@@ -1,4 +1,8 @@
-replicas: 4
+replicas: 3
+horizontalPodAutoscaler:
+  maxReplicas: 5
+  minReplicas: 3
+
 image:
   identifier: ${artifact.metadata.image}
 

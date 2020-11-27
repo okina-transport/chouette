@@ -1,0 +1,22 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "chouette.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "common.labels" . | indent 4 }}
+spec:
+  minReplicas: {{ .Values.horizontalPodAutoscaler.minReplicas}}
+  maxReplicas: {{ .Values.horizontalPodAutoscaler.maxReplicas}}
+  metrics:
+    - external:
+        metricName: pubsub.googleapis.com|subscription|num_undelivered_messages
+        metricSelector:
+          matchLabels:
+            resource.labels.subscription_id: chouette_poll_status_queue
+        targetAverageValue: "2"
+      type: External
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "chouette.name" . }}
