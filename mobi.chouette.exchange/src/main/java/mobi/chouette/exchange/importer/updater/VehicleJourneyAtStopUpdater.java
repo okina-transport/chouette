@@ -1,12 +1,12 @@
 package mobi.chouette.exchange.importer.updater;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.StopPointDAO;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourneyAtStop;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 
 @Stateless(name = VehicleJourneyAtStopUpdater.BEAN_NAME)
 public class VehicleJourneyAtStopUpdater implements
@@ -14,7 +14,7 @@ public class VehicleJourneyAtStopUpdater implements
 
 	public static final String BEAN_NAME = "VehicleJourneyAtStopUpdater";
 
-	@EJB 
+	@EJB
 	private StopPointDAO stopPointDAO;
 
 	
@@ -30,17 +30,22 @@ public class VehicleJourneyAtStopUpdater implements
 		}
 		if (newValue.getDepartureTime() != null
 				&& !newValue.getDepartureTime().equals(
-						oldValue.getDepartureTime())) {
+				oldValue.getDepartureTime())) {
 			oldValue.setDepartureTime(newValue.getDepartureTime());
 		}
-		
+
 		if (newValue.getArrivalDayOffset() != oldValue.getArrivalDayOffset()) {
 			oldValue.setArrivalDayOffset(newValue.getArrivalDayOffset());
 		}
 		if (newValue.getDepartureDayOffset() != oldValue.getDepartureDayOffset()) {
 			oldValue.setDepartureDayOffset(newValue.getDepartureDayOffset());
 		}
-		
+
+		if (newValue.getBoardingAlightingPossibility() != null
+				&& !newValue.getBoardingAlightingPossibility().equals(oldValue.getBoardingAlightingPossibility())) {
+			oldValue.setBoardingAlightingPossibility(newValue.getBoardingAlightingPossibility());
+		}
+
 		// if (newValue.getElapseDuration() != null
 		// 		&& !newValue.getElapseDuration().equals(
 		// 				oldValue.getElapseDuration())) {

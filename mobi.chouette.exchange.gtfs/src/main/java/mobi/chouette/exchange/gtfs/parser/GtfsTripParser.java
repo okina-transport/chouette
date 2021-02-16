@@ -20,10 +20,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
 import mobi.chouette.model.*;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-import mobi.chouette.model.type.JourneyCategoryEnum;
-import mobi.chouette.model.type.SectionStatusEnum;
+import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -1162,7 +1159,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
      * @param gtfsStopTime
      * @param vehicleJourneyAtStop
      */
-    protected void convert(Context context, GtfsStopTime gtfsStopTime, VehicleJourneyAtStop vehicleJourneyAtStop) {
+    protected void convert(Context context, GtfsStopTime gtfsStopTime, VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -1181,6 +1178,66 @@ public class GtfsTripParser implements Parser, Validator, Constant {
          */
         vehicleJourneyAtStop.setArrivalDayOffset(gtfsStopTime.getArrivalTime().getDay());
         vehicleJourneyAtStop.setDepartureDayOffset(gtfsStopTime.getDepartureTime().getDay());
+
+        vehicleJourneyAtStop.setBoardingAlightingPossibility(getBoardingAlightingPossibilityEnum(vehicleJourneyAtStop));
+    }
+
+    /**
+     * Return corresponding BoardingAlightingPossibilityEnum
+     * Some cases can't be handled so BoardAndAlightOnRequest is set when something is requested and the other is normal
+     * @param vehicleJourneyAtStop
+     * @return
+     */
+    private BoardingAlightingPossibilityEnum getBoardingAlightingPossibilityEnum(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
+        AlightingPossibilityEnum dropOffType = vehicleJourneyAtStop.getDropOffType();
+        BoardingPossibilityEnum pickUpType = vehicleJourneyAtStop.getPickUpType();
+        BoardingAlightingPossibilityEnum finalEnum = BoardingAlightingPossibilityEnum.BoardAndAlight;
+
+        switch (pickUpType) {
+            case normal:
+                switch (dropOffType) {
+                    case normal:
+                        finalEnum = BoardingAlightingPossibilityEnum.BoardAndAlight;
+                        break;
+                    case forbidden:
+                        finalEnum = BoardingAlightingPossibilityEnum.BoardOnly;
+                        break;
+                    case request_stop:
+                    case is_flexible:
+                        finalEnum = BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest;
+                        break;
+                }
+                break;
+            case forbidden:
+                switch (dropOffType) {
+                    case normal:
+                        finalEnum = BoardingAlightingPossibilityEnum.AlightOnly;
+                        break;
+                    case forbidden:
+                        finalEnum = BoardingAlightingPossibilityEnum.NeitherBoardOrAlight;
+                        break;
+                    case request_stop:
+                    case is_flexible:
+                        finalEnum = BoardingAlightingPossibilityEnum.AlightOnRequest;
+                        break;
+                }
+                break;
+
+            case is_flexible:
+            case request_stop:
+                switch (dropOffType) {
+                    case normal:
+                    case request_stop:
+                    case is_flexible:
+                        finalEnum = BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest;
+                        break;
+                    case forbidden:
+                        finalEnum = BoardingAlightingPossibilityEnum.BoardOnRequest;
+                        break;
+                }
+                break;
+        }
+        return finalEnum;
     }
 
     /**

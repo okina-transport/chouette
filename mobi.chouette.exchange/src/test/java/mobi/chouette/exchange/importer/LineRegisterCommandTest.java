@@ -1,18 +1,17 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.StringWriter;
-import java.sql.Time;
-
-import javax.naming.InitialContext;
-
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-
+import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.naming.InitialContext;
+import java.io.StringWriter;
+import java.sql.Time;
 
 public class LineRegisterCommandTest implements Constant {
 	
@@ -44,13 +43,15 @@ public class LineRegisterCommandTest implements Constant {
         vjas.setArrivalDayOffset(0);
         
         vjas.setDepartureDayOffset(1);
+
+        vjas.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlight);
         
 		lineRegister = new LineRegisterCommand();
 		
 		lineRegister.write(buffer, neptuneObject, sp, vjas);
 		
 		
-		Assert.assertEquals(buffer.toString(), "4321|1001|23:59:00|00:05:00|0|1\n", "Invalid data entry for buffer");
+		Assert.assertEquals(buffer.toString(), "4321|1001|23:59:00|00:05:00|0|1|BoardAndAlight\n", "Invalid data entry for buffer");
 	
 		
 	}
