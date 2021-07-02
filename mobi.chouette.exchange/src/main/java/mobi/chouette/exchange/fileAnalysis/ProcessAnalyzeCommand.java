@@ -29,7 +29,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -137,15 +139,15 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
                             for (Timetable timetable : vehicleJourney.getTimetables()) {
 
-                                LocalDate startOfPeriod = getMinDateOfTimeTable(timetable);
-                                LocalDate endOfPeriod = getMaxDateOfTimeTable(timetable);
+                                Optional<LocalDate> startOfPeriod = getMinDateOfTimeTable(timetable);
+                                Optional<LocalDate> endOfPeriod = getMaxDateOfTimeTable(timetable);
 
-                                if (analyzeReport.getOldestPeriodOfCalendars() == null || (startOfPeriod != null && analyzeReport.getOldestPeriodOfCalendars().isAfter(startOfPeriod))){
-                                    analyzeReport.setOldestPeriodOfCalendars(startOfPeriod);
+                                if (startOfPeriod.isPresent() && (analyzeReport.getOldestPeriodOfCalendars() == null || (analyzeReport.getOldestPeriodOfCalendars().isAfter(startOfPeriod.get())))){
+                                    analyzeReport.setOldestPeriodOfCalendars(startOfPeriod.get());
                                 }
 
-                                if (analyzeReport.getNewestPeriodOfCalendars() == null || (endOfPeriod != null && analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod))){
-                                    analyzeReport.setNewestPeriodOfCalendars(endOfPeriod);
+                                if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod.get())))){
+                                    analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
                                 }
 
                             }
@@ -173,47 +175,36 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         });
     }
 
-    private LocalDate getMinDateOfTimeTable(Timetable timetable ){
+    private Optional<LocalDate> getMinDateOfTimeTable(Timetable timetable ){
 
-        LocalDate startPeriod = timetable.getStartOfPeriod();
-        List<LocalDate> startPeriodList = timetable.getPeriods().stream().map(Period::getStartDate)
-                                                                         .collect(Collectors.toList());
+        List<LocalDate> startPeriodList = timetable.getPeriods().stream()
+                                                                .map(Period::getStartDate)
+                                                                .collect(Collectors.toList());
 
-        LocalDate minDate = startPeriod;
-        for (LocalDate localDate : startPeriodList){
-            if (minDate == null || minDate.isAfter(localDate)){
-                minDate = localDate;
-            }
-        }
 
-        for (CalendarDay calendarDay : timetable.getCalendarDays()) {
-            if (calendarDay.getIncluded() && calendarDay.getDate().isBefore(minDate)){
-                minDate = calendarDay.getDate();
-            }
-        }
+        List<LocalDate> calendarDates = timetable.getCalendarDays().stream()
+                                                                   .filter(CalendarDay::getIncluded)
+                                                                   .map(CalendarDay::getDate)
+                                                                   .collect(Collectors.toList());
 
-        return minDate;
+        startPeriodList.addAll(calendarDates);
+        return startPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.min(startPeriodList));
     }
 
-    private LocalDate getMaxDateOfTimeTable(Timetable timetable ){
+    private Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
 
-        LocalDate endPeriod = timetable.getEndOfPeriod();
-        List<LocalDate> endPeriodList = timetable.getPeriods().stream().map(Period::getEndDate)
-                                                             .collect(Collectors.toList());
+        List<LocalDate> endPeriodList = timetable.getPeriods().stream()
+                                                              .map(Period::getEndDate)
+                                                              .collect(Collectors.toList());
 
-        LocalDate maxDate = endPeriod;
-        for (LocalDate localDate : endPeriodList){
-            if (maxDate == null || maxDate.isBefore(localDate)){
-                maxDate = localDate;
-            }
-        }
 
-        for (CalendarDay calendarDay : timetable.getCalendarDays()) {
-            if (calendarDay.getIncluded() && calendarDay.getDate().isAfter(maxDate)){
-                maxDate = calendarDay.getDate();
-            }
-        }
-        return maxDate;
+        List<LocalDate> calendarDates = timetable.getCalendarDays().stream()
+                                                                   .filter(CalendarDay::getIncluded)
+                                                                   .map(CalendarDay::getDate)
+                                                                   .collect(Collectors.toList());
+
+        endPeriodList.addAll(calendarDates);
+        return endPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.max(endPeriodList));
     }
 
 
