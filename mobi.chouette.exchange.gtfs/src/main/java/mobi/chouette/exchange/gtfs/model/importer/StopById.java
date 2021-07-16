@@ -271,6 +271,13 @@ public class StopById extends IndexImpl<GtfsStop> implements GtfsConverter {
 
 		GtfsStop copy_bean = new GtfsStop(bean);
 		String parentStationId = copy_bean.getParentStation();
+
+		if (copy_bean.getStopId().equals(parentStationId)){
+			//After prefix removal, parent and child has the same id. It is forbidden
+			result = false;
+			bean.getErrors().add(new GtfsException(_path, copy_bean.getId(), getIndex(FIELDS.parent_station.name()), FIELDS.parent_station.name(), GtfsException.ERROR.PREFIX_REMOVAL_ERROR, copy_bean.getStopId(), parentStationId));
+		}
+
 		if (isPresent(parentStationId)) {
 
 			// parentStation must reference a stop

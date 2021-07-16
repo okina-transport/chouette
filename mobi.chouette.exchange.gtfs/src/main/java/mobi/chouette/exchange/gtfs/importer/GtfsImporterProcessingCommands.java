@@ -65,6 +65,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, GtfsPrefixRemovalChecker.class.getName()));
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");
