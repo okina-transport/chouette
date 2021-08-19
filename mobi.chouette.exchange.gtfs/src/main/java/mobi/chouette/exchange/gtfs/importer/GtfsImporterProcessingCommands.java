@@ -231,7 +231,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             if (parameters.getRouteMerge()){
                 commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
             }
-            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
+//            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
         } catch (Exception e) {
             log.error(e, e);
