@@ -13,7 +13,6 @@ import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
@@ -62,12 +61,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
             Referential referential = (Referential) context.get(REFERENTIAL);
 
+            Line newValue  = referential.getLines().values().iterator().next();
 
-            for (Line line : referential.getLines().values()) {
-                initializeLine(context, line);
-            }
 
-            feedAnalysisWithLineData(context);
+//            for (Line line : referential.getLines().values()) {
+//                initializeLine(context, line);
+//            }
+
+            feedAnalysisWithLineData(context,newValue);
             feedAnalysisWithStopAreaData(context);
 
             log.info("analysis completed");
@@ -125,37 +126,26 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
      * Read the context to recover all data of the files and write analysis results into analyzeReport
      * @param context
      */
-    private void feedAnalysisWithLineData(Context context){
+    private void feedAnalysisWithLineData(Context context, Line line){
 
         AnalyzeReport analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
-        Referential cache = (Referential) context.get(CACHE);
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
-
-
-        List<String> analyzedLineList = new ArrayList<>();
         List<String> vehicleJourneys = new ArrayList<>();
 
-        Map<String, String> lineTextColorMap = new HashMap<>();
-        Map<String, String> lineBackgroundColorMap = new HashMap<>();
-        Map<String, String> lineShortNameMap = new HashMap<>();
 
 
-
-        for (Network network : cache.getPtNetworks().values()) {
-
-            for (Line line : network.getLines()) {
                 String lineName = line.getName();
 
                 //If line is not part of the incoming file or if line has already been analyzed, we skip it
-                if (!incomingLineList.contains(line.getObjectId()) || analyzedLineList.contains(lineName))
-                    continue;
+        if (!incomingLineList.contains(line.getObjectId()) || analyzeReport.getLines().contains(lineName))
+              return;
 
 
-                analyzedLineList.add(lineName);
-                lineTextColorMap.put(lineName,line.getTextColor());
-                lineBackgroundColorMap.put(lineName,line.getColor());
-                lineShortNameMap.put(lineName,line.getNumber());
+        analyzeReport.getLines().add(lineName);
+        analyzeReport.addLineTextColor(lineName,line.getTextColor());
+        analyzeReport.addLineBackgroundColor(lineName,line.getColor());
+        analyzeReport.addLineShortName(lineName,line.getNumber());
 
                 for (Route route : line.getRoutes()) {
 
@@ -184,33 +174,12 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                     }
 
                 }
-            }
 
-        }
-
-
-        analyzedLineList.forEach(line -> {
-            if (!analyzeReport.getLines().contains(line)){
-                analyzeReport.getLines().add(line);
-            }
-        });
-
-        lineTextColorMap.forEach((key,value) ->{
-            analyzeReport.addLineTextColor(key,value);
-        });
-
-        lineBackgroundColorMap.forEach((key,value) ->{
-            analyzeReport.addLineBackgroundColor(key,value);
-        });
 
         vehicleJourneys.forEach(vehicleJourney->{
             if(!analyzeReport.getJourneys().contains(vehicleJourney)){
                 analyzeReport.getJourneys().add(vehicleJourney);
             }
-        });
-
-        lineShortNameMap.forEach((key,value) ->{
-            analyzeReport.addLineShortName(key,value);
         });
     }
 
