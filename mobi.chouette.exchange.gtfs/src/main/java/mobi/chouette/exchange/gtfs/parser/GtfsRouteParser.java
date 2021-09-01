@@ -154,15 +154,15 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
             parser.setWithValidation(false);
             int i = 1;
             boolean unsuedId = false;
-            for (GtfsAgency bean : importer.getAgencyById()) {
-                if (!agencyIds.contains(bean.getAgencyId())) {
-                    i++;
-                    unsuedId = true;
-                    gtfsValidationReporter.reportError(context,
-                            new GtfsException(GTFS_AGENCY_FILE, i, AgencyById.FIELDS.agency_id.name(),
-                                    GtfsException.ERROR.UNUSED_AGENCY_ID, null, bean.getAgencyId()), GTFS_AGENCY_FILE);
-                }
-            }
+//            for (GtfsAgency bean : importer.getAgencyById()) {
+//                if (!agencyIds.contains(bean.getAgencyId())) {
+//                    i++;
+//                    unsuedId = true;
+//                    gtfsValidationReporter.reportError(context,
+//                            new GtfsException(GTFS_AGENCY_FILE, i, AgencyById.FIELDS.agency_id.name(),
+//                                    GtfsException.ERROR.UNUSED_AGENCY_ID, null, bean.getAgencyId()), GTFS_AGENCY_FILE);
+//                }
+//            }
             if (!unsuedId)
                 gtfsValidationReporter.validate(context, GTFS_ROUTES_FILE, GtfsException.ERROR.UNUSED_AGENCY_ID);
             if (fatalException != null)

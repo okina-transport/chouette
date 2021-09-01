@@ -87,7 +87,7 @@ public class GtfsValidationCommand implements Command, Constant {
 			if (all) {
 				// agency.txt
 				GtfsAgencyParser agencyParser = (GtfsAgencyParser) ParserFactory.create(GtfsAgencyParser.class.getName());
-				agencyParser.validate(context);
+//				agencyParser.validate(context);
 				
 				// routes.txt
 				GtfsRouteParser routeParser = (GtfsRouteParser) ParserFactory.create(GtfsRouteParser.class.getName());
