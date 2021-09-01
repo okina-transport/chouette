@@ -33,6 +33,7 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -53,6 +54,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -192,7 +194,7 @@ public class LineRegisterCommand implements Command {
 							StopPoint stopPoint = cache.getStopPoints().get(
 									vehicleJourneyAtStop.getStopPoint().getObjectId());
 
-							write(buffer, vehicleJourney, stopPoint, vehicleJourneyAtStop);
+							write(buffer, vehicleJourney, stopPoint, vehicleJourneyAtStop,importParameter.isKeepBoardingAlighting());
 						}
 					}
 					vehicleJourneyDAO.deleteChildren(list);
@@ -339,7 +341,7 @@ public class LineRegisterCommand implements Command {
 	
 	
 	protected void write(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint,
-			VehicleJourneyAtStop vehicleJourneyAtStop) throws IOException {
+			VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) throws IOException {
 		// The list of fields to synchronize with
 		// VehicleJourneyAtStopUpdater.update(Context context,
 		// VehicleJourneyAtStop oldValue,
@@ -348,6 +350,11 @@ public class LineRegisterCommand implements Command {
 
 		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
 		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+		if (keepBoardingAlighting){
+			Optional<BoardingAlightingPossibilityEnum> currentBoardingAlightingPossibilityOpt = getActualBordingAlightingPossibility(vehicleJourney, vehicleJourneyAtStop);
+			currentBoardingAlightingPossibilityOpt.ifPresent(vehicleJourneyAtStop::setBoardingAlightingPossibility);
+		}
 		
 		buffer.write(vehicleJourneyAtStop.getObjectId().replace('|', '_'));
 		buffer.append(SEP);
@@ -391,6 +398,24 @@ public class LineRegisterCommand implements Command {
 
 		buffer.append('\n');
 
+	}
+
+	/**
+	 * Read the old VehicleJourney to recover boardingAlightingPossibility, for the vehicleJourneyAtStop passed as parameter
+	 * (Needed if user wants to keep boardingAlighting between 2 imports)
+	 *
+	 * @param vehicleJourney
+	 * 		VehicleJourney that constains old data from DB
+	 * @param newVehicleJourneyAtStop
+	 * 		newVehicleJourney
+	 * @return
+	 */
+	private Optional<BoardingAlightingPossibilityEnum> getActualBordingAlightingPossibility(VehicleJourney vehicleJourney, VehicleJourneyAtStop newVehicleJourneyAtStop){
+		return vehicleJourney.getVehicleJourneyAtStops().stream()
+												.filter(currentVehicleJourneyAtStop -> currentVehicleJourneyAtStop.getStopPoint().equals(newVehicleJourneyAtStop.getStopPoint()) &&
+																						currentVehicleJourneyAtStop.getVehicleJourney().equals(newVehicleJourneyAtStop.getVehicleJourney()))
+												.map(VehicleJourneyAtStop::getBoardingAlightingPossibility)
+												.findFirst();
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {

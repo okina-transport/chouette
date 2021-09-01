@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "noSave", "cleanRepository", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines",
-		"generateMissingRouteSectionsForModes" }, name = "actionImportParameter")
+		"generateMissingRouteSectionsForModes","keepBoardingAlighting" }, name = "actionImportParameter")
 public class AbstractImportParameter extends AbstractParameter {
 
 	@XmlElement(name = "no_save", defaultValue = "false")
@@ -61,6 +61,12 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Getter
 	@Setter
 	private Set<TransportModeNameEnum> generateMissingRouteSectionsForModes = new HashSet<>();
+
+
+	@XmlElement(name = "keep_boarding_alighting", defaultValue = "true")
+	@Getter
+	@Setter
+	private boolean keepBoardingAlighting = true;
 
 
 	public boolean isValid(Logger log) {
