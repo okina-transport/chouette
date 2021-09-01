@@ -114,11 +114,6 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 
 	
 	public void create(final T entity) {
-		if (entity instanceof NeptuneIdentifiedObject){
-			if(((NeptuneIdentifiedObject) entity).getObjectId().contains("LOC")){
-				System.out.println("ici");
-			}
-		}
 		em.persist(entity);
 	}
 

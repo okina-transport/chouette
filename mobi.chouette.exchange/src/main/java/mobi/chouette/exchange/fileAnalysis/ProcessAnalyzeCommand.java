@@ -13,7 +13,6 @@ import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
@@ -55,25 +54,25 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         boolean result = ERROR;
 
 
-            log.info("Starting analysis");
-            Referential cache = new Referential();
-            context.put(CACHE, cache);
-            context.put(OPTIMIZED, Boolean.FALSE);
+        log.info("Starting analysis");
+        Referential cache = new Referential();
+        context.put(CACHE, cache);
+        context.put(OPTIMIZED, Boolean.FALSE);
 
-            Referential referential = (Referential) context.get(REFERENTIAL);
+        Referential referential = (Referential) context.get(REFERENTIAL);
 
-            Line newValue  = referential.getLines().values().iterator().next();
+        Line newValue  = referential.getLines().values().iterator().next();
 
 
 //            for (Line line : referential.getLines().values()) {
 //                initializeLine(context, line);
 //            }
 
-            feedAnalysisWithLineData(context,newValue);
-            feedAnalysisWithStopAreaData(context);
+        feedAnalysisWithLineData(context,newValue);
+        feedAnalysisWithStopAreaData(context);
 
-            log.info("analysis completed");
-            result = SUCCESS;
+        log.info("analysis completed");
+        result = SUCCESS;
 
 
         return result;
@@ -94,10 +93,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         List<String> stopAreaList = new ArrayList<>();
 
         referential.getSharedStopAreas().values().stream()
-                                                .filter(stopArea -> stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition))
-                                                .map(StopArea::getName)
-                                                .distinct()
-                                                .forEach(stopAreaList::add);
+                .filter(stopArea -> stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition))
+                .map(StopArea::getName)
+                .distinct()
+                .forEach(stopAreaList::add);
 
         stopAreaList.forEach(stopArea -> {
             if (!analyzeReport.getStops().contains(stopArea)){
@@ -140,7 +139,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         //If line is not part of the incoming file or if line has already been analyzed, we skip it
         if (!incomingLineList.contains(line.getObjectId()) || analyzeReport.getLines().contains(lineName))
-              return;
+            return;
 
 
         analyzeReport.getLines().add(lineName);
@@ -150,31 +149,31 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         for (Route route : line.getRoutes()) {
 
-             for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
 
-                  for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
-                        vehicleJourneys.add(vehicleJourney.getObjectId());
+                for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
+                    vehicleJourneys.add(vehicleJourney.getObjectId());
 
-                       for (Timetable timetable : vehicleJourney.getTimetables()) {
+                    for (Timetable timetable : vehicleJourney.getTimetables()) {
 
-                            Optional<LocalDate> startOfPeriod = getMinDateOfTimeTable(timetable);
-                            Optional<LocalDate> endOfPeriod = getMaxDateOfTimeTable(timetable);
+                        Optional<LocalDate> startOfPeriod = getMinDateOfTimeTable(timetable);
+                        Optional<LocalDate> endOfPeriod = getMaxDateOfTimeTable(timetable);
 
-                            if (startOfPeriod.isPresent() && (analyzeReport.getOldestPeriodOfCalendars() == null || (analyzeReport.getOldestPeriodOfCalendars().isAfter(startOfPeriod.get())))){
-                               analyzeReport.setOldestPeriodOfCalendars(startOfPeriod.get());
-                            }
+                        if (startOfPeriod.isPresent() && (analyzeReport.getOldestPeriodOfCalendars() == null || (analyzeReport.getOldestPeriodOfCalendars().isAfter(startOfPeriod.get())))){
+                            analyzeReport.setOldestPeriodOfCalendars(startOfPeriod.get());
+                        }
 
-                           if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod.get())))){
-                               analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
-                            }
+                        if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod.get())))){
+                            analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
+                        }
 
-                       }
+                    }
 
-                  }
+                }
 
-             }
+            }
 
-       }
+        }
 
 
         vehicleJourneys.forEach(vehicleJourney->{
@@ -187,14 +186,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Optional<LocalDate> getMinDateOfTimeTable(Timetable timetable ){
 
         List<LocalDate> startPeriodList = timetable.getPeriods().stream()
-                                                                .map(Period::getStartDate)
-                                                                .collect(Collectors.toList());
+                .map(Period::getStartDate)
+                .collect(Collectors.toList());
 
 
         List<LocalDate> calendarDates = timetable.getCalendarDays().stream()
-                                                                   .filter(CalendarDay::getIncluded)
-                                                                   .map(CalendarDay::getDate)
-                                                                   .collect(Collectors.toList());
+                .filter(CalendarDay::getIncluded)
+                .map(CalendarDay::getDate)
+                .collect(Collectors.toList());
 
         startPeriodList.addAll(calendarDates);
         return startPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.min(startPeriodList));
@@ -203,14 +202,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
 
         List<LocalDate> endPeriodList = timetable.getPeriods().stream()
-                                                              .map(Period::getEndDate)
-                                                              .collect(Collectors.toList());
+                .map(Period::getEndDate)
+                .collect(Collectors.toList());
 
 
         List<LocalDate> calendarDates = timetable.getCalendarDays().stream()
-                                                                   .filter(CalendarDay::getIncluded)
-                                                                   .map(CalendarDay::getDate)
-                                                                   .collect(Collectors.toList());
+                .filter(CalendarDay::getIncluded)
+                .map(CalendarDay::getDate)
+                .collect(Collectors.toList());
 
         endPeriodList.addAll(calendarDates);
         return endPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.max(endPeriodList));
