@@ -144,7 +144,7 @@ public abstract class NeptuneUtil {
 		}
 	}
 
-	public static List<StopArea> getStopAreaOfRoute(Route route) {
+		public static List<StopArea> getStopAreaOfRoute(Route route) {
 		ArrayList<StopArea> areas = new ArrayList<>();
 		ArrayList<StopPoint> points = new ArrayList<>(route.getStopPoints());
 		for (Iterator<StopPoint> iterator = points.iterator(); iterator.hasNext();) {
@@ -160,6 +160,13 @@ public abstract class NeptuneUtil {
 			}
 		});
 		for (StopPoint point : points) {
+
+			if (point == null || point.getScheduledStopPoint() == null || point.getScheduledStopPoint().getContainedInStopAreaRef() == null){
+				log.error("Error while getting stop area from route");
+				String pointObjectId = point == null ? "" : point.getObjectId();
+				log.error("Details : routeObjectId:" + route.getObjectId() + "  ,pointObjectId :" + pointObjectId);
+			}
+
 			areas.add(point.getScheduledStopPoint().getContainedInStopAreaRef().getObject());
 		}
 		return areas;
