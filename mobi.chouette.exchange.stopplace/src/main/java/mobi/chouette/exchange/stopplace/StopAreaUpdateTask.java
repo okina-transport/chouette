@@ -58,7 +58,9 @@ public class StopAreaUpdateTask {
 					         .forEach(stopArea -> createOrUpdate(stopArea));
 		}
 
-		removedContainedStopAreas.values().forEach(containedStopArea -> removeContainedStopArea(containedStopArea));
+		// De-activate auto delete of unused values.
+		// Generates exceptions because deleted points are still in use. Need to investigate
+		//removedContainedStopAreas.values().forEach(containedStopArea -> removeContainedStopArea(containedStopArea));
 
 		stopAreaDAO.flush();
 		stopAreaDAO.clear();
