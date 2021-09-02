@@ -75,6 +75,7 @@ public class DaoLineValidatorCommand implements Command, Constant {
 			if (line.getSupprime()){
 				//deleted line no need for validation
 				log.info(Color.YELLOW + "Deleted line will not be validated:"+line.getId() + Color.NORMAL);
+				data.setCurrentLine(line);
 				return true;
 			}
 			ValidationDataCollector collector = new ValidationDataCollector();
