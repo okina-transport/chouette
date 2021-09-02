@@ -522,6 +522,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
                     DataLocation location = buildLocation(context, vj);
                     DataLocation stop = buildLocation(context, vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
                     ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+                    log.error("vehicleJourney " + vj.getObjectId() + " has problem with diffTime");
                     reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_5, "1", location, Long.toString(diffTime),
                             Long.toString(diffTime), stop);
                 }
@@ -543,6 +544,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
                     DataLocation previousStop = buildLocation(context, previous_vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
                     DataLocation stop = buildLocation(context, vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
                     ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+                    log.error("vehicleJourney " + vj.getObjectId() + " has problem with diffTime");
                     reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_5, "2", location, Long.toString(diffTime),
                             Long.toString(diffTime), previousStop, stop);
                 }
@@ -562,6 +564,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
                     DataLocation previousStop = buildLocation(context, previous_vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
                     DataLocation stop = buildLocation(context, vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
                     ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+                    log.error("vehicleJourney " + vj.getObjectId() + " has problem with diffTime");
                     reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_5, "2", location, Long.toString(diffTime),
                             Long.toString(diffTime), previousStop, stop);
                 }
