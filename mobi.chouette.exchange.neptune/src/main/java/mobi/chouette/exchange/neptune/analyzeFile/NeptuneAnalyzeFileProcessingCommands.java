@@ -16,6 +16,7 @@ import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneBrokenRouteFixerCommand;
+import mobi.chouette.exchange.neptune.importer.NeptuneComplianceCheckerCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportExtensionsCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.importer.NeptuneInitImportCommand;
@@ -63,6 +64,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             }
             commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, NeptuneComplianceCheckerCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
         } catch (Exception e) {

@@ -55,7 +55,15 @@ public class NeptuneAnalyzeFileCommand extends AbstractImporterCommand implement
         try{
             result = process(context, commands, progression, true, Mode.line);
             log.info("Neptune analysis completed");
-            report.setResult("OK");
+
+            if (result){
+                report.setResult("OK");
+            }else{
+                report.setResult("NOK");
+            }
+
+
+
             progression.saveAnalyzeReport(context,true);
         }catch(Exception e){
             report.setResult("NOK");
