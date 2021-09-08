@@ -135,7 +135,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                             analyzeReport.setOldestPeriodOfCalendars(startOfPeriod.get());
                         }
 
-                        if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod.get())))){
+                        if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isBefore(endOfPeriod.get())))){
                             analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
                         }
 
@@ -168,7 +168,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                 .collect(Collectors.toList());
 
         startPeriodList.addAll(calendarDates);
-        return startPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.min(startPeriodList));
+
+        return startPeriodList.isEmpty() ? Optional.empty() : startPeriodList.stream().min(LocalDate::compareTo);
     }
 
     private Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
@@ -184,7 +185,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                 .collect(Collectors.toList());
 
         endPeriodList.addAll(calendarDates);
-        return endPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.max(endPeriodList));
+        return endPeriodList.isEmpty() ? Optional.empty() : endPeriodList.stream().max(LocalDate::compareTo);
     }
 
 
