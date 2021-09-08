@@ -41,13 +41,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
     public static final String COMMAND = "ProcessAnalyzeCommand";
 
-    @EJB(beanName = LineUpdater.BEAN_NAME)
-    private Updater<Line> lineUpdater;
-
-
-    @EJB
-    private LineOptimiser optimiser;
-
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -62,11 +55,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         Line newValue  = referential.getLines().values().iterator().next();
-
-
-//            for (Line line : referential.getLines().values()) {
-//                initializeLine(context, line);
-//            }
 
         feedAnalysisWithLineData(context,newValue);
         feedAnalysisWithStopAreaData(context);
@@ -104,22 +92,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             }
         });
     }
-
-    private void initializeLine(Context context, Line newValue) throws Exception {
-        Referential cache = (Referential) context.get(CACHE);
-        Referential referential = (Referential) context.get(REFERENTIAL);
-
-
-        try {
-            optimiser.initialize(cache, referential);
-            Line oldValue = cache.getLines().get(newValue.getObjectId());
-            lineUpdater.update(context, oldValue, newValue);
-        } catch (Exception e) {
-            log.error("Error on line initialization:" + e.getStackTrace());
-            throw e;
-        }
-    }
-
 
 
     /**
