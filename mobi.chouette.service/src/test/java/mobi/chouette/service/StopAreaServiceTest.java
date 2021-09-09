@@ -440,6 +440,11 @@ public class StopAreaServiceTest extends Arquillian {
 
 		stopAreaService.deleteStopArea(stopAreaId);
 
+		utx.commit();
+
+		utx.begin();
+		ContextHolder.setContext("tro");
+
 		Assert.assertNull(stopAreaDAO.findByObjectId(stopAreaId));
 		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Expected quay to have been cascade deleted");
 		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Expected quay to have been cascade deleted");
