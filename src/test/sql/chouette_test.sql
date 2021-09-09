@@ -1014,7 +1014,8 @@ CREATE TABLE lines (
     codifligne character varying(255),
     tad character varying(14),
     pmr character varying(14),
-    pos integer
+    pos integer,
+    supprime boolean DEFAULT false
 );
 
 
