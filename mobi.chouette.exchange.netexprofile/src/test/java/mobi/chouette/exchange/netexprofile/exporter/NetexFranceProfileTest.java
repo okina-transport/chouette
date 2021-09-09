@@ -223,7 +223,7 @@ public class NetexFranceProfileTest {
             DayTypeRefStructure firstDayType = serviceJourney.getDayTypes().getDayTypeRef().get(0).getValue();
 
             Assert.assertEquals(firstDayType.getRef(), "TEST:DayType:t1:LOC", "wrong day type ref");
-            Assert.assertEquals(firstDayType.getValue(), "version=\"any\"", "wrong value ");
+
             
             
             
@@ -303,7 +303,7 @@ public class NetexFranceProfileTest {
         Assert.assertEquals(firstScheduledPointRef.getVersion(), "any", "wrong version");
         QuayRefStructure quayRef = firstAssignment.getQuayRef();
         Assert.assertEquals(quayRef.getRef(), "TEST:Quay:quay3", "wrong ref");
-        Assert.assertEquals(quayRef.getValue(), "version=\"any\"", "wrong value");
+
 
         PassengerStopAssignment secondAssignment = passengerStopAssignmentList.get(1);
         Assert.assertEquals(secondAssignment.getOrder(), new BigInteger("0"), "wrong order");
@@ -314,7 +314,7 @@ public class NetexFranceProfileTest {
         Assert.assertEquals(secondScheduledPointRef.getVersion(), "any", "wrong version");
         QuayRefStructure secondQuayRef = secondAssignment.getQuayRef();
         Assert.assertEquals(secondQuayRef.getRef(), "TEST:Quay:quay2", "wrong ref");
-        Assert.assertEquals(secondQuayRef.getValue(), "version=\"any\"", "wrong value");
+
 
         PassengerStopAssignment thirdAssignment = passengerStopAssignmentList.get(2);
         Assert.assertEquals(thirdAssignment.getOrder(), new BigInteger("0"), "wrong order");
@@ -325,7 +325,7 @@ public class NetexFranceProfileTest {
         Assert.assertEquals(thirdScheduledPointRef.getVersion(), "any", "wrong version");
         QuayRefStructure thirdQuayRef = thirdAssignment.getQuayRef();
         Assert.assertEquals(thirdQuayRef.getRef(), "TEST:Quay:quay1", "wrong ref");
-        Assert.assertEquals(thirdQuayRef.getValue(), "version=\"any\"", "wrong value");
+
 
     }
 
