@@ -142,7 +142,7 @@ public class NetexLineDataIDFMProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getJourneyPatternRef().getValue().getRef(), "TEST:ServiceJourneyPattern:jp1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getJourneyPatternRef().getValue().getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getDayTypes().getDayTypeRef().get(0).getValue().getRef(), "TEST:DayType:t1:LOC");
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getDayTypes().getDayTypeRef().get(0).getValue().getValue(), "version=\"any\"");
+
 
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getDepartureTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 0, 0)));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getVersion(), "any");
