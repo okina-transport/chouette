@@ -33,7 +33,7 @@ public class NetexInitImportCommand implements Command, Constant {
 			if (context.get(VALIDATION) != null)
 			   context.put(VALIDATION_DATA, new ValidationData());
 
-			NetexImportParameters parameters = context.get(CONFIGURATION);
+			NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 			context.put(StopArea.IMPORT_MODE, parameters.getStopAreaImportMode());
 			result = SUCCESS;
 
