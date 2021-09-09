@@ -260,7 +260,8 @@ public class StopAreaServiceTest extends Arquillian {
 
 		// New quay, removed quay and moved quay for 2
 		assertStopPlace("NSR:StopPlace:2", "NSR:Quay:3a", "NSR:Quay:2b");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Did not expect to find removed quay");
+		//disabled test : delete removed from irkalla update
+		//Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Did not expect to find removed quay");
 		assertStopPlace("NSR:StopPlace:3");
 
 		utx.commit();
@@ -291,7 +292,8 @@ public class StopAreaServiceTest extends Arquillian {
 
 		ContextHolder.setContext("sky");
 		// Quay 5 merged with quay 6
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Did not expect to find quay merged into another quay");
+		//delete disabled from irkalla update
+		//Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Did not expect to find quay merged into another quay");
 		assertStopPlace("NSR:StopPlace:6", "NSR:Quay:6");
 
 		assertStopPlace("NSR:StopPlace:7", "NSR:Quay:7");
@@ -366,15 +368,17 @@ public class StopAreaServiceTest extends Arquillian {
 
 		ContextHolder.setContext("tro");
 
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4000"), "Did not expect to find deactivated parent stop place");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:2000"), "Did not expect to find stop with deactivated parent ");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1000"), "Did not expect to find stop with deactivated parent");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1000"), "Did not expect to find quay with deactivated stop place parent");
+		//delete de-activated from irkalla
+//		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4000"), "Did not expect to find deactivated parent stop place");
+//		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:2000"), "Did not expect to find stop with deactivated parent ");
+//		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1000"), "Did not expect to find stop with deactivated parent");
+//		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1000"), "Did not expect to find quay with deactivated stop place parent");
 
 		utx.rollback();
 	}
 
-	@Test
+
+	@Test(enabled = false, description = "Delete no longer used in irkalla")
 	public void deleteExistingBoardingPositionsNoLongerValidForStopOnlyIfInSameCodeSpaceAsStop() throws Exception {
 
 		cleanAllschemas();
