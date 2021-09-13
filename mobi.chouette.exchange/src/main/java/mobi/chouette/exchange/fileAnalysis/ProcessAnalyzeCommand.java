@@ -41,13 +41,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
     public static final String COMMAND = "ProcessAnalyzeCommand";
 
-    @EJB(beanName = LineUpdater.BEAN_NAME)
-    private Updater<Line> lineUpdater;
-
-
-    @EJB
-    private LineOptimiser optimiser;
-
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -62,11 +55,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         Line newValue  = referential.getLines().values().iterator().next();
-
-
-//            for (Line line : referential.getLines().values()) {
-//                initializeLine(context, line);
-//            }
 
         feedAnalysisWithLineData(context,newValue);
         feedAnalysisWithStopAreaData(context);
@@ -93,7 +81,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         List<String> stopAreaList = new ArrayList<>();
 
         referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition))
+                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
                 .map(StopArea::getName)
                 .distinct()
                 .forEach(stopAreaList::add);
@@ -104,22 +92,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             }
         });
     }
-
-    private void initializeLine(Context context, Line newValue) throws Exception {
-        Referential cache = (Referential) context.get(CACHE);
-        Referential referential = (Referential) context.get(REFERENTIAL);
-
-
-        try {
-            optimiser.initialize(cache, referential);
-            Line oldValue = cache.getLines().get(newValue.getObjectId());
-            lineUpdater.update(context, oldValue, newValue);
-        } catch (Exception e) {
-            log.error("Error on line initialization:" + e.getStackTrace());
-            throw e;
-        }
-    }
-
 
 
     /**
@@ -163,7 +135,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                             analyzeReport.setOldestPeriodOfCalendars(startOfPeriod.get());
                         }
 
-                        if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isAfter(endOfPeriod.get())))){
+                        if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isBefore(endOfPeriod.get())))){
                             analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
                         }
 
@@ -196,7 +168,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                 .collect(Collectors.toList());
 
         startPeriodList.addAll(calendarDates);
-        return startPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.min(startPeriodList));
+
+        return startPeriodList.isEmpty() ? Optional.empty() : startPeriodList.stream().min(LocalDate::compareTo);
     }
 
     private Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
@@ -212,7 +185,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                 .collect(Collectors.toList());
 
         endPeriodList.addAll(calendarDates);
-        return endPeriodList.isEmpty() ? Optional.empty() : Optional.of(Collections.max(endPeriodList));
+        return endPeriodList.isEmpty() ? Optional.empty() : endPeriodList.stream().max(LocalDate::compareTo);
     }
 
 

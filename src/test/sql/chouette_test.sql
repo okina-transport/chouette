@@ -1014,7 +1014,8 @@ CREATE TABLE lines (
     codifligne character varying(255),
     tad character varying(14),
     pmr character varying(14),
-    pos integer
+    pos integer,
+    supprime boolean DEFAULT false
 );
 
 
@@ -1228,7 +1229,8 @@ CREATE TABLE routes (
     published_name character varying(255),
     number character varying(255),
     direction character varying(255),
-    wayback character varying(255)
+    wayback character varying(255),
+    supprime boolean DEFAULT false
 );
 
 

@@ -11,6 +11,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.netex.Constant;
 import mobi.chouette.exchange.validation.ValidationData;
+import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 
 import com.jamonapi.Monitor;
@@ -31,6 +32,9 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(REFERENTIAL, new Referential());
 			if (context.get(VALIDATION) != null)
 			   context.put(VALIDATION_DATA, new ValidationData());
+
+			NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
+			context.put(StopArea.IMPORT_MODE, parameters.getStopAreaImportMode());
 			result = SUCCESS;
 
 		} catch (Exception e) {

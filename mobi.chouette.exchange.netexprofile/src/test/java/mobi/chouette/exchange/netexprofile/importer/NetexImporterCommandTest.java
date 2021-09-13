@@ -367,6 +367,10 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 		configuration.setCleanRepository(true);
 		configuration.setStopAreaImportMode(stopAreaImportMode);
 
+		context.put(StopArea.IMPORT_MODE,stopAreaImportMode);
+
+
+
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

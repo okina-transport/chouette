@@ -38,6 +38,8 @@ public class LineParser implements Parser, Constant, JsonExtension {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
 
+		List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
+
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber = xpp.getColumnNumber();
@@ -52,6 +54,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
 				objectId = objectId.replaceFirst("^"+parameters.getLinePrefixToRemove(),"");
+				incomingLineList.add(objectId);
 				line = ObjectFactory.getLine(referential, objectId);
 				line.setFilled(true);
 				line.setNetwork(getPtNetwork(referential));
