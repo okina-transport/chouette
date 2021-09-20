@@ -175,10 +175,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         }
 
         mobi.chouette.model.Line line = exportableData.getLine();
-        boolean allSPTad = exportableData.getStopPoints().stream().allMatch(sp -> AlightingPossibilityEnum.is_flexible.equals(sp.getForAlighting()) && BoardingPossibilityEnum.is_flexible.equals(sp.getForBoarding()));
-        if(allSPTad){
-            line.setFlexibleService(true);
-        }
+
         org.rutebanken.netex.model.Line_VersionStructure netexLine = lineFranceProducer.produce(context, line);
         exportableNetexData.setLine(netexLine);
         exportableNetexData.getSharedLines().put(line.getObjectId(), netexLine);

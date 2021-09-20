@@ -55,6 +55,9 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
         LineRefs_RelStructure lineRefs_relStructure = netexFactory.createLineRefs_RelStructure();
         List<JAXBElement<? extends LineRefStructure>> jaxbElementsLineRefStructure = new ArrayList<>();
         for(Line line : neptuneNetwork.getLines()){
+            if (Boolean.TRUE.equals(line.getFlexibleService()) && !line.getObjectId().contains(":FlexibleLine:")) {
+                line.setObjectId(line.getObjectId().replace(":Line:", ":FlexibleLine:"));
+            }
             JAXBElement<? extends LineRefStructure> jaxbElementLineRefStructure = NetexProducerUtils.createLineIDFMRef(line, netexFactory);
             jaxbElementsLineRefStructure.add(jaxbElementLineRefStructure);
         }

@@ -106,10 +106,13 @@ public class UpdateLineInfosCommand implements Command, Constant {
         int nbVJASWithTAD = (int) vehicleJourneyAtStopList.stream().filter(this::isVJASTAD).count();
         if (nbVJASWithTAD == 0) {
             lineToUpdate.setTad(TadEnum.NO_TAD);
+            lineToUpdate.setFlexibleService(false);
         } else if (nbVJASWithTAD == nbVehicleJourneyAtStop) {
             lineToUpdate.setTad(TadEnum.FULL_TAD);
+            lineToUpdate.setFlexibleService(true);
         } else {
             lineToUpdate.setTad(TadEnum.PARTIAL_TAD);
+            lineToUpdate.setFlexibleService(false);
         }
     }
 
