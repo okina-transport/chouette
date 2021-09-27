@@ -225,6 +225,7 @@ public class NetexLineDataIDFMProducerTest {
         line.setRegistrationNumber("l1");
         line.setCodifligne("TestCodifligne");
         line.setNetwork(network);
+        line.setFlexibleService(true);
 
         Route route  = new Route();
         route.setObjectId("TEST:Route:r1");
