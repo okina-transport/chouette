@@ -12,6 +12,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
+import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
@@ -141,8 +142,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        List<Command> commands = new ArrayList<>();
-        return commands;
+        return new ArrayList<>();
     }
 
     @Override
@@ -157,7 +157,17 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
 
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        return new ArrayList<>();
+        List<Command> commands = new ArrayList<>();
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        try {
+            Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
+            commands.add(geolocationCheckCommand);
+
+        } catch (ClassNotFoundException | IOException e) {
+            log.error(e.getStackTrace());
+        }
+
+        return commands;
     }
 
 }

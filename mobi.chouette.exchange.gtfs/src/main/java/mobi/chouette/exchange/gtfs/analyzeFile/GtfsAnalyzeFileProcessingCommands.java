@@ -10,6 +10,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
+import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
@@ -139,15 +140,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        List<Command> commands = new ArrayList<>();
-//        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-//        try {
-//            commands.add(CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName()));
-//        } catch (ClassNotFoundException | IOException e) {
-//            log.error(e, e);
-//            throw new RuntimeException("unable to call factories");
-//        }
-        return commands;
+        return  new ArrayList<>();
     }
 
     @Override
@@ -162,7 +155,16 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
 
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        return new ArrayList<>();
+        List<Command> commands = new ArrayList<>();
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        try {
+            Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
+            commands.add(geolocationCheckCommand);
+
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();        }
+
+        return commands;
     }
 
 }

@@ -78,11 +78,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
 
-        List<String> stopAreaList = new ArrayList<>();
+        List<StopArea> stopAreaList = new ArrayList<>();
 
         referential.getSharedStopAreas().values().stream()
                 .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
-                .map(StopArea::getName)
                 .distinct()
                 .forEach(stopAreaList::add);
 
