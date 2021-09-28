@@ -49,6 +49,9 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			}
 
 			GtfsImportParameters parameters = (GtfsImportParameters) configuration;
+			// Pour éviter une import cyclique de GtfsImportParameters
+			context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
+
 			// import total par défaut
 			if (parameters.getReferencesType() == null) parameters.setReferencesType("line");
 			boolean all = !(parameters.getReferencesType().equalsIgnoreCase("stop_area"));

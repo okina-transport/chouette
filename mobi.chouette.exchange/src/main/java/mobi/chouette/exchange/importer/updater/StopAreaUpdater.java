@@ -94,6 +94,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 		validationReporter.addItemToValidationReport(context, "2-DATABASE-", "StopArea", 2, "W", "E");
 		validationReporter.addItemToValidationReport(context, DATABASE_ACCESS_POINT_1, "E");
 		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
+		Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
 
 		if (newValue.getAreaType() == null) {
 			log.error("stoparea without mandatory areatype " + newValue.getObjectId());
@@ -131,9 +132,12 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setUrl(newValue.getUrl());
 				oldValue.setOriginalStopId(newValue.getOriginalStopId());
 			}
-			oldValue.setLongitude(newValue.getLongitude());
-			oldValue.setLatitude(newValue.getLatitude());
-
+			if(!keepStopGeolocalisation || oldValue.getLongitude() == null) {
+				oldValue.setLongitude(newValue.getLongitude());
+			}
+			if(!keepStopGeolocalisation || oldValue.getLatitude() == null) {
+				oldValue.setLatitude(newValue.getLatitude());
+			}
 		} else {
 			if(!shouldNotUpdate) {
 				twoDatabaseStopAreaTwoTest(validationReporter, context, oldValue, newValue, data);
@@ -219,11 +223,13 @@ public class StopAreaUpdater implements Updater<StopArea> {
 					oldValue.setStopAreaType(newValue.getStopAreaType());
 				}
 			}
-			if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
-				oldValue.setLongitude(newValue.getLongitude());
-			}
-			if (newValue.getLatitude() != null && !newValue.getLatitude().equals(oldValue.getLatitude())) {
-				oldValue.setLatitude(newValue.getLatitude());
+			if(!keepStopGeolocalisation) {
+				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
+					oldValue.setLongitude(newValue.getLongitude());
+				}
+				if (newValue.getLatitude() != null && !newValue.getLatitude().equals(oldValue.getLatitude())) {
+					oldValue.setLatitude(newValue.getLatitude());
+				}
 			}
 		}
 

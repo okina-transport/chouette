@@ -63,6 +63,9 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 			reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS,"invalid parameters for neptune import " + configuration.getClass().getName());
 			return ERROR;
 		}
+
+		NeptuneImportParameters parameters = (NeptuneImportParameters) configuration;
+		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 		
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NeptuneImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);

@@ -54,6 +54,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Log4j
@@ -415,6 +416,7 @@ public class LineRegisterCommand implements Command {
 												.filter(currentVehicleJourneyAtStop -> currentVehicleJourneyAtStop.getStopPoint().equals(newVehicleJourneyAtStop.getStopPoint()) &&
 																						currentVehicleJourneyAtStop.getVehicleJourney().equals(newVehicleJourneyAtStop.getVehicleJourney()))
 												.map(VehicleJourneyAtStop::getBoardingAlightingPossibility)
+												.filter(Objects::nonNull)
 												.findFirst();
 	}
 

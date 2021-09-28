@@ -65,6 +65,7 @@ public interface Constant {
 	public static final String LINE_ID = "line_id";
 	public static final String EXPORTABLE_OPERATORS = "exportable_operators";
 	public static final String FEED_INFO = "feed_info";
+	public static final String KEEP_STOP_GEOLOCALISATION = "KeepStopGeolocalisation";
 
 	public static final char SEP = '|';
 	public static final String NULL = "\\N";
