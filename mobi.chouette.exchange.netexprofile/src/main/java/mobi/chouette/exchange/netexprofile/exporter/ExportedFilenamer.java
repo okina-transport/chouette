@@ -26,11 +26,15 @@ public class ExportedFilenamer {
 		return b.toString();
 	}
 
-	public static String createIDFMLineFilename(Context context, Line line) {
+	public static String createNetexFranceLineFilename(Context context, Line line) {
 		NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
 
 		StringBuilder b = new StringBuilder();
-		b.append("offre_");
+		b.append(parameters.getDefaultCodespacePrefix());
+		b.append(UNDERSCORE);
+		b.append("offre");
+		b.append(UNDERSCORE);
+
 		if(line.getCodifligne() != null){
 			b.append(line.getCodifligne().replaceAll(UNDERSCORE, DASH));
 			b.append(UNDERSCORE);
@@ -165,5 +169,27 @@ public class ExportedFilenamer {
 			ch = iterator.next();
 		}
 		return sb.toString().replaceAll("[^\\p{ASCII}]", "");
+	}
+
+	public static String createNetexFranceCommonFilename(Context context) {
+		NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
+
+		StringBuilder b = new StringBuilder();
+		b.append(parameters.getDefaultCodespacePrefix());
+		b.append(UNDERSCORE);
+		b.append("commun.xml");
+
+		return b.toString();
+	}
+
+	public static String createNetexFranceCalendarFilename(Context context) {
+		NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
+
+		StringBuilder b = new StringBuilder();
+		b.append(parameters.getDefaultCodespacePrefix());
+		b.append(UNDERSCORE);
+		b.append("calendriers.xml");
+
+		return b.toString();
 	}
 }

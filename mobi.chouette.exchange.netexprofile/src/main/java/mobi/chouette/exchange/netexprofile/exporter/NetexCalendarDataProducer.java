@@ -22,9 +22,9 @@ public class NetexCalendarDataProducer extends NetexProducer implements Constant
         ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
 
-        String filename = "calendriers.xml";
-        reporter.addFileReport(context, filename, IO_TYPE.OUTPUT);
-        Path filePath = new File(outputPath.toFile(), filename).toPath();
+        String fileName = ExportedFilenamer.createNetexFranceCalendarFilename(context);
+        reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);
+        Path filePath = new File(outputPath.toFile(), fileName).toPath();
 
         Marshaller marshaller = (Marshaller) context.get(MARSHALLER);
         NetexFileWriter writer = new NetexFileWriter();
