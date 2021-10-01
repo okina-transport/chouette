@@ -32,6 +32,8 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
+import static mobi.chouette.common.Constant.KEEP_STOP_GEOLOCALISATION;
+
 @Singleton(name = StopAreaService.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Log4j
@@ -97,6 +99,7 @@ public class StopAreaService {
 			ContextHolder.clear();
 			ContextHolder.setContext(impactedSchema);
 			resetSavedStatusToFalse(updateContext,impactedSchema);
+			chouetteDbContext.put(KEEP_STOP_GEOLOCALISATION, false);
 			stopAreaUpdateService.createOrUpdateStopAreas(chouetteDbContext, updateContext);
 			log.info("Update completed on schema: " + impactedSchema);
 		}
