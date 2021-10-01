@@ -3,6 +3,7 @@ package mobi.chouette.dao;
 import mobi.chouette.core.ChouetteException;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.core.CoreExceptionCode;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 
@@ -48,5 +49,14 @@ public class StopAreaDAOImpl extends GenericDAOImpl<StopArea> implements StopAre
 
         }
 
+    }
+
+    @Override
+    public List<StopArea> findByOriginalId(String originalId) {
+        return em.createQuery("SELECT s " +
+                "                   FROM StopArea s " +
+                "                  WHERE s.originalStopId = :originalStopId", StopArea.class)
+                .setParameter("originalStopId", originalId)
+                .getResultList();
     }
 }
