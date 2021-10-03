@@ -53,7 +53,7 @@ public class TransitDataStatisticsService {
 
         ContextHolder.setContext(referential);
 
-        log.debug(Color.CYAN + "Gettings statistics for "
+        log.info(Color.CYAN + "Gettings statistics for "
                 + referential
                 + " using startDate="
                 + startDate
