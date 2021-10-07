@@ -3,21 +3,29 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
+import mobi.chouette.model.ConnectionLink;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.FlexibleLine;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.Line;
 import org.rutebanken.netex.model.Line_VersionStructure;
+import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
+import org.rutebanken.netex.model.SiteConnection;
+import org.rutebanken.netex.model.SiteConnectionEndStructure;
+import org.rutebanken.netex.model.SiteConnection_VersionStructure;
+import org.rutebanken.netex.model.StopAreaRefStructure;
+import org.rutebanken.netex.model.TransferDurationStructure;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -39,10 +47,13 @@ public class NetexCommunWriter extends AbstractNetexWriter {
         writeLinesElement(writer, exportableNetexData, marshaller);
         writeOrganisationsElement(writer, exportableNetexData, marshaller);
         writeNoticesElement(writer, exportableNetexData.getSharedNotices().values(), marshaller);
+        writeSiteConnectionElement(writer, exportableNetexData, marshaller);
 
         writer.writeEndElement();
 
     }
+
+
 
     private static void writeNoticesElement(XMLStreamWriter writer, Collection<Notice> notices, Marshaller marshaller) {
         try {
@@ -115,5 +126,53 @@ public class NetexCommunWriter extends AbstractNetexWriter {
                 }
             }
         }
+    }
+
+    static void writeSiteConnectionElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
+
+        if (exportableNetexData.getConnectionLinks().isEmpty())
+            return ;
+
+        for (ConnectionLink connectionLink : exportableNetexData.getConnectionLinks()) {
+            JAXBElement<? extends SiteConnection_VersionStructure> jaxbElement = null;
+            SiteConnection siteConnection = new SiteConnection();
+
+            SiteConnectionEndStructure fromArea = netexFactory.createSiteConnectionEndStructure();
+            StopAreaRefStructure fromStopAreaRef = netexFactory.createStopAreaRefStructure();
+            fromStopAreaRef.withRef(connectionLink.getStartOfLink().getObjectId());
+            fromArea.setStopAreaRef(fromStopAreaRef);
+            siteConnection.withFrom(fromArea);
+
+            SiteConnectionEndStructure toArea = netexFactory.createSiteConnectionEndStructure();
+            StopAreaRefStructure toStopAreaRef = netexFactory.createStopAreaRefStructure();
+            toStopAreaRef.withRef(connectionLink.getEndOfLink().getObjectId());
+            toArea.setStopAreaRef(toStopAreaRef);
+            siteConnection.withTo(toArea);
+
+            MultilingualString name = new MultilingualString();
+            name.setLang("fr");
+            name.setValue(connectionLink.getName());
+            siteConnection.withName(name);
+
+            siteConnection.withDistance(connectionLink.getLinkDistance());
+
+
+            TransferDurationStructure transfertDuration = netexFactory.createTransferDurationStructure();
+
+            Duration duration = Duration.parse(connectionLink.getDefaultDuration().toString());
+            transfertDuration.setDefaultDuration(duration);
+            siteConnection.setWalkTransferDuration(transfertDuration);
+
+            siteConnection.setId(connectionLink.getObjectId());
+            siteConnection.setVersion(String.valueOf(connectionLink.getObjectVersion()));
+
+            jaxbElement = netexFactory.createSiteConnection(siteConnection);
+            try {
+                marshaller.marshal(jaxbElement, writer);
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 }
