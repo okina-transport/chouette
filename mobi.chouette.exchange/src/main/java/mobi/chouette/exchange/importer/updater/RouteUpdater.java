@@ -105,9 +105,6 @@ public class RouteUpdater implements Updater<Route> {
 			if (newValue.getNumber() != null && !newValue.getNumber().equals(oldValue.getNumber())) {
 				oldValue.setNumber(newValue.getNumber());
 			}
-			if (newValue.getDirection() != null && !newValue.getDirection().equals(oldValue.getDirection())) {
-				oldValue.setDirection(newValue.getDirection());
-			}
 			if (newValue.getWayBack() != null && !newValue.getWayBack().equals(oldValue.getWayBack())) {
 				oldValue.setWayBack(newValue.getWayBack());
 			}

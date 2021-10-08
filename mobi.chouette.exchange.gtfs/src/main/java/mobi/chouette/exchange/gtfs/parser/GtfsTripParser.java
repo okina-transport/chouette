@@ -624,7 +624,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             vehicleJourney.getTimetables().add(timetable);
 
             // JourneyPattern
-            String journeyKey = gtfsTrip.getRouteId() + "_" + gtfsTrip.getDirectionId().ordinal();
+            String journeyKey = gtfsTrip.getRouteId();
             Iterable<GtfsShape> gtfsShapes = null;
             if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty()
                     && importer.getShapeById().containsKey(gtfsTrip.getShapeId())) {
@@ -1123,7 +1123,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         Line line = ObjectFactory.getLine(referential, lineId);
 
 
-        String routeKey = gtfsTrip.getRouteId() + "_" + gtfsTrip.getDirectionId().ordinal();
+        String routeKey = gtfsTrip.getRouteId();
         if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty())
             routeKey += "_" + gtfsTrip.getShapeId();
 
