@@ -238,4 +238,19 @@ public class Phase2RouteTests extends AbstractPhase2Tests {
 			Assert.assertEquals(detail.getSource().getFile().getLineNumber(), Integer.valueOf(3), "detail must refer bad line");
 		}
 	}
+
+	@Test(groups = { "Phase 3 Route" }, description = "minimum 2 stops by route", priority = 332 )
+	public void verifyTest_3_6() throws Exception {
+		log.info(Color.GREEN + "3_Route_6 : 2 stops minimum par trajet" + Color.NORMAL);
+		Context context = new Context();
+
+		CheckPointReport result = verifyValidation( log, context, "3_route_6", GTFS_3_Route_6, SEVERITY.ERROR, RESULT.NOK, true);
+		Assert.assertEquals(result.getCheckPointErrorCount(), 1, "detail count");
+		for (CheckPointErrorReport detail : getDetails(context, result)) {
+			Assert.assertNotNull(detail.getSource(), "detail must refer a source");
+			Assert.assertNotNull(detail.getSource().getFile(), "detail must refer a file source");
+			Assert.assertEquals(detail.getSource().getFile().getFilename(), "stop_times.txt", "detail must refer bad file");
+			Assert.assertEquals(detail.getSource().getFile().getLineNumber(), Integer.valueOf(2), "detail must refer bad line");
+		}
+	}
 }
