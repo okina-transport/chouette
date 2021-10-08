@@ -7,6 +7,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.Constant;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.ITLValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.Line;
@@ -25,6 +26,7 @@ public class ITLParser implements Parser, Constant {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -42,7 +44,8 @@ public class ITLParser implements Parser, Constant {
 				if (line != null) line.addRoutingConstraint(stopArea);
 			} else if (xpp.getName().equals("lineIdShortCut")) {
 				String lineIdShortCut = ParserUtils.getText(xpp.nextText());
-				validator.addLineId(context, objectId, lineIdShortCut);
+				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineIdShortCut);
+				validator.addLineId(context, objectId, lineObjectId);
 			} else if (xpp.getName().equals("name")) {
 				String name = ParserUtils.getText(xpp.nextText());
 				validator.addName(context, objectId, name);

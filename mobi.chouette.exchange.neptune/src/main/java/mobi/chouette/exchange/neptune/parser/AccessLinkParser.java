@@ -11,10 +11,12 @@ import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.AccessLinkValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.type.LinkOrientationEnum;
@@ -36,6 +38,7 @@ public class AccessLinkParser implements Parser, Constant {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -48,6 +51,7 @@ public class AccessLinkParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 			    objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.ACCESSLINK_KEY, objectId);
 				accessLink = ObjectFactory.getAccessLink(referential, objectId);
 				accessLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
