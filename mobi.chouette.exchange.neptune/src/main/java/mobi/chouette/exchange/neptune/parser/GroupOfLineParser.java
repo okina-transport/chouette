@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.neptune.parser;
 
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import org.joda.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
@@ -29,6 +30,7 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -41,6 +43,7 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.GROUPOFLINE_KEY, objectId);
 				groupOfLine = ObjectFactory.getGroupOfLine(referential,
 						objectId);
 				groupOfLine.setFilled(true);
@@ -58,9 +61,10 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 				groupOfLine.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("lineId")) {
 				String lineId = ParserUtils.getText(xpp.nextText());
-				Line line = ObjectFactory.getLine(referential, lineId);
+				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineId);
+				Line line = ObjectFactory.getLine(referential, lineObjectId);
 				groupOfLine.addLine(line);
-				validator.addLineId(context, objectId, lineId);
+				validator.addLineId(context, objectId, lineObjectId);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);
 			}

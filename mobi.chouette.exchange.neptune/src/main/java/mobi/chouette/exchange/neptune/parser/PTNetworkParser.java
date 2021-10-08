@@ -7,8 +7,10 @@ import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.PTNetworkValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
@@ -27,6 +29,7 @@ public class PTNetworkParser implements Parser, Constant {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -40,6 +43,7 @@ public class PTNetworkParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, objectId);
 				network = ObjectFactory.getPTNetwork(referential, objectId);
 				network.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -77,7 +81,8 @@ public class PTNetworkParser implements Parser, Constant {
 				network.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("lineId")) {
 				String lineId = ParserUtils.getText(xpp.nextText());
-				validator.addLineId(context, objectId, lineId);
+				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineId);
+				validator.addLineId(context, objectId, lineObjectId);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);
 			}

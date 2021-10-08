@@ -1,5 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.Line;
 import org.joda.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
@@ -32,6 +34,7 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber = xpp.getColumnNumber();
@@ -46,6 +49,7 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, objectId);
 				stopPoint = ObjectFactory.getStopPoint(referential, objectId);
 				stopPoint.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -68,10 +72,12 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 				scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
 			} else if (xpp.getName().equals("lineIdShortcut")) {
 				String lineIdShortcut = ParserUtils.getText(xpp.nextText());
-				validator.addLineIdShortcut(context, objectId, lineIdShortcut);
+				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineIdShortcut);
+				validator.addLineIdShortcut(context, objectId, lineObjectId);
 			} else if (xpp.getName().equals("ptNetworkIdShortcut")) {
 				String ptNetworkIdShortcut = ParserUtils.getText(xpp.nextText());
-				validator.addPtNetworkIdShortcut(context, objectId, ptNetworkIdShortcut);
+				String ptNetworkObjectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, ptNetworkIdShortcut);
+				validator.addPtNetworkIdShortcut(context, objectId, ptNetworkObjectId);
 			} else if (xpp.getName().equals("longLatType")) {
 				LongLatTypeEnum longLatType = ParserUtils.getEnum(LongLatTypeEnum.class, xpp.nextText());
 				validator.addLongLatType(context, objectId, longLatType);
