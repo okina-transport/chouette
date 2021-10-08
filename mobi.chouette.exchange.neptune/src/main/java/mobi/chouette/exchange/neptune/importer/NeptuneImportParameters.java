@@ -20,7 +20,9 @@ import mobi.chouette.exchange.parameters.AbstractImportParameter;
         "stopAreaPrefixToRemove",
         "areaCentroidPrefixToRemove",
         "linePrefixToRemove",
-        "ignoreCommercialPoints"
+        "ignoreCommercialPoints",
+        "splitIdOnDot",
+        "objectIdPrefix"
 })
 public class NeptuneImportParameters extends AbstractImportParameter {
 
@@ -44,5 +46,14 @@ public class NeptuneImportParameters extends AbstractImportParameter {
     @Setter
     @XmlElement(name = "ignore_commercial_points")
     public boolean ignoreCommercialPoints = false;
+
+    @Getter@Setter
+    @XmlElement(name = "split_id_on_dot", defaultValue="true")
+    private boolean splitIdOnDot = true;
+
+
+    @Getter@Setter
+    @XmlElement(name = "object_id_prefix", required=true)
+    private String objectIdPrefix;
 
 }
