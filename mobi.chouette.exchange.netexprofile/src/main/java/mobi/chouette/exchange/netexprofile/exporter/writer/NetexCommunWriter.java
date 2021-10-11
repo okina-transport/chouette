@@ -14,10 +14,11 @@ import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
+import org.rutebanken.netex.model.QuayRefStructure;
 import org.rutebanken.netex.model.SiteConnection;
 import org.rutebanken.netex.model.SiteConnectionEndStructure;
 import org.rutebanken.netex.model.SiteConnection_VersionStructure;
-import org.rutebanken.netex.model.StopAreaRefStructure;
+
 import org.rutebanken.netex.model.TransferDurationStructure;
 
 import javax.xml.bind.JAXBElement;
@@ -138,15 +139,16 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             SiteConnection siteConnection = new SiteConnection();
 
             SiteConnectionEndStructure fromArea = netexFactory.createSiteConnectionEndStructure();
-            StopAreaRefStructure fromStopAreaRef = netexFactory.createStopAreaRefStructure();
-            fromStopAreaRef.withRef(connectionLink.getStartOfLink().getObjectId());
-            fromArea.setStopAreaRef(fromStopAreaRef);
+            QuayRefStructure fromQuayRef = netexFactory.createQuayRefStructure();
+            fromQuayRef.withRef(connectionLink.getStartOfLink().getObjectId());
+            fromArea.setQuayRef(fromQuayRef);
             siteConnection.withFrom(fromArea);
 
+
             SiteConnectionEndStructure toArea = netexFactory.createSiteConnectionEndStructure();
-            StopAreaRefStructure toStopAreaRef = netexFactory.createStopAreaRefStructure();
-            toStopAreaRef.withRef(connectionLink.getEndOfLink().getObjectId());
-            toArea.setStopAreaRef(toStopAreaRef);
+            QuayRefStructure toQuayRef = netexFactory.createQuayRefStructure();
+            toQuayRef.withRef(connectionLink.getEndOfLink().getObjectId());
+            toArea.setQuayRef(toQuayRef);
             siteConnection.withTo(toArea);
 
             MultilingualString name = new MultilingualString();
