@@ -21,6 +21,7 @@ import javax.ejb.Singleton;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.stopplace.PublicationDeliveryStopPlaceParser;
@@ -63,7 +64,7 @@ public class StopAreaService {
 
 	}
 
-	public void createOrUpdateStopPlacesFromNetexStopPlaces(InputStream inputStream) {
+	public void createOrUpdateStopPlacesFromNetexStopPlaces(InputStream inputStream) throws CoreException {
 		PublicationDeliveryStopPlaceParser parser = new PublicationDeliveryStopPlaceParser(inputStream);
 
 		StopAreaUpdateContext updateContext = parser.getUpdateContext();
@@ -87,7 +88,7 @@ public class StopAreaService {
 	 * @param updateContext
 	 * 		Context with all modifications to apply
 	 */
-	private void updateSchemas(StopAreaUpdateContext updateContext ){
+	private void updateSchemas(StopAreaUpdateContext updateContext ) throws CoreException {
 
 		for (String impactedSchema : updateContext.getImpactedSchemas()) {
 			//deleted schemas are ignored
