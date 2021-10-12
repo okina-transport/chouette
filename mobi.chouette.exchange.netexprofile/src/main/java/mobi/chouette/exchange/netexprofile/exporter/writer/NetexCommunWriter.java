@@ -4,6 +4,8 @@ import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import mobi.chouette.model.ConnectionLink;
+import mobi.chouette.model.StopArea;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.FlexibleLine;
 import org.rutebanken.netex.model.GeneralOrganisation;
@@ -19,6 +21,7 @@ import org.rutebanken.netex.model.SiteConnection;
 import org.rutebanken.netex.model.SiteConnectionEndStructure;
 import org.rutebanken.netex.model.SiteConnection_VersionStructure;
 
+import org.rutebanken.netex.model.StopPlaceRefStructure;
 import org.rutebanken.netex.model.TransferDurationStructure;
 
 import javax.xml.bind.JAXBElement;
@@ -140,6 +143,10 @@ public class NetexCommunWriter extends AbstractNetexWriter {
 
             SiteConnectionEndStructure fromArea = netexFactory.createSiteConnectionEndStructure();
             QuayRefStructure fromQuayRef = netexFactory.createQuayRefStructure();
+            StopPlaceRefStructure fromStopPlaceRef = netexFactory.createStopPlaceRefStructure();
+            setTransportMode(fromArea, connectionLink.getStartOfLink());
+            fromStopPlaceRef.withRef(connectionLink.getStartOfLink().getParent().getObjectId());
+            fromArea.setStopPlaceRef(fromStopPlaceRef);
             fromQuayRef.withRef(connectionLink.getStartOfLink().getObjectId());
             fromArea.setQuayRef(fromQuayRef);
             siteConnection.withFrom(fromArea);
@@ -147,6 +154,10 @@ public class NetexCommunWriter extends AbstractNetexWriter {
 
             SiteConnectionEndStructure toArea = netexFactory.createSiteConnectionEndStructure();
             QuayRefStructure toQuayRef = netexFactory.createQuayRefStructure();
+            StopPlaceRefStructure toStopPlaceRef = netexFactory.createStopPlaceRefStructure();
+            setTransportMode(toArea, connectionLink.getEndOfLink());
+            toStopPlaceRef.withRef(connectionLink.getEndOfLink().getParent().getObjectId());
+            toArea.setStopPlaceRef(toStopPlaceRef);
             toQuayRef.withRef(connectionLink.getEndOfLink().getObjectId());
             toArea.setQuayRef(toQuayRef);
             siteConnection.withTo(toArea);
@@ -176,5 +187,34 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             }
         }
 
+    }
+
+    private static void setTransportMode(SiteConnectionEndStructure area, StopArea link) {
+        switch (link.getParent().getTransportModeName()) {
+            case Tram:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.TRAM);
+                break;
+            case Metro:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.METRO);
+                break;
+            case Rail:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.RAIL);
+                break;
+            case Water:
+            case Ferry:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.WATER);
+                break;
+            case Funicular:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.FUNICULAR);
+            case Cableway:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.CABLEWAY);
+            case TrolleyBus:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.TROLLEY_BUS);
+            case Coach:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.COACH);
+            case Bus:
+            default:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.BUS);
+        }
     }
 }
