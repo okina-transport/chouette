@@ -34,6 +34,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 
 		context.put(REFERENTIAL, new Referential());
 
+
 		// initialize reporting and progression
 		ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext,
 				ProgressionCommand.class.getName());
@@ -47,6 +48,9 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 			actionReporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for netex import " + configuration.getClass().getName());
 			return false;
 		}
+
+		NetexprofileImportParameters parameters = (NetexprofileImportParameters) configuration;
+		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NetexImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);

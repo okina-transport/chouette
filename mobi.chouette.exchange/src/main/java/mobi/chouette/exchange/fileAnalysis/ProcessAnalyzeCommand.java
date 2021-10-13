@@ -137,13 +137,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                         if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isBefore(endOfPeriod.get())))){
                             analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
                         }
-
                     }
-
                 }
-
             }
-
         }
 
 

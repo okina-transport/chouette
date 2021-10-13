@@ -3,13 +3,17 @@ package mobi.chouette.exchange.netexprofile.importer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
+import mobi.chouette.model.Line;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 
 import com.jamonapi.Monitor;
@@ -80,6 +84,12 @@ public class NetexInitReferentialCommand implements Command, Constant {
 
 			context.put(NETEX_DATA_JAVA, netexJava);
 			context.put(NETEX_DATA_DOM, netexDom);
+
+			List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
+			if (incomingLineList == null){
+				context.put(INCOMING_LINE_LIST, new ArrayList());
+			}
+
 
 			if (lineFile) {
 				context.put(NETEX_WITH_COMMON_DATA, Boolean.FALSE);

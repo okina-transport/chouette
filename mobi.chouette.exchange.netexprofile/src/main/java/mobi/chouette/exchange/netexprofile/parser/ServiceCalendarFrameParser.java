@@ -12,6 +12,8 @@ import javax.xml.bind.JAXBElement;
 
 import lombok.extern.log4j.Log4j;
 
+import mobi.chouette.exchange.NetexParserUtils;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import org.rutebanken.helper.calendar.CalendarPattern;
 import org.rutebanken.helper.calendar.CalendarPatternAnalyzer;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
@@ -51,9 +53,12 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 		ServiceCalendarFrame serviceCalendarFrame = (ServiceCalendarFrame) context.get(NETEX_LINE_DATA_CONTEXT);
 		ValidBetween validBetween = getValidBetweenForFrame(context);
 
+
 		if (serviceCalendarFrame.getDayTypes() != null) {
 			for (JAXBElement<? extends DataManagedObjectStructure> dayTypeElement : serviceCalendarFrame.getDayTypes().getDayType_()) {
 				DayType dayType = (DayType) dayTypeElement.getValue();
+				String generatedDayTypeId = NetexImportUtil.composeObjectIdFromNetexId(context,"Timetable",dayType.getId());
+				dayType.setId(generatedDayTypeId);
 				NetexObjectUtil.addDayTypeRef(netexReferential, dayType.getId(), dayType);
 				addValidBetween(context, dayType.getId(), validBetween);
 			}
@@ -61,6 +66,8 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 		if (serviceCalendarFrame.getDayTypeAssignments() != null) {
 			for (DayTypeAssignment dayTypeAssignment : serviceCalendarFrame.getDayTypeAssignments().getDayTypeAssignment()) {
 				String dayTypeIdRef = dayTypeAssignment.getDayTypeRef().getValue().getRef();
+				String generatedDayTypeId = NetexImportUtil.composeObjectIdFromNetexId(context,"Timetable", dayTypeAssignment.getDayTypeRef().getValue().getRef());
+				dayTypeAssignment.getDayTypeRef().getValue().setRef(generatedDayTypeId);
 				NetexObjectUtil.addDayTypeAssignmentRef(netexReferential, dayTypeIdRef, dayTypeAssignment);
 			}
 		}

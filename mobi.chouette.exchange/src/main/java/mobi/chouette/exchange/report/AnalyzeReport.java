@@ -116,7 +116,8 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 			analyzeReport.put("stops", array);
 			for (StopArea stop : stops) {
 				JSONObject object = new JSONObject();
-				object.put("stop_name", stop.getName());
+				String stopCode = StringUtils.isEmpty(stop.getName()) ? stop.getObjectId() : stop.getName();
+				object.put("stop_name", stopCode);
 				array.put(object);
 			}
 		}
@@ -209,7 +210,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
 		if (!stops.isEmpty()){
 			List<String> stopList = stops.stream()
-					.map(StopArea::getName)
+					.map(stop -> StringUtils.isEmpty(stop.getName()) ? stop.getObjectId() : stop.getName())
 					.collect(Collectors.toList());
 
 			printStringList(out,stopList,"stops","stopName");

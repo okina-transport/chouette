@@ -4,6 +4,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -20,7 +21,8 @@ public class ScheduledStopPointParser implements Parser, Constant {
 
 			for (org.rutebanken.netex.model.ScheduledStopPoint netexScheduledStopPoint : scheduledStopPointsInFrameStruct.getScheduledStopPoint()) {
 
-				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, netexScheduledStopPoint.getId());
+				String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",netexScheduledStopPoint.getId());
+				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
 				if (netexScheduledStopPoint.getName() != null) {
 					scheduledStopPoint.setName(netexScheduledStopPoint.getName().getValue());
 				}

@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import mobi.chouette.exchange.NetexParserUtils;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import org.rutebanken.netex.model.GroupOfLines;
 import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.OrganisationRefStructure;
@@ -28,8 +31,11 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
 		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
         org.rutebanken.netex.model.Network netexNetwork = (org.rutebanken.netex.model.Network) context.get(NETEX_LINE_DATA_CONTEXT);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 
-        mobi.chouette.model.Network chouetteNetwork = ObjectFactory.getPTNetwork(referential, netexNetwork.getId());
+
+        String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network",netexNetwork.getId());
+        mobi.chouette.model.Network chouetteNetwork = ObjectFactory.getPTNetwork(referential, networkId);
         chouetteNetwork.setObjectVersion(NetexParserUtils.getVersion(netexNetwork));
 
         if (netexNetwork.getCreated() != null) {
@@ -42,7 +48,8 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         chouetteNetwork.setName(netexNetwork.getName().getValue());
 
         OrganisationRefStructure authorityRefStruct = netexNetwork.getTransportOrganisationRef().getValue();
-        Company company = ObjectFactory.getCompany(referential, authorityRefStruct.getRef());
+        String generatedAuthorityId = NetexImportUtil.composeObjectIdFromNetexId("Authority", parameters.getObjectIdPrefix(), authorityRefStruct.getRef());
+        Company company = ObjectFactory.getCompany(referential, generatedAuthorityId);
         chouetteNetwork.setCompany(company);
         chouetteNetwork.setDescription(ConversionUtil.getValue(netexNetwork.getDescription()));
        
@@ -50,7 +57,16 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
             chouetteNetwork.setRegistrationNumber(netexNetwork.getPrivateCode().getValue());
         }
         if (netexNetwork.getMainLineRef() != null) {
-            Line line = ObjectFactory.getLine(referential, netexNetwork.getMainLineRef().getRef());
+
+            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",netexNetwork.getMainLineRef().getRef());
+            Line line = ObjectFactory.getLine(referential, lineId);
+            line.setNetwork(chouetteNetwork);
+        }
+
+        for (JAXBElement<? extends LineRefStructure> lineRefStructure : netexNetwork.getMembers().getLineRef()) {
+            String lineRef = lineRefStructure.getValue().getRef();
+            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineRef);
+            Line line = ObjectFactory.getLine(referential, lineId);
             line.setNetwork(chouetteNetwork);
         }
 
@@ -64,7 +80,8 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
                 if (groupOfLines.getMembers() != null) {
                     for (JAXBElement<? extends LineRefStructure> lineRefRelStruct : groupOfLines.getMembers().getLineRef()) {
                         String lineIdRef = lineRefRelStruct.getValue().getRef();
-                        Line line = ObjectFactory.getLine(referential, lineIdRef);
+                        String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
+                        Line line = ObjectFactory.getLine(referential, lineId);
 
                         if (line != null) {
                             groupOfLine.addLine(line);

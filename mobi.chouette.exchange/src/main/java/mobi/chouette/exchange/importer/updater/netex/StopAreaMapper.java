@@ -1,9 +1,11 @@
 package mobi.chouette.exchange.importer.updater.netex;
 
+import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
+import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
@@ -107,6 +109,8 @@ public class StopAreaMapper {
         mapQuayRegistrationNumber(quay, boardingPosition);
         createCompassBearing(quay, boardingPosition);
         mapOriginalStopId(quay,boardingPosition);
+        boardingPosition.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(quay.getTransportMode().value()));
+        boardingPosition.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
         return boardingPosition;
     }
 
@@ -146,8 +150,8 @@ public class StopAreaMapper {
         stopArea.setMobilityRestrictedSuitable(null);
         stopArea.setLiftAvailable(null);
         stopArea.setStairsAvailable(null);
-
-
+        stopArea.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(stopPlace.getTransportMode().value()));
+        stopArea.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
         mapCentroidToChouette(stopPlace, stopArea);
         mapName(stopPlace, stopArea);
         mapOriginalStopId(stopPlace,stopArea);

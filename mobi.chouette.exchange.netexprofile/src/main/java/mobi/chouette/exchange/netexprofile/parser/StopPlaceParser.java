@@ -8,11 +8,15 @@ import java.util.Properties;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -115,8 +119,17 @@ public class StopPlaceParser implements Parser, Constant {
 
     void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String stopPlaceId;
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            stopPlaceId = NetexImportUtil.composeObjectId("StopPlace", parameters.getObjectIdPrefix(), stopPlace.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            stopPlaceId = stopPlace.getId();
+        }
 
-        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
+        StopArea stopArea = ObjectFactory.getStopArea(referential,stopPlaceId);
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
         stopArea.setObjectVersion(NetexParserUtils.getVersion(stopPlace));
         stopArea.setName(ConversionUtil.getValue(stopPlace.getName()));
@@ -274,8 +287,17 @@ public class StopPlaceParser implements Parser, Constant {
 
     private void parseQuay(Context context, StopArea parentStopArea, Quay quay) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String quayId;
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            quayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), quay.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            quayId = quay.getId();
+        }
 
-        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quay.getId());
+        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quayId);
         boardingPosition.setAreaType(ChouetteAreaEnum.BoardingPosition);
         //boardingPosition.setAreaType(ChouetteAreaEnum.Quay);
 

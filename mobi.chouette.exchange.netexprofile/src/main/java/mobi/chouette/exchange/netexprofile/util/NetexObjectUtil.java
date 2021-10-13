@@ -86,4 +86,33 @@ public class NetexObjectUtil {
         return foundFrames;
     }
 
+    public static List<JAXBElement<? extends DataManagedObjectStructure>> getMembersAsJaxb(Class clazz, List<JAXBElement<? extends EntityStructure>> members) {
+        List<JAXBElement<? extends DataManagedObjectStructure>> foundMembers = new ArrayList<>();
+
+        for (JAXBElement<? extends EntityStructure> member : members) {
+            if (member.getValue().getClass().equals(clazz)) {
+                foundMembers.add((JAXBElement<? extends DataManagedObjectStructure>)member);
+            }
+        }
+
+        return foundMembers;
+    }
+
+
+    public static <T> List<T> getMembers(Class<T> clazz, List<JAXBElement<? extends EntityStructure>> members) {
+        List<T> foundMembers = new ArrayList<>();
+
+        for (JAXBElement<? extends EntityStructure> member : members) {
+            if (member.getValue().getClass().equals(clazz)) {
+                foundMembers.add(clazz.cast(member.getValue()));
+            }
+        }
+
+        return foundMembers;
+    }
+
+
+
+
+
 }

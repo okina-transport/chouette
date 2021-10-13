@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>mobi.chouette</groupId>
     <artifactId>mobi.chouette</artifactId>
-    <version>5.1.4-mobi-iti-SNAPSHOT</version>
+    <version>5.1.6-mobi-iti-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -32,7 +32,7 @@
 
         <!-- NB: Concious choice of using snapshot version. This is to keep in
             sync, and fail fast if incompatibilities -->
-        <netex-java-model.version>2.0.1-NETEX-FR</netex-java-model.version>
+        <netex-java-model.version>2.0.2-NETEX-FR</netex-java-model.version>
         <okina-helpers.version>1.0.23</okina-helpers.version>
     </properties>
     <repositories>
