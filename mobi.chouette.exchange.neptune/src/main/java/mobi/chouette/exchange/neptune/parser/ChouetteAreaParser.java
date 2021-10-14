@@ -19,6 +19,7 @@ import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.validation.AreaCentroidValidator;
 import mobi.chouette.exchange.neptune.validation.StopAreaValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
@@ -69,7 +70,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 			throws Exception {
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
-		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 
 		xpp.require(XmlPullParser.START_TAG, null, "StopArea");
@@ -86,7 +87,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
 				stopArea = ObjectFactory.getStopArea(referential, objectId);
-				stopArea.setOriginalStopId(objectId.replaceFirst("^"+parameters.getStopAreaPrefixToRemove(),""));
+				stopArea.setOriginalStopId(objectId.replaceFirst("^" + configuration.getStopAreaPrefixToRemove(),""));
 				stopArea.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
 				Integer version = ParserUtils.getInt(xpp.nextText());
@@ -180,8 +181,9 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 				}
 			} else if (xpp.getName().equals("contains")) {
 				String containsId = ParserUtils.getText(xpp.nextText());
-				contains.add(containsId);
-				validator.addContains(context, objectId, containsId);
+				String containsObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, containsId);
+				contains.add(containsObjectId);
+				validator.addContains(context, objectId, containsObjectId);
 
 			} else if (xpp.getName().equals("centroidOfArea")) {
 				String value = ParserUtils.getText(xpp.nextText());
@@ -201,7 +203,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NeptuneObjectFactory factory =  (NeptuneObjectFactory) context.get(NEPTUNE_OBJECT_FACTORY);
 		Map<String,String> areaCentroidMap =  (Map<String,String>) context.get(AREA_CENTROID_MAP);
-		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 
 		xpp.require(XmlPullParser.START_TAG, null, "AreaCentroid");
@@ -222,7 +224,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 				String areaId = inverse.get(objectId);
 				stopArea = ObjectFactory.getStopArea(referential, areaId);
 				areaCentroid.setContainedIn(stopArea);
-				areaCentroidMap.put(stopArea.getOriginalStopId(),objectId.replaceFirst("^"+parameters.getAreaCentroidPrefixToRemove(),""));
+				areaCentroidMap.put(stopArea.getOriginalStopId(),objectId.replaceFirst("^" + configuration.getAreaCentroidPrefixToRemove(),""));
 			} else if (xpp.getName().equals("name")) {
 				areaCentroid.setName(ParserUtils.getText(xpp.nextText()));
 				if (stopArea.getName() == null)

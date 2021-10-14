@@ -140,6 +140,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 		context.put(INITIAL_CONTEXT, initialContext);
 		context.put(REPORT, new ActionReport());
 		context.put(VALIDATION_REPORT, new ValidationReport());
+		context.put (KEEP_STOP_GEOLOCALISATION, false);
 		NetexprofileImportParameters configuration = new NetexprofileImportParameters();
 		context.put(CONFIGURATION, configuration);
 		configuration.setName("name");

@@ -449,6 +449,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
 		configuration.setCleanRepository(true);
+		configuration.setObjectIdPrefix("CITURA");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

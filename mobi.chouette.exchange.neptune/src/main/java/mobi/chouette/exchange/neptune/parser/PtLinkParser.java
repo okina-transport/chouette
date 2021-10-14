@@ -1,6 +1,9 @@
 package mobi.chouette.exchange.neptune.parser;
 
 import java.math.BigDecimal;
+
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.Line;
 import org.joda.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
@@ -30,6 +33,7 @@ public class PtLinkParser implements Parser, Constant {
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NeptuneObjectFactory factory =  (NeptuneObjectFactory) context.get(NEPTUNE_OBJECT_FACTORY);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -42,7 +46,8 @@ public class PtLinkParser implements Parser, Constant {
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 
 			if (xpp.getName().equals("objectId")) {
-				 objectId = ParserUtils.getText(xpp.nextText());
+				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.PTLINK_KEY, objectId);
 				ptLink = factory.getPTLink(objectId);
 				ptLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -55,16 +60,18 @@ public class PtLinkParser implements Parser, Constant {
 				ptLink.setCreatorId(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("startOfLink")) {
 				String startOfLinkId = ParserUtils.getText(xpp.nextText());
+				String startOfLinkObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, startOfLinkId);
 				StopPoint startOfLink = ObjectFactory.getStopPoint(referential,
-						startOfLinkId);
+						startOfLinkObjectId);
 				ptLink.setStartOfLink(startOfLink);
-				validator.addStartOfLinkId(context, objectId, startOfLinkId);
+				validator.addStartOfLinkId(context, objectId, startOfLinkObjectId);
 			} else if (xpp.getName().equals("endOfLink")) {
 				String endOfLinkId = ParserUtils.getText(xpp.nextText());
+				String endOfLinkObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, endOfLinkId);
 				StopPoint endOfLink = ObjectFactory.getStopPoint(referential,
-						endOfLinkId);
+						endOfLinkObjectId);
 				ptLink.setEndOfLink(endOfLink);
-				validator.addEndOfLinkId(context, objectId, endOfLinkId);
+				validator.addEndOfLinkId(context, objectId, endOfLinkObjectId);
 			} else if (xpp.getName().equals("linkDistance")) {
 				BigDecimal value = ParserUtils.getBigDecimal(xpp.nextText());
 				ptLink.setLinkDistance(value);

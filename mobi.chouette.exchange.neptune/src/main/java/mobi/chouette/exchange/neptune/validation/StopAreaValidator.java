@@ -4,6 +4,7 @@ package mobi.chouette.exchange.neptune.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 	private static final String STOP_AREA_4 = "2-NEPTUNE-StopArea-4";
 	private static final String STOP_AREA_5 = "2-NEPTUNE-StopArea-5";
 	private static final String STOP_AREA_6 = "2-NEPTUNE-StopArea-6";
+	private static final String STOP_AREA_7 = "2-NEPTUNE-StopArea-7";
 
 	// TODO move tests to ITLValidator
 	private static final String ITL_1 = "2-NEPTUNE-ITL-1";
@@ -48,7 +50,7 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
     @Override
 	protected void initializeCheckPoints(Context context)
 	{
-		addItemToValidation(context, prefix, "StopArea", 6, "E", "E", "E", "E", "E", "E");
+		addItemToValidation(context, prefix, "StopArea", 7, "E", "E", "E", "E", "E", "E", "E");
 
 		try {
 			ITLValidator validator = (ITLValidator) ValidatorFactory.create(ITLValidator.class.getName(), context);
@@ -108,6 +110,19 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 		Map<String, StopArea> stopAreas = referential.getStopAreas();
 
 		prepareCheckPoint(context,STOP_AREA_1);
+
+		Map<String,String> areaCentroidMap =  (Map<String,String>) context.get(AREA_CENTROID_MAP);
+
+		for (Map.Entry<String, String> entry : areaCentroidMap.entrySet()){
+			if(entry.getKey().equals(entry.getValue())){
+				ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
+				Optional<String> fileLocation = fileLocations.keySet().stream().filter(s -> s.contains("StopArea:" + entry.getKey())).findFirst();
+				fileLocation.ifPresent(s -> validationReporter.addCheckPointReportError(context, STOP_AREA_7, fileLocations.get(s), "L'identifiant de l'arrêt commercial est identique à celui de l'arrêt physique"));
+				if(!fileLocation.isPresent()){
+					log.error("Problème de récupération du file location dans le stopAreaValidator, valeur : " + entry.getKey());
+				}
+			}
+		}
 
 		for (String objectId : localContext.keySet()) 
 		{
@@ -292,7 +307,6 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 
 			}
 		}
-		return ;
 	}
 
 	public static class DefaultValidatorFactory extends ValidatorFactory {

@@ -10,6 +10,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
+import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.RouteSection;
 
 import org.rutebanken.netex.model.AvailabilityCondition;
@@ -37,6 +38,7 @@ import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.ServiceJourneyInterchange;
 import org.rutebanken.netex.model.ServiceJourneyPattern;
 import org.rutebanken.netex.model.ServiceLink;
+import org.rutebanken.netex.model.SiteConnection;
 import org.rutebanken.netex.model.StopPlace;
 
 public class ExportableNetexData {
@@ -165,6 +167,10 @@ public class ExportableNetexData {
     @Setter
     private Map<String, PassengerStopAssignment> stopAssignments = new HashMap<>();
 
+    @Getter
+    @Setter
+    private List<ConnectionLink> connectionLinks = new ArrayList<>();
+
 
     public void clear() {
         lineCondition = null;
@@ -181,6 +187,7 @@ public class ExportableNetexData {
         stopAssignments.clear();
         scheduledStopPoints.clear();
         destinationDisplays.clear();
+        connectionLinks.clear();
     }
 
     public void dispose() {

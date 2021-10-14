@@ -1,5 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.Line;
 import org.joda.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
@@ -29,6 +31,7 @@ public class JourneyPatternParser implements Parser, Constant {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -42,6 +45,7 @@ public class JourneyPatternParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.JOURNEYPATTERN_KEY, objectId);
 				journeyPattern = ObjectFactory.getJourneyPattern(referential,
 						objectId);
 				journeyPattern.setFilled(true);
@@ -61,26 +65,30 @@ public class JourneyPatternParser implements Parser, Constant {
 						.nextText()));
 			} else if (xpp.getName().equals("routeId")) {
 				String routeId = ParserUtils.getText(xpp.nextText());
-				validator.addRouteId(context, objectId, routeId);
-				Route route = ObjectFactory.getRoute(referential, routeId);
+				String routeObjectId = AbstractConverter.composeObjectId(configuration, Line.ROUTE_KEY, routeId);
+				validator.addRouteId(context, objectId, routeObjectId);
+				Route route = ObjectFactory.getRoute(referential, routeObjectId);
 				journeyPattern.setRoute(route);
 			} else if (xpp.getName().equals("origin")) {
 				String origin = ParserUtils.getText(xpp.nextText());
+				String originObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, origin);
 				StopPoint departureStopPoint = ObjectFactory.getStopPoint(
-						referential, origin);
+						referential, originObjectId);
 				journeyPattern.setDepartureStopPoint(departureStopPoint);
 
 			} else if (xpp.getName().equals("destination")) {
 				String destination = ParserUtils.getText(xpp.nextText());
+				String destinationObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, destination);
 				StopPoint arrivalStopPoint = ObjectFactory.getStopPoint(
-						referential, destination);
+						referential, destinationObjectId);
 				journeyPattern.setArrivalStopPoint(arrivalStopPoint);
 
 			} else if (xpp.getName().equals("stopPointList")) {
 				String stopPointId = ParserUtils.getText(xpp.nextText());
-				validator.addStopPointList(context, objectId, stopPointId);
+				String stopPointObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, stopPointId);
+				validator.addStopPointList(context, objectId, stopPointObjectId);
 				StopPoint stopPoint = ObjectFactory.getStopPoint(referential,
-						stopPointId);
+						stopPointObjectId);
 				journeyPattern.addStopPoint(stopPoint);
 			} else if (xpp.getName().equals("registration")) {
 
@@ -96,7 +104,8 @@ public class JourneyPatternParser implements Parser, Constant {
 				journeyPattern.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("lineIdShortcut")) {
 				String lineIdShortcut = ParserUtils.getText(xpp.nextText());
-				validator.addLineIdShortcut(context, objectId, lineIdShortcut);
+				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineIdShortcut);
+				validator.addLineIdShortcut(context, objectId, lineObjectId);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);
 			}

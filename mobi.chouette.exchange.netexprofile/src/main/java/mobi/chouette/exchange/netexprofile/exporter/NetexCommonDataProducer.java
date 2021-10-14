@@ -13,6 +13,7 @@ import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 
+
 public class NetexCommonDataProducer extends NetexProducer implements Constant {
 
     public void produce(Context context) throws Exception {
@@ -21,6 +22,7 @@ public class NetexCommonDataProducer extends NetexProducer implements Constant {
         Path outputPath = Paths.get(jobData.getPathName(), OUTPUT);
         ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
+        exportableNetexData.getConnectionLinks().addAll(exportableData.getConnectionLinks());
 
         String fileName = ExportedFilenamer.createNetexFranceCommonFilename(context);
         reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);

@@ -12,7 +12,6 @@ import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.MappingHastusZdep;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
@@ -37,6 +36,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.math.BigInteger;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;

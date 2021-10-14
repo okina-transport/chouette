@@ -1,5 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.joda.time.LocalDateTime;
 
@@ -27,6 +29,7 @@ public class CompanyParser implements Parser, Constant {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber =  xpp.getColumnNumber();
@@ -39,6 +42,7 @@ public class CompanyParser implements Parser, Constant {
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
+				objectId = AbstractConverter.composeObjectId(configuration, Line.COMPANY_KEY, objectId);
 				company = ObjectFactory.getCompany(referential, objectId);
 				company.setFilled(true);
 				company.setOrganisationType(OrganisationTypeEnum.Operator);

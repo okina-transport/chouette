@@ -36,7 +36,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 
 		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
 		Referential referential = (Referential) context.get(REFERENTIAL);
-		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
@@ -53,7 +53,8 @@ public class LineParser implements Parser, Constant, JsonExtension {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = objectId.replaceFirst("^"+parameters.getLinePrefixToRemove(),"");
+				objectId = objectId.replaceFirst("^" + configuration.getLinePrefixToRemove(),"");
+				objectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, objectId);
 				incomingLineList.add(objectId);
 				line = ObjectFactory.getLine(referential, objectId);
 				line.setFilled(true);
@@ -82,12 +83,14 @@ public class LineParser implements Parser, Constant, JsonExtension {
 				validator.addLineEnd(context, objectId, lineEnd);
 			} else if (xpp.getName().equals("routeId")) {
 				String routeId = ParserUtils.getText(xpp.nextText());
-				validator.addRouteId(context, objectId, routeId);
-				Route route = ObjectFactory.getRoute(referential, routeId);
+				String routeObjectId = AbstractConverter.composeObjectId(configuration, Line.ROUTE_KEY, routeId);
+				validator.addRouteId(context, objectId, routeObjectId);
+				Route route = ObjectFactory.getRoute(referential, routeObjectId);
 				route.setLine(line);
 			} else if (xpp.getName().equals("ptNetworkIdShortcut")) {
 				String ptNetworkIdShortcut = ParserUtils.getText(xpp.nextText());
-				validator.addPtNetworkIdShortcut(context, objectId, ptNetworkIdShortcut);
+				String networkObjectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, ptNetworkIdShortcut);
+				validator.addPtNetworkIdShortcut(context, objectId, networkObjectId);
 			} else if (xpp.getName().equals("registration")) {
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
 					if (xpp.getName().equals("registrationNumber")) {
