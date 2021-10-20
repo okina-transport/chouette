@@ -157,11 +157,14 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
 
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
         List<Command> commands = new ArrayList<>();
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
         try {
-            Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
-            commands.add(geolocationCheckCommand);
+            if (!parameters.isKeepStopGeolocalisation()) {
+                Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
+                commands.add(geolocationCheckCommand);
+            }
 
         } catch (ClassNotFoundException | IOException e) {
             log.error(e.getStackTrace());
