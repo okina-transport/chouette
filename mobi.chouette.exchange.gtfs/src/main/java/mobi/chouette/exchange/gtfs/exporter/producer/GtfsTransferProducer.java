@@ -16,7 +16,6 @@ import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.StopArea;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
@@ -32,32 +31,31 @@ public class GtfsTransferProducer extends AbstractProducer {
 	private GtfsTransfer transfer = new GtfsTransfer();
 
    public boolean save(ConnectionLink neptuneObject, String prefix, boolean keepOriginalId, IdParameters idParams){
-   	  transfer.clear();
+	   transfer.clear();
 
 	   StopArea startArea = neptuneObject.getStartOfLink();
 	   StopArea endArea = neptuneObject.getEndOfLink();
-	   String fromStopId = StringUtils.isEmpty(startArea.getOriginalStopId()) ? toGtfsId(startArea.getObjectId(), prefix, keepOriginalId) : GtfsStopUtils.getNewStopId(startArea, idParams);
-	   String endStopId = StringUtils.isEmpty(endArea.getOriginalStopId()) ? toGtfsId(endArea.getObjectId(), prefix, keepOriginalId) : GtfsStopUtils.getNewStopId(endArea, idParams);
+	   String fromStopId = GtfsStopUtils.getNewStopId(startArea, idParams, keepOriginalId);
+	   String endStopId = GtfsStopUtils.getNewStopId(endArea, idParams, keepOriginalId);
 
-      transfer.setFromStopId(fromStopId);
-      transfer.setToStopId(endStopId);
+	   transfer.setFromStopId(fromStopId);
+	   transfer.setToStopId(endStopId);
 
 
-      if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getStandardSeconds() > 1) {
-         transfer.setMinTransferTime((int)neptuneObject.getDefaultDuration().getStandardSeconds());
-         transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
-      } else
-      {
-			transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
-         }
+	   if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getStandardSeconds() > 1) {
+		   transfer.setMinTransferTime((int) neptuneObject.getDefaultDuration().getStandardSeconds());
+		   transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
+	   } else {
+		   transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
+	   }
 
-		try {
-			getExporter().getTransferExporter().export(transfer);
-		} catch (Exception e) {
-			log.error("fail to produce transfer " + e.getClass().getName() + " " + e.getMessage());
-			return false;
-		}
-		return true;
+	   try {
+		   getExporter().getTransferExporter().export(transfer);
+	   } catch (Exception e) {
+		   log.error("fail to produce transfer " + e.getClass().getName() + " " + e.getMessage());
+		   return false;
+	   }
+	   return true;
 	}
 
 	public boolean save(Interchange neptuneObject, String prefix, boolean keepOriginalId) {

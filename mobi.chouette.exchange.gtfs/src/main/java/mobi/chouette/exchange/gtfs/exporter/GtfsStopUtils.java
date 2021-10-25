@@ -16,21 +16,21 @@ public class GtfsStopUtils {
 
 
 
-    public static String getNewStopId(StopArea stop, IdParameters idParams) {
-        String idPrefix = ChouetteAreaEnum.BoardingPosition.equals(stop.getAreaType())?idParams.getStopIdPrefix():idParams.getCommercialPointIdPrefix();
-        if(stop != null && StringUtils.isNotEmpty(stop.getOriginalStopId())){
+    public static String getNewStopId(StopArea stop, IdParameters idParams, boolean keepOriginalId) {
+        String idPrefix = ChouetteAreaEnum.BoardingPosition.equals(stop.getAreaType()) ? idParams.getStopIdPrefix() : idParams.getCommercialPointIdPrefix();
+        if(!keepOriginalId && StringUtils.isNotEmpty(stop.getOriginalStopId())){
             if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)){
                 return createTridentId(stop,idPrefix);
             }
             return createStandardId(stop,idPrefix);
         }
-        String inputStopId = stop.getObjectId();
-        if(StringUtils.isEmpty(inputStopId)) return null;
-        String pattern1 = "^.*:.*:.*_.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
-        String retour = findInPattern(pattern1, inputStopId);
-        if(!StringUtils.isEmpty(retour)) return retour;
-        String pattern2 = "^.*:.*:.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
-        return findInPattern(pattern2, inputStopId);
+//        String inputStopId = stop.getObjectId();
+//        if(StringUtils.isEmpty(inputStopId)) return null;
+//        String pattern1 = "^.*:.*:.*_.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
+//        String retour = findInPattern(pattern1, inputStopId);
+//        if(!StringUtils.isEmpty(retour)) return retour;
+//        String pattern2 = "^.*:.*:.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
+        return stop.getObjectId();
     }
 
 
@@ -44,7 +44,7 @@ public class GtfsStopUtils {
      * @return
      */
     private static String createStandardId(StopArea stop, String idPrefix){
-        return StringUtils.isEmpty(idPrefix)?stop.getOriginalStopId():idPrefix+stop.getOriginalStopId();
+        return StringUtils.isEmpty(idPrefix) ? stop.getOriginalStopId() : idPrefix + stop.getOriginalStopId();
     }
 
     /**
@@ -58,9 +58,9 @@ public class GtfsStopUtils {
      */
     private static String createTridentId(StopArea stop, String idPrefix){
         if (stop.getObjectId().contains("Quay")){
-            return idPrefix+TRIDENT_QUAY_TYPE+stop.getOriginalStopId();
+            return idPrefix + TRIDENT_QUAY_TYPE + stop.getOriginalStopId();
         }
-        return idPrefix+TRIDENT_STOP_PLACE_TYPE+stop.getOriginalStopId();
+        return idPrefix + TRIDENT_STOP_PLACE_TYPE + stop.getOriginalStopId();
     }
 
     private static String findInPattern(String pattern, String value){

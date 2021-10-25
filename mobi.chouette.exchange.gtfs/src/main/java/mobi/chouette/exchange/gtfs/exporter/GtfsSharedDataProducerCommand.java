@@ -33,11 +33,9 @@ import mobi.chouette.model.Interchange;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
-import org.apache.commons.lang.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +100,6 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
 		TimeZone timezone = TimeZone.getTimeZone(configuration.getTimeZone());
 		String prefix = configuration.getObjectIdPrefix();
-		String sharedPrefix = prefix;
 		ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 		Map<String, List<Timetable>> timetables = collection.getTimetableMap();
 		Set<StopArea> commercialStops = collection.getCommercialStops();
@@ -124,12 +121,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext();) {
 			StopArea stop = iterator.next();
 
-			String newStopId = GtfsStopUtils.getNewStopId(stop,idParams);
-			if(StringUtils.isEmpty(newStopId) || newStopId.contains(".")){
-				newStopId = stop.getOriginalStopId();
-			}
-
-			if (!stopProducer.save(stop, sharedPrefix, null, configuration.isKeepOriginalId(),configuration.isUseTpegHvt(), newStopId,idParams)) {
+			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams)) {
 				iterator.remove();
 			} else {
 				if (metadata != null && stop.hasCoordinates())
@@ -138,22 +130,13 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 		}
 
-		List<String> stopGenerated = new ArrayList<>();
 		for (StopArea stop : physicalStops) {
-            String newStopId = GtfsStopUtils.getNewStopId(stop,idParams);
-            if(StringUtils.isEmpty(newStopId) || newStopId.contains(".")){
-            	newStopId = stop.getOriginalStopId();
-			}
-			if(!stopGenerated.contains(newStopId)){
-				stopGenerated.add(newStopId);
-				stopProducer.save(stop, sharedPrefix, commercialStops, configuration.isKeepOriginalId(),configuration.isUseTpegHvt(), newStopId,idParams);
-				if (metadata != null && stop.hasCoordinates()) {
-					metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),
-							stop.getLatitude().doubleValue());
-				}
+			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams);
+			if (metadata != null && stop.hasCoordinates()) {
+				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),
+						stop.getLatitude().doubleValue());
 			}
 		}
-		stopGenerated = null; // anti leak ?
 
 		// remove incomplete connectionlinks
 		for (ConnectionLink link : connectionLinks) {
@@ -162,13 +145,13 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			} else if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
 				continue;
 			}
-			transferProducer.save(link, sharedPrefix, configuration.isKeepOriginalId(),idParams);
+			transferProducer.save(link, prefix, configuration.isKeepOriginalId(), idParams);
 		}
 		
 		// produce interchanges
 		for(Interchange interchange : interchanges) {
 			if (isInterchangeValid(interchange)) {
-				transferProducer.save(interchange, sharedPrefix, configuration.isKeepOriginalId());
+				transferProducer.save(interchange, prefix, configuration.isKeepOriginalId());
 			}
 		}
 
@@ -177,7 +160,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 		for (List<Timetable> tms : timetables.values()) {
-			calendarProducer.save(tms, sharedPrefix, configuration.isKeepOriginalId());
+			calendarProducer.save(tms, prefix, configuration.isKeepOriginalId());
 			if (metadata != null) {
 				for (Timetable tm : tms) {
 					metadata.getTemporalCoverage().update(tm.getStartOfPeriod(), tm.getEndOfPeriod());
