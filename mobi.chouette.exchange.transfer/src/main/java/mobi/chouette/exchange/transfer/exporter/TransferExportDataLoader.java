@@ -46,7 +46,7 @@ public class TransferExportDataLoader implements Command, Constant {
 	private EntityManager em;
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@TransactionTimeout(value = 2, unit = TimeUnit.HOURS)
+	@TransactionTimeout(value = 4, unit = TimeUnit.HOURS)
 	public boolean execute(Context context) throws Exception {
 
 		List<Line> lineToTransfer = prepareLines(context);
