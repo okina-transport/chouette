@@ -473,7 +473,7 @@ public class RestService implements Constant {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response scheduledJob(@PathParam("ref") String referential, @PathParam("id") Long id) {
 		try {
-			log.info(Color.CYAN + "Call scheduledJob referential = " + referential + ", id = " + id + Color.NORMAL);
+			log.debug(Color.CYAN + "Call scheduledJob referential = " + referential + ", id = " + id + Color.NORMAL);
 
 			Response result = null;
 			ResponseBuilder builder = null;

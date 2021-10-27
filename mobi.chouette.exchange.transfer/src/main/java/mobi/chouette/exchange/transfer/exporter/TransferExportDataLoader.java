@@ -62,16 +62,16 @@ public class TransferExportDataLoader implements Command, Constant {
 		if (!em.isJoinedToTransaction()) {
 			throw new RuntimeException("No transaction");
 		}
-		
+
 		TransferExportParameters configuration = (TransferExportParameters) context.get(CONFIGURATION);
 
 		log.info("Loading all lines...");
 		List<Line> allLines = lineDAO.findAll().stream()
 											   .filter(line-> !line.getSupprime())
 										       .collect(Collectors.toList());
-		
+
 		List<Line> lineToTransfer = new ArrayList<>();
-		
+
 		LineFilter lineFilter = new LineFilter();
 
 		log.info("Filtering lines");
@@ -84,13 +84,13 @@ public class TransferExportDataLoader implements Command, Constant {
 				lineToTransfer.add(line);
 			}
 		}
-		
+
 		log.info("Filtering lines completed");
 		log.info("Removing Hibernate proxies");
 		HibernateDeproxynator<?> deProxy = new HibernateDeproxynator<>();
 		lineToTransfer = deProxy.deepDeproxy(lineToTransfer);
 		log.info("Removing Hibernate proxies completed");
-		
+
 
 		em.clear();
 		return lineToTransfer;
