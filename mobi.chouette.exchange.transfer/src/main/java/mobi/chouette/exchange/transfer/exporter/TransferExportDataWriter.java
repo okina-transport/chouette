@@ -69,7 +69,7 @@ public class TransferExportDataWriter implements Command, Constant {
     private EntityManager em;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @TransactionTimeout(value = 4, unit = TimeUnit.HOURS)
+    @TransactionTimeout(value = 8, unit = TimeUnit.HOURS)
     public boolean execute(Context context) throws Exception {
         if (!em.isJoinedToTransaction()) {
             throw new RuntimeException("No transaction");
