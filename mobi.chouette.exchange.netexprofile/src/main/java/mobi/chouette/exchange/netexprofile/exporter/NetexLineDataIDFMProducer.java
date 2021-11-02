@@ -21,6 +21,8 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.JourneyPattern;
+import mobi.chouette.model.Line;
+import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopPoint;
@@ -108,6 +110,12 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
      * @param defaultCodespacePrefix
      */
     private void deleteSpacesInIdsAndChangeSpecialCharacters(ExportableData exportableData, String defaultCodespacePrefix) {
+        for(Network network : exportableData.getNetworks()){
+            network.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(network.getObjectId(), defaultCodespacePrefix));
+            for(Line line : network.getLines()){
+                line.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getObjectId(), defaultCodespacePrefix));
+            }
+        }
         for (Route route : exportableData.getRoutes()) {
             route.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(route.getObjectId(), defaultCodespacePrefix));
             route.getLine().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(route.getLine().getObjectId(), defaultCodespacePrefix));
