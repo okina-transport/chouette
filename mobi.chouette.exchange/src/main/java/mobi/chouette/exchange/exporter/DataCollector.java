@@ -267,12 +267,20 @@ public class DataCollector {
 				continue;
 			if (!link.getStartOfLink().hasCoordinates() || !link.getEndOfLink().hasCoordinates())
 				continue;
+			initializeLazyObjects(link);
 			collection.getConnectionLinks().add(link);
 			if (followLinks) {
 				collectStopAreas(collection, link.getStartOfLink(), skipNoCoordinate, followLinks);
 				collectStopAreas(collection, link.getEndOfLink(), skipNoCoordinate, followLinks);
 			}
 		}
+	}
+
+	private void initializeLazyObjects(ConnectionLink connectionLink){
+		Hibernate.initialize(connectionLink.getStartOfLink().getParent());
+		Hibernate.initialize(connectionLink.getStartOfLink().getParent().getTransportModeName());
+		Hibernate.initialize(connectionLink.getEndOfLink().getParent());
+		Hibernate.initialize(connectionLink.getEndOfLink().getParent().getTransportModeName());
 	}
 
 	protected void addAccessLinks(ExportableData collection, List<AccessLink> links) {

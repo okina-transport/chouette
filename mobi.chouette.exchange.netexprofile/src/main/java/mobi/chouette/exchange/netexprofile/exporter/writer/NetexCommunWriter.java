@@ -172,9 +172,12 @@ public class NetexCommunWriter extends AbstractNetexWriter {
 
             TransferDurationStructure transfertDuration = netexFactory.createTransferDurationStructure();
 
-            Duration duration = Duration.parse(connectionLink.getDefaultDuration().toString());
-            transfertDuration.setDefaultDuration(duration);
-            siteConnection.setWalkTransferDuration(transfertDuration);
+            if (connectionLink.getDefaultDuration() != null ){
+                Duration duration = Duration.parse(connectionLink.getDefaultDuration().toString());
+                transfertDuration.setDefaultDuration(duration);
+                siteConnection.setWalkTransferDuration(transfertDuration);
+            }
+
 
             siteConnection.setId(connectionLink.getObjectId());
             siteConnection.setVersion(String.valueOf(connectionLink.getObjectVersion()));
