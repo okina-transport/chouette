@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
@@ -21,7 +15,6 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import net.opengis.gml._3.DirectPositionType;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.LocationStructure;
@@ -35,7 +28,6 @@ import org.rutebanken.netex.model.SiteRefStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
 import org.rutebanken.netex.model.StopTypeEnumeration;
-import org.rutebanken.netex.model.TariffZone;
 import org.rutebanken.netex.model.TariffZoneRef;
 import org.rutebanken.netex.model.TariffZoneRefs_RelStructure;
 import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
@@ -44,6 +36,11 @@ import org.rutebanken.netex.model.ZoneRefStructure;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 
 import javax.xml.bind.JAXBElement;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @Log4j
 public class StopPlaceParser implements Parser, Constant {

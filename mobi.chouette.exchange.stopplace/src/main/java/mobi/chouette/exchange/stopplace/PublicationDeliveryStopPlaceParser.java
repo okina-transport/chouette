@@ -1,5 +1,25 @@
 package mobi.chouette.exchange.stopplace;
 
+import lombok.Getter;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Constant;
+import mobi.chouette.common.Context;
+import mobi.chouette.exchange.importer.ParserFactory;
+import mobi.chouette.exchange.netexprofile.parser.StopPlaceParser;
+import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.rutebanken.netex.model.Common_VersionFrameStructure;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.Quay;
+import org.rutebanken.netex.model.Site_VersionFrameStructure;
+import org.rutebanken.netex.model.StopPlace;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -11,28 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
-import lombok.Getter;
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Constant;
-import mobi.chouette.common.Context;
-import mobi.chouette.exchange.importer.ParserFactory;
-import mobi.chouette.exchange.netexprofile.parser.StopPlaceParser;
-import mobi.chouette.model.util.Referential;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.model.Common_VersionFrameStructure;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.Site_VersionFrameStructure;
-import org.rutebanken.netex.model.StopPlace;
 
 import static javax.xml.bind.JAXBContext.newInstance;
 import static mobi.chouette.exchange.netexprofile.Constant.NETEX_LINE_DATA_CONTEXT;
@@ -111,7 +109,7 @@ public class PublicationDeliveryStopPlaceParser {
                             updateContext.getInactiveStopAreaIds().add(stopPlace.getId());
                             referential.getStopAreas().remove(stopPlace.getId());
                         } else if (stopPlace.getQuays() != null && !CollectionUtils.isEmpty(stopPlace.getQuays().getQuayRefOrQuay())) {
-                            stopPlace.getQuays().getQuayRefOrQuay().forEach(quay -> collectMergedIdForQuay(quay));
+                            stopPlace.getQuays().getQuayRefOrQuay().forEach(this::collectMergedIdForQuay);
                         }
                     }
 
@@ -132,8 +130,8 @@ public class PublicationDeliveryStopPlaceParser {
      */
     private void feedImportedIds(StopPlace stopPlace){
         stopPlace.getKeyList().getKeyValue().stream()
-                                            .filter(kv -> IMPORT_ID_KEY.equals(kv.getKey()))
-                                            .forEach(kv ->splitAndCollectIds(kv.getValue(),stopPlace.getId()));
+                .filter(kv -> IMPORT_ID_KEY.equals(kv.getKey()))
+                .forEach(kv -> splitAndCollectIds(kv.getValue(), stopPlace.getId()));
 
     }
 
@@ -154,7 +152,7 @@ public class PublicationDeliveryStopPlaceParser {
             if (!stopPlaceImportedId.contains(":") || stopPlaceImportedId.split(":").length != 3)
                 continue;
 
-            collectImportedIds(netexId,stopPlaceImportedId);
+            collectImportedIds(netexId, stopPlaceImportedId);
 
             String schemaName = stopPlaceImportedId.split(":")[0].toLowerCase();
 
@@ -176,11 +174,11 @@ public class PublicationDeliveryStopPlaceParser {
     private void collectImportedIds(String netexId, String importedId){
         Map<String, List<String>> importedIdByNetex = updateContext.getImportedIdsByNetexId();
         List<String> importedIds;
-        if ( importedIdByNetex.containsKey(netexId)){
+        if (importedIdByNetex.containsKey(netexId)) {
             importedIds = importedIdByNetex.get(netexId);
-        }else {
+        } else {
             importedIds = new ArrayList<String>();
-            importedIdByNetex.put(netexId,importedIds);
+            importedIdByNetex.put(netexId, importedIds);
         }
         importedIds.add(importedId);
 
@@ -200,7 +198,7 @@ public class PublicationDeliveryStopPlaceParser {
     }
 
     private void addMergedIds(String mergedToId, String mergedFromIdsAsString) {
-        Set<String> mergedFromIds = Arrays.asList(mergedFromIdsAsString.split(ID_VALUE_SEPARATOR)).stream().filter(id -> !StringUtils.isEmpty(id)).collect(Collectors.toSet());
+        Set<String> mergedFromIds = Arrays.stream(mergedFromIdsAsString.split(ID_VALUE_SEPARATOR)).filter(id -> !StringUtils.isEmpty(id)).collect(Collectors.toSet());
 
         if (updateContext.getMergedQuays().get(mergedToId) != null) {
             updateContext.getMergedQuays().get(mergedToId).addAll(mergedFromIds);
