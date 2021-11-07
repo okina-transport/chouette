@@ -53,8 +53,8 @@ public class GtfsExportTransferProducerTests
       Reporter.log("verifyTransferProducer1");
       Reporter.log(TransferExporter.CONVERTER.to(context,gtfsObject));
 
-      Assert.assertEquals(gtfsObject.getFromStopId(), "start", "Start of link must be correctly set");
-      Assert.assertEquals(gtfsObject.getToStopId(), "end", "End of link must be correctly set");
+      Assert.assertEquals(gtfsObject.getFromStopId(), "GTFS:StopArea:start", "Start of link must be correctly set");
+      Assert.assertEquals(gtfsObject.getToStopId(), "GTFS:StopArea:end", "End of link must be correctly set");
       Assert.assertEquals(gtfsObject.getMinTransferTime().toString(), "60", "transfer time must be correctly set");
       Assert.assertEquals(gtfsObject.getTransferType(), TransferType.Minimal, "transfer type must be MINIMAL");
 
@@ -82,8 +82,8 @@ public class GtfsExportTransferProducerTests
       Reporter.log("verifyTransferProducer2");
       Reporter.log(TransferExporter.CONVERTER.to(context,gtfsObject));
 
-      Assert.assertEquals(gtfsObject.getFromStopId(), "start", "Start of link must be correctly set");
-      Assert.assertEquals(gtfsObject.getToStopId(), "end", "End of link must be correctly set");
+      Assert.assertEquals(gtfsObject.getFromStopId(), "GTFS:StopArea:start", "Start of link must be correctly set");
+      Assert.assertEquals(gtfsObject.getToStopId(), "GTFS:StopArea:end", "End of link must be correctly set");
       Assert.assertNull(gtfsObject.getMinTransferTime(), "transfer time must be null");
       Assert.assertEquals(gtfsObject.getTransferType(), TransferType.Recommended, "transfer type must be RECOMMENDED");
 
