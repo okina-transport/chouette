@@ -68,32 +68,40 @@ public class AccessLinkParser implements Parser, Constant {
 				accessLink.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("startOfLink")) {
 				String linkId = ParserUtils.getText(xpp.nextText());
-				validator.addStartOfLinkId(context, objectId, linkId);
 				if (referential.getStopAreas().containsKey(linkId)) {
 					StopArea stopArea = ObjectFactory.getStopArea(referential,
 							linkId);
 					accessLink.setStopArea(stopArea);
 					accessLink
 							.setLinkOrientation(LinkOrientationEnum.StopAreaToAccessPoint);
-				} else if (referential.getAccessPoints().containsKey(linkId)) {
-					AccessPoint accessPoint = ObjectFactory.getAccessPoint(
-							referential, linkId);
-					accessLink.setAccessPoint(accessPoint);
-					accessLink
-							.setLinkOrientation(LinkOrientationEnum.AccessPointToStopArea);
+				} else {
+					linkId = AbstractConverter.composeObjectId(configuration, Line.ACCESSPOINT_KEY, linkId);
+					if (referential.getAccessPoints().containsKey(linkId)) {
+						AccessPoint accessPoint = ObjectFactory.getAccessPoint(
+								referential, linkId);
+						accessLink.setAccessPoint(accessPoint);
+						accessLink
+								.setLinkOrientation(LinkOrientationEnum.AccessPointToStopArea);
+					}
 				}
+				validator.addStartOfLinkId(context, objectId, linkId);
 			} else if (xpp.getName().equals("endOfLink")) {
 				String linkId = ParserUtils.getText(xpp.nextText());
-				validator.addEndOfLinkId(context, objectId, linkId);
+
 				if (referential.getStopAreas().containsKey(linkId)) {
 					StopArea stopArea = ObjectFactory.getStopArea(referential,
 							linkId);
 					accessLink.setStopArea(stopArea);
-				} else if (referential.getAccessPoints().containsKey(linkId)) {
-					AccessPoint accessPoint = ObjectFactory.getAccessPoint(
-							referential, linkId);
-					accessLink.setAccessPoint(accessPoint);
+				} else{
+					linkId = AbstractConverter.composeObjectId(configuration, Line.ACCESSPOINT_KEY, linkId);
+					if (referential.getAccessPoints().containsKey(linkId)) {
+						AccessPoint accessPoint = ObjectFactory.getAccessPoint(
+								referential, linkId);
+						accessLink.setAccessPoint(accessPoint);
+					}
+
 				}
+				validator.addEndOfLinkId(context, objectId, linkId);
 			} else if (xpp.getName().equals("linkDistance")) {
 				BigDecimal value = ParserUtils.getBigDecimal(xpp.nextText());
 				accessLink.setLinkDistance(value);

@@ -173,6 +173,9 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
 		configuration.setCleanRepository(cleanRepo);
+		configuration.setObjectIdPrefix("TESTSCHEMA");
+//		configuration.setAreaCentroidPrefixToRemove("NINOXE:AreaCentroid:");
+//		configuration.setStopAreaPrefixToRemove("NINOXE:StopArea:");
 		try {
 			cleanStopAreasCommand.execute(context);
 			command.execute(context);
