@@ -71,7 +71,7 @@ public class GtfsExportTripProducerTests
       {
          Reporter.log(StopTimeExporter.CONVERTER.to(context,gtfsStopTime));
          Assert.assertEquals(gtfsStopTime.getTripId(), "4321", "TripId must be correctly set");
-         Assert.assertEquals(gtfsStopTime.getStopId(), "SA"+i, "StopId must be correctly set");
+         Assert.assertEquals(gtfsStopTime.getStopId(), "GTFS:StopPoint:SA"+i, "StopId must be correctly set");
          Assert.assertEquals(gtfsStopTime.getStopSequence(), Integer.valueOf(i*2), "StopSequence must be correctly set");
          if (i == 0) 
          {
@@ -313,7 +313,7 @@ public class GtfsExportTripProducerTests
       {
          Reporter.log(StopTimeExporter.CONVERTER.to(context,gtfsStopTime));
          Assert.assertEquals(gtfsStopTime.getTripId(), "4321", "TripId must be correctly set");
-         Assert.assertEquals(gtfsStopTime.getStopId(), "SA"+i, "StopId must be correctly set");
+         Assert.assertEquals(gtfsStopTime.getStopId(), "GTFS:StopPoint:SA"+i, "StopId must be correctly set");
          Assert.assertEquals(gtfsStopTime.getStopSequence(), Integer.valueOf(i*2), "StopSequence must be correctly set");
          if (i == 0) 
          {
