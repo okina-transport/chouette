@@ -1,19 +1,25 @@
 package mobi.chouette.exchange.stopplace;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.importer.updater.Updater;
 import mobi.chouette.model.StopArea;
-
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j
 public class StopAreaUpdateTask {
@@ -42,17 +48,20 @@ public class StopAreaUpdateTask {
 		String currentSchema = ContextHolder.getContext();
 		List<String> impactedStopAreasIds = updateContext.getImpactedStopAreasBySchema().get(currentSchema);
 
-		if (impactedStopAreasIds != null){
+		if (impactedStopAreasIds != null) {
 			//Filtering to apply modification only on points used by the current schema
 			List<StopArea> impactedStopAreas = updateContext.getActiveStopAreas().stream()
-															 	                .filter(stopArea -> isStopAreaImpacted(stopArea,impactedStopAreasIds))
-																				.distinct()
-																 				.collect(Collectors.toList());
+					.filter(stopArea -> isStopAreaImpacted(stopArea, impactedStopAreasIds))
+					.distinct()
+					.collect(Collectors.toList());
 
+			for(StopArea stopArea : impactedStopAreas){
+				stopArea.getContainedStopAreas().removeIf(containedStopArea -> StringUtils.isEmpty(containedStopArea.getOriginalStopId()));
+			}
 
 			impactedStopAreas.stream()
-					         .map(this::createCopy)
-					         .forEach(this::createOrUpdate);
+					.map(this::createCopy)
+					.forEach(this::createOrUpdate);
 		}
 
 		Map<String, Set<String>> mergedQuaysMap = new HashMap<>(updateContext.getMergedQuays());
@@ -127,7 +136,7 @@ public class StopAreaUpdateTask {
 			return true;
 
 		return stopArea.getContainedStopAreas().stream()
-				 						       .anyMatch(containedStopArea -> isStopAreaImpacted(containedStopArea,impactedIds));
+				.anyMatch(containedStopArea -> isStopAreaImpacted(containedStopArea, impactedIds));
 
 	}
 
