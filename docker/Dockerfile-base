@@ -69,7 +69,7 @@ RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
   && chown jboss:jboss /opt/jboss/data
 
 # Running as root, in order to get mounted volume writable:
-#USER root
+USER root
 
 RUN /opt/jboss/wildfly/bin/add-user.sh admin password --silent
 
