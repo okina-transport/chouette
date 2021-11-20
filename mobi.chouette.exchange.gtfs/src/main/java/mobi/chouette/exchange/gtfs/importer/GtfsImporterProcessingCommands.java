@@ -102,6 +102,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
            Integer cpt = 1;
 
             String splitCharacter = parameters.getSplitCharacter();
+            context.put(TOTAL_NB_OF_LINES,index.getLength());
             for (GtfsRoute gtfsRoute : index) {
 
                 if (StringUtils.isNotEmpty(splitCharacter)){

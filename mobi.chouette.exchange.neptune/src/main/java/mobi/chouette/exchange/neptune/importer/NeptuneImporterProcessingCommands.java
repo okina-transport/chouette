@@ -77,6 +77,7 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 		List<Command> commands = new ArrayList<>();
 		JobData jobData = (JobData) context.get(JOB_DATA);
 		Path path = Paths.get(jobData.getPathName(), INPUT);
+
 		try {
 			List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");
 			if (!excluded.isEmpty()) {
@@ -85,6 +86,7 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 				}
 			}
 			List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
+			context.put(TOTAL_NB_OF_LINES, stream.size());
 			for (Path file : stream) {
 				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 				commands.add(chain);

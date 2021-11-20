@@ -95,6 +95,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             Integer cpt = 1;
 
             String splitCharacter = parameters.getSplitCharacter();
+            context.put(TOTAL_NB_OF_LINES,index.getLength());
             for (GtfsRoute gtfsRoute : index) {
 
                 if (StringUtils.isNotEmpty(splitCharacter)){

@@ -87,4 +87,7 @@ public interface Constant {
 
 	public static final String INCOMING_LINE_LIST="incomingLineList";
 
+	public static final String TOTAL_NB_OF_LINES="totalNbOfLines";
+	public static final String CURRENT_LINE_NB="currentLineNb";
+
 }

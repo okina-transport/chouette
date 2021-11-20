@@ -92,6 +92,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
                 }
             }
             List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
+            context.put(TOTAL_NB_OF_LINES, stream.size());
             for (Path file : stream) {
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 commands.add(chain);
