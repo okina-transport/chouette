@@ -16,7 +16,7 @@ function waitWildfly {
 function initWildfly {
 	waitWildfly
 	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --file=/tmp/wildfly_db.cli
-	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --command='/subsystem=transactions:write-attribute(name=default-timeout,value=3600)'
+	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --command='/subsystem=transactions:write-attribute(name=default-timeout,value=36000)'
 	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --command='/subsystem=undertow/server=default-server/http-listener=default/:write-attribute(name=max-post-size,value=100485760)'
 	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --command="/:reload"
 	/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --command="deploy /tmp/chouette.ear"
