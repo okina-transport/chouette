@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import mobi.chouette.exchange.NetexParserUtils;
 import org.rutebanken.netex.model.GroupOfLines;
 import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.OrganisationRefStructure;

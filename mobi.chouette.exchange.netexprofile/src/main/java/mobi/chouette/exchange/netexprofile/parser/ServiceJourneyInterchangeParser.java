@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
+import mobi.chouette.exchange.NetexParserUtils;
 import org.rutebanken.netex.model.Interchange_VersionStructure;
 import org.rutebanken.netex.model.JourneyInterchangesInFrame_RelStructure;
 import org.rutebanken.netex.model.ServiceJourneyInterchange;
