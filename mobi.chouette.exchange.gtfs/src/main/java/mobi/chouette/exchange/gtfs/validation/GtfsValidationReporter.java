@@ -39,7 +39,7 @@ public class GtfsValidationReporter implements Constant{
 		reporter.addItemToValidationReport(context, "1-GTFS-", "Route", 3, "E","E","W");
 
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 4, "E","W","E","W");
-		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 6, "E","W","E","E","E","E");
+		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 6, "E","W","W","E","E","E");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W","W","W","W");
 
 		reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
@@ -519,8 +519,8 @@ public class GtfsValidationReporter implements Constant{
 			fieldName = ex.getField();
 			validationReporter.addCheckPointReportError(context,checkPointName,
 					buildDataLocation(context,new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()),routeId), ex.getValue());
-			throw ex;
-			// break;
+//			throw ex;
+			break;
 
 		case NO_PARENT_FOR_STATION:
 			// 2-GTFS-Stop-4

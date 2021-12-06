@@ -34,12 +34,12 @@ public class GtfsStopProducer extends AbstractProducer {
 		super(exporter);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams) {
-		String stopId = GtfsStopUtils.getNewStopId(neptuneObject, idParams, keepOriginalId);
-		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams);
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix) {
+		String stopId = GtfsStopUtils.getNewStopId(neptuneObject, idParams, keepOriginalId, schemaPrefix);
+		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix) {
 		Optional<StopArea> parent = Optional.ofNullable(neptuneObject.getParent());
 		if (validParents != null && !validParents.isEmpty() && parent.isPresent()) {
 			if (parent.get().getObjectId().equals(neptuneObject.getObjectId())) {
@@ -123,7 +123,7 @@ public class GtfsStopProducer extends AbstractProducer {
 		{
 			if (neptuneObject.getParent() != null && validParents.contains(neptuneObject.getParent()))
 			{
-				stop.setParentStation(GtfsStopUtils.getNewStopId(neptuneObject.getParent(), idParams, keepOriginalId));
+				stop.setParentStation(GtfsStopUtils.getNewStopId(neptuneObject.getParent(), idParams, keepOriginalId, prefix));
 			}
 		}
 

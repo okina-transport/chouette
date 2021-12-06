@@ -2,6 +2,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
@@ -24,7 +25,6 @@ import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.RelationshipStructure;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
-import org.rutebanken.netex.model.SiteRefStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
 import org.rutebanken.netex.model.StopTypeEnumeration;
@@ -92,26 +92,28 @@ public class StopPlaceParser implements Parser, Constant {
         for (Map.Entry<String, String> item : childMappedAgainstParent.entrySet()) {
             StopArea child = ObjectFactory.getStopArea(referential, item.getKey());
             StopArea parent = ObjectFactory.getStopArea(referential, item.getValue());
-            if (parent != null) {
-                parent.setAreaType(parentAreaType);
-                child.setParent(parent);
-				copyNameIfMissingRecursively(parent);
-			}
-		}
+            parent.setAreaType(parentAreaType);
+            child.setParent(parent);
+            copyNameIfMissingRecursively(parent);
+        }
 	}
 
 	private void copyNameIfMissingRecursively(StopArea parent){
-		for(StopArea child:parent.getContainedStopAreas()){
-			if (child.getName()==null){
-				child.setName(parent.getName());
-			}
-			copyNameIfMissingRecursively(child);
-		}
+		for(StopArea child:parent.getContainedStopAreas()) {
+            if (child.getName() == null) {
+                child.setName(parent.getName());
+            }
+            copyNameIfMissingRecursively(child);
+        }
 	}
 
 
     void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
+        if (stopPlace.getQuays() == null) {
+            return;
+        }
 
         StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
@@ -147,10 +149,10 @@ public class StopPlaceParser implements Parser, Constant {
             parentZoneMap.put(stopArea.getObjectId(), parentZoneRefStruct.getRef());
         }
 
-        SiteRefStructure siteRefStructure = stopPlace.getParentSiteRef();
-        if (siteRefStructure != null) {
-            parentSiteMap.put(stopArea.getObjectId(), siteRefStructure.getRef());
-        }
+//        SiteRefStructure siteRefStructure = stopPlace.getParentSiteRef();
+//        if (siteRefStructure != null) {
+//            parentSiteMap.put(stopArea.getObjectId(), siteRefStructure.getRef());
+//        }
 
         PostalAddress postalAddress = stopPlace.getPostalAddress();
         if (postalAddress != null) {

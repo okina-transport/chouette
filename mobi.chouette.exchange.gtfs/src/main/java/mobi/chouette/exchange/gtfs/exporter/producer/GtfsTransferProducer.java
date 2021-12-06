@@ -35,8 +35,8 @@ public class GtfsTransferProducer extends AbstractProducer {
 
 	   StopArea startArea = neptuneObject.getStartOfLink();
 	   StopArea endArea = neptuneObject.getEndOfLink();
-	   String fromStopId = GtfsStopUtils.getNewStopId(startArea, idParams, keepOriginalId);
-	   String endStopId = GtfsStopUtils.getNewStopId(endArea, idParams, keepOriginalId);
+	   String fromStopId = GtfsStopUtils.getNewStopId(startArea, idParams, keepOriginalId, prefix);
+	   String endStopId = GtfsStopUtils.getNewStopId(endArea, idParams, keepOriginalId, prefix);
 
 	   transfer.setFromStopId(fromStopId);
 	   transfer.setToStopId(endStopId);

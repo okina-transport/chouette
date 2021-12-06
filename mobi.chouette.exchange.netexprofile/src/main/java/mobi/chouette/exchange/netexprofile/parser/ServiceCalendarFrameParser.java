@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBElement;
 
 import lombok.extern.log4j.Log4j;
 
+import mobi.chouette.exchange.NetexParserUtils;
 import org.rutebanken.helper.calendar.CalendarPattern;
 import org.rutebanken.helper.calendar.CalendarPatternAnalyzer;
 import org.rutebanken.netex.model.DataManagedObjectStructure;

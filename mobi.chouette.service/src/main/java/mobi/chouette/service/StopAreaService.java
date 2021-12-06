@@ -1,23 +1,5 @@
 package mobi.chouette.service;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -32,6 +14,24 @@ import mobi.chouette.model.Provider;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.EJB;
+import javax.ejb.Singleton;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static mobi.chouette.common.Constant.KEEP_STOP_GEOLOCALISATION;
 
@@ -99,7 +99,7 @@ public class StopAreaService {
 			Context chouetteDbContext = createContext();
 			ContextHolder.clear();
 			ContextHolder.setContext(impactedSchema);
-			resetSavedStatusToFalse(updateContext,impactedSchema);
+			resetSavedStatusToFalse(updateContext, impactedSchema);
 			chouetteDbContext.put(KEEP_STOP_GEOLOCALISATION, false);
 			stopAreaUpdateService.createOrUpdateStopAreas(chouetteDbContext, updateContext);
 			log.info("Update completed on schema: " + impactedSchema);
@@ -139,10 +139,10 @@ public class StopAreaService {
 
 		for (StopArea activeStopArea : updateContext.getActiveStopAreas()) {
 			activeStopArea.setSaved(false);
-			setOriginalStopId(activeStopArea,updateContext,currentSchemaName);
+			setOriginalStopId(activeStopArea, updateContext, currentSchemaName);
 			activeStopArea.getContainedStopAreas().forEach(containedStopArea -> {
-															setOriginalStopId(containedStopArea,updateContext,currentSchemaName);
-															containedStopArea.setSaved(false);
+				setOriginalStopId(containedStopArea, updateContext, currentSchemaName);
+				containedStopArea.setSaved(false);
 			});
 		}
 	}

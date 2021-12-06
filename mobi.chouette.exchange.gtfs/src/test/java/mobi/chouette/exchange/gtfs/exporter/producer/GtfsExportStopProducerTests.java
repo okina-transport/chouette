@@ -57,7 +57,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams);
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStopWithFullData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -70,7 +70,7 @@ public class GtfsExportStopProducerTests
       Assert.assertEquals(gtfsObject.getLocationType(), LocationType.Stop, "LocationType must be correctly set");
       Assert.assertEquals(gtfsObject.getStopLat(), neptuneObject.getLatitude(), "StopLat must be correctly set");
       Assert.assertEquals(gtfsObject.getStopLon(), neptuneObject.getLongitude(), "StopLon must be correctly set");
-      Assert.assertEquals(gtfsObject.getParentStation(), "5678", "ParentStation must be correctly set");
+      Assert.assertEquals(gtfsObject.getParentStation(), "GTFS:StopArea:5678", "ParentStation must be correctly set");
       Assert.assertNotNull(gtfsObject.getStopUrl(), "StopUrl must be set");
       Assert.assertEquals(gtfsObject.getStopUrl().toString(), neptuneObject.getUrl(), "StopUrl must be correctly set");
       Assert.assertEquals(gtfsObject.getWheelchairBoarding(), WheelchairBoardingType.Allowed, "WheelchairBoarding must be correctly set");
@@ -103,7 +103,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams);
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStopWithLessData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -152,7 +152,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams);
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStationWithFullData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -199,7 +199,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      Assert.assertFalse(producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams));
+      Assert.assertFalse(producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test"));
 
    }
 

@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
+import mobi.chouette.exchange.NetexParserUtils;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
 import org.rutebanken.netex.model.DestinationDisplaysInFrame_RelStructure;

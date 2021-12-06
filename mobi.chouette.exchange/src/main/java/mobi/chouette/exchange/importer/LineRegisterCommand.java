@@ -129,7 +129,10 @@ public class LineRegisterCommand implements Command {
 //		}
 
 		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
-		log.info("Importing line: " + newValue.getObjectId() + " with stop area import mode: " + importParameter.getStopAreaImportMode());
+		int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
+		context.put(CURRENT_LINE_NB,currentLineNb);
+
+		log.info("Importing line: " + newValue.getObjectId() + " with stop area import mode: " + importParameter.getStopAreaImportMode() + "[" +  currentLineNb + "/" + context.get(TOTAL_NB_OF_LINES) + "]");
 
 		if (importParameter.isKeepObsoleteLines() || isLineValidInFuture(newValue)) {
 

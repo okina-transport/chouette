@@ -628,7 +628,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             Iterable<GtfsShape> gtfsShapes = null;
             if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty()
                     && importer.getShapeById().containsKey(gtfsTrip.getShapeId())) {
-                journeyKey += "_" + gtfsTrip.getShapeId();
                 gtfsShapes = importer.getShapeById().values(gtfsTrip.getShapeId());
             }
             for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
@@ -1124,8 +1123,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 
         String routeKey = gtfsTrip.getRouteId();
-        if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty())
-            routeKey += "_" + gtfsTrip.getShapeId();
 
         routeKey += "_" + computeEndId(journeyKey);
 
