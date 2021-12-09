@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.DropOffType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.PickupType;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsConverter;
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 
 public class StopTimeExporter extends ExporterImpl<GtfsStopTime> implements GtfsConverter {
 
@@ -49,9 +49,9 @@ public class StopTimeExporter extends ExporterImpl<GtfsStopTime> implements Gtfs
 			bean.setArrivalTime(GTFSTIME_CONVERTER.from(context, FIELDS.arrival_time, values.get(i++), true));
 			bean.setDepartureTime(GTFSTIME_CONVERTER.from(context, FIELDS.departure_time, values.get(i++), true));
 			bean.setPickupType(PICKUP_CONVERTER.from(context, FIELDS.pickup_type, values.get(i++),
-					PickupType.Scheduled, false));
+					PickUpTypeEnum.Scheduled, false));
 			bean.setDropOffType(DROPOFFTYPE_CONVERTER.from(context, FIELDS.drop_off_type, values.get(i++),
-					DropOffType.Scheduled, false));
+					DropOffTypeEnum.Scheduled, false));
  			bean.setShapeDistTraveled(FLOAT_CONVERTER.from(context, FIELDS.shape_dist_traveled, values.get(i++), false));
 			bean.setStopHeadsign(STRING_CONVERTER.from(context, FIELDS.stop_headsign, values.get(i++), false));
 

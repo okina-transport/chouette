@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
@@ -44,11 +46,11 @@ public class GtfsStopTime extends GtfsObject implements Serializable
 
    @Getter
    @Setter
-   private PickupType pickupType;
+   private PickUpTypeEnum pickupType;
 
    @Getter
    @Setter
-   private DropOffType dropOffType;
+   private DropOffTypeEnum dropOffType;
 
    @Getter
    @Setter
@@ -58,19 +60,4 @@ public class GtfsStopTime extends GtfsObject implements Serializable
    @Setter
    private Integer timepoint;
 
-   // @Override
-   // public String toString()
-   // {
-   // return id + ":" + StopTimeExporter.CONVERTER.to(new Context(),this);
-   // }
-
-   public enum DropOffType implements Serializable
-   {
-      Scheduled, NoAvailable, AgencyCall, DriverCall;
-   }
-
-   public enum PickupType implements Serializable
-   {
-      Scheduled, NoAvailable, AgencyCall, DriverCall;
-   }
 }

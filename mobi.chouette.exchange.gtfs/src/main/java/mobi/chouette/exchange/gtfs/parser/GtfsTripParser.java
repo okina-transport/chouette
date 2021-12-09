@@ -13,8 +13,6 @@ import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.DropOffType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.PickupType;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.DirectionType;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
@@ -48,8 +46,10 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
+import mobi.chouette.model.type.DropOffTypeEnum;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.util.NeptuneUtil;
@@ -565,38 +565,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 // TAD probalement à faire évoluer un jour pour les interruptions
                 // 2X
 
-                boolean isDropOff0 = vehicleJourneyAtStop.getDropOff() == null || vehicleJourneyAtStop.getDropOff().equals(DropOffType.Scheduled);
-                boolean isPickUp0 = vehicleJourneyAtStop.getPickup() == null || vehicleJourneyAtStop.getPickup().equals(PickupType.Scheduled);
-                boolean isDropOff1 = vehicleJourneyAtStop.getDropOff() != null && vehicleJourneyAtStop.getDropOff().equals(DropOffType.NoAvailable);
-                boolean isPickUp1 = vehicleJourneyAtStop.getPickup() != null && vehicleJourneyAtStop.getPickup().equals(PickupType.NoAvailable);
-                boolean isDropOff2 = vehicleJourneyAtStop.getDropOff() != null && vehicleJourneyAtStop.getDropOff().equals(DropOffType.AgencyCall);
-                boolean isPickUp2 = vehicleJourneyAtStop.getPickup() != null && vehicleJourneyAtStop.getPickup().equals(PickupType.AgencyCall);
-
-                if(isDropOff2) {
-                    if (isPickUp2) {
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest);
-                    } else if (isPickUp0){
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest);
-                    } else if(isPickUp1){
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.AlightOnRequest);
-                    }
-                } else if (isDropOff1) {
-                    if(isPickUp1) {
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.NeitherBoardOrAlight);
-                    } else if(isPickUp0) {
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardOnly);
-                    } else if(isPickUp2){
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardOnRequest);
-                    }
-                } else if(isDropOff0) {
-                    if(isPickUp0){
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlight);
-                    } else if(isPickUp1) {
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.AlightOnly);
-                    } else if(isPickUp2) {
-                        vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest);
-                    }
-                }
+                vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.fromDropOffAndPickUp(gtfsStopTime.getDropOffType(),gtfsStopTime.getPickupType()));
 
                 convert(context, gtfsStopTime, gtfsTrip, vehicleJourneyAtStop);
 
@@ -670,8 +639,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
-        DropOffType drop = (vehicleJourneyAtStop.dropOff == null ? DropOffType.Scheduled : vehicleJourneyAtStop.dropOff);
-        PickupType pickup = (vehicleJourneyAtStop.pickup == null ? PickupType.Scheduled : vehicleJourneyAtStop.pickup);
+        DropOffTypeEnum drop = (vehicleJourneyAtStop.dropOff == null ? DropOffTypeEnum.Scheduled : vehicleJourneyAtStop.dropOff);
+        PickUpTypeEnum pickup = (vehicleJourneyAtStop.pickup == null ? PickUpTypeEnum.Scheduled : vehicleJourneyAtStop.pickup);
 
         String result = null;
 
@@ -1178,7 +1147,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
     }
 
-    private BoardingPossibilityEnum toBoardingPossibility(PickupType type) {
+    private BoardingPossibilityEnum toBoardingPossibility(PickUpTypeEnum type) {
         if (type == null) {
             return BoardingPossibilityEnum.normal;
         }
@@ -1196,7 +1165,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         return null;
     }
 
-    private AlightingPossibilityEnum toAlightingPossibility(DropOffType type) {
+    private AlightingPossibilityEnum toAlightingPossibility(DropOffTypeEnum type) {
         if (type == null) {
             return AlightingPossibilityEnum.normal;
         }
@@ -1323,9 +1292,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         int stopSequence;
         Float shapeDistTraveled;
         @Getter
-        DropOffType dropOff;
+        DropOffTypeEnum dropOff;
         @Getter
-        PickupType pickup;
+        PickUpTypeEnum pickup;
         String stopHeadsign;
     }
 

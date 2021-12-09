@@ -5,8 +5,8 @@ import java.util.Map;
 
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.DropOffType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.PickupType;
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 
 public class StopTimeByTrip extends IndexImpl<GtfsStopTime> implements GtfsConverter {
 
@@ -172,7 +172,7 @@ public class StopTimeByTrip extends IndexImpl<GtfsStopTime> implements GtfsConve
 		value = _array[i++]; testExtraSpace(FIELDS.pickup_type.name(), value, _bean);
 		if (value != null && !value.trim().isEmpty()) {
 			try {
-				_bean.setPickupType(PICKUP_CONVERTER.from(context, FIELDS.pickup_type, value, PickupType.Scheduled, false));
+				_bean.setPickupType(PICKUP_CONVERTER.from(context, FIELDS.pickup_type, value, PickUpTypeEnum.Scheduled, false));
 			} catch(GtfsException e) {
 				if (withValidation)
 					_bean.getErrors().add(new GtfsException(_path, id, getIndex(FIELDS.pickup_type.name()), FIELDS.pickup_type.name(), GtfsException.ERROR.INVALID_FORMAT, null, value));
@@ -182,7 +182,7 @@ public class StopTimeByTrip extends IndexImpl<GtfsStopTime> implements GtfsConve
 		value = _array[i++]; testExtraSpace(FIELDS.drop_off_type.name(), value, _bean);
 		if (value != null && !value.trim().isEmpty()) {
 			try {
-				_bean.setDropOffType(DROPOFFTYPE_CONVERTER.from(context, FIELDS.drop_off_type, value, DropOffType.Scheduled, false));
+				_bean.setDropOffType(DROPOFFTYPE_CONVERTER.from(context, FIELDS.drop_off_type, value, DropOffTypeEnum.Scheduled, false));
 			} catch(GtfsException e) {
 				if (withValidation)
 					_bean.getErrors().add(new GtfsException(_path, id, getIndex(FIELDS.drop_off_type.name()), FIELDS.drop_off_type.name(), GtfsException.ERROR.INVALID_FORMAT, null, value));

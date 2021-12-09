@@ -8,8 +8,6 @@ import java.util.TimeZone;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate.ExceptionType;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.WheelchairBoardingType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.DropOffType;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime.PickupType;
 import mobi.chouette.exchange.gtfs.model.GtfsTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.BikesAllowedType;
@@ -17,6 +15,8 @@ import mobi.chouette.exchange.gtfs.model.GtfsTrip.DirectionType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.WheelchairAccessibleType;
 import mobi.chouette.exchange.gtfs.model.RouteTypeEnum;
 
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
@@ -289,30 +289,30 @@ public interface GtfsConverter {
 		}
 	};
 
-	public static DefaultFieldConverter<PickupType> PICKUP_CONVERTER = new DefaultFieldConverter<PickupType>() {
+	public static DefaultFieldConverter<PickUpTypeEnum> PICKUP_CONVERTER = new DefaultFieldConverter<PickUpTypeEnum>() {
 
 		@Override
-		protected PickupType convertFrom(String input) throws Exception {
+		protected PickUpTypeEnum convertFrom(String input) throws Exception {
 			int ordinal = Integer.parseInt(input, 10);
-			return PickupType.values()[ordinal];
+			return PickUpTypeEnum.values()[ordinal];
 		}
 
 		@Override
-		protected String convertTo(PickupType input) throws Exception {
+		protected String convertTo(PickUpTypeEnum input) throws Exception {
 			return String.valueOf(input.ordinal());
 		}
 	};
 
-	public static DefaultFieldConverter<DropOffType> DROPOFFTYPE_CONVERTER = new DefaultFieldConverter<DropOffType>() {
+	public static DefaultFieldConverter<DropOffTypeEnum> DROPOFFTYPE_CONVERTER = new DefaultFieldConverter<DropOffTypeEnum>() {
 
 		@Override
-		protected DropOffType convertFrom(String input) throws Exception {
+		protected DropOffTypeEnum convertFrom(String input) throws Exception {
 			int ordinal = Integer.parseInt(input, 10);
-			return DropOffType.values()[ordinal];
+			return DropOffTypeEnum.values()[ordinal];
 		}
 
 		@Override
-		protected String convertTo(DropOffType input) throws Exception {
+		protected String convertTo(DropOffTypeEnum input) throws Exception {
 			return String.valueOf(input.ordinal());
 		}
 	};

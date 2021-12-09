@@ -3,10 +3,16 @@ package mobi.chouette.exchange.netexprofile.exporter.producer;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
+import org.rutebanken.netex.model.BookingArrangementsStructure;
+import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
+import org.rutebanken.netex.model.RequestMethodTypeEnumeration;
 import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.ServiceJourneyPatternTypeEnumeration;
@@ -14,11 +20,15 @@ import org.rutebanken.netex.model.StopPointInJourneyPattern;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
+
+    private static List<DropOffTypeEnum> requestDropOffTypes = Arrays.asList(DropOffTypeEnum.AgencyCall, DropOffTypeEnum.DriverCall);
+    private static List<PickUpTypeEnum> requestPickUpTypes = Arrays.asList(PickUpTypeEnum.AgencyCall, PickUpTypeEnum.DriverCall);
 
     public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();
@@ -86,27 +96,7 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
 
                 }
                 if(getVehicleJourneyAtStopWithBoardingAlighting && vehicleJourneyAtStop.getBoardingAlightingPossibility() != null){
-                    switch (vehicleJourneyAtStop.getBoardingAlightingPossibility()) {
-                        case AlightOnly:
-                            stopPointInJourneyPattern.setForBoarding(false);
-                            stopPointInJourneyPattern.setForAlighting(true);
-                            break;
-                        case BoardOnly:
-                            stopPointInJourneyPattern.setForBoarding(true);
-                            stopPointInJourneyPattern.setForAlighting(false);
-                            break;
-                        case NeitherBoardOrAlight:
-                            stopPointInJourneyPattern.setForAlighting(false);
-                            stopPointInJourneyPattern.setForBoarding(false);
-                            break;
-                        case BoardAndAlightOnRequest:
-                        case BoardOnRequest:
-                        case AlightOnRequest:
-                            stopPointInJourneyPattern.setForBoarding(true);
-                            stopPointInJourneyPattern.setForAlighting(true);
-                            stopPointInJourneyPattern.setRequestStop(true);
-                            break;
-                    }
+                    setBoardingAlighting(stopPointInJourneyPattern, vehicleJourneyAtStop);
                 }
             }
         }
@@ -118,4 +108,44 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
 
         return netexServiceJourneyPattern;
     }
+
+
+    private void setBoardingAlighting(StopPointInJourneyPattern stopPointInJourneyPattern, VehicleJourneyAtStop vehicleJourneyAtStop){
+
+
+        BoardingAlightingPossibilityEnum boardingAlightingPossibility = vehicleJourneyAtStop.getBoardingAlightingPossibility();
+
+        if (boardingAlightingPossibility == null)
+            return;
+
+        DropOffTypeEnum dropOffType = boardingAlightingPossibility.getDropOffType();
+        PickUpTypeEnum pickUpType = boardingAlightingPossibility.getPickUpType();
+
+        boolean canBoard = !pickUpType.equals(PickUpTypeEnum.NoAvailable);
+        stopPointInJourneyPattern.setForBoarding(canBoard);
+
+        boolean canAlight = !dropOffType.equals(DropOffTypeEnum.NoAvailable);
+        stopPointInJourneyPattern.setForAlighting(canAlight);
+
+
+        boolean requestStop = requestDropOffTypes.contains(dropOffType);
+        stopPointInJourneyPattern.setRequestStop(requestStop);
+
+
+        if (requestStop){
+            RequestMethodTypeEnumeration method = dropOffType.equals(DropOffTypeEnum.DriverCall) ? RequestMethodTypeEnumeration.STOP_BUTTON : RequestMethodTypeEnumeration.PHONE_CALL;
+            stopPointInJourneyPattern.setRequestMethod(method);
+        }
+
+        boolean requestPickup = requestPickUpTypes.contains(pickUpType);
+
+        if (requestPickup){
+
+            BookingArrangementsStructure bookingArrangements = new BookingArrangementsStructure();
+            BookingMethodEnumeration bookingMethod = pickUpType.equals(PickUpTypeEnum.DriverCall) ? BookingMethodEnumeration.CALL_DRIVER : BookingMethodEnumeration.CALL_OFFICE;
+            bookingArrangements.withBookingMethods(bookingMethod);
+            stopPointInJourneyPattern.setBookingArrangements(bookingArrangements);
+        }
+    }
+
 }
