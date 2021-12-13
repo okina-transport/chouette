@@ -1,22 +1,25 @@
 package mobi.chouette.exchange.stopplace;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Context;
+import mobi.chouette.core.CoreException;
+import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.exchange.importer.updater.Updater;
+import mobi.chouette.model.StopArea;
+import mobi.chouette.model.type.Utils;
+import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Context;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.exchange.importer.updater.Updater;
-import mobi.chouette.model.StopArea;
-
-import mobi.chouette.model.type.Utils;
-import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
 
 @Log4j
 public class StopAreaUpdateTask {
@@ -39,23 +42,61 @@ public class StopAreaUpdateTask {
 		this.updateContext = updateContext;
 	}
 
-	public void update() {
-		updateContext.getInactiveStopAreaIds().stream().forEach(stopAreaId -> removeStopArea(stopAreaId));
+	public void update() throws CoreException {
+		updateContext.getInactiveStopAreaIds().forEach(this::removeStopArea);
 
 		String currentSchema = ContextHolder.getContext();
 		List<String> impactedStopAreasIds = updateContext.getImpactedStopAreasBySchema().get(currentSchema);
 
-		if (impactedStopAreasIds != null){
+		if (impactedStopAreasIds != null) {
 			//Filtering to apply modification only on points used by the current schema
 			List<StopArea> impactedStopAreas = updateContext.getActiveStopAreas().stream()
-															 	                .filter(stopArea -> isStopAreaImpacted(stopArea,impactedStopAreasIds))
-																				.distinct()
-																 				.collect(Collectors.toList());
+					.filter(stopArea -> isStopAreaImpacted(stopArea, impactedStopAreasIds))
+					.distinct()
+					.collect(Collectors.toList());
 
+			for(StopArea stopArea : impactedStopAreas){
+				stopArea.getContainedStopAreas().removeIf(containedStopArea -> StringUtils.isEmpty(containedStopArea.getOriginalStopId()));
+			}
 
 			impactedStopAreas.stream()
-					         .map(this::createCopy)
-					         .forEach(stopArea -> createOrUpdate(stopArea));
+					.map(this::createCopy)
+					.forEach(this::createOrUpdate);
+		}
+
+		Map<String, Set<String>> mergedQuaysMap = new HashMap<>(updateContext.getMergedQuays());
+		for (String mergeQuay : mergedQuaysMap.keySet()) {
+
+			// On vérifie que le quai dans lequel les autres ont été fusionnés existe en base
+			StopArea quay = stopAreaDAO.findByObjectId(mergeQuay);
+			if (quay == null) {
+				continue;
+			}
+
+			// On récupère la liste des quais fusionnés (ne devant plus exister)
+			List<String> mergedQuays = new ArrayList<>(mergedQuaysMap.get(mergeQuay));
+			if (!mergedQuays.isEmpty()) {
+				for (String quayToMergeId : mergedQuays) {
+					List<String> quayIds = Arrays.asList(quayToMergeId.split(":"));
+					//On s'assure de travailler avec les quais du schéma en cours
+					if (isQuayInCurrentSchema(quayIds, currentSchema)) {
+						List<StopArea> quaysToMerge = stopAreaDAO.findByOriginalId(quayIds.get(quayIds.size() - 1));
+						if (quaysToMerge != null && !quaysToMerge.isEmpty()) {
+							for(StopArea stopArea : quaysToMerge) {
+								if (!stopArea.getObjectId().equals(quay.getObjectId())) {
+									stopAreaDAO.mergeStopArea30m(stopArea.getId(), quay.getId());
+								}
+							}
+						}
+					// ou des quais partagés
+					} else if (isQuayIsGlobal(quayIds)) {
+						StopArea stopArea = stopAreaDAO.findByObjectId(quayToMergeId);
+						if (stopArea != null) {
+							stopAreaDAO.mergeStopArea30m(stopArea.getId(), quay.getId());
+						}
+					}
+				}
+			}
 		}
 
 		// De-activate auto delete of unused values.
@@ -66,6 +107,14 @@ public class StopAreaUpdateTask {
 		stopAreaDAO.clear();
 
 
+	}
+
+	private boolean isQuayInCurrentSchema(List<String> quayIds, String currentSchema) {
+		return quayIds.stream().anyMatch(quayId -> quayId.equals(currentSchema));
+	}
+
+	private boolean isQuayIsGlobal(List<String> quayIds) {
+		return quayIds.stream().anyMatch(quayId -> quayId.equals("MOBIITI"));
 	}
 
 	/**
@@ -87,7 +136,7 @@ public class StopAreaUpdateTask {
 			return true;
 
 		return stopArea.getContainedStopAreas().stream()
-				 						       .anyMatch(containedStopArea -> isStopAreaImpacted(containedStopArea,impactedIds));
+				.anyMatch(containedStopArea -> isStopAreaImpacted(containedStopArea, impactedIds));
 
 	}
 

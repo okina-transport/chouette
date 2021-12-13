@@ -9,6 +9,8 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.AccessLinkDAO;
+import mobi.chouette.dao.AccessPointDAO;
 import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VariationsDAO;
@@ -24,6 +26,8 @@ import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.AccessLink;
+import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.JourneyFrequency;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -68,6 +72,9 @@ public class LineRegisterCommand implements Command {
 
 	@EJB
 	private LineDAO lineDAO;
+
+	@EJB
+	private AccessPointDAO accessPointDAO;
 
 	@EJB
 	private VariationsDAO variationsDAO;
@@ -122,7 +129,10 @@ public class LineRegisterCommand implements Command {
 //		}
 
 		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
-		log.info("Importing line: " + newValue.getObjectId() + " with stop area import mode: " + importParameter.getStopAreaImportMode());
+		int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
+		context.put(CURRENT_LINE_NB,currentLineNb);
+
+		log.info("Importing line: " + newValue.getObjectId() + " with stop area import mode: " + importParameter.getStopAreaImportMode() + "[" +  currentLineNb + "/" + context.get(TOTAL_NB_OF_LINES) + "]");
 
 		if (importParameter.isKeepObsoleteLines() || isLineValidInFuture(newValue)) {
 
@@ -179,7 +189,7 @@ public class LineRegisterCommand implements Command {
 				lineDAO.create(oldValue);
 
 				findRefToLoc(oldValue);
-
+				persistAccessPoints(oldValue);
 				lineDAO.flush(); // to prevent SQL error outside method
 
 				if (optimized) {
@@ -270,6 +280,30 @@ public class LineRegisterCommand implements Command {
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 		return result;
+	}
+
+
+	private void persistAccessPoints(Line line){
+
+		for (Route route : line.getRoutes()) {
+			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+				for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+					StopArea stopArea = stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
+					persistAccessPointsForStopArea(stopArea);
+				}
+			}
+
+		}
+	}
+
+	private void persistAccessPointsForStopArea(StopArea stopArea){
+		for (AccessLink accessLink : stopArea.getAccessLinks()) {
+			AccessPoint accessPoint = accessLink.getAccessPoint();
+			AccessPoint recoveredAccessPoint = accessPointDAO.findByObjectId(accessPoint.getObjectId());
+			if (recoveredAccessPoint == null){
+				accessPointDAO.create(accessPoint);
+			}
+		}
 	}
 
 

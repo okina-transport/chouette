@@ -28,6 +28,8 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
+import static mobi.chouette.exchange.gtfs.parameters.IdFormat.SOURCE;
+
 
 public class GtfsExportTripProducerTests 
 {
@@ -71,7 +73,7 @@ public class GtfsExportTripProducerTests
       {
          Reporter.log(StopTimeExporter.CONVERTER.to(context,gtfsStopTime));
          Assert.assertEquals(gtfsStopTime.getTripId(), "4321", "TripId must be correctly set");
-         Assert.assertEquals(gtfsStopTime.getStopId(), "SA"+i, "StopId must be correctly set");
+         Assert.assertEquals(gtfsStopTime.getStopId(), "GTFS:StopPoint:SA"+i, "StopId must be correctly set");
          Assert.assertEquals(gtfsStopTime.getStopSequence(), Integer.valueOf(i*2), "StopSequence must be correctly set");
          if (i == 0) 
          {
@@ -195,7 +197,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObjectWithOriginalStopIds(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS", "GTFS",false,new IdParameters("PREFIX",null,null,"PREFIXROUTE","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS", "GTFS",false,new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"));
       Reporter.log("verifyStopIds");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -225,7 +227,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObjectWithCommercialPointsIds(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS", "GTFS",false,new IdParameters("PREFIX",null,null,"PREFIXROUTE","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS", "GTFS",false,new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"));
       Reporter.log("verifyStopIds");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -313,7 +315,7 @@ public class GtfsExportTripProducerTests
       {
          Reporter.log(StopTimeExporter.CONVERTER.to(context,gtfsStopTime));
          Assert.assertEquals(gtfsStopTime.getTripId(), "4321", "TripId must be correctly set");
-         Assert.assertEquals(gtfsStopTime.getStopId(), "SA"+i, "StopId must be correctly set");
+         Assert.assertEquals(gtfsStopTime.getStopId(), "GTFS:StopPoint:SA"+i, "StopId must be correctly set");
          Assert.assertEquals(gtfsStopTime.getStopSequence(), Integer.valueOf(i*2), "StopSequence must be correctly set");
          if (i == 0) 
          {

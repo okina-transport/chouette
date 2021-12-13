@@ -19,6 +19,7 @@ import javax.ejb.TransactionAttributeType;
 import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopAreaDAO;
@@ -53,7 +54,7 @@ public class StopAreaUpdateService {
 
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void createOrUpdateStopAreas(Context context, StopAreaUpdateContext updateContext) {
+	public void createOrUpdateStopAreas(Context context, StopAreaUpdateContext updateContext) throws CoreException {
 		new StopAreaUpdateTask(stopAreaDAO, stopAreaUpdater, context, updateContext).update();
 	}
 

@@ -13,13 +13,19 @@ import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
+import mobi.chouette.model.ObjectReference;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
+import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
+import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
@@ -46,8 +52,11 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     public boolean execute(Context context) throws Exception {
         boolean result = ERROR;
 
+        DateTime startingTime = new DateTime();
+        int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
+        context.put(CURRENT_LINE_NB,currentLineNb);
 
-        log.info("Starting analysis");
+        log.info("Starting analysis " + currentLineNb + "/" + context.get(TOTAL_NB_OF_LINES));
         Referential cache = new Referential();
         context.put(CACHE, cache);
         context.put(OPTIMIZED, Boolean.FALSE);
@@ -56,10 +65,13 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         Line newValue  = referential.getLines().values().iterator().next();
 
-        feedAnalysisWithLineData(context,newValue);
-        feedAnalysisWithStopAreaData(context);
+        feedAnalysisWithLineData(context, newValue);
+        feedAnalysisWithStopAreaData(context, newValue);
 
-        log.info("analysis completed");
+        DateTime endingTime = new DateTime();
+
+        Duration duration = new Duration(endingTime, startingTime);
+        log.info("analysis completed in:" + duration.toString());
         result = SUCCESS;
 
 
@@ -71,8 +83,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     /**
      * Read the context to recover all data of stopAreas and write analysis results into analyzeReport
      * @param context
+     * @param line
      */
-    private void feedAnalysisWithStopAreaData(Context context){
+    private void feedAnalysisWithStopAreaData(Context context, Line line){
         AnalyzeReport analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -80,10 +93,17 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         List<StopArea> stopAreaList = new ArrayList<>();
 
-        referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
-                .distinct()
-                .forEach(stopAreaList::add);
+
+        for (Route route : line.getRoutes()) {
+            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+                for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                    Optional<StopArea> stopAreaOpt = Utils.getStopAreaFromScheduledStopPoint(stopPoint);
+                    stopAreaOpt.ifPresent(stopAreaList::add);
+                }
+
+            }
+        }
+
 
         stopAreaList.forEach(stopArea -> {
             if (!analyzeReport.getStops().contains(stopArea)){

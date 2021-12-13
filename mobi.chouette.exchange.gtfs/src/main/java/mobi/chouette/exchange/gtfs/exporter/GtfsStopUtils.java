@@ -6,9 +6,6 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class GtfsStopUtils {
 
     private static final String TRIDENT_STOP_PLACE_TYPE=":StopPlace:";
@@ -16,21 +13,20 @@ public class GtfsStopUtils {
 
 
 
-    public static String getNewStopId(StopArea stop, IdParameters idParams) {
-        String idPrefix = ChouetteAreaEnum.BoardingPosition.equals(stop.getAreaType())?idParams.getStopIdPrefix():idParams.getCommercialPointIdPrefix();
-        if(stop != null && StringUtils.isNotEmpty(stop.getOriginalStopId())){
-            if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)){
-                return createTridentId(stop,idPrefix);
+    public static String getNewStopId(StopArea stop, IdParameters idParams, boolean keepOriginalId, String schemaPrefix) {
+        String idPrefix = ChouetteAreaEnum.BoardingPosition.equals(stop.getAreaType()) ? idParams.getStopIdPrefix() : idParams.getCommercialPointIdPrefix();
+        if (!keepOriginalId && StringUtils.isNotEmpty(stop.getOriginalStopId())) {
+            if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)) {
+                return createTridentId(stop, idPrefix);
             }
-            return createStandardId(stop,idPrefix);
+            if (IdFormat.SOURCE.equals(idParams.getIdFormat())) {
+                return createStandardId(stop, idPrefix);
+            }
         }
-        String inputStopId = stop.getObjectId();
-        if(StringUtils.isEmpty(inputStopId)) return null;
-        String pattern1 = "^.*:.*:.*_.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
-        String retour = findInPattern(pattern1, inputStopId);
-        if(!StringUtils.isEmpty(retour)) return retour;
-        String pattern2 = "^.*:.*:.*_.*_[0-9]+a([A-Za-z0-9]+).*$";
-        return findInPattern(pattern2, inputStopId);
+        if (keepOriginalId && IdFormat.SOURCE_GLOBAL.equals(idParams.getIdFormat())) {
+            return createTridentIdStandard(stop, schemaPrefix);
+        }
+        return stop.getObjectId();
     }
 
 
@@ -44,7 +40,7 @@ public class GtfsStopUtils {
      * @return
      */
     private static String createStandardId(StopArea stop, String idPrefix){
-        return StringUtils.isEmpty(idPrefix)?stop.getOriginalStopId():idPrefix+stop.getOriginalStopId();
+        return StringUtils.isEmpty(idPrefix) ? stop.getOriginalStopId() : idPrefix + stop.getOriginalStopId();
     }
 
     /**
@@ -56,22 +52,19 @@ public class GtfsStopUtils {
      *       Prefix that will be used on Id beginning.
      * @return
      */
-    private static String createTridentId(StopArea stop, String idPrefix){
-        if (stop.getObjectId().contains("Quay")){
-            return idPrefix+TRIDENT_QUAY_TYPE+stop.getOriginalStopId();
+    private static String createTridentId(StopArea stop, String idPrefix) {
+        if (stop.getObjectId().contains("Quay")) {
+            return idPrefix + TRIDENT_QUAY_TYPE + stop.getOriginalStopId();
         }
-        return idPrefix+TRIDENT_STOP_PLACE_TYPE+stop.getOriginalStopId();
+        return idPrefix + TRIDENT_STOP_PLACE_TYPE + stop.getOriginalStopId();
     }
 
-    private static String findInPattern(String pattern, String value){
-        if(StringUtils.isEmpty(value)) return null;
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(value);
-        String retour = null;
-        if (m.matches()) {
-            retour = m.group(1);
+
+    private static String createTridentIdStandard(StopArea stop, String prefix) {
+        if (stop.getObjectId().contains("Quay")) {
+            return prefix + TRIDENT_QUAY_TYPE + stop.getOriginalStopId();
         }
-        return retour;
+        return prefix + TRIDENT_STOP_PLACE_TYPE + stop.getOriginalStopId();
     }
 
 }

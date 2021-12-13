@@ -10,7 +10,6 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
-import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
@@ -20,7 +19,6 @@ import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.DeleteLineWithoutOfferCommand;
 import mobi.chouette.exchange.importer.GenerateRouteSectionsCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
-import mobi.chouette.exchange.importer.MergeDuplicatedJourneyPatternsCommand;
 import mobi.chouette.exchange.importer.MergeTripIdCommand;
 import mobi.chouette.exchange.importer.StopAreaRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
@@ -104,6 +102,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
            Integer cpt = 1;
 
             String splitCharacter = parameters.getSplitCharacter();
+            context.put(TOTAL_NB_OF_LINES,index.getLength());
             for (GtfsRoute gtfsRoute : index) {
 
                 if (StringUtils.isNotEmpty(splitCharacter)){

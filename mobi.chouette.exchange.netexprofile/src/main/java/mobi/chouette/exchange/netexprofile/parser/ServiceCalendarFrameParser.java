@@ -132,8 +132,8 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 				}
 
 				CalendarPattern pattern = new CalendarPatternAnalyzer().computeCalendarPattern(includedDays);
-				
-				
+
+
 				if (pattern != null && !pattern.significantDays.isEmpty()) {
 
 					// Remove and re-add
@@ -172,22 +172,22 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 	private DayTypeEnum convertFromDayOfWeek(DayOfWeek dayType) {
 		switch (dayType) {
-		case MONDAY:
-			return DayTypeEnum.Monday;
-		case TUESDAY:
-			return DayTypeEnum.Tuesday;
-		case WEDNESDAY:
-			return DayTypeEnum.Wednesday;
-		case THURSDAY:
-			return DayTypeEnum.Thursday;
-		case FRIDAY:
-			return DayTypeEnum.Friday;
-		case SATURDAY:
-			return DayTypeEnum.Saturday;
-		case SUNDAY:
-			return DayTypeEnum.Sunday;
-		default:
-			return null;
+			case MONDAY:
+				return DayTypeEnum.Monday;
+			case TUESDAY:
+				return DayTypeEnum.Tuesday;
+			case WEDNESDAY:
+				return DayTypeEnum.Wednesday;
+			case THURSDAY:
+				return DayTypeEnum.Thursday;
+			case FRIDAY:
+				return DayTypeEnum.Friday;
+			case SATURDAY:
+				return DayTypeEnum.Saturday;
+			case SUNDAY:
+				return DayTypeEnum.Sunday;
+			default:
+				return null;
 		}
 
 	}
@@ -268,13 +268,13 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 				org.joda.time.LocalDate validFrom = null;
 				if(validBetween.getFromDate() != null) {
 					validFrom = TimeUtil.toJodaLocalDateIgnoreTime(validBetween.getFromDate());
-			
+
 				}
 				org.joda.time.LocalDate validTo = null;
 				if (validBetween.getToDate() != null) {
 					validTo = TimeUtil.toJodaLocalDateIgnoreTime(validBetween.getToDate());
 				}
-				
+
 				if((validFrom != null && endDate.isBefore(validFrom)) || (validTo != null && startDate.isAfter(validTo))) {
 					// Outside of validFrom/to envelope
 				} else {
@@ -285,14 +285,14 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 					if(validTo != null && endDate.isAfter(validTo)) {
 						endDate = validTo;
 					}
-					
-					
+
+
 					timetable.addPeriod(new Period(startDate, endDate));
 				}
-				
+
 			}
 		}
-		
+
 		for(Timetable t : referential.getTimetables().values()) {
 			if(t.getStartOfPeriod() == null || t.getEndOfPeriod() == null) {
 				List<org.joda.time.LocalDate> effectiveDates = t.getEffectiveDates();
@@ -337,9 +337,9 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 			// Both from and to empty
 			return true;
 		}
-		
-		
-		
+
+
+
 	}
 
 	private ValidBetween getValidBetweenForFrame(Context context) {
@@ -386,22 +386,22 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 		return null;
 	}
-	
+
 	private ValidBetween getValidBetween(Context context, DayType dayType) {
 		ValidBetween validBetween = null;
 		Context objectContext = getObjectContext(context, LOCAL_CONTEXT, dayType.getId());
 		if(objectContext != null) {
 			validBetween = (ValidBetween) objectContext.get(VALID_BETWEEN);
 		}
-		
+
 		if(validBetween == null) {
 			log.info("About to invoke getValidBetweenForFrame");
 			validBetween =  getValidBetweenForFrame(objectContext); // TODO could this be correct? Or should it be context as input param?
 		}
-		
+
 		return validBetween;
 	}
-	
+
 
 	private void addValidBetween(Context context, String objectId, ValidBetween validBetween) {
 		Context objectContext = getObjectContext(context, LOCAL_CONTEXT, objectId);

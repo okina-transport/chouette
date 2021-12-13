@@ -24,7 +24,6 @@ import mobi.chouette.model.type.ServiceAlterationEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 
-import org.joda.time.Duration;
 import org.rutebanken.netex.model.AirSubmodeEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
@@ -518,6 +517,4 @@ public class NetexParserUtils extends ParserUtils {
         }
         return null;
     }
-
-
 }

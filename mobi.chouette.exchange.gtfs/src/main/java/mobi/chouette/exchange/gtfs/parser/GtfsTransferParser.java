@@ -132,19 +132,19 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		String fromStopId = gtfsTransfer.getFromStopId();
 		String toStopId = gtfsTransfer.getToStopId();
 
-		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"") : fromStopId;
-		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"") : toStopId;
+		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : fromStopId;
+		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : toStopId;
 
 		StopArea startOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialFromId, log));
 		if(startOfLink == null) {
 			// Create between quays by default
-			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^"+quayIdPrefixToRemove,"") : fromStopId;
+			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : fromStopId;
 			startOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quayFromId));
 		}
 		
 		StopArea endOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialToStopId, log));
 		if(endOfLink == null) {
-			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^"+quayIdPrefixToRemove,"") : toStopId;
+			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : toStopId;
 			endOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quaytoId));
 		}
 

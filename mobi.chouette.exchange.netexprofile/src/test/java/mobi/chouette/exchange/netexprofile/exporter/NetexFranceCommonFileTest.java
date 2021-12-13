@@ -24,9 +24,11 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
+import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralFrame;
 import org.rutebanken.netex.model.General_VersionFrameStructure;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -110,8 +112,13 @@ public class NetexFranceCommonFileTest {
         SiteConnection firstSiteConnection = siteConnections.get(0);
         Assert.assertEquals(firstSiteConnection.getName().getValue(),"nameC1");
         Assert.assertEquals(firstSiteConnection.getId(),"TEST:ConnectionLink:uffcarr_uffcarr2");
-        Assert.assertEquals(firstSiteConnection.getFrom().getStopAreaRef().getRef(),"TEST:Quay:quay1");
-        Assert.assertEquals(firstSiteConnection.getTo().getStopAreaRef().getRef(),"TEST:Quay:quay2");
+        Assert.assertEquals(firstSiteConnection.getFrom().getQuayRef().getRef(),"TEST:Quay:quay1");
+        Assert.assertEquals(firstSiteConnection.getTo().getQuayRef().getRef(),"TEST:Quay:quay2");
+        Assert.assertEquals(firstSiteConnection.getTo().getTransportMode(), AllVehicleModesOfTransportEnumeration.BUS);
+        Assert.assertEquals(firstSiteConnection.getFrom().getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
+
+        Assert.assertEquals(firstSiteConnection.getFrom().getStopPlaceRef().getRef(),"TEST:StopPlace:SP1");
+        Assert.assertEquals(firstSiteConnection.getTo().getStopPlaceRef().getRef(),"TEST:StopPlace:SP2");
         Assert.assertEquals(firstSiteConnection.getDistance(),new BigDecimal(5));
         java.time.Duration expectedDuration = java.time.Duration.parse(Duration.parse("PT76400S").toString());
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);
@@ -199,13 +206,23 @@ public class NetexFranceCommonFileTest {
         stopArea1.setLongitude(new BigDecimal("5.5555"));
         stopArea1.setName("quay1");
 
+        StopArea parentOfStop1 = new StopArea();
+        parentOfStop1.setObjectId("TEST:StopPlace:SP1");
+        parentOfStop1.setTransportModeName(TransportModeNameEnum.Bus);
+        stopArea1.setParent(parentOfStop1);
 
         StopArea stopArea2 = new StopArea();
         stopArea2.setObjectId("TEST:Quay:quay2");
+
         stopArea2.setAreaType(ChouetteAreaEnum.Quay);
         stopArea2.setLatitude(new BigDecimal("1.1111"));
         stopArea2.setLongitude(new BigDecimal("2.2222"));
         stopArea2.setName("quay2");
+
+        StopArea parentOfStop2 = new StopArea();
+        parentOfStop2.setTransportModeName(TransportModeNameEnum.Bus);
+        parentOfStop2.setObjectId("TEST:StopPlace:SP2");
+        stopArea2.setParent(parentOfStop2);
 
 
         StopArea stopArea3 = new StopArea();

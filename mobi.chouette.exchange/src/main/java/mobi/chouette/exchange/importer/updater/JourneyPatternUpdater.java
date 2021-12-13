@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
@@ -25,6 +26,7 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
 @Stateless(name = JourneyPatternUpdater.BEAN_NAME)
+@Log4j
 public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 
 	public static final String BEAN_NAME = "JourneyPatternUpdater";
@@ -291,10 +293,13 @@ public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 	 * @param newVj
 	 */
 	private void twoDatabaseVehicleJourneyOneTest(ValidationReporter validationReporter, Context context, VehicleJourney oldVj, VehicleJourney newVj, ValidationData data) {
-		if(!NeptuneUtil.sameValue(oldVj.getJourneyPattern(), newVj.getJourneyPattern()))
+		if(!NeptuneUtil.sameValue(oldVj.getJourneyPattern(), newVj.getJourneyPattern())){
+			log.error("2-DATABASE-VehicleJourney-1 objectid old VJ : " + oldVj.getObjectId());
 			validationReporter.addCheckPointReportError(context, DATABASE_VEHICLE_JOURNEY_1, data.getDataLocations().get(newVj.getObjectId()));
-		else
+		}
+		else {
 			validationReporter.reportSuccess(context, DATABASE_VEHICLE_JOURNEY_1);
+		}
 	}
 	
 }

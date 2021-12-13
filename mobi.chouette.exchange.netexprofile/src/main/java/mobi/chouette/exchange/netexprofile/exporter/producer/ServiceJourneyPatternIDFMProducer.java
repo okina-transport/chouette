@@ -67,7 +67,8 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
                             .stream()
                             .flatMap(journeyPattern1 -> journeyPattern1.getVehicleJourneys()
                                     .stream()
-                                    .flatMap(vehicleJourney -> vehicleJourney.getVehicleJourneyAtStops().stream()))
+                                    .flatMap(vehicleJourney -> vehicleJourney.getVehicleJourneyAtStops().stream()
+                                            .filter(vehicleJourneyAtStop -> stopPoint.getObjectId().equals(vehicleJourneyAtStop.getStopPoint().getObjectId()))))
                             .collect(Collectors.toList());
 
             // On ne récupère que les vehicleJourneyAtStop qui sont liés à un même stoppoint et qui ont un boardingAlighting identique
@@ -75,18 +76,14 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
                 boolean getVehicleJourneyAtStopWithBoardingAlighting = false;
 
                 for(VehicleJourneyAtStop vehicleJourneyAtStop1 : vehicleJourneyAtStops) {
-                    if(stopPoint.getObjectId().equals(vehicleJourneyAtStop.getStopPoint().getObjectId()) &&
-                            stopPoint.getObjectId().equals(vehicleJourneyAtStop1.getStopPoint().getObjectId())){
-                        if(vehicleJourneyAtStop.getBoardingAlightingPossibility() != null && vehicleJourneyAtStop1.getBoardingAlightingPossibility() != null){
-                            getVehicleJourneyAtStopWithBoardingAlighting = vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(vehicleJourneyAtStop1.getBoardingAlightingPossibility());
-                        }
-                        else{
-                            getVehicleJourneyAtStopWithBoardingAlighting = false;
-                        }
-
-                        if(!getVehicleJourneyAtStopWithBoardingAlighting)
-                            break;
+                    if (vehicleJourneyAtStop.getBoardingAlightingPossibility() != null && vehicleJourneyAtStop1.getBoardingAlightingPossibility() != null) {
+                        getVehicleJourneyAtStopWithBoardingAlighting = vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(vehicleJourneyAtStop1.getBoardingAlightingPossibility());
+                    } else {
+                        getVehicleJourneyAtStopWithBoardingAlighting = false;
                     }
+                    if (!getVehicleJourneyAtStopWithBoardingAlighting)
+                        break;
+
                 }
                 if(getVehicleJourneyAtStopWithBoardingAlighting && vehicleJourneyAtStop.getBoardingAlightingPossibility() != null){
                     switch (vehicleJourneyAtStop.getBoardingAlightingPossibility()) {

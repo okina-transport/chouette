@@ -8,15 +8,11 @@ import java.util.Properties;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
-import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
-import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
-import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -121,6 +117,11 @@ public class StopPlaceParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
         String stopPlaceId;
+
+        if (stopPlace.getQuays() == null) {
+            return;
+        }
+
         if (parameters != null){
             //Netex file import by application : parameters are available
             stopPlaceId = NetexImportUtil.composeObjectId("StopPlace", parameters.getObjectIdPrefix(), stopPlace.getId());
@@ -129,7 +130,8 @@ public class StopPlaceParser implements Parser, Constant {
             stopPlaceId = stopPlace.getId();
         }
 
-        StopArea stopArea = ObjectFactory.getStopArea(referential,stopPlaceId);
+
+        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlaceId);
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
         stopArea.setObjectVersion(NetexParserUtils.getVersion(stopPlace));
         stopArea.setName(ConversionUtil.getValue(stopPlace.getName()));
@@ -163,10 +165,10 @@ public class StopPlaceParser implements Parser, Constant {
             parentZoneMap.put(stopArea.getObjectId(), parentZoneRefStruct.getRef());
         }
 
-        SiteRefStructure siteRefStructure = stopPlace.getParentSiteRef();
-        if (siteRefStructure != null) {
-            parentSiteMap.put(stopArea.getObjectId(), siteRefStructure.getRef());
-        }
+//        SiteRefStructure siteRefStructure = stopPlace.getParentSiteRef();
+//        if (siteRefStructure != null) {
+//            parentSiteMap.put(stopArea.getObjectId(), siteRefStructure.getRef());
+//        }
 
         PostalAddress postalAddress = stopPlace.getPostalAddress();
         if (postalAddress != null) {

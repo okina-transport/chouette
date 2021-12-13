@@ -29,7 +29,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
     @Override
     public void parse(Context context) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
-		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
+        NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
         org.rutebanken.netex.model.Network netexNetwork = (org.rutebanken.netex.model.Network) context.get(NETEX_LINE_DATA_CONTEXT);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 
@@ -52,7 +52,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         Company company = ObjectFactory.getCompany(referential, generatedAuthorityId);
         chouetteNetwork.setCompany(company);
         chouetteNetwork.setDescription(ConversionUtil.getValue(netexNetwork.getDescription()));
-       
+
         if (netexNetwork.getPrivateCode() != null) {
             chouetteNetwork.setRegistrationNumber(netexNetwork.getPrivateCode().getValue());
         }
@@ -88,7 +88,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
                         }
                     }
                 }
-             
+
                 netexReferential.getGroupOfLinesToNetwork().put(groupOfLine.getObjectId(),chouetteNetwork.getObjectId());
                 groupOfLine.setFilled(true);
             }
@@ -97,7 +97,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         chouetteNetwork.setFilled(true);
     }
 
- 
+
     static {
         ParserFactory.register(NetworkParser.class.getName(), new ParserFactory() {
             private NetworkParser instance = new NetworkParser();

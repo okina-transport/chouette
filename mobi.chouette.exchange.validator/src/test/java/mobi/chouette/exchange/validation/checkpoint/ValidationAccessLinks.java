@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -165,7 +166,8 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 	}
 
-	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 no test", priority = 1)
+	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 no test", priority = 6)
+	@Ignore //pour avoir l'autre en preums TODO reactiver
 	public void verifyTest4_1_notest() throws Exception {
 		// 4-AccessLink-1 : check columns
 		log.info(Color.BLUE + "4-AccessLink-1 no test" + Color.NORMAL);
@@ -197,7 +199,8 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 	}
 
-	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 unicity", priority = 2)
+	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 unicity", priority = 0)
+	@Ignore //pour avoir l'autre en preums TODO reactiver
 	public void verifyTest4_1_unique() throws Exception {
 		// 4-AccessLink-1 : check columns
 		log.info(Color.BLUE + "4-AccessLink-1 unicity" + Color.NORMAL);
@@ -224,10 +227,12 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 		Assert.assertEquals(detail.getValue(), bean2.getObjectId().split(":")[2], "detail must refer value");
 	}
 
-	@Test(groups = { "accessLink" }, description = "3-AccessLink-1", priority = 3)
-	public void verifyTest3_1() throws Exception {
+	@Test(groups = { "accessLink" }, description = "3-AccessLink-1", priority = 1)
+	public void averifyTest3_1() throws Exception {
 		// 3-AccessLink-1 : check distance between ends of accessLink
-		importLines("model.zip", 7, 7, true);
+		//importLines("model.zip", 7, 7, true);
+		importLines("15626053_only.zip", 1, 1, true);
+
 		log.info(Color.BLUE + "3-AccessLink-1" + Color.NORMAL);
 		Context context = initValidatorContext();
 		context.put(VALIDATION, fullparameters);
@@ -284,11 +289,14 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 		List<AccessLink> beans = accessLinkDao.findAll();
 		Assert.assertFalse(beans.isEmpty(), "No data for test");
-		AccessLink link = beans.get(0);
+		AccessLink link = beans.get(2);
 
 		double distance = AbstractTestValidation.distance(link.getStopArea(), link.getAccessPoint());
 
-		link.setLinkDistance(BigDecimal.valueOf(distance - 50));
+		link.setLinkDistance(BigDecimal.valueOf(distance - 154300));
+
+		link.getStopArea().setLatitude(new BigDecimal(46.09192725456719));
+		link.getStopArea().setLongitude(new BigDecimal(7.4820704460144105));
 
 		ValidationData data = new ValidationData();
 		data.getAccessLinks().addAll(beans);
@@ -332,14 +340,14 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 		AccessLink link = null;
 		for (AccessLink accessLink : beans) {
-			if (accessLink.getObjectId().equals("NINOXE:AccessLink:7")) {
+			if (accessLink.getObjectId().equals("TESTSCHEMA:AccessLink:14")) {
 				link = accessLink;
 				break;
 			}
 		}
 		double distance = AbstractTestValidation.distance(link.getAccessPoint(), link.getStopArea());
-		link.setLinkDistance(BigDecimal.valueOf(distance));
-		link.setDefaultDuration(link.getDefaultDuration().minus(150000));
+		link.setLinkDistance(BigDecimal.valueOf(150000));
+		link.setDefaultDuration(link.getDefaultDuration().minus(19000));
 		link.setOccasionalTravellerDuration(link.getDefaultDuration());
 		link.setFrequentTravellerDuration(link.getDefaultDuration());
 		link.setMobilityRestrictedTravellerDuration(link.getDefaultDuration());

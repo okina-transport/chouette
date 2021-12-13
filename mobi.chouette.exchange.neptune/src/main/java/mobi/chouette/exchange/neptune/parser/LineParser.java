@@ -80,6 +80,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 				convertNeptuneTransportModeToInternalModel(line,value);
 			} else if (xpp.getName().equals("lineEnd")) {
 				String lineEnd = ParserUtils.getText(xpp.nextText());
+				lineEnd = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, lineEnd);
 				validator.addLineEnd(context, objectId, lineEnd);
 			} else if (xpp.getName().equals("routeId")) {
 				String routeId = ParserUtils.getText(xpp.nextText());

@@ -8,6 +8,8 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.AccessLink;
+import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
@@ -15,6 +17,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
+import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 import mobi.chouette.model.util.Referential;
 
@@ -135,11 +138,56 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 		removeStopAreasFromMap(removedCommercialPoints,referential.getSharedStopAreas());
 		removeStopAreasFromMap(removedCommercialPoints,referential.getStopAreas());
 
+		//Rebuild commercial points
+		buildCommercialPoints(context);
+
 		Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
 		Context stopAreaContext = (Context) validationContext.get(STOP_AREA_CONTEXT);
 
 		removedCommercialPoints.forEach(stopAreaToRemove -> stopAreaContext.remove(stopAreaToRemove));
 
+	}
+
+	private void buildCommercialPoints(Context context){
+
+		Map<String,String> areaCentroidMap =  (Map<String,String>) context.get(AREA_CENTROID_MAP);
+		Referential referential = (Referential) context.get(REFERENTIAL);
+
+		List<StopArea> boardingPositions = referential.getSharedStopAreas().values().stream()
+																		.filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
+																		.collect(Collectors.toList());
+
+		for (StopArea boardingPosition : boardingPositions) {
+			StopArea commercialPoint = initArea(referential, boardingPosition, null);
+			boardingPosition.setParent(commercialPoint);
+			areaCentroidMap.put(boardingPosition.getOriginalStopId(),commercialPoint.getObjectId());
+		}
+	}
+
+
+
+	/**
+	 * Commercial stop point initialization with first boarding position values
+	 *
+	 * @param area
+	 *            commercial stop point
+	 * @param stop
+	 *            boarding position
+	 * @param referential
+	 * @param objectId
+	 */
+	private StopArea initArea(Referential referential, StopArea stop, String objectId) {
+		LocalDateTime now = LocalDateTime.now();
+		String[] token = stop.getObjectId().split(":");
+		if (objectId == null)
+			objectId = token[0] + ":StopPlace:COM_" + token[2];
+		StopArea area = ObjectFactory.getStopArea(referential, objectId);
+		area.setName(stop.getName());
+		area.setObjectId(objectId);
+		area.setObjectVersion(stop.getObjectVersion());
+		area.setCreationTime(now);
+		area.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
+		return area;
 	}
 
 	private void removeStopAreasFromMap(List<String> stopAreasToRemove, Map<String, StopArea> stopAreaMap){
@@ -233,11 +281,35 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 			connectionLink.setEndOfLink(newEndStopArea);
 		}
 
+		List<AccessLink> accessLinksList = referential.getSharedAccessLinks().values().stream().collect(Collectors.toList());
+
+		for (AccessLink accessLink: accessLinksList){
 
 
+			String stopAreaId = accessLink.getStopArea().getObjectId();
+			String newStopAreaId = fileToReferentialStopIdMap.get(stopAreaId);
+
+			if (newStopAreaId == null) continue;
+
+			StopArea newStartStopArea = referential.getSharedStopAreas().get(newStopAreaId);
+			accessLink.setStopArea(newStartStopArea);
+
+		}
 
 
+		List<AccessPoint> accessPointList = referential.getSharedAccessPoints().values().stream().collect(Collectors.toList());
+		for (AccessPoint accessPoint: accessPointList){
+			StopArea containedInArea = accessPoint.getContainedIn();
+			if (containedInArea == null)
+				continue;
 
+			String containedInId = containedInArea.getObjectId();
+			String newStopAreaId = fileToReferentialStopIdMap.get(containedInId);
+
+			if (newStopAreaId == null) continue;
+			StopArea newContainedArea = referential.getSharedStopAreas().get(newStopAreaId);
+			accessPoint.setContainedIn(newContainedArea);
+		}
 	}
 
 	private void mapIdsInContainedInStopAreas(Context context, StopArea stopArea){
