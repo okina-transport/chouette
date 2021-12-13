@@ -181,7 +181,8 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 				}
 			} else if (xpp.getName().equals("contains")) {
 				String containsId = ParserUtils.getText(xpp.nextText());
-				String containsObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, containsId);
+				String objectType = containsId.contains(ObjectIdTypes.STOPPOINT_KEY) ? ObjectIdTypes.STOPPOINT_KEY :  ObjectIdTypes.STOPAREA_KEY;
+				String containsObjectId = AbstractConverter.composeObjectId(configuration, objectType, containsId);
 				contains.add(containsObjectId);
 				validator.addContains(context, objectId, containsObjectId);
 
