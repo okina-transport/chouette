@@ -304,7 +304,6 @@ public class StopPlaceParser implements Parser, Constant {
 
         StopArea boardingPosition = ObjectFactory.getStopArea(referential, quayId);
         boardingPosition.setAreaType(ChouetteAreaEnum.BoardingPosition);
-        //boardingPosition.setAreaType(ChouetteAreaEnum.Quay);
 
         boardingPosition.setObjectVersion(NetexParserUtils.getVersion(quay));
         if (quay.getName() == null) {
