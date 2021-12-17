@@ -174,6 +174,7 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 		configuration.setNoSave(false);
 		configuration.setCleanRepository(cleanRepo);
 		configuration.setObjectIdPrefix("TESTSCHEMA");
+		configuration.setIgnoreCommercialPoints(false);
 //		configuration.setAreaCentroidPrefixToRemove("NINOXE:AreaCentroid:");
 //		configuration.setStopAreaPrefixToRemove("NINOXE:StopArea:");
 		try {
