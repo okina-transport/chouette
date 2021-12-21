@@ -56,6 +56,7 @@ public abstract class AbstractIDFMNetexProfileValidator extends AbstractNetexPro
         addCheckpoints(context, _1_NETEX_UNAPPROVED_CODESPACE_DEFINED, "E");
         addCheckpoints(context, _1_NETEX_USE_OF_UNAPPROVED_CODESPACE, "E");
         addCheckpoints(context, _1_NETEX_REFERENCE_TO_ILLEGAL_ELEMENT, "E");
+        addCheckpoints(context, _1_NETEX_TRANSPORT_MODE_MISMATCH, "E");
     }
 
     private void addCheckpoints(Context context, String checkpointName, String error) {

@@ -90,4 +90,6 @@ public interface Constant {
 	public static final String TOTAL_NB_OF_LINES="totalNbOfLines";
 	public static final String CURRENT_LINE_NB="currentLineNb";
 
+	public static final String TIAMAT_ERROR_CODE_CONVERTER = "TiamatErrorCodeConverter";
+
 }

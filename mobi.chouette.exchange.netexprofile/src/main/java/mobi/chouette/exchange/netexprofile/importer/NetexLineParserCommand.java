@@ -105,9 +105,8 @@ public class NetexLineParserCommand implements Command, Constant {
                 currentLine.setComment(currentLineInfo.getComment());
             }
 
-            if (currentLine.getTransportModeName() == null){
-                currentLine.setTransportModeName(currentLineInfo.getTransportModeName());
-            }
+            //transport mode is never null because there is a default value (bus). No need to to a test : override must be made in all cases
+            currentLine.setTransportModeName(currentLineInfo.getTransportModeName());
 
             if (StringUtils.isEmpty(currentLine.getCodifligne())){
                 currentLine.setCodifligne(currentLineInfo.getCodifligne());

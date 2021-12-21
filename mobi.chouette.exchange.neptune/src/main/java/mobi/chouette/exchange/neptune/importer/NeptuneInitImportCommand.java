@@ -36,6 +36,7 @@ public class NeptuneInitImportCommand implements Command, Constant {
 			NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
 			context.put(StopArea.IMPORT_MODE, parameters.getStopAreaImportMode());
 			context.put(REFERENTIAL, new Referential());
+			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NeptuneErrorCodeConverter());
 			if (context.get(VALIDATION) != null)
 			   context.put(VALIDATION_DATA, new ValidationData());
 			// prepare entries for shared objects 
