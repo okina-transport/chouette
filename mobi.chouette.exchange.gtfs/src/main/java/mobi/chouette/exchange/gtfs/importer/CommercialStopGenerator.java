@@ -22,9 +22,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 	/**
 	 * create and associate commercial stop points for boarding positions
-	 * 
-	 * @param boardingPositions
-	 *            list of input boarding positions
+	 *
 	 * @return commercial stop points created
 	 */
 	public void createCommercialStopPoints(Context context) {
@@ -64,12 +62,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			if (stop.getParent() != null) {
 				mergeKey = stop.getParent().getObjectId();
 			} else {
-				for (String key : keys) {
-					if (mergeKey.startsWith(key)) {
-						mergeKey = key;
-						break;
-					}
-				}
+				mergeKey = generateCommercialStopId(stop);
 			}
 
 			StopArea area = areaMap.get(mergeKey);
@@ -126,9 +119,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 	/**
 	 * Commercial stop point initialization with first boarding position values
-	 * 
-	 * @param area
-	 *            commercial stop point
+	 *
 	 * @param stop
 	 *            boarding position
 	 * @param referential
@@ -136,9 +127,8 @@ public class CommercialStopGenerator extends AbstractGenerator {
 	 */
 	private StopArea initArea(Referential referential, StopArea stop, String objectId) {
 		LocalDateTime now = LocalDateTime.now();
-		String[] token = stop.getObjectId().split(":");
 		if (objectId == null)
-			objectId = token[0] + ":StopPlace:COM_" + token[2];
+			objectId = generateCommercialStopId(stop);
 		StopArea area = ObjectFactory.getStopArea(referential, objectId);
 		area.setName(stop.getName());
 		area.setObjectId(objectId);
@@ -146,6 +136,17 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		area.setCreationTime(now);
 		area.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 		return area;
+	}
+
+	/**
+	 * Generate a commercial stop id( PROVIDER:StopPlace:COM_xxx) from a boarding Stop id (PROVIDER:Quay:xxx)
+	 *
+	 * @param stopArea
+	 * @return
+	 */
+	private String generateCommercialStopId(StopArea stopArea){
+		String[] token = stopArea.getObjectId().split(":");
+		return token[0] + ":StopPlace:COM_" + token[2];
 	}
 
 	/**
