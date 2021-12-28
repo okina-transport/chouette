@@ -80,7 +80,13 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 				// Monitor monitor = MonitorFactory.start("COPY");
 				try {
 
+
+					log.info("Starting vehicleJourney copy");
 					StringReader from = new StringReader(data);
+
+					log.info("String reader has been built");
+
+
 					PGConnection pgConnection = (PGConnection) ((WrappedConnection) connection)
 							.getUnderlyingConnection();
 					org.postgresql.copy.CopyManager manager = pgConnection
@@ -95,7 +101,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 							+ " FROM STDIN WITH DELIMITER '|'";
 
 					manager.copyIn(
-							copyStatement, from);
+							copyStatement, from,2048);
 
 				} catch (IOException e) {
 					log.error(e);
