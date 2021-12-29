@@ -99,7 +99,7 @@ public class StopAreaUpdateTask {
 					// ou des quais partagés
 					} else if (isQuayIsGlobal(quayIds)) {
 						StopArea stopArea = stopAreaDAO.findByObjectId(quayToMergeId);
-						if (stopArea != null) {
+						if (stopArea != null && !stopArea.getId().equals(quay.getId())) {
 							stopAreaDAO.mergeStopArea30m(stopArea.getId(), quay.getId());
 						}
 					}
