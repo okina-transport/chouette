@@ -30,6 +30,11 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 		this.em = em;
 	}
 
+	// Max nb of lines that will be sent to copyIn command at once
+	private int MAX_NB_OF_LINES = 1000;
+
+	private String[] linesToCopy;
+
 	@Override
 	public void deleteChildren(final List<String> vehicleJourneyObjectIds) {
 
@@ -78,41 +83,68 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 			@Override
 			public void execute(Connection connection) throws SQLException {
 				// Monitor monitor = MonitorFactory.start("COPY");
-				try {
 
+					linesToCopy = data.split("\n");
+					log.info("nb of lines to copy:" + linesToCopy.length);
+					String currentBatchOfLines = null;
+					int nbOfLinesInBatch = 0;
 
-					log.info("Starting vehicleJourney copy");
-					StringReader from = new StringReader(data);
+					for (int i = 0 ; i < linesToCopy.length ; i++){
 
-					log.info("String reader has been built");
+						if (currentBatchOfLines != null ){
+							currentBatchOfLines = currentBatchOfLines + linesToCopy[i] + "\n";
+						}else{
+							currentBatchOfLines = linesToCopy[i] + "\n";
+						}
 
+						nbOfLinesInBatch++;
 
-					PGConnection pgConnection = (PGConnection) ((WrappedConnection) connection)
-							.getUnderlyingConnection();
-					org.postgresql.copy.CopyManager manager = pgConnection
-							.getCopyAPI();
-					String copyStatement = "COPY vehicle_journey_at_stops("
-							+ "objectid, object_version, creation_time, creator_id, "
-							+ "vehicle_journey_id, stop_point_id, "
-							+ "arrival_time, departure_time, "
-							+ "arrival_day_offset, departure_day_offset, boardingalightingpossibility)"
-							// + "arrival_time, departure_time, "
-							// + "elapse_duration, headway_frequency)"
-							+ " FROM STDIN WITH DELIMITER '|'";
+						if (nbOfLinesInBatch == MAX_NB_OF_LINES){
+							launchCopy(connection,currentBatchOfLines);
+							log.info("copy batch terminated. Current index:" + i);
+							currentBatchOfLines = null;
+							nbOfLinesInBatch=0;
+						}
+					}
 
-					manager.copyIn(
-							copyStatement, from,2048);
-
+					if (currentBatchOfLines != null){
+						launchCopy(connection,currentBatchOfLines);
+						log.info("last batch has been copied. Length:" + nbOfLinesInBatch);
+					}
 
 					log.info("copie VJAS terminée");
-
-				} catch (IOException e) {
-					log.error("Erreur pendant la copie des VJAS");
-					log.error(e);
-				}
 				// log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			}
 		});
+	}
+
+
+
+	private void launchCopy(Connection connection, String currentBatchOfLines) throws SQLException{
+
+		try {
+			StringReader from = new StringReader(currentBatchOfLines);
+
+			PGConnection pgConnection = (PGConnection) ((WrappedConnection) connection)
+					.getUnderlyingConnection();
+			org.postgresql.copy.CopyManager manager = pgConnection
+					.getCopyAPI();
+			String copyStatement = "COPY vehicle_journey_at_stops("
+					+ "objectid, object_version, creation_time, creator_id, "
+					+ "vehicle_journey_id, stop_point_id, "
+					+ "arrival_time, departure_time, "
+					+ "arrival_day_offset, departure_day_offset, boardingalightingpossibility)"
+					// + "arrival_time, departure_time, "
+					// + "elapse_duration, headway_frequency)"
+					+ " FROM STDIN WITH DELIMITER '|'";
+
+			manager.copyIn(copyStatement, from);
+
+
+		} catch (IOException e) {
+			log.error("Erreur pendant la copie des VJAS");
+			log.error(e);
+		}
 	}
 
 }
