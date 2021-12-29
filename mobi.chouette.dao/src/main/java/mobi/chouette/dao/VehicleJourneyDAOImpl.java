@@ -103,7 +103,11 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 					manager.copyIn(
 							copyStatement, from,2048);
 
+
+					log.info("copie VJAS terminée");
+
 				} catch (IOException e) {
+					log.error("Erreur pendant la copie des VJAS");
 					log.error(e);
 				}
 				// log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
