@@ -154,7 +154,7 @@ public class ValidationAccessPoints extends AbstractTestValidation {
 
 	}
 
-	//@Test(groups = { "accessPoint" }, description = "4-AccessPoint-1 no test", priority =1)
+	@Test(groups = { "accessPoint" }, description = "4-AccessPoint-1 no test", priority =1)
 	public void verifyTest4_1_notest() throws Exception {
 		// 4-AccessPoint-1 : check columns
 		log.info(Color.BLUE + "4-AccessPoint-1 no test" + Color.NORMAL);
@@ -186,7 +186,7 @@ public class ValidationAccessPoints extends AbstractTestValidation {
 
 	}
 
-	//@Test(groups = { "accessPoint" }, description = "4-AccessPoint-1 unicity", priority =2)
+	@Test(groups = { "accessPoint" }, description = "4-AccessPoint-1 unicity", priority =2)
 	public void verifyTest4_1_unique() throws Exception {
 		// 4-AccessPoint-1 : check columns
 		log.info(Color.BLUE + "4-AccessPoint-1 unicity" + Color.NORMAL);
@@ -217,7 +217,7 @@ public class ValidationAccessPoints extends AbstractTestValidation {
 	@Test(groups = { "accessPoint" }, description = "3-AccessPoint-1", priority =3)
 	public void verifyTest3_1() throws Exception {
 		// 3-AccessPoint-1 : check if all access points have geolocalization
-		importLines("15626053_orig.zip", 1, 1, true);
+		importLines("model.zip", 7, 7, true);
 		log.info(Color.BLUE + "3-AccessPoint-1" + Color.NORMAL);
 		Context context = initValidatorContext();
 		context.put(VALIDATION, fullparameters);
@@ -276,9 +276,9 @@ public class ValidationAccessPoints extends AbstractTestValidation {
 		AccessPoint access1 = null;
 		AccessPoint access2 = null;
 		for (AccessPoint accessPoint : beans) {
-			if (accessPoint.getObjectId().equals("NINOXE:AccessPoint:6"))
+			if (accessPoint.getObjectId().equals("TESTSCHEMA:AccessPoint:6"))
 				access1 = accessPoint;
-			if (accessPoint.getObjectId().equals("NINOXE:AccessPoint:7"))
+			if (accessPoint.getObjectId().equals("TESTSCHEMA:AccessPoint:7"))
 				access2 = accessPoint;
 		}
 
