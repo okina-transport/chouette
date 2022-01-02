@@ -9,11 +9,14 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,10 +53,15 @@ public class StopAreaUpdateTask {
 
 		if (impactedStopAreasIds != null) {
 			//Filtering to apply modification only on points used by the current schema
-			List<StopArea> impactedStopAreas = updateContext.getActiveStopAreas().stream()
+			Set<StopArea> impactedStopAreas = new HashSet<>();
+
+			for(StopArea stopArea : updateContext.getActiveStopAreas()){
+				impactedStopAreas.add(SerializationUtils.clone(stopArea));
+			}
+
+			impactedStopAreas = impactedStopAreas.stream()
 					.filter(stopArea -> isStopAreaImpacted(stopArea, impactedStopAreasIds))
-					.distinct()
-					.collect(Collectors.toList());
+					.collect(Collectors.toSet());
 
 			for(StopArea stopArea : impactedStopAreas){
 				stopArea.getContainedStopAreas().removeIf(containedStopArea -> StringUtils.isEmpty(containedStopArea.getOriginalStopId()));
@@ -91,7 +99,7 @@ public class StopAreaUpdateTask {
 					// ou des quais partagés
 					} else if (isQuayIsGlobal(quayIds)) {
 						StopArea stopArea = stopAreaDAO.findByObjectId(quayToMergeId);
-						if (stopArea != null) {
+						if (stopArea != null && !stopArea.getId().equals(quay.getId())) {
 							stopAreaDAO.mergeStopArea30m(stopArea.getId(), quay.getId());
 						}
 					}

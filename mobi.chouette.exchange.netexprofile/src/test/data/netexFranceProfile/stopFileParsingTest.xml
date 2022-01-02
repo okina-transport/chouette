@@ -1,0 +1,4085 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:acbs="http://www.ifopt.org.uk/acsb" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:ifopt="http://www.ifopt.org.uk/ifopt" xmlns:siri="http://www.siri.org.uk/siri" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1:FR-NETEX-2.2">
+    <PublicationTimestamp>2021-11-02T17:39:36Z</PublicationTimestamp>
+    <ParticipantRef>MOBIITI</ParticipantRef>
+    <dataObjects>
+        <SiteFrame id="PROD3:SiteFrame:1308754117" modification="new" version="1">
+            <Description>Site frame ExportParams{topographicPlaceExportMode=RELEVANT, municipalityReferences=[], countyReferences=[], countryReferences=[], stopPlaceSearch=StopPlaceSearch{stopPlaceType=[], netexIdList=[], allVersions=false, withoutLocationOnly=false, withoutQuaysOnly=false, withDuplicatedQuayImportedIds=false, withTags=[], tags=[], page=0, size=20}, tariffZoneExportMode=RELEVANT, providerId=2709}</Description>
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Paris</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <stopPlaces>
+                <StopPlace created="2021-11-02T17:36:18.563" id="PROD3:StopPlace:1" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:18.562</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare SNCF</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrgare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare SNCF</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.890080</Longitude>
+                            <Latitude>48.721409</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:1" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="1" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:1" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare SNCF</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrgare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare SNCF</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.890080</Longitude>
+    <Latitude>48.721409</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:1" version="2">
+<Name>Gare SNCF</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:2" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="2" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:1"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:19.921" id="PROD3:StopPlace:2" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:19.921</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Rue de St Benoît</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffbeno</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Rue de St Benoît</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.886740</Longitude>
+                            <Latitude>48.698231</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:3" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="3" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:2" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Rue de St Benoît</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffbeno</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Rue de St Benoît</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.886740</Longitude>
+    <Latitude>48.698231</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:2" version="2">
+<Name>Rue de St Benoît</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:4" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="4" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:2"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:19.969" id="PROD3:StopPlace:3" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:19.969</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Mairie</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffmair_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Mairie</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.887296</Longitude>
+                            <Latitude>48.700073</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:5" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="5" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:3" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Mairie</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffmair</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Mairie</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.887296</Longitude>
+    <Latitude>48.700073</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:3" version="2">
+<Name>Mairie</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:6" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="6" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:3"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.016" id="PROD3:StopPlace:4" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.015</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>La Fauvette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_peyfauv2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">La Fauvette</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.864896</Longitude>
+                            <Latitude>48.693268</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:7" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="7" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:4" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>La Fauvette</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:peyfauv2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>La Fauvette</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.864896</Longitude>
+    <Latitude>48.693268</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:4" version="2">
+<Name>La Fauvette</Name>
+<PostalRegion>78486</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:8" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="8" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:4"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.067" id="PROD3:StopPlace:5" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.067</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Collège les Molières</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrmoli</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Collège les Molières</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.898182</Longitude>
+                            <Latitude>48.720249</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:9" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="9" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:5" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Collège les Molières</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrmoli</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Collège les Molières</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.898182</Longitude>
+    <Latitude>48.720249</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:5" version="2">
+<Name>Collège les Molières</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:10" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="10" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:5"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.124" id="PROD3:StopPlace:6" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.124</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Pont Tarault</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_peypont</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Pont Tarault</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.863067</Longitude>
+                            <Latitude>48.689789</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:11" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="11" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:6" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Pont Tarault</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:peypont</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Pont Tarault</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.863067</Longitude>
+    <Latitude>48.689789</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:6" version="2">
+<Name>Pont Tarault</Name>
+<PostalRegion>78486</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:12" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="12" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:6"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.175" id="PROD3:StopPlace:7" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.175</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Hameau</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffhame2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Hameau</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.894430</Longitude>
+                            <Latitude>48.700851</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:13" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="13" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:7" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Hameau</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffhame</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Hameau</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.894430</Longitude>
+    <Latitude>48.700851</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:7" version="2">
+<Name>Hameau</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:14" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="14" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:7"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.218" id="PROD3:StopPlace:8" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.218</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Rue d'Auffargis</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrauff2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Rue d'Auffargis</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.891341</Longitude>
+                            <Latitude>48.713299</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:15" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="15" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:8" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Rue d'Auffargis</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrauff2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Rue d'Auffargis</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.891341</Longitude>
+    <Latitude>48.713299</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:8" version="2">
+<Name>Rue d'Auffargis</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:16" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="16" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:8"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.264" id="PROD3:StopPlace:9" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.264</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Le Stade</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffstad</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Le Stade</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.885889</Longitude>
+                            <Latitude>48.695515</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:17" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="17" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:9" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Le Stade</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffstad</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Le Stade</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.885889</Longitude>
+    <Latitude>48.695515</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:9" version="2">
+<Name>Le Stade</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:18" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="18" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:9"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.306" id="PROD3:StopPlace:10" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.306</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Eglise</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffegli2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Eglise</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.885410</Longitude>
+                            <Latitude>48.702667</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:19" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="19" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:10" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Eglise</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffegli2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Eglise</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.885410</Longitude>
+    <Latitude>48.702667</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:10" version="2">
+<Name>Eglise</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:20" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="20" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:10"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.347" id="PROD3:StopPlace:11" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.347</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Centre</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrcent</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Centre</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.894038</Longitude>
+                            <Latitude>48.717438</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:21" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="21" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:11" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Centre</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrcent</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Centre</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.894038</Longitude>
+    <Latitude>48.717438</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:11" version="2">
+<Name>Centre</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:22" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="22" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:11"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.388" id="PROD3:StopPlace:12" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.388</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Château</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffchat_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Château</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.890887</Longitude>
+                            <Latitude>48.702015</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:23" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="23" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:12" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Château</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffchat</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Château</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.890887</Longitude>
+    <Latitude>48.702015</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:12" version="2">
+<Name>Château</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:24" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="24" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:12"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.421" id="PROD3:StopPlace:13" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.421</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Mairie</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffmair</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Mairie</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.887240</Longitude>
+                            <Latitude>48.699566</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:25" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="25" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:13" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Mairie</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffmair2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Mairie</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.887240</Longitude>
+    <Latitude>48.699566</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:13" version="2">
+<Name>Mairie</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:26" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="26" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:13"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.46" id="PROD3:StopPlace:14" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.46</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Ecole primaire</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffecole</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Ecole primaire</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.885851</Longitude>
+                            <Latitude>48.698761</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:27" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="27" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:14" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Ecole primaire</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffecole</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Ecole primaire</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.885851</Longitude>
+    <Latitude>48.698761</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:14" version="2">
+<Name>Ecole primaire</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:28" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="28" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:14"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.524" id="PROD3:StopPlace:15" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.524</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Hameau</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffhame2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Hameau</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.895099</Longitude>
+                            <Latitude>48.700542</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:29" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="29" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:15" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Hameau</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffhame2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Hameau</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.895099</Longitude>
+    <Latitude>48.700542</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:15" version="2">
+<Name>Hameau</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:30" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="30" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:15"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.659" id="PROD3:StopPlace:16" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.658</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Croix St Jacques</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffcroi_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Croix St Jacques</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.895547</Longitude>
+                            <Latitude>48.698288</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:31" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="31" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:16" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Croix St Jacques</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffcroi</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Croix St Jacques</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.895547</Longitude>
+    <Latitude>48.698288</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:16" version="2">
+<Name>Croix St Jacques</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:32" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="32" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:16"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.712" id="PROD3:StopPlace:17" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.712</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare SNCF</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrgare_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare SNCF</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.856724</Longitude>
+                            <Latitude>48.693188</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:33" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="33" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:17" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare SNCF</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:peygare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare SNCF</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.856724</Longitude>
+    <Latitude>48.693188</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:17" version="2">
+<Name>Gare SNCF</Name>
+<PostalRegion>78486</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:34" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="34" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:17"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.758" id="PROD3:StopPlace:18" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.758</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Route du Perray</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffperra</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Route du Perray</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.884841</Longitude>
+                            <Latitude>48.698494</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:35" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="35" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:18" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Route du Perray</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffperra</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Route du Perray</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.884841</Longitude>
+    <Latitude>48.698494</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:18" version="2">
+<Name>Route du Perray</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:36" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="36" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:18"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.791" id="PROD3:StopPlace:19" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.791</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Les Carrières</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffcarr2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Les Carrières</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.868480</Longitude>
+                            <Latitude>48.693279</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:37" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="37" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:19" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Les Carrières</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffcarr2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Les Carrières</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.868480</Longitude>
+    <Latitude>48.693279</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:19" version="2">
+<Name>Les Carrières</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:38" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="38" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:19"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.83" id="PROD3:StopPlace:20" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.83</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Eglise</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffegli2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Eglise</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.885458</Longitude>
+                            <Latitude>48.702522</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:39" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="39" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:20" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Eglise</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffegli</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Eglise</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.885458</Longitude>
+    <Latitude>48.702522</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:20" version="2">
+<Name>Eglise</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:40" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="40" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:20"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.865" id="PROD3:StopPlace:21" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.865</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Les Carrières</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffcarr2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Les Carrières</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.868452</Longitude>
+                            <Latitude>48.693390</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:41" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="41" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:21" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Les Carrières</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffcarr</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Les Carrières</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.868452</Longitude>
+    <Latitude>48.693390</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:21" version="2">
+<Name>Les Carrières</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:42" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="42" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:21"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.903" id="PROD3:StopPlace:22" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.903</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Croix St Jacques</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffcroi</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Croix St Jacques</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.895726</Longitude>
+                            <Latitude>48.698204</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:43" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="43" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:22" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Croix St Jacques</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffcroi2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Croix St Jacques</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.895726</Longitude>
+    <Latitude>48.698204</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:22" version="2">
+<Name>Croix St Jacques</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:44" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="44" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:22"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.933" id="PROD3:StopPlace:23" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.932</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>centre</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrcent2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">centre</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.894375</Longitude>
+                            <Latitude>48.717590</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:45" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="45" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:23" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>centre</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrcent2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>centre</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.894375</Longitude>
+    <Latitude>48.717590</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:23" version="2">
+<Name>centre</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:46" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="46" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:23"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.961" id="PROD3:StopPlace:24" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.96</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>La Fauvette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_peyfauv2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">La Fauvette</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.865083</Longitude>
+                            <Latitude>48.693378</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:47" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="47" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:24" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>La Fauvette</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:peyfauv</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>La Fauvette</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.865083</Longitude>
+    <Latitude>48.693378</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:24" version="2">
+<Name>La Fauvette</Name>
+<PostalRegion>78486</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:48" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="48" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:24"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:20.988" id="PROD3:StopPlace:25" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:20.988</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Le Perray en Yvelines Gare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_pergar</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Le Perray en Yvelines Gare</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.856531</Longitude>
+                            <Latitude>48.692486</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:49" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="49" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:25" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Le Perray en Yvelines Gare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:pergar</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Le Perray en Yvelines Gare</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.856531</Longitude>
+    <Latitude>48.692486</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:25" version="2">
+<Name>Le Perray en Yvelines Gare</Name>
+<PostalRegion>78486</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:50" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="50" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:25"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:21.017" id="PROD3:StopPlace:26" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:21.016</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Château</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_uffchat</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Château</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.889868</Longitude>
+                            <Latitude>48.702347</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:51" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="51" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:26" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Château</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:uffchat2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Château</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.889868</Longitude>
+    <Latitude>48.702347</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:26" version="2">
+<Name>Château</Name>
+<PostalRegion>78030</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:52" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="52" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:26"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:36:21.047" id="PROD3:StopPlace:27" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:36:21.046</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Rue d'Auffargis</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elrauff2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Rue d'Auffargis</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.891118</Longitude>
+                            <Latitude>48.713188</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:53" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="53" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:27" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Rue d'Auffargis</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elrauff</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Rue d'Auffargis</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.891118</Longitude>
+    <Latitude>48.713188</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:27" version="2">
+<Name>Rue d'Auffargis</Name>
+<PostalRegion>78220</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:54" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="54" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:27"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.589" id="PROD3:StopPlace:28" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.589</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Rd-pt de Grignon</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_thivgri2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Rd-pt de Grignon</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.944336</Longitude>
+                            <Latitude>48.843002</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:55" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="55" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:28" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Rd-pt de Grignon</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:thivgri2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Rd-pt de Grignon</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.944336</Longitude>
+    <Latitude>48.843002</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:28" version="2">
+<Name>Rd-pt de Grignon</Name>
+<PostalRegion>78615</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:56" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="56" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:28"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.628" id="PROD3:StopPlace:29" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.628</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Chamoiserie RD43</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_lmuchamo</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Chamoiserie RD43</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.918622</Longitude>
+                            <Latitude>48.971809</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:57" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="57" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:29" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Chamoiserie RD43</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:lmuchamo</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Chamoiserie RD43</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.918622</Longitude>
+    <Latitude>48.971809</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:29" version="2">
+<Name>Chamoiserie RD43</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:58" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="58" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:29"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.765" id="PROD3:StopPlace:30" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.765</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Conforama</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_orgconfo</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Conforama</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.987551</Longitude>
+                            <Latitude>48.926424</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:59" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="59" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:30" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Conforama</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:orgconfo</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Conforama</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.987507</Longitude>
+    <Latitude>48.926437</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:30" version="2">
+<Name>Conforama</Name>
+<PostalRegion>78466</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:60" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="60" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:30"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                        <Quay id="PROD3:Quay:31" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Conforama</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:ogvconfo</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Conforama</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.987595</Longitude>
+    <Latitude>48.926411</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:31" version="2">
+<Name>Conforama</Name>
+<PostalRegion>78466</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:61" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="61" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:30"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.8" id="PROD3:StopPlace:31" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.799</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Rond-point du Petit St-Cloud</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_plapsc2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Rond-point du Petit St-Cloud</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.951622</Longitude>
+                            <Latitude>48.829185</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:62" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="62" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:32" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Rond-point du Petit St-Cloud</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:plapsc2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Rond-point du Petit St-Cloud</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.951622</Longitude>
+    <Latitude>48.829185</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:32" version="2">
+<Name>Rond-point du Petit St-Cloud</Name>
+<PostalRegion>78490</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:63" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="63" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:31"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.822" id="PROD3:StopPlace:32" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.822</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Ile de loisirs centre équestre</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_travagu2_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Ile de loisirs centre équestre</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>2.003263</Longitude>
+                            <Latitude>48.780338</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:64" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="64" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:33" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Ile de loisirs centre équestre</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:travagu</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Ile de loisirs centre équestre</Name>
+                            <Centroid>
+<Location>
+    <Longitude>2.003263</Longitude>
+    <Latitude>48.780338</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:33" version="2">
+<Name>Ile de loisirs centre équestre</Name>
+<PostalRegion>78621</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:65" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="65" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:32"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.848" id="PROD3:StopPlace:33" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.848</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Vigne Blanche</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_lmuvign</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Vigne Blanche</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.912200</Longitude>
+                            <Latitude>48.981628</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:66" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="66" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:34" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Vigne Blanche</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:lmuvigne</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Vigne Blanche</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.912200</Longitude>
+    <Latitude>48.981628</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:34" version="2">
+<Name>Vigne Blanche</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:67" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="67" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:33"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.873" id="PROD3:StopPlace:34" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.873</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Prague</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elaprg</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Prague</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.968190</Longitude>
+                            <Latitude>48.795349</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:68" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="68" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:35" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Prague</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elaprg2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Prague</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.968190</Longitude>
+    <Latitude>48.795349</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:35" version="2">
+<Name>Prague</Name>
+<PostalRegion>78208</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:69" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="69" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:34"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.897" id="PROD3:StopPlace:35" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.897</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gay Lussac</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_elagay4_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gay Lussac</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.974653</Longitude>
+                            <Latitude>48.791885</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:70" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="70" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:36" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gay Lussac</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:elagay2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gay Lussac</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.974653</Longitude>
+    <Latitude>48.791885</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:36" version="2">
+<Name>Gay Lussac</Name>
+<PostalRegion>78208</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:71" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="71" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:35"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.927" id="PROD3:StopPlace:36" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.927</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Sablons</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_lmusablo_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Sablons</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.914751</Longitude>
+                            <Latitude>48.976906</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:72" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="72" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:37" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Sablons</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:lmusablo</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Sablons</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.914751</Longitude>
+    <Latitude>48.976906</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:37" version="2">
+<Name>Sablons</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:73" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="73" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:36"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.958" id="PROD3:StopPlace:37" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.958</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>St-Quentin Gare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_mbga11_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">St-Quentin Gare</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>2.045750</Longitude>
+                            <Latitude>48.787628</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:74" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="74" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:38" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>St-Quentin Gare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:mbga11</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>St-Quentin Gare</Name>
+                            <Centroid>
+<Location>
+    <Longitude>2.045750</Longitude>
+    <Latitude>48.787628</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:38" version="2">
+<Name>St-Quentin Gare</Name>
+<PostalRegion>78423</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:75" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="75" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:37"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:17.995" id="PROD3:StopPlace:38" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:17.995</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>De Lattre De Tassigny</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_eladlt</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">De Lattre De Tassigny</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.974885</Longitude>
+                            <Latitude>48.797703</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:76" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="76" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:39" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>De Lattre De Tassigny</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:eladlt</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>De Lattre De Tassigny</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.974885</Longitude>
+    <Latitude>48.797703</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:39" version="2">
+<Name>De Lattre De Tassigny</Name>
+<PostalRegion>78208</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:77" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="77" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:38"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:18.022" id="PROD3:StopPlace:39" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:18.022</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_plagriga</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.943811</Longitude>
+                            <Latitude>48.831497</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:78" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="78" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:40" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:plagrig2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.943811</Longitude>
+    <Latitude>48.831497</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:40" version="2">
+<Name>Gare</Name>
+<PostalRegion>78490</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:79" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="79" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:39"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:18.051" id="PROD3:StopPlace:40" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:18.051</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Presle RD 43</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_ecqpres2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Presle RD 43</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.927830</Longitude>
+                            <Latitude>48.950203</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:80" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="80" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:41" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Presle RD 43</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:ecqpres2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Presle RD 43</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.927830</Longitude>
+    <Latitude>48.950203</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:41" version="2">
+<Name>Presle RD 43</Name>
+<PostalRegion>78206</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:81" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="81" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:40"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:18.08" id="PROD3:StopPlace:41" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:18.08</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Base de Loisirs - Golf</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_trabase_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Base de Loisirs - Golf</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.993889</Longitude>
+                            <Latitude>48.783226</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:82" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="82" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:42" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Base de Loisirs - Golf</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:trabase2</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Base de Loisirs - Golf</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.993889</Longitude>
+    <Latitude>48.783226</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:42" version="2">
+<Name>Base de Loisirs - Golf</Name>
+<PostalRegion>78621</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:83" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="83" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:41"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:18.107" id="PROD3:StopPlace:42" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:18.107</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Centre Ccial Bougimonts</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_lmuboug2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Centre Ccial Bougimonts</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.912011</Longitude>
+                            <Latitude>48.986603</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:84" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="84" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:43" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Centre Ccial Bougimonts</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:lmubougi</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Centre Ccial Bougimonts</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.912011</Longitude>
+    <Latitude>48.986603</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:43" version="2">
+<Name>Centre Ccial Bougimonts</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:85" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="85" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:42"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:18.138" id="PROD3:StopPlace:43" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:18.138</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare Routière</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_plagriga_1</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare Routière</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.912995</Longitude>
+                            <Latitude>48.993275</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:86" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="86" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:44" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare Routière</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:lmurgar1</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare Routière</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.912995</Longitude>
+    <Latitude>48.993275</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:44" version="2">
+<Name>Gare Routière</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:87" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="87" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:43"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:22.464" id="PROD3:StopPlace:44" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:22.464</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>La Défense - Terminal Jules Verne</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:place_PA14</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">La Défense - Terminal Jules Verne</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>2.242077</Longitude>
+                            <Latitude>48.891235</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:88" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="88" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:45" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>La Défense - Terminal Jules Verne</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:puta14</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>La Défense - Terminal Jules Verne</Name>
+                            <Centroid>
+<Location>
+    <Longitude>2.241974</Longitude>
+    <Latitude>48.891193</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:45" version="2">
+<Name>La Défense - Terminal Jules Verne</Name>
+<PostalRegion>92026</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:89" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="89" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:44"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                        <Quay id="PROD3:Quay:46" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>La Défense - Terminal Jules Verne</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:put2a14</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>La Défense - Terminal Jules Verne</Name>
+                            <Centroid>
+<Location>
+    <Longitude>2.242180</Longitude>
+    <Latitude>48.891277</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:46" version="2">
+<Name>La Défense - Terminal Jules Verne</Name>
+<PostalRegion>92026</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:90" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="90" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:44"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:22.492" id="PROD3:StopPlace:45" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:22.492</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_plagriga_2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.912589</Longitude>
+                            <Latitude>48.992966</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:91" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="91" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:47" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare Routière</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:murgare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare Routière</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.912589</Longitude>
+    <Latitude>48.992966</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:47" version="2">
+<Name>Gare Routière</Name>
+<PostalRegion>78440</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:92" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="92" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:45"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:24.669" id="PROD3:StopPlace:46" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:24.669</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Jean Jaurès</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_verjaur2</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Jean Jaurès</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.986822</Longitude>
+                            <Latitude>48.974625</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:93" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="93" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:48" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Jean Jaurès</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:verjaur1</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Jean Jaurès</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.986822</Longitude>
+    <Latitude>48.974625</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:48" version="2">
+<Name>Jean Jaurès</Name>
+<PostalRegion>78643</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:94" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="94" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:46"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace created="2021-11-02T17:37:24.691" id="PROD3:StopPlace:47" modification="new" version="1">
+                    <ValidBetween>
+                        <FromDate>2021-11-02T17:37:24.691</FromDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare routière de Verneuil</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value>LOCGUI11021735DG:StopPlace:COM_vergare</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>CHANGED_BY</Key>
+                            <Value>service-account-chouette</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>IS_PARENT_STOP_PLACE</Key>
+                            <Value>false</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="fr">Gare routière de Verneuil</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>1.982099</Longitude>
+                            <Latitude>48.980728</Latitude>
+                        </Location>
+                    </Centroid>
+                    <AccessibilityAssessment id="PROD3:AccessibilityAssessment:95" modification="new" version="1">
+                        <MobilityImpairedAccess>partial</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="95" modification="new" version="1">
+<WheelchairAccess>true</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <TransportMode>bus</TransportMode>
+                    <OtherTransportModes/>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <Weighting>interchangeAllowed</Weighting>
+                    <quays>
+                        <Quay id="PROD3:Quay:49" modification="new" version="1">
+                            <keyList>
+<KeyValue>
+    <Key>imported-name</Key>
+    <Value>Gare routière de Verneuil</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-id</Key>
+    <Value>LOCGUI11021735DG:Quay:vergare</Value>
+</KeyValue>
+<KeyValue>
+    <Key>imported-stopcode</Key>
+    <Value/>
+</KeyValue>
+                            </keyList>
+                            <Name>Gare routière de Verneuil</Name>
+                            <Centroid>
+<Location>
+    <Longitude>1.982099</Longitude>
+    <Latitude>48.980728</Latitude>
+</Location>
+                            </Centroid>
+                            <PostalAddress id="PROD3:PostalAddress:49" version="2">
+<Name>Gare routière de Verneuil</Name>
+<PostalRegion>78642</PostalRegion>
+                            </PostalAddress>
+                            <AccessibilityAssessment id="PROD3:AccessibilityAssessment:96" modification="new" version="1">
+<MobilityImpairedAccess>partial</MobilityImpairedAccess>
+<limitations>
+    <AccessibilityLimitation id="96" modification="new" version="1">
+        <WheelchairAccess>true</WheelchairAccess>
+    </AccessibilityLimitation>
+</limitations>
+                            </AccessibilityAssessment>
+                            <SiteRef ref="PROD3:StopPlace:47"/>
+                            <TransportMode>bus</TransportMode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+            </stopPlaces>
+        </SiteFrame>
+    </dataObjects>
+</PublicationDelivery>

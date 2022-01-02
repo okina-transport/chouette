@@ -10,6 +10,7 @@ import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -38,7 +39,8 @@ public class RouteParser implements Parser, Constant {
 
 		for (JAXBElement<? extends LinkSequence_VersionStructure> routeElement : routeElements) {
 			org.rutebanken.netex.model.Route netexRoute = (org.rutebanken.netex.model.Route) routeElement.getValue();
-			mobi.chouette.model.Route chouetteRoute = ObjectFactory.getRoute(referential, netexRoute.getId());
+			String routeId = NetexImportUtil.composeObjectIdFromNetexId(context,"Route",netexRoute.getId());
+			mobi.chouette.model.Route chouetteRoute = ObjectFactory.getRoute(referential,routeId);
 
 			chouetteRoute.setObjectVersion(NetexParserUtils.getVersion(netexRoute));
 
@@ -54,7 +56,9 @@ public class RouteParser implements Parser, Constant {
 			chouetteRoute.setDirection(getNeptuneDirection(netexRoute, context));
 
 			String lineIdRef = netexRoute.getLineRef().getValue().getRef();
-			Line chouetteLine = ObjectFactory.getLine(referential, lineIdRef);
+			String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
+
+			Line chouetteLine = ObjectFactory.getLine(referential, lineId);
 			chouetteRoute.setLine(chouetteLine);
 
 			// TODO find out if this should be set?

@@ -1,5 +1,11 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.NetexParserUtils;
@@ -8,6 +14,8 @@ import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -16,6 +24,7 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
 import net.opengis.gml._3.DirectPositionType;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.LocationStructure;
@@ -25,9 +34,11 @@ import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.RelationshipStructure;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
+import org.rutebanken.netex.model.SiteRefStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
 import org.rutebanken.netex.model.StopTypeEnumeration;
+import org.rutebanken.netex.model.TariffZone;
 import org.rutebanken.netex.model.TariffZoneRef;
 import org.rutebanken.netex.model.TariffZoneRefs_RelStructure;
 import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
@@ -36,11 +47,6 @@ import org.rutebanken.netex.model.ZoneRefStructure;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 
 import javax.xml.bind.JAXBElement;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 @Log4j
 public class StopPlaceParser implements Parser, Constant {
@@ -92,30 +98,43 @@ public class StopPlaceParser implements Parser, Constant {
         for (Map.Entry<String, String> item : childMappedAgainstParent.entrySet()) {
             StopArea child = ObjectFactory.getStopArea(referential, item.getKey());
             StopArea parent = ObjectFactory.getStopArea(referential, item.getValue());
-            parent.setAreaType(parentAreaType);
-            child.setParent(parent);
-            copyNameIfMissingRecursively(parent);
-        }
+            if (parent != null) {
+                parent.setAreaType(parentAreaType);
+                child.setParent(parent);
+				copyNameIfMissingRecursively(parent);
+			}
+		}
 	}
 
 	private void copyNameIfMissingRecursively(StopArea parent){
-		for(StopArea child:parent.getContainedStopAreas()) {
-            if (child.getName() == null) {
-                child.setName(parent.getName());
-            }
-            copyNameIfMissingRecursively(child);
-        }
+		for(StopArea child:parent.getContainedStopAreas()){
+			if (child.getName()==null){
+				child.setName(parent.getName());
+			}
+			copyNameIfMissingRecursively(child);
+		}
 	}
 
 
     void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String stopPlaceId;
 
         if (stopPlace.getQuays() == null) {
             return;
         }
 
-        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            stopPlaceId = NetexImportUtil.composeObjectId("StopPlace", parameters.getObjectIdPrefix(), stopPlace.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            stopPlaceId = stopPlace.getId();
+        }
+
+
+        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlaceId);
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
         stopArea.setObjectVersion(NetexParserUtils.getVersion(stopPlace));
         stopArea.setName(ConversionUtil.getValue(stopPlace.getName()));
@@ -273,10 +292,18 @@ public class StopPlaceParser implements Parser, Constant {
 
     private void parseQuay(Context context, StopArea parentStopArea, Quay quay) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String quayId;
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            quayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), quay.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            quayId = quay.getId();
+        }
 
-        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quay.getId());
+        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quayId);
         boardingPosition.setAreaType(ChouetteAreaEnum.BoardingPosition);
-        //boardingPosition.setAreaType(ChouetteAreaEnum.Quay);
 
         boardingPosition.setObjectVersion(NetexParserUtils.getVersion(quay));
         if (quay.getName() == null) {

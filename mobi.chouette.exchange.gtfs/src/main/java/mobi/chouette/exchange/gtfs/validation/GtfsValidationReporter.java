@@ -39,7 +39,7 @@ public class GtfsValidationReporter implements Constant{
 		reporter.addItemToValidationReport(context, "1-GTFS-", "Route", 3, "E","E","W");
 
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 4, "E","W","E","W");
-		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 6, "E","W","W","E","E","E");
+		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 7, "E","W","W","E","E","E","E");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W","W","W","W");
 
 		reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
@@ -593,9 +593,14 @@ public class GtfsValidationReporter implements Constant{
 			fieldName = ex.getField();
 			validationReporter.addCheckPointReportError(context, checkPointName,
 					buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue(), fieldName);
-
 			break;
 
+		case TRANSPORT_MODE_MISMATCH:
+			  	//2-GTFS-Stop-7
+			checkPointName = checkPointName(name, GtfsException.ERROR.TRANSPORT_MODE_MISMATCH);
+			validationReporter.addCheckPointReportError(context,checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
+					ex.getField());
+			break;
 		case MISSING_FOREIGN_KEY: // THIS CAN NEVER OCCUR !
 		case SYSTEM: // THIS CAN NEVER OCCUR !
 		default:
@@ -696,7 +701,8 @@ public class GtfsValidationReporter implements Constant{
 			return GTFS_2_GTFS_Stop_6;
 		case NOT_ENOUGH_ROUTE_POINTS:
 			return GTFS_3_Route_6;
-
+		case TRANSPORT_MODE_MISMATCH:
+			return GTFS_2_GTFS_Stop_7;
 		default:
 			return null;
 		}

@@ -34,6 +34,7 @@ public class ImportedLineValidatorCommand implements Command, Constant {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		log.info("Début traitement ImportedLineValidatorCommand");
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);

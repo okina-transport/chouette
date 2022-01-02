@@ -15,6 +15,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
 import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.Company;
@@ -51,6 +52,8 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 	public void parse(Context context) throws Exception {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		JourneysInFrame_RelStructure journeyStructs = (JourneysInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
+		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney();
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
@@ -60,7 +63,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			}
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
 
-			VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourney.getId());
+			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
+
+			VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential,serviceJourneyId);
 
 			if (vehicleJourney.isFilled()) {
 				VehicleJourney vehicleJourneyWithVersion = ObjectFactory.getVehicleJourney(referential,
@@ -73,7 +78,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			DayTypeRefs_RelStructure dayTypes = serviceJourney.getDayTypes();
 			if (dayTypes != null) {
 				for (JAXBElement<? extends DayTypeRefStructure> dayType : dayTypes.getDayTypeRef()) {
-					String timetableId = dayType.getValue().getRef();
+					String timetableId = NetexImportUtil.composeObjectIdFromNetexId(context, "Timetable", dayType.getValue().getRef());
 					Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
 					timetable.addVehicleJourney(vehicleJourney);
 				}
@@ -89,7 +94,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 			if (serviceJourney.getJourneyPatternRef() != null) {
 				JourneyPatternRefStructure patternRefStruct = serviceJourney.getJourneyPatternRef().getValue();
-				mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential, patternRefStruct.getRef());
+				String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId("JourneyPattern", parameters.getObjectIdPrefix(), patternRefStruct.getRef());
+
+				mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential,journeyPatternId);
 				vehicleJourney.setJourneyPattern(journeyPattern);
 			}
 
@@ -175,7 +182,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 	private void parseTimetabledPassingTimes(Context context, Referential referential, ServiceJourney serviceJourney, VehicleJourney vehicleJourney) {
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
+		String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context,"JourneyPattern",serviceJourney.getJourneyPatternRef().getValue().getRef());
 
+		JourneyPattern journeyPattern = referential.getJourneyPatterns().get(journeyPatternId);
 
 		for (int i = 0; i < serviceJourney.getPassingTimes().getTimetabledPassingTime().size(); i++) {
 			TimetabledPassingTime passingTime = serviceJourney.getPassingTimes().getTimetabledPassingTime().get(i);
@@ -188,7 +197,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			VehicleJourneyAtStop vehicleJourneyAtStop = ObjectFactory.getVehicleJourneyAtStop(referential, passingTimeId);
 			vehicleJourneyAtStop.setObjectVersion(NetexParserUtils.getVersion(passingTime));
 
-			StopPoint stopPoint = ObjectFactory.getStopPoint(referential, passingTime.getPointInJourneyPatternRef().getValue().getRef());
+			StopPoint stopPoint = getStopPointFromJourneyPattern(journeyPattern, i );
 			vehicleJourneyAtStop.setStopPoint(stopPoint);
 
 			parsePassingTimes(passingTime, vehicleJourneyAtStop);
@@ -196,6 +205,24 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		}
 
 		vehicleJourney.getVehicleJourneyAtStops().sort(Comparator.comparingInt(o -> o.getStopPoint().getPosition()));
+	}
+
+
+	/**
+	 * Read the journeyPattern to search a stopPoint using its position
+	 * @param journeyPattern
+	 * 			journeyPattern to read
+	 * @param index
+	 * 			index of the stopPoint to recover
+	 * @return
+	 * 			The stopPoint
+	 */
+	private StopPoint getStopPointFromJourneyPattern(JourneyPattern journeyPattern, int index){
+
+		return journeyPattern.getStopPoints().stream()
+										     .filter(stopPoint -> stopPoint.getPosition().equals(index))
+				                             .findFirst()
+										     .orElseThrow(() -> new RuntimeException("Unable to find stopPoint with position:" + index  + " in journeyPattern:" + journeyPattern.getObjectId()));
 	}
 
 	// TODO add support for other time zones and zone offsets, for now only handling UTC

@@ -14,11 +14,13 @@ import mobi.chouette.common.parallel.ParallelExecutionCommand;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
+import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.GenerateRouteSectionsCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
@@ -132,7 +134,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			// common file parsing
 
 			List<Path> commonFilePaths = allFilePaths.stream().filter(
-					filePath -> filePath.getFileName() != null && filePath.getFileSystem().getPathMatcher("glob:_*.xml").matches(filePath.getFileName()))
+                    filePath -> filePath.getFileName() != null && NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
 					.collect(Collectors.toList());
 
 			ChainCommand commonFileChains = (ChainCommand) CommandFactory.create(initialContext, ChainCommand.class.getName());
@@ -159,9 +161,14 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 					Command validator = CommandFactory.create(initialContext, NetexValidationCommand.class.getName());
 					commonFileChain.add(validator);
 				}
+
 				NetexCommonFilesParserCommand commonFilesParser = (NetexCommonFilesParserCommand) CommandFactory.create(initialContext,
 						NetexCommonFilesParserCommand.class.getName());
 				commonFileChain.add(commonFilesParser);
+
+				NetexInitGeolocationCommand initGeolocCommand = (NetexInitGeolocationCommand) CommandFactory.create(initialContext,
+						NetexInitGeolocationCommand.class.getName());
+				commonFileChain.add(initGeolocCommand);
 			}
 
 			// Check for duplicate identifiers declared in common files
@@ -171,7 +178,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 
 			// line file processing
 			List<Path> lineFilePaths = allFilePaths.stream().filter(
-					filePath -> filePath.getFileName() != null && !filePath.getFileSystem().getPathMatcher("glob:_*.xml").matches(filePath.getFileName()))
+                    filePath -> filePath.getFileName() != null && !NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
 					.collect(Collectors.toList());
 
 
@@ -226,10 +233,14 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 					parser.setPath(file);
 					lineChain.add(parser);
 
+					//Geoloc initialization (needed if netex stops are imported in a separate file)
+					NetexInitGeolocationCommand initGeolocCommand = (NetexInitGeolocationCommand) CommandFactory.create(initialContext, NetexInitGeolocationCommand.class.getName());
+					lineChain.add(initGeolocCommand);
+
 					if (withDao && !parameters.isNoSave()) {
 
-						Command clean = CommandFactory.create(initialContext, NetexprofileLineDeleteCommand.class.getName());
-						lineChain.add(clean);
+//						Command clean = CommandFactory.create(initialContext, NetexprofileLineDeleteCommand.class.getName());
+//						lineChain.add(clean);
 
 						// register
 						Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
@@ -244,6 +255,8 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 						lineChain.add(validate);
 					}
 				}
+
+				mainChain.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
 			}
 
 		} catch (Exception e) {
@@ -252,6 +265,8 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 
 		return commands;
 	}
+
+
 
 
 

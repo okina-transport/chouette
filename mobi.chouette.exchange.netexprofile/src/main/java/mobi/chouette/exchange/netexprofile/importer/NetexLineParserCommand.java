@@ -2,6 +2,7 @@ package mobi.chouette.exchange.netexprofile.importer;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 import javax.naming.InitialContext;
 
@@ -24,6 +25,7 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang.StringUtils;
 
 @Log4j
 public class NetexLineParserCommand implements Command, Constant {
@@ -53,12 +55,14 @@ public class NetexLineParserCommand implements Command, Constant {
 
             PublicationDeliveryParser parser = (PublicationDeliveryParser) ParserFactory.create(PublicationDeliveryParser.class.getName());
             parser.parse(context);
+            feedLineInfoWithCommonData(context);
 
             Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
             addStats(context, reporter, validationContext, referential);
 			reporter.setFileState(context, fileName, IO_TYPE.INPUT, ActionReporter.FILE_STATE.OK);
             result = SUCCESS;
         } catch (Exception e) {
+            log.error("ERROR",e);
         	reporter.addFileErrorInReport(context, fileName, FILE_ERROR_CODE.INTERNAL_ERROR, e.toString());
             throw e;
         } finally {
@@ -68,52 +72,135 @@ public class NetexLineParserCommand implements Command, Constant {
         return result;
     }
 
+    /**
+     * Feed the current line with information coming from common files.
+     * (Common files are parsed before line files. And each time NetexLineParser is called, referential is cleared.
+     * To avoid data loss, line information are stored in context and then pulled back to current line in feedLineInfoWithCommonData)
+     */
+    private void feedLineInfoWithCommonData(Context context){
+        Referential referential = (Referential) context.get(REFERENTIAL);
+
+
+        for (Line currentLine : referential.getLines().values()) {
+
+            String currentLineId = currentLine.getObjectId();
+            if (!referential.getSharedLines().containsKey(currentLineId))
+              continue;
+
+            Line currentLineInfo = referential.getSharedLines().get(currentLine.getObjectId());
+
+            if (StringUtils.isEmpty(currentLine.getName())){
+                currentLine.setName(currentLineInfo.getName());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getNumber())){
+                currentLine.setNumber(currentLineInfo.getNumber());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getColor())){
+                currentLine.setColor(currentLineInfo.getColor());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getComment())){
+                currentLine.setComment(currentLineInfo.getComment());
+            }
+
+            //transport mode is never null because there is a default value (bus). No need to to a test : override must be made in all cases
+            currentLine.setTransportModeName(currentLineInfo.getTransportModeName());
+
+            if (StringUtils.isEmpty(currentLine.getCodifligne())){
+                currentLine.setCodifligne(currentLineInfo.getCodifligne());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getPublishedName())){
+                currentLine.setPublishedName(currentLineInfo.getPublishedName());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getRegistrationNumber())){
+                currentLine.setRegistrationNumber(currentLineInfo.getRegistrationNumber());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getTextColor())){
+                currentLine.setTextColor(currentLineInfo.getTextColor());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getUrl())){
+                currentLine.setUrl(currentLineInfo.getUrl());
+            }
+
+            if (StringUtils.isEmpty(currentLine.getCreatorId())){
+                currentLine.setCreatorId(currentLineInfo.getCreatorId());
+            }
+
+            if (currentLine.getBike() == null){
+                currentLine.setBike(currentLineInfo.getBike());
+            }
+
+            if (currentLine.getCategoriesForLine() == null){
+                currentLine.setCategoriesForLine(currentLineInfo.getCategoriesForLine());
+            }
+
+            if (currentLine.getCompany() == null){
+                currentLine.setCompany(currentLineInfo.getCompany());
+            }
+
+            if (currentLine.getFlexibleLineProperties() == null){
+                currentLine.setFlexibleLineProperties(currentLineInfo.getFlexibleLineProperties());
+            }
+
+            if (currentLine.getFlexibleService() == null){
+                currentLine.setFlexibleService(currentLineInfo.getFlexibleService());
+            }
+
+            if (currentLine.getFootnotes() == null || currentLine.getFootnotes().isEmpty()){
+                currentLine.setFootnotes(currentLineInfo.getFootnotes());
+            }
+
+            if (currentLine.getGroupOfLines() == null || currentLine.getGroupOfLines().isEmpty()){
+                currentLine.setGroupOfLines(currentLineInfo.getGroupOfLines());
+            }
+
+            if (currentLine.getIntUserNeeds() == null){
+                currentLine.setIntUserNeeds(currentLineInfo.getIntUserNeeds());
+            }
+
+            if (currentLine.getNetwork() == null){
+                currentLine.setNetwork(currentLineInfo.getNetwork());
+            }
+
+            if (currentLine.getMobilityRestrictedSuitable() == null){
+                currentLine.setMobilityRestrictedSuitable(currentLineInfo.getMobilityRestrictedSuitable());
+            }
+
+            if (currentLine.getPosition() == null){
+                currentLine.setPosition(currentLineInfo.getPosition());
+            }
+
+            if (currentLine.getTransportSubModeName() == null  ){
+                currentLine.setTransportSubModeName(currentLineInfo.getTransportSubModeName());
+            }
+
+            if (currentLine.getWheelchairAccess() == null  ){
+                currentLine.setWheelchairAccess(currentLineInfo.getWheelchairAccess());
+            }
+
+            if (currentLine.getUserNeeds() == null  ){
+                currentLine.setUserNeeds(currentLineInfo.getUserNeeds());
+            }
+
+            if (currentLine.getTad() == null  ){
+                currentLine.setTad(currentLineInfo.getTad());
+            }
+
+        }
+
+    }
+
     private void addStats(Context context, ActionReporter reporter, Context validationContext, Referential referential) {
         Line line = referential.getLines().values().iterator().next();
         reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.INPUT);
         reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 1);
 
-/*
-        {
-            Context localContext = (Context) validationContext.get(ChouetteRouteValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.ROUTE, count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(ConnectionLinkValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.CONNECTION_LINK,
-                    count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(TimetableValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.TIMETABLE, count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(StopAreaValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.STOP_AREA, count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(AccessPointValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.ACCESS_POINT,
-                    count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(VehicleJourneyValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.VEHICLE_JOURNEY,
-                    count);
-        }
-        {
-            Context localContext = (Context) validationContext.get(JourneyPatternValidator.LOCAL_CONTEXT);
-            int count = (localContext != null) ? localContext.size() : 0;
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.JOURNEY_PATTERN,
-                    count);
-        }
-*/
     }
 
     public static class DefaultCommandFactory extends CommandFactory {

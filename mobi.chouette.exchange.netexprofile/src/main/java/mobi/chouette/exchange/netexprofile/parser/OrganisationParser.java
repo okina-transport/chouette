@@ -7,6 +7,8 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
@@ -25,11 +27,23 @@ public class OrganisationParser implements Parser, Constant {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		OrganisationsInFrame_RelStructure organisationsInFrameStruct = (OrganisationsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 
+		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+
 		for (JAXBElement<? extends DataManagedObjectStructure> organisationElement : organisationsInFrameStruct.getOrganisation_()) {
 			DataManagedObjectStructure organisation = organisationElement.getValue();
 			Organisation_VersionStructure organisationStruct = (Organisation_VersionStructure) organisation;
+			boolean isOperator = false;
+			String organisationId = organisation.getId();
+			String generatedOrganisationId = null;
 
-			Company company = ObjectFactory.getCompany(referential, organisation.getId());
+			if (organisationStruct instanceof Operator) {
+				isOperator = true;
+				generatedOrganisationId = NetexImportUtil.composeOperatorIdFromNetexId(parameters.getObjectIdPrefix(),organisationId);
+			}else{
+				generatedOrganisationId = NetexImportUtil.composeObjectIdFromNetexId("Authority",parameters.getObjectIdPrefix(),organisationId);
+			}
+
+			Company company = ObjectFactory.getCompany(referential, generatedOrganisationId);
 			company.setObjectVersion(NetexParserUtils.getVersion(organisation));
 			company.setName(ConversionUtil.getValue(organisationStruct.getName()));
 			company.setLegalName(ConversionUtil.getValue(organisationStruct.getLegalName()));
@@ -51,11 +65,7 @@ public class OrganisationParser implements Parser, Constant {
 					company.setOrganisationType(organisationType);
 				}
 			} else {
-				if (organisationStruct instanceof Operator) {
-					company.setOrganisationType(OrganisationTypeEnum.Operator);
-				} else if (organisationStruct instanceof Authority) {
-					company.setOrganisationType(OrganisationTypeEnum.Authority);
-				}
+				company.setOrganisationType(isOperator ? OrganisationTypeEnum.Operator : OrganisationTypeEnum.Authority);
 			}
 
 			// Contact details

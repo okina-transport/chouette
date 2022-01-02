@@ -50,7 +50,7 @@
                             </ContactDetails>
                             <OrganisationType>authority</OrganisationType>
                         </Authority>
-                        <Operator version="1" id="AVI:Operator:WF">
+                        <Operator version="1" id="AVI:Operator:WF:LOC">
                             <CompanyNumber>917330557</CompanyNumber>
                             <Name>Widerøe</Name>
                             <LegalName>WIDERØE'S FLYVESELSKAP AS</LegalName>
@@ -116,6 +116,9 @@
                     <Network changed="2017-02-20T14:39:25.305Z" version="1" id="AVI:Network:WF">
                         <Name>Widerøe</Name>
                         <AuthorityRef ref="AVI:Authority:Avinor" version="1"/>
+                         <members>
+				    <LineRef ref="AVI:Line:WF_TRD-MOL" versionRef="any"/>			
+				  </members>
                     </Network>
                     <routePoints>
                         <RoutePoint version="1" id="AVI:RoutePoint:76522">
@@ -164,7 +167,7 @@
                             <Name>Trondheim-Molde</Name>
                             <TransportMode>air</TransportMode>
                             <PublicCode>TRD-MOL</PublicCode>
-                            <OperatorRef ref="AVI:Operator:WF" version="1"/>
+                            <OperatorRef ref="AVI:Operator:WF:LOC" version="1"/>
                             <routes>
                                 <RouteRef ref="AVI:Route:18696881" version="1"/>
                                 <RouteRef ref="AVI:Route:12636280" version="1"/>

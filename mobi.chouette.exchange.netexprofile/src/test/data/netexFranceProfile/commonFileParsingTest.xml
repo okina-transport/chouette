@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gis="http://www.opengis.net/gml/3.2" xmlns:siri="http://www.siri.org.uk/siri" version="1.1:FR-NETEX_COMMUN-2.2">
+  <PublicationTimestamp>2021-11-02T16:39:17Z</PublicationTimestamp>
+  <ParticipantRef>LOCGUI11021735DG</ParticipantRef>
+  <dataObjects>
+    <GeneralFrame version="any" id="LOCGUI11021735DG:GeneralFrame:NETEX_COMMUN-20211102163917Z:LOC">
+      <TypeOfFrameRef ref="FR:TypeOfFrame:NETEX_COMMUN:">version="1.1:FR-NETEX_COMMUN-2.2"</TypeOfFrameRef>
+      <members>
+        <Network version="any" id="LOCGUI11021735DG:Network:perrier:LOC">
+          <Name>perrier</Name>
+          <members>
+            <LineRef ref="LOCGUI11021735DG:Line:3615-381:LOC" versionRef="any"/>
+          </members>
+          <AuthorityRef ref="LOCGUI11021735DG:Authority:perrier:LOC" version="any"/>
+        </Network>
+        <Network version="any" id="LOCGUI11021735DG:Network:default:LOC">
+          <Name>locgui11021735dg</Name>
+          <members>
+            <LineRef ref="LOCGUI11021735DG:Line:100:LOC" versionRef="any"/>
+            <LineRef ref="LOCGUI11021735DG:Line:142:LOC" versionRef="any"/>
+            <LineRef ref="LOCGUI11021735DG:Line:143:LOC" versionRef="any"/>
+          </members>
+          <AuthorityRef ref="LOCGUI11021735DG:Authority:default:LOC" version="any"/>
+        </Network>
+        <Line version="any" id="LOCGUI11021735DG:Line:3615-381:LOC">
+          <Name>3615</Name>
+          <ShortName>3615</ShortName>
+          <TransportMode>bus</TransportMode>
+          <PublicCode>3615</PublicCode>
+          <PrivateCode>3615-381</PrivateCode>
+          <OperatorRef ref="LOCGUI11021735DG:Operator:perriero:LOC" version="any"/>
+          <Presentation>
+            <Colour>FFFFFF</Colour>
+            <TextColour>000000</TextColour>
+          </Presentation>
+        </Line>
+        <Line version="any" id="LOCGUI11021735DG:Line:142:LOC">
+          <Name>Ligne Express A14 Les Mureaux - La Défense</Name>
+          <ShortName>Ligne Express A14 Les Mureaux - La Défense</ShortName>
+          <TransportMode>bus</TransportMode>
+          <PublicCode>142</PublicCode>
+          <PrivateCode>142</PrivateCode>
+          <OperatorRef ref="LOCGUI11021735DG:Operator:ag1o:LOC" version="any"/>
+          <Presentation>
+            <Colour>2618F2</Colour>
+            <TextColour>000000</TextColour>
+          </Presentation>
+        </Line>
+        <Line version="any" id="LOCGUI11021735DG:Line:143:LOC">
+          <Name>Ligne Express A14 Verneuil - Orgeval - La Défense</Name>
+          <ShortName>Ligne Express A14 Verneuil - Orgeval - La Défense</ShortName>
+          <TransportMode>bus</TransportMode>
+          <PublicCode>143</PublicCode>
+          <PrivateCode>143</PrivateCode>
+          <OperatorRef ref="LOCGUI11021735DG:Operator:ag1o:LOC" version="any"/>
+          <Presentation>
+            <Colour>18F243</Colour>
+            <TextColour>000000</TextColour>
+          </Presentation>
+        </Line>
+        <Line version="any" id="LOCGUI11021735DG:Line:100:LOC">
+          <Name>Les Mureaux &lt;&gt; St-Quentin Gare</Name>
+          <ShortName>Les Mureaux &lt;&gt; St-Quentin Gare</ShortName>
+          <TransportMode>bus</TransportMode>
+          <PublicCode>100</PublicCode>
+          <PrivateCode>100</PrivateCode>
+          <OperatorRef ref="LOCGUI11021735DG:Operator:ag1o:LOC" version="any"/>
+          <Presentation>
+            <Colour>F21818</Colour>
+            <TextColour>000000</TextColour>
+          </Presentation>
+        </Line>
+        <Operator version="any" id="LOCGUI11021735DG:Operator:ag1o:LOC">
+          <CompanyNumber>ag1o</CompanyNumber>
+          <Name>locgui11021735dg</Name>
+          <ContactDetails>
+            <Url>http://www.giro.ca</Url>
+          </ContactDetails>
+          <OrganisationType>operator</OrganisationType>
+        </Operator>
+        <Operator version="any" id="LOCGUI11021735DG:Operator:perriero:LOC">
+          <CompanyNumber>perriero</CompanyNumber>
+          <Name>perrier</Name>
+          <ContactDetails>
+            <Url>http://www.giro.ca</Url>
+          </ContactDetails>
+          <OrganisationType>operator</OrganisationType>
+        </Operator>
+        <Authority version="any" id="LOCGUI11021735DG:Authority:perrier:LOC">
+          <CompanyNumber>perrier</CompanyNumber>
+          <Name>perrier</Name>
+          <ContactDetails>
+            <Url>http://www.giro.ca</Url>
+          </ContactDetails>
+          <OrganisationType>authority</OrganisationType>
+        </Authority>
+        <Authority version="any" id="LOCGUI11021735DG:Authority:default:LOC">
+          <CompanyNumber>default</CompanyNumber>
+          <Name>locgui11021735dg</Name>
+          <ContactDetails>
+            <Url>http://www.giro.ca</Url>
+          </ContactDetails>
+          <OrganisationType>authority</OrganisationType>
+        </Authority>
+      </members>
+    </GeneralFrame>
+  </dataObjects>
+</PublicationDelivery>

@@ -40,6 +40,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 			// prepare importer
 			GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 			GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+			context.put(TIAMAT_ERROR_CODE_CONVERTER, new GtfsErrorCodeConverter());
 			if (importer == null) {
 				Path path = Paths.get(jobData.getPathName(), INPUT);
 				FactoryParameters factoryParameters = new FactoryParameters();
