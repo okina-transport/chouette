@@ -1,12 +1,17 @@
 package mobi.chouette.dao;
 
+import mobi.chouette.core.CoreException;
+import mobi.chouette.core.CoreExceptionCode;
 import mobi.chouette.model.Referential;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
+
+import static mobi.chouette.common.Constant.SUPERSPACE_PREFIX;
 
 @Stateless
 public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements ReferentialDAO {
@@ -37,4 +42,16 @@ public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements R
                 .getSingleResult();
         return result;
     }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void dropSchema(String schema) {
+        em.createNativeQuery("DROP SCHEMA " + schema + " CASCADE" ).executeUpdate();
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void renameSchemaForSimulation(String schema) {
+        em.createNativeQuery("ALTER SCHEMA " + schema + " RENAME TO " + SUPERSPACE_PREFIX + "_" + schema).executeUpdate();
+    }
+
+
 }

@@ -92,4 +92,6 @@ public interface Constant {
 
 	public static final String TIAMAT_ERROR_CODE_CONVERTER = "TiamatErrorCodeConverter";
 
+	public static final String SUPERSPACE_PREFIX = System.getProperty("iev.superspace.prefix");
+
 }

@@ -1,5 +1,6 @@
 package mobi.chouette.dao;
 
+import mobi.chouette.core.CoreException;
 import mobi.chouette.model.Line;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface LineDAO extends GenericDAO<Line> {
     List<Line> findByNetworkId(Long networkId);
 
     List<String> findObjectIdLinesInFirstDataspace(List<Long> ids, String dataspace);
+
+    String removeDeletedLines() throws CoreException;
 }
