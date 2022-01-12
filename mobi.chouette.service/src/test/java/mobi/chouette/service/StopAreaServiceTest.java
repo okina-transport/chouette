@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopAreaDAO;
@@ -334,7 +335,8 @@ public class StopAreaServiceTest extends Arquillian {
 	}
 
 
-	@Test
+	@Ignore
+	//Multi modal points are not saved into the database that stores offer. Only stored in Stop point database
 	public void testStopAreaUpdateForMultiModalStop() throws Exception {
 		cleanAllschemas();
 		ContextHolder.setContext("chouette_gui"); // set tenant schema
@@ -350,6 +352,7 @@ public class StopAreaServiceTest extends Arquillian {
 		utx.begin();
 
 		ContextHolder.setContext("tro");
+
 		StopArea stopAreaParent = assertStopPlace("NSR:StopPlace:4000");
 		Assert.assertEquals(stopAreaParent.getName(), parentName);
 
