@@ -53,7 +53,7 @@ public class NetexInitImportCommand implements Command, Constant {
 		try {
 			NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 
-			
+
 			NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 			context.put(IMPORTER, importer);
 			context.put(NETEX_XPATH_COMPILER, importer.getXPathCompiler());
@@ -61,6 +61,8 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(NETEX_REFERENTIAL, new NetexReferential());
 			context.put(VALIDATION_DATA, new ValidationData());
 			context.put(OPTIMIZED, false);
+			context.put(FILE_TO_REFERENTIAL_STOP_ID_MAP, new HashMap<String, String>());
+			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
 
 			Map<String, NetexProfileValidator> availableProfileValidators = new HashMap<>();
 

@@ -557,7 +557,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             for (GtfsStopTime gtfsStopTime : importer.getStopTimeByTrip().values(gtfsTrip.getTripId())) {
 
-                String stopId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ?  gtfsStopTime.getStopId().replaceFirst("^"+quayIdPrefixToRemove,"") : gtfsStopTime.getStopId();
+                String stopId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ?  gtfsStopTime.getStopId().replaceFirst("^"+quayIdPrefixToRemove,"").trim() : gtfsStopTime.getStopId();
 
                 VehicleJourneyAtStopWrapper vehicleJourneyAtStop = new VehicleJourneyAtStopWrapper(
                         stopId, gtfsStopTime.getStopSequence(), gtfsStopTime.getShapeDistTraveled(), gtfsStopTime.getDropOffType(), gtfsStopTime.getPickupType(), gtfsStopTime.getStopHeadsign());

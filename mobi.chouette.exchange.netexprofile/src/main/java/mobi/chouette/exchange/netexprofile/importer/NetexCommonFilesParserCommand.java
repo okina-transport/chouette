@@ -54,7 +54,7 @@ public class NetexCommonFilesParserCommand implements Command, Constant {
 
             result = SUCCESS;
         } catch (Exception e) {
-        	log.error("Error parsing common file",e);
+            log.error("Error parsing common file",e);
             actionReporter.addFileErrorInReport(context, fileName, ActionReporter.FILE_ERROR_CODE.INTERNAL_ERROR, e.toString());
         } finally {
             log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
@@ -62,8 +62,8 @@ public class NetexCommonFilesParserCommand implements Command, Constant {
 
         return result;
     }
-    
-  
+
+
 
     public static class DefaultCommandFactory extends CommandFactory {
 

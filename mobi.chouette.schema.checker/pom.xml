@@ -3,7 +3,7 @@
   <parent>
     <groupId>mobi.chouette</groupId>
     <artifactId>mobi.chouette</artifactId>
-    <version>5.1.6-mobi-iti-SNAPSHOT</version>
+    <version>5.1.8-mobi-iti-SNAPSHOT</version>
 
   </parent>
   <artifactId>mobi.chouette.schema.checker</artifactId>

@@ -50,6 +50,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
     public static final String _1_NETEX_USE_OF_UNAPPROVED_CODESPACE = "1-NETEXPROFILE-UseOfUnapprovedCodespace";
     public static final String _1_NETEX_DUPLICATE_IDS_ACROSS_LINE_FILES = "1-NETEXPROFILE-DuplicateIdentificatorsAcrossLineFiles";
     public static final String _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE = "1-NETEXPROFILE-UnresolvedExternalReference";
+    public static final String _1_NETEX_TRANSPORT_MODE_MISMATCH = "1-NETEXPROFILE-TransportModeMismatch";
 
     protected static final String OBJECT_IDS = "encountered_ids";
 

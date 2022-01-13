@@ -8,6 +8,8 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.AccessLink;
+import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
@@ -279,11 +281,35 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 			connectionLink.setEndOfLink(newEndStopArea);
 		}
 
+		List<AccessLink> accessLinksList = referential.getSharedAccessLinks().values().stream().collect(Collectors.toList());
+
+		for (AccessLink accessLink: accessLinksList){
 
 
+			String stopAreaId = accessLink.getStopArea().getObjectId();
+			String newStopAreaId = fileToReferentialStopIdMap.get(stopAreaId);
+
+			if (newStopAreaId == null) continue;
+
+			StopArea newStartStopArea = referential.getSharedStopAreas().get(newStopAreaId);
+			accessLink.setStopArea(newStartStopArea);
+
+		}
 
 
+		List<AccessPoint> accessPointList = referential.getSharedAccessPoints().values().stream().collect(Collectors.toList());
+		for (AccessPoint accessPoint: accessPointList){
+			StopArea containedInArea = accessPoint.getContainedIn();
+			if (containedInArea == null)
+				continue;
 
+			String containedInId = containedInArea.getObjectId();
+			String newStopAreaId = fileToReferentialStopIdMap.get(containedInId);
+
+			if (newStopAreaId == null) continue;
+			StopArea newContainedArea = referential.getSharedStopAreas().get(newStopAreaId);
+			accessPoint.setContainedIn(newContainedArea);
+		}
 	}
 
 	private void mapIdsInContainedInStopAreas(Context context, StopArea stopArea){

@@ -129,11 +129,11 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 	private void handlePrefixes(GtfsStop gtfsStop, GtfsImportParameters configuration){
 
 		if (gtfsStop.getLocationType() == LocationType.Station){
-			gtfsStop.setStopId(gtfsStop.getStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),""));
+			gtfsStop.setStopId(gtfsStop.getStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),"").trim());
 		}else{
-			gtfsStop.setStopId(gtfsStop.getStopId().replaceFirst("^"+configuration.getQuayIdPrefixToRemove(),""));
+			gtfsStop.setStopId(gtfsStop.getStopId().replaceFirst("^"+configuration.getQuayIdPrefixToRemove(),"").trim());
 			if (gtfsStop.getParentStation() != null){
-				gtfsStop.setParentStation(gtfsStop.getParentStation().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),""));
+				gtfsStop.setParentStation(gtfsStop.getParentStation().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),"").trim());
 				checkUniqueIdWithParent(gtfsStop);
 			}
 		}
@@ -164,12 +164,12 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		if (gtfsStop.getLocationType() == GtfsStop.LocationType.Station) {
 			stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 
-			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),""));
+			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),"").trim());
 			if (AbstractConverter.getNonEmptyTrimedString(gtfsStop.getParentStation()) != null) {
 				// TODO report
 			}
 		} else {
-			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getQuayIdPrefixToRemove(),""));
+			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getQuayIdPrefixToRemove(),"").trim());
 			if (!importer.getStopById().containsKey(gtfsStop.getParentStation())) {
 				// TODO report
 			}

@@ -253,7 +253,7 @@ public class ValidationConnectionLinks extends AbstractTestValidation {
 
 		ConnectionLink link = null;
 		for (ConnectionLink connectionLink : beans) {
-			if (connectionLink.getObjectId().equals("NINOXE:ConnectionLink:15625448")) {
+			if (connectionLink.getObjectId().equals("TESTSCHEMA:ConnectionLink:15625448")) {
 				link = connectionLink;
 				break;
 			}

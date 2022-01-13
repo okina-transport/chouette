@@ -28,6 +28,7 @@ import java.util.Set;
 public class IDFMCommonNetexProfileValidator extends AbstractIDFMNetexProfileValidator implements NetexProfileValidator {
 
     public static final String NETEX_FRANCE_COMMON_PROFILE = "1.1:FR-NETEX_COMMUN-2.2";
+    public static final String NETEX_FRANCE_PROFILE = "1.1:FR-NETEX-2.2";
 
 
     @Override
@@ -61,6 +62,6 @@ public class IDFMCommonNetexProfileValidator extends AbstractIDFMNetexProfileVal
 
     @Override
     public Collection<String> getSupportedProfiles() {
-        return Arrays.asList(new String[] {NETEX_FRANCE_COMMON_PROFILE});
+        return Arrays.asList(new String[] {NETEX_FRANCE_COMMON_PROFILE,NETEX_FRANCE_PROFILE});
     }
 }

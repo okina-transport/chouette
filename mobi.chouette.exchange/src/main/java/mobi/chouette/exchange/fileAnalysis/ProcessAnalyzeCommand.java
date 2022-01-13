@@ -21,7 +21,9 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
 import org.joda.time.DateTime;
@@ -36,9 +38,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -46,6 +50,7 @@ import java.util.stream.Collectors;
 public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Command, Constant {
 
     public static final String COMMAND = "ProcessAnalyzeCommand";
+    private AnalyzeReport analyzeReport;
 
 
     @Override
@@ -60,13 +65,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         Referential cache = new Referential();
         context.put(CACHE, cache);
         context.put(OPTIMIZED, Boolean.FALSE);
+        analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         Line newValue  = referential.getLines().values().iterator().next();
 
         feedAnalysisWithLineData(context, newValue);
-        feedAnalysisWithStopAreaData(context, newValue);
+        feedAnalysisWithStopAreaData( newValue);
 
         DateTime endingTime = new DateTime();
 
@@ -81,16 +87,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
     /**
-     * Read the context to recover all data of stopAreas and write analysis results into analyzeReport
-     * @param context
+     * recover all data of stopAreas and write analysis results into analyzeReport     *
      * @param line
      */
-    private void feedAnalysisWithStopAreaData(Context context, Line line){
-        AnalyzeReport analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
-        Referential referential = (Referential) context.get(REFERENTIAL);
-
-
-
+    private void feedAnalysisWithStopAreaData(Line line){
         List<StopArea> stopAreaList = new ArrayList<>();
 
 
@@ -98,9 +98,12 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
                 for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
                     Optional<StopArea> stopAreaOpt = Utils.getStopAreaFromScheduledStopPoint(stopPoint);
-                    stopAreaOpt.ifPresent(stopAreaList::add);
+                    if (stopAreaOpt.isPresent()){
+                        StopArea stopArea = stopAreaOpt.get();
+                        stopAreaList.add(stopArea);
+                        checkQuayTransportMode(stopArea,line);
+                    }
                 }
-
             }
         }
 
@@ -118,8 +121,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
      * @param context
      */
     private void feedAnalysisWithLineData(Context context, Line line){
-
-        AnalyzeReport analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
         List<String> vehicleJourneys = new ArrayList<>();
@@ -157,15 +158,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                         if (endOfPeriod.isPresent() && (analyzeReport.getNewestPeriodOfCalendars() == null || (analyzeReport.getNewestPeriodOfCalendars().isBefore(endOfPeriod.get())))){
                             analyzeReport.setNewestPeriodOfCalendars(endOfPeriod.get());
                         }
-
                     }
-
                 }
-
             }
-
         }
-
 
         vehicleJourneys.forEach(vehicleJourney->{
             if(!analyzeReport.getJourneys().contains(vehicleJourney)){
@@ -173,6 +169,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             }
         });
     }
+
 
     private Optional<LocalDate> getMinDateOfTimeTable(Timetable timetable ){
 
@@ -206,6 +203,37 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         endPeriodList.addAll(calendarDates);
         return endPeriodList.isEmpty() ? Optional.empty() : endPeriodList.stream().max(LocalDate::compareTo);
     }
+
+
+    /***
+     * Checks if the transportMode has changed, for the same quay
+     * @param quay
+     *     quay to check
+     * @param line
+     *  line on which the quay is used
+     */
+    private void checkQuayTransportMode( StopArea quay, Line line){
+        TransportModeNameEnum transportMode = line.getTransportModeName();
+        String originalStopId = quay.getOriginalStopId();
+        Set<String> lineUse;
+        String lineAndTransportString = line.getRegistrationNumber() + "(" + transportMode + ")";
+
+        if (!analyzeReport.getQuayLineUse().containsKey(originalStopId)){
+            lineUse = new HashSet<>();
+            analyzeReport.getQuayLineUse().put(originalStopId,lineUse);
+        }else{
+            lineUse = analyzeReport.getQuayLineUse().get(originalStopId);
+        }
+        lineUse.add(lineAndTransportString);
+
+        if (! analyzeReport.getQuayTransportMode().containsKey(originalStopId)){
+            analyzeReport.getQuayTransportMode().put(originalStopId,transportMode);
+        }else if (!analyzeReport.getQuayTransportMode().get(originalStopId).equals(transportMode)){
+            // Same quay has been detected on 2 lines with different transport mode
+            analyzeReport.getQuayWithDifferentTransportModes().add(originalStopId);
+        }
+    }
+
 
 
     public static class DefaultCommandFactory extends CommandFactory {

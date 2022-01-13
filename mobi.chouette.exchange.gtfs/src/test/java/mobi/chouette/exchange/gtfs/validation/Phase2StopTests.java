@@ -83,7 +83,7 @@ public class Phase2StopTests extends AbstractPhase2Tests {
 	public void verifyTest_2_4() throws Exception {
 		log.info(Color.GREEN + "Stop_4 : shared values for stop_name and stop_desc" + Color.NORMAL);
 		Context context = new Context();
-		CheckPointReport result = verifyValidation( log, context, "stop_4", GTFS_2_GTFS_Stop_3,SEVERITY.ERROR, RESULT.NOK,true);
+		CheckPointReport result = verifyValidation( log, context, "stop_4", GTFS_2_GTFS_Stop_3,SEVERITY.WARNING, RESULT.NOK,true);
 
 		Assert.assertEquals(result.getCheckPointErrorCount(), 1, "detail count");
 		int count = 0;

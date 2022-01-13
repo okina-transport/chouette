@@ -39,6 +39,7 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 	private static final String STOP_AREA_5 = "2-NEPTUNE-StopArea-5";
 	private static final String STOP_AREA_6 = "2-NEPTUNE-StopArea-6";
 	private static final String STOP_AREA_7 = "2-NEPTUNE-StopArea-7";
+	public static final String STOP_AREA_8 = "2-NEPTUNE-StopArea-8";
 
 	// TODO move tests to ITLValidator
 	private static final String ITL_1 = "2-NEPTUNE-ITL-1";
@@ -50,7 +51,7 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
     @Override
 	protected void initializeCheckPoints(Context context)
 	{
-		addItemToValidation(context, prefix, "StopArea", 7, "E", "E", "E", "E", "E", "E", "E");
+		addItemToValidation(context, prefix, "StopArea", 8, "E", "E", "E", "E", "E", "E", "E","E");
 
 		try {
 			ITLValidator validator = (ITLValidator) ValidatorFactory.create(ITLValidator.class.getName(), context);

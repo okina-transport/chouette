@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
@@ -8,10 +9,13 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
+import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.BookingArrangement;
@@ -43,10 +47,16 @@ public class LineParser implements Parser, Constant {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
 		LinesInFrame_RelStructure linesInFrameStruct = (LinesInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
+		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+
+		List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
 		for (JAXBElement<? extends DataManagedObjectStructure> lineElement : linesInFrameStruct.getLine_()) {
 			org.rutebanken.netex.model.Line_VersionStructure netexLine = (org.rutebanken.netex.model.Line_VersionStructure) lineElement.getValue();
-			mobi.chouette.model.Line chouetteLine = ObjectFactory.getLine(referential, netexLine.getId());
+			String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",netexLine.getId());
+
+			mobi.chouette.model.Line chouetteLine = ObjectFactory.getLine(referential, lineId);
+			incomingLineList.add(lineId);
 			chouetteLine.setObjectVersion(NetexParserUtils.getVersion(netexLine));
 
 			if (netexLine.getRepresentedByGroupRef() != null) {
@@ -55,12 +65,13 @@ public class LineParser implements Parser, Constant {
 				String dataTypeName = groupIdRef.split(":")[1];
 
 				if (dataTypeName.equals(NetexObjectIdTypes.NETWORK)) {
-					Network ptNetwork = ObjectFactory.getPTNetwork(referential, groupIdRef);
+					String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network",groupIdRef);
+					Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
 					chouetteLine.setNetwork(ptNetwork);
 				} else if (dataTypeName.equals(NetexObjectIdTypes.GROUP_OF_LINES)) {
 					GroupOfLine group = ObjectFactory.getGroupOfLine(referential, groupIdRef);
 					group.addLine(chouetteLine);
-					String networkId = netexReferential.getGroupOfLinesToNetwork().get(groupIdRef);
+					String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network", netexReferential.getGroupOfLinesToNetwork().get(groupIdRef));
 					if (networkId != null) {
 						Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
 						chouetteLine.setNetwork(ptNetwork);
@@ -89,7 +100,8 @@ public class LineParser implements Parser, Constant {
 
 			if (netexLine.getOperatorRef() != null) {
 				String operatorRefValue = netexLine.getOperatorRef().getRef();
-				Company company = ObjectFactory.getCompany(referential, operatorRefValue);
+				String generatedOrganisationId = NetexImportUtil.composeOperatorIdFromNetexId(parameters.getObjectIdPrefix(), operatorRefValue);
+				Company company = ObjectFactory.getCompany(referential, generatedOrganisationId);
 				chouetteLine.setCompany(company);
 			}
 

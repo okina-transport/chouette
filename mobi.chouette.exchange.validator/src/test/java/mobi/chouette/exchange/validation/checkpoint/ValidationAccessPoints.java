@@ -276,9 +276,9 @@ public class ValidationAccessPoints extends AbstractTestValidation {
 		AccessPoint access1 = null;
 		AccessPoint access2 = null;
 		for (AccessPoint accessPoint : beans) {
-			if (accessPoint.getObjectId().equals("NINOXE:AccessPoint:6"))
+			if (accessPoint.getObjectId().equals("TESTSCHEMA:AccessPoint:6"))
 				access1 = accessPoint;
-			if (accessPoint.getObjectId().equals("NINOXE:AccessPoint:7"))
+			if (accessPoint.getObjectId().equals("TESTSCHEMA:AccessPoint:7"))
 				access2 = accessPoint;
 		}
 
