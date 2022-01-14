@@ -34,6 +34,8 @@
             sync, and fail fast if incompatibilities -->
         <netex-java-model.version>2.0.3-NETEX-FR</netex-java-model.version>
         <okina-helpers.version>1.0.23</okina-helpers.version>
+
+        <sonar.projectKey>mobi-iti:chouette</sonar.projectKey>
     </properties>
     <repositories>
         <repository>
@@ -913,6 +915,54 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <sonar.dependencyCheck.jsonReportPath>target/dependency-check-report.json</sonar.dependencyCheck.jsonReportPath>
+                <sonar.dependencyCheck.htmlReportPath>target/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+                <sonar.dependencyCheck.securityHotspot>true</sonar.dependencyCheck.securityHotspot>
+                <sonar.dependencyCheck.summarize>true</sonar.dependencyCheck.summarize>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.5</version>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>6.5.2</version>
+                        <configuration>
+                            <format>ALL</format>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
     <modules>
         <module>mobi.chouette.common</module>

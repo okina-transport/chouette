@@ -384,7 +384,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		for (Route route : line1.getRoutes()) {
 			for (JourneyPattern jp : route.getJourneyPatterns()) {
 				for (VehicleJourney vj : jp.getVehicleJourneys()) {
-					if (vj.getObjectId().equals("NINOXE:VehicleJourney:15627288")) {
+					if (vj.getObjectId().equals("TESTSCHEMA:VehicleJourney:15627288")) {
 						vj1 = vj;
 						jp1 = jp;
 					}
@@ -506,7 +506,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		em.joinTransaction();
 
 		
-		JourneyPattern bean = journeyPatternDao.findByObjectId("ratp:JourneyPattern:1000252_00");
+		JourneyPattern bean = journeyPatternDao.findByObjectId("TESTSCHEMA:JourneyPattern:1000252_00");
 		Assert.assertFalse(bean == null, "No data for test");
 		JourneyPattern jp1 = bean;
 		jp1.setObjectId("NINOXE:JourneyPattern:checkedJP");
@@ -533,7 +533,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		VehicleJourney vj1 = null;
 		
 		for(VehicleJourney vj: jp1.getVehicleJourneys()) {
-			if(vj.getObjectId().equalsIgnoreCase("ratp:VehicleJourney:514572940997334-2-2")) {
+			if(vj.getObjectId().equalsIgnoreCase("TESTSCHEMA:VehicleJourney:514572940997334-2-2")) {
 				vj1 = vj;
 				break;
 			}
@@ -589,7 +589,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		utx.begin();
 		em.joinTransaction();
 
-		JourneyPattern bean = journeyPatternDao.findByObjectId("ratp:JourneyPattern:1000252_00");
+		JourneyPattern bean = journeyPatternDao.findByObjectId("TESTSCHEMA:JourneyPattern:1000252_00");
 		Assert.assertFalse(bean == null, "No data for test");
 		JourneyPattern jp1 = bean;
 		jp1.setObjectId("NINOXE:JourneyPattern:checkedJP");
@@ -618,7 +618,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		VehicleJourney vj1 = null;
 		
 		for(VehicleJourney vj: jp1.getVehicleJourneys()) {
-			if(vj.getObjectId().equalsIgnoreCase("ratp:VehicleJourney:514572940997334-2-2")) {
+			if(vj.getObjectId().equalsIgnoreCase("TESTSCHEMA:VehicleJourney:514572940997334-2-2")) {
 				vj1 = vj;
 				break;
 			}
@@ -676,7 +676,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		utx.begin();
 		em.joinTransaction();
 
-		JourneyPattern bean = journeyPatternDao.findByObjectId("ratp:JourneyPattern:1000252_00");
+		JourneyPattern bean = journeyPatternDao.findByObjectId("TESTSCHEMA:JourneyPattern:1000252_00");
 		Assert.assertFalse(bean == null, "No data for test");
 		JourneyPattern jp1 = bean;
 		jp1.setObjectId("NINOXE:JourneyPattern:checkedJP");
@@ -685,7 +685,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		VehicleJourney vj1 = null;
 		
 		for(VehicleJourney vj: jp1.getVehicleJourneys()) {
-			if(vj.getObjectId().equalsIgnoreCase("ratp:VehicleJourney:514572940997334-2-2")) {
+			if(vj.getObjectId().equalsIgnoreCase("TESTSCHEMA:VehicleJourney:514572940997334-2-2")) {
 				vj1 = vj;
 				break;
 			}
@@ -694,7 +694,7 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 		VehicleJourney vj2 = null;
 		
 		for(VehicleJourney vj: jp1.getVehicleJourneys()) {
-			if(vj.getObjectId().equalsIgnoreCase("ratp:VehicleJourney:514572940997334-2-1")) {
+			if(vj.getObjectId().equalsIgnoreCase("TESTSCHEMA:VehicleJourney:514572940997334-2-1")) {
 				vj2 = vj;
 				break;
 			}

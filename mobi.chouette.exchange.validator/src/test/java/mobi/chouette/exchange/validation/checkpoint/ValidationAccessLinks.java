@@ -166,8 +166,7 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 	}
 
-	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 no test", priority = 6)
-	@Ignore //pour avoir l'autre en preums TODO reactiver
+	@Test(groups = { "accessLink" }, description = "4-AccessLink-1 unicity", priority = 2)
 	public void verifyTest4_1_notest() throws Exception {
 		// 4-AccessLink-1 : check columns
 		log.info(Color.BLUE + "4-AccessLink-1 no test" + Color.NORMAL);
@@ -227,11 +226,12 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 		Assert.assertEquals(detail.getValue(), bean2.getObjectId().split(":")[2], "detail must refer value");
 	}
 
-	@Test(groups = { "accessLink" }, description = "3-AccessLink-1", priority = 1)
+	@Test(groups = { "accessLink" }, description = "3-AccessLink-1", priority = 3)
 	public void averifyTest3_1() throws Exception {
 		// 3-AccessLink-1 : check distance between ends of accessLink
 		//importLines("model.zip", 7, 7, true);
-		importLines("15626053_only.zip", 1, 1, true);
+		//importLines("15626053_only.zip", 1, 1, true);
+		importLines("model.zip", 7, 7, true);
 
 		log.info(Color.BLUE + "3-AccessLink-1" + Color.NORMAL);
 		Context context = initValidatorContext();
@@ -289,14 +289,18 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 
 		List<AccessLink> beans = accessLinkDao.findAll();
 		Assert.assertFalse(beans.isEmpty(), "No data for test");
-		AccessLink link = beans.get(2);
+		AccessLink link = beans.get(0);
 
 		double distance = AbstractTestValidation.distance(link.getStopArea(), link.getAccessPoint());
 
-		link.setLinkDistance(BigDecimal.valueOf(distance - 154300));
+//		link.setLinkDistance(BigDecimal.valueOf(distance - 154300));
+//
+//		link.getStopArea().setLatitude(new BigDecimal(46.09192725456719));
+//		link.getStopArea().setLongitude(new BigDecimal(7.4820704460144105));
 
-		link.getStopArea().setLatitude(new BigDecimal(46.09192725456719));
-		link.getStopArea().setLongitude(new BigDecimal(7.4820704460144105));
+
+		link.setLinkDistance(BigDecimal.valueOf(distance - 50));
+
 
 		ValidationData data = new ValidationData();
 		data.getAccessLinks().addAll(beans);

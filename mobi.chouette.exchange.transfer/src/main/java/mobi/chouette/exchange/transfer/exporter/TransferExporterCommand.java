@@ -66,10 +66,6 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 
 			// TODO : Progression
 
-			Command dataLoader = CommandFactory.create(initialContext, TransferExportDataLoader.class.getName());
-			dataLoader.execute(context);
-			progression.execute(context);
-			int numLines = ((List<Line>) context.get(LINES)).size();
 
 			// Cancel existing jobs since this one is deleting all data
 			for (JobService job : jobServiceManager.activeJobs()) {
@@ -78,13 +74,14 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 				}
 			}
 
+			Command transfertByDump = CommandFactory.create(initialContext, TransferExportByDump.class.getName());
+			transfertByDump.execute(context);
+
 			ContextHolder.setContext(parameters.getDestReferentialName());
 
-			progression.start(context, numLines + 3); // separate saving of stopareas, connectionlinks and accesslinks
 
-			Command dataWriter = CommandFactory.create(initialContext, TransferExportDataWriter.class.getName());
-			dataWriter.execute(context);
-			progression.execute(context);
+			Command postTransfer = CommandFactory.create(initialContext, PostTransferCleanup.class.getName());
+			postTransfer.execute(context);
 
 			result = SUCCESS;
 
@@ -105,6 +102,7 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 
 		return result;
 	}
+
 
 	public static class DefaultCommandFactory extends CommandFactory {
 
