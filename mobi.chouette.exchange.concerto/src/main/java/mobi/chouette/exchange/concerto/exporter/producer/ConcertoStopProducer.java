@@ -58,6 +58,15 @@ public class ConcertoStopProducer extends AbstractProducer {
 			}
 		}
 
+		// On modifie le referent_uuid des stops qui vont avoir leur stop parent/referent supprimés
+		for (ConcertoStopArea concertoStopArea : concertoStopAreas) {
+			for (UUID concertoStopAreaToDelete : concertoStopAreasToDelete.keySet()) {
+				if (concertoStopAreaToDelete.equals(concertoStopArea.getReferent_uuid())){
+					concertoStopArea.setReferent_uuid(concertoStopAreasToDelete.get(concertoStopAreaToDelete));
+				}
+			}
+		}
+
 		concertoStopAreas.removeIf(concertoStopArea -> concertoStopAreasToDelete.containsKey(concertoStopArea.getUuid()));
 
 		for (ConcertoStopArea concertoStopArea : concertoStopAreas) {
