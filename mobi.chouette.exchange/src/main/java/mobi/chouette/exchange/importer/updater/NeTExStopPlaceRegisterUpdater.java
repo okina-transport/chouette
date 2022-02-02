@@ -97,30 +97,32 @@ public class NeTExStopPlaceRegisterUpdater {
 
     @PostConstruct
     public void postConstruct() {
-        initializeClient(null);
+        initializeClient(null, false);
     }
 
-    private void initializeClient(String ref){
+    private void initializeClient(String ref, Boolean keepStopGeolocalisation){
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
+
         if(!StringUtils.isEmpty(ref)) {
             if(url.contains("?"))
                 url = url + "&providerCode=" + ref;
             else
                 url = url + "?providerCode=" + ref;
         }
+
+        if(url.contains("?")){
+            url += "&";
+        }
+        else {
+            url += "?";
+        }
+
+        url += ("keepStopGeolocalisation=" + keepStopGeolocalisation);
+
         String clientId = getAndValidateProperty(KC_CLIENT_ID);
         String clientSecret = getAndValidateProperty(KC_CLIENT_SECRET);
         String realm = getAndValidateProperty(KC_CLIENT_REALM);
         String authServerUrl = getAndValidateProperty(KC_CLIENT_AUTH_URL);
-
-        /**
-         * WORKAROUND
-         */
-//        url = "http://kong:8000/api/stop_places/1.0/netex";
-//        clientId = "chouette";
-//        clientSecret = "314a5096-ed83-45ae-8dd6-904639a68806";
-//        realm = "Naq";
-//        authServerUrl = "https://auth-rmr.nouvelle-aquitaine.pro/auth/";
 
         try {
             this.client = new PublicationDeliveryClient(url, false, new TokenService(clientId, clientSecret, realm, authServerUrl));
@@ -135,8 +137,9 @@ public class NeTExStopPlaceRegisterUpdater {
         String ref = (String) context.get("ref");
 
         Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
+        Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
 
-        initializeClient(ref);
+        initializeClient(ref, keepStopGeolocalisation);
 
         if (client == null) {
             throw new RuntimeException("Looks like PublicationDeliveryClient is not set up correctly. Aborting.");
