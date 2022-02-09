@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>5.1.9-mobi-iti-SNAPSHOT</version>
+		<version>5.1.9-mobi-iti-SNAPSHOT-12063</version>
 
     </parent>
     <artifactId>mobi.chouette.exchange</artifactId>
