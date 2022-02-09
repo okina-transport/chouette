@@ -52,6 +52,9 @@ jobs:
   build:
     docker:
       - image: cimg/openjdk:8.0
+        auth:
+          username: $DOCKERHUB_LOGIN
+          password: $DOCKERHUB_PASSWORD
       - image: mdillon/postgis:9.6
         auth:
           username: $DOCKERHUB_LOGIN
@@ -67,7 +70,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dep-cache-{{ checksum "pom.xml" }}
+          keys:
+            - dep-cache-{{ checksum "pom.xml" }}
+            # fallback to the most recent cache if there is no exact match for this pom.xml
+            - dep-cache-
       # Cannot use go offline and -o because of snapshot dependencies.
       - run:
           name: Download Maven settings
@@ -130,12 +136,18 @@ jobs:
   sonar:
     docker:
       - image: cimg/openjdk:11.0
+        auth:
+          username: $DOCKERHUB_LOGIN
+          password: $DOCKERHUB_PASSWORD
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
       - checkout
       - restore_cache:
-          key: dep-cache-{{ checksum "pom.xml" }}
+          keys:
+            - dep-cache-{{ checksum "pom.xml" }}
+            # fallback to the most recent cache if there is no exact match for this pom.xml
+            - dep-cache-
       - attach_workspace:
           at: ~/project
       - run: *sonar-scan
@@ -145,6 +157,7 @@ jobs:
     steps:
       - setup_remote_docker:
           version: 19.03.13
+          docker_layer_caching: true
       - attach_workspace:
           at: ~/project
       - run: *GCP-auth-docker
@@ -160,11 +173,15 @@ workflows:
             - org-carbon
             - global
       - sonar:
-          context: org-carbon
+          context:
+            - org-carbon
+            - global
           requires:
             - build
       - deploy-docker:
-          context: global
+          context:
+            - org-carbon
+            - global
           requires:
             - sonar
           filters:
