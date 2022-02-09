@@ -120,6 +120,11 @@
             <artifactId>commons-collections</artifactId>
         </dependency>
 
+		<dependency>
+			<groupId>com.okina</groupId>
+			<artifactId>netex-java-model</artifactId>
+		</dependency>
+
 		<!-- Modules -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
