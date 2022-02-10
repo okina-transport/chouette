@@ -54,8 +54,4 @@ public class OkinaAccessibilityAssessment implements Serializable {
 
 	@OneToOne(mappedBy = "accessibilityAssessment")
 	private Line line;
-
-	@OneToOne(mappedBy = "accessibilityAssessment")
-	private Route route;
-
 }

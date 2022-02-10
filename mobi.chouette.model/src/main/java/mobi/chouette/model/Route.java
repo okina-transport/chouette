@@ -282,10 +282,4 @@ public class Route extends NeptuneIdentifiedObject {
 	@DefaultValue("false")
 	private Boolean supprime = false;
 
-	@Getter
-	@Setter
-	@OneToOne
-	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
-	private OkinaAccessibilityAssessment accessibilityAssessment;
-
 }

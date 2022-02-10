@@ -25,7 +25,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "accessibility_assessment")
+@Table(name = "accessibility_limitation")
 @NoArgsConstructor
 @Getter
 @Setter

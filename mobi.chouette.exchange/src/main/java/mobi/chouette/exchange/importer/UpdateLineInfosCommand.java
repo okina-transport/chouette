@@ -5,18 +5,14 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
+import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.BikeAccessEnum;
-import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.TadEnum;
-import mobi.chouette.model.type.WheelchairAccessEnum;
+import mobi.chouette.model.*;
+import mobi.chouette.model.type.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.rutebanken.netex.model.AccessibilityAssessment;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -35,6 +31,12 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
     @EJB
     VehicleJourneyDAO vehicleJourneyDAO;
+
+    @EJB
+    AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+
+    @EJB
+    AccessibilityLimitationDAO accessibilityLimitationDAO;
 
     public static final String COMMAND = "UpdateLineInfosCommand";
 
@@ -80,7 +82,43 @@ public class UpdateLineInfosCommand implements Command, Constant {
             } else {
                 lineToUpdate.setWheelchairAccess(WheelchairAccessEnum.PARTIAL_ACCESS);
             }
+
+            manageAccessibilty(lineToUpdate);
+
         }
+    }
+
+    private void manageAccessibilty(Line lineToUpdate){
+
+        OkinaAccessibilityAssessment accessibilityAssessment = null;
+        OkinaAccessibilityLimitation accessibilityLimitation = null;
+
+        if(lineToUpdate.getAccessibilityAssessment()== null){
+            accessibilityAssessment = new OkinaAccessibilityAssessment();
+            accessibilityAssessment.setLine(lineToUpdate);
+        }else{
+            accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
+        }
+
+        accessibilityLimitation = accessibilityAssessment.getLimitations() == null?
+                new OkinaAccessibilityLimitation():
+                accessibilityAssessment.getLimitations();
+
+        switch (lineToUpdate.getWheelchairAccess()) {
+            case NO_ACCESS:
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.FALSE);
+                break;
+            case PARTIAL_ACCESS:
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.PARTIAL);
+                break;
+            case FULL_ACCESS:
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.TRUE);
+                break;
+        }
+        accessibilityLimitationDAO.create(accessibilityLimitation);
+        accessibilityAssessment.setLimitations(accessibilityLimitation);
+        accessibilityAssessmentDAO.create(accessibilityAssessment);
+        lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
     }
 
     private void manageBike(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {
