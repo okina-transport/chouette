@@ -11,6 +11,7 @@ import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -104,13 +105,13 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
         switch (lineToUpdate.getWheelchairAccess()) {
             case NO_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.FALSE);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE.FALSE);
                 break;
             case PARTIAL_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.PARTIAL);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
                 break;
             case FULL_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnum.TRUE);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
                 break;
         }
         accessibilityLimitationDAO.create(accessibilityLimitation);
