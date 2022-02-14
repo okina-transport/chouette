@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import mobi.chouette.model.type.LimitationStatusEnum;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.persistence.Column;
 
@@ -46,7 +46,7 @@ public class OkinaAccessibilityAssessment implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "mobility_impaired_access")
-	protected LimitationStatusEnum mobilityImpairedAccess = LimitationStatusEnum.UNKNOWN;
+	protected LimitationStatusEnumeration mobilityImpairedAccess = LimitationStatusEnumeration.UNKNOWN;
 
 	@OneToOne
 	@JoinColumn(name = "accessibility_limitation_id", referencedColumnName = "id")
@@ -54,4 +54,5 @@ public class OkinaAccessibilityAssessment implements Serializable {
 
 	@OneToOne(mappedBy = "accessibilityAssessment")
 	private Line line;
+
 }

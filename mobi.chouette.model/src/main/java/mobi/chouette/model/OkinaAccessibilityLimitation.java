@@ -10,7 +10,7 @@ package mobi.chouette.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mobi.chouette.model.type.LimitationStatusEnum;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,26 +39,26 @@ public class OkinaAccessibilityLimitation implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "wheelchair_access")
-	protected LimitationStatusEnum wheelchairAccess;
+	protected LimitationStatusEnumeration wheelchairAccess;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "step_free_access")
-	protected LimitationStatusEnum stepFreeAccess;
+	protected LimitationStatusEnumeration stepFreeAccess;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "escalator_free_access")
-	protected LimitationStatusEnum escalatorFreeAccess;
+	protected LimitationStatusEnumeration escalatorFreeAccess;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "lift_free_access")
-	protected LimitationStatusEnum liftFreeAccess;
+	protected LimitationStatusEnumeration liftFreeAccess;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "audible_signals_available")
-	protected LimitationStatusEnum audibleSignalsAvailable;
+	protected LimitationStatusEnumeration audibleSignalsAvailable;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "visual_signs_available")
-	protected LimitationStatusEnum visualSignsAvailable;
+	protected LimitationStatusEnumeration visualSignsAvailable;
 
 }
