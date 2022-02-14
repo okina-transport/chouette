@@ -14,10 +14,13 @@ public class PublicationDeliveryReflexService {
         InputStream input = null;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+        String icarToken = System.getProperty("iev.icar.token");
+
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestProperty("User-Agent", "Mozaic");
+            connection.setRequestProperty("Authorization","Bearer "+icarToken);
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
             input = connection.getInputStream();
