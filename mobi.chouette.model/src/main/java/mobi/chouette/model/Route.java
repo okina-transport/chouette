@@ -23,7 +23,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.ws.rs.DefaultValue;
@@ -286,6 +285,6 @@ public class Route extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToOne
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
-	private OkinaAccessibilityAssessment accessibilityAssessment;
+	private AccessibilityAssessment accessibilityAssessment;
 
 }

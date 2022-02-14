@@ -11,8 +11,6 @@ import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
-import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.rutebanken.netex.model.AccessibilityAssessment;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -90,18 +88,18 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
     private void manageAccessibilty(Line lineToUpdate){
 
-        OkinaAccessibilityAssessment accessibilityAssessment = null;
-        OkinaAccessibilityLimitation accessibilityLimitation = null;
+        AccessibilityAssessment accessibilityAssessment = null;
+        AccessibilityLimitation accessibilityLimitation = null;
 
         if(lineToUpdate.getAccessibilityAssessment()== null){
-            accessibilityAssessment = new OkinaAccessibilityAssessment();
+            accessibilityAssessment = new AccessibilityAssessment();
             accessibilityAssessment.setLine(lineToUpdate);
         }else{
             accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
         }
 
         accessibilityLimitation = accessibilityAssessment.getLimitations() == null?
-                new OkinaAccessibilityLimitation():
+                new AccessibilityLimitation():
                 accessibilityAssessment.getLimitations();
 
         switch (lineToUpdate.getWheelchairAccess()) {

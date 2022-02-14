@@ -1,10 +1,10 @@
 package mobi.chouette.dao;
 
 
-import mobi.chouette.model.OkinaAccessibilityLimitation;
+import mobi.chouette.model.AccessibilityLimitation;
 
 
-public interface AccessibilityLimitationDAO extends GenericDAO<OkinaAccessibilityLimitation> {
+public interface AccessibilityLimitationDAO extends GenericDAO<AccessibilityLimitation> {
 
 
 }

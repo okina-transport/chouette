@@ -6,6 +6,8 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DestinationDisplay;
@@ -13,8 +15,6 @@ import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.OkinaAccessibilityAssessment;
-import mobi.chouette.model.OkinaAccessibilityLimitation;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.ScheduledStopPoint;
@@ -30,9 +30,6 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
-import org.rutebanken.netex.model.AccessibilityAssessment;
-import org.rutebanken.netex.model.AccessibilityLimitation;
-import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralFrame;
 import org.rutebanken.netex.model.General_VersionFrameStructure;
@@ -140,12 +137,12 @@ public class NetexFranceCommonFileTest {
         Assert.assertEquals(firstLine.getShortName().getValue(),"testPublishedName");
         Assert.assertEquals(firstLine.getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
 
-        AccessibilityAssessment firstLineAssessment = firstLine.getAccessibilityAssessment();
+        org.rutebanken.netex.model.AccessibilityAssessment firstLineAssessment = firstLine.getAccessibilityAssessment();
         Assert.assertNotNull(firstLineAssessment);
 
         Assert.assertEquals(firstLineAssessment.getMobilityImpairedAccess(),LimitationStatusEnumeration.PARTIAL);
 
-        AccessibilityLimitation limitations = firstLineAssessment.getLimitations().getAccessibilityLimitation();
+        org.rutebanken.netex.model.AccessibilityLimitation limitations = firstLineAssessment.getLimitations().getAccessibilityLimitation();
         Assert.assertNotNull(limitations);
         Assert.assertNull(limitations.getWheelchairAccess());
         Assert.assertEquals(limitations.getStepFreeAccess(),LimitationStatusEnumeration.FALSE);
@@ -216,10 +213,10 @@ public class NetexFranceCommonFileTest {
         line.setName("TestLineName");
         line.setPublishedName("testPublishedName");
 
-        OkinaAccessibilityAssessment accessibilityAssessment = new OkinaAccessibilityAssessment();
+        AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
         accessibilityAssessment.setId(3l);
         accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
-        OkinaAccessibilityLimitation limitations = new OkinaAccessibilityLimitation();
+        AccessibilityLimitation limitations = new AccessibilityLimitation();
         limitations.setStepFreeAccess(LimitationStatusEnumeration.FALSE);
         limitations.setLiftFreeAccess(LimitationStatusEnumeration.TRUE);
         limitations.setEscalatorFreeAccess(LimitationStatusEnumeration.PARTIAL);

@@ -544,7 +544,7 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Setter
 	@OneToOne
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
-	private OkinaAccessibilityAssessment accessibilityAssessment;
+	private AccessibilityAssessment accessibilityAssessment;
 
 	public boolean equals(Object o) {
 		if (this == o) return true;

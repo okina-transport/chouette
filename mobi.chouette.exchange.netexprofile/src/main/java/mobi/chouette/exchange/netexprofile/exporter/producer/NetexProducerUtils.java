@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
+import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
@@ -11,8 +12,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.NeptuneObject;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.OkinaAccessibilityAssessment;
-import mobi.chouette.model.OkinaAccessibilityLimitation;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
@@ -22,8 +22,6 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.rutebanken.netex.model.AccessibilityAssessment;
-import org.rutebanken.netex.model.AccessibilityLimitation;
 import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.EntityInVersionStructure;
@@ -370,8 +368,8 @@ public class NetexProducerUtils {
         if (source.getAccessibilityAssessment() == null)
             return;
 
-        OkinaAccessibilityAssessment sourceAssessment = source.getAccessibilityAssessment();
-        AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+        AccessibilityAssessment sourceAssessment = source.getAccessibilityAssessment();
+        org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment = new org.rutebanken.netex.model.AccessibilityAssessment();
         if (sourceAssessment.getMobilityImpairedAccess() != null) {
             accessibilityAssessment.setMobilityImpairedAccess(sourceAssessment.getMobilityImpairedAccess());
         }
@@ -380,10 +378,10 @@ public class NetexProducerUtils {
         accessibilityAssessment.setId("MOBIITI:LineAccessibilityAssessment:" + sourceAssessment.getId());
 
 
-        OkinaAccessibilityLimitation sourceLimitations = sourceAssessment.getLimitations();
+        AccessibilityLimitation sourceLimitations = sourceAssessment.getLimitations();
 
         if (sourceLimitations != null) {
-            AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
+            org.rutebanken.netex.model.AccessibilityLimitation accessibilityLimitation = new org.rutebanken.netex.model.AccessibilityLimitation();
             AccessibilityLimitations_RelStructure accessibilityLimitations_relStructure = new AccessibilityLimitations_RelStructure();
 
             if (sourceLimitations.getAudibleSignalsAvailable() != null) {

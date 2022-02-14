@@ -36,7 +36,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class OkinaAccessibilityAssessment implements Serializable {
+public class AccessibilityAssessment implements Serializable {
 
 	@Id
 	@SequenceGenerator(name = "accessibility_assessment_id_seq", sequenceName = "accessibility_assessment_id_seq", allocationSize = 1)
@@ -50,7 +50,7 @@ public class OkinaAccessibilityAssessment implements Serializable {
 
 	@OneToOne
 	@JoinColumn(name = "accessibility_limitation_id", referencedColumnName = "id")
-	protected OkinaAccessibilityLimitation limitations;
+	protected AccessibilityLimitation limitations;
 
 	@OneToOne(mappedBy = "accessibilityAssessment")
 	private Line line;

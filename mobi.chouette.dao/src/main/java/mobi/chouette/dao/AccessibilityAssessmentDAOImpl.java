@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import mobi.chouette.model.OkinaAccessibilityAssessment;
+import mobi.chouette.model.AccessibilityAssessment;
 
 
 import javax.ejb.Stateless;
@@ -9,10 +9,10 @@ import javax.persistence.PersistenceContext;
 
 
 @Stateless (name="AccessibilityAssessmentDAO")
-public class AccessibilityAssessmentDAOImpl extends GenericDAOImpl<OkinaAccessibilityAssessment> implements AccessibilityAssessmentDAO {
+public class AccessibilityAssessmentDAOImpl extends GenericDAOImpl<AccessibilityAssessment> implements AccessibilityAssessmentDAO {
 
 	public AccessibilityAssessmentDAOImpl() {
-		super(OkinaAccessibilityAssessment.class);
+		super(AccessibilityAssessment.class);
 	}
 
 	@PersistenceContext(unitName = "referential")
