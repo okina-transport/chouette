@@ -1,4 +1,4 @@
-package mobi.chouette.exchange.netexprofile.importer.validation.idfm;
+package mobi.chouette.exchange.netexprofile.importer.validation.france;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
@@ -6,46 +6,30 @@ import mobi.chouette.exchange.netexprofile.importer.util.DataLocationHelper;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidatorFactory;
-import mobi.chouette.exchange.netexprofile.importer.validation.norway.DummyStopReferentialIdValidator;
-import mobi.chouette.exchange.netexprofile.importer.validation.norway.ServiceJourneyInterchangeIgnorer;
-import mobi.chouette.exchange.netexprofile.importer.validation.norway.StopPlaceRegistryIdValidator;
 import mobi.chouette.exchange.netexprofile.util.NetexIdExtractorHelper;
 import mobi.chouette.exchange.validation.ValidationData;
-import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.Codespace;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
-import org.apache.commons.lang.StringUtils;
-import org.rutebanken.netex.model.BookingAccessEnumeration;
-import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.FlexibleServiceEnumeration;
-import org.rutebanken.netex.model.PurchaseMomentEnumeration;
-import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 
 import javax.xml.xpath.XPathExpressionException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Log4j
-public class IDFMLineNetexProfileValidator extends AbstractIDFMNetexProfileValidator implements NetexProfileValidator {
+public class FranceLineNetexProfileValidator extends AbstractFranceNetexProfileValidator implements NetexProfileValidator {
 
     public static final String NAME = "IDFMLineNetexProfileValidator";
     public static final String NETEX_FRANCE_RESEAU_PROFILE = "1.1:FR-NETEX_RESEAU-2.2";
 
 
-    public IDFMLineNetexProfileValidator() {
+    public FranceLineNetexProfileValidator() {
     }
 
     @Override
@@ -94,18 +78,18 @@ public class IDFMLineNetexProfileValidator extends AbstractIDFMNetexProfileValid
     public static class DefaultValidatorFactory extends NetexProfileValidatorFactory {
         @Override
         protected NetexProfileValidator create(Context context) throws ClassNotFoundException {
-            NetexProfileValidator instance = (NetexProfileValidator) context.get(IDFMLineNetexProfileValidator.class.getName());
+            NetexProfileValidator instance = (NetexProfileValidator) context.get(FranceLineNetexProfileValidator.class.getName());
             if (instance == null) {
-                instance = new IDFMLineNetexProfileValidator();
-                context.put(IDFMLineNetexProfileValidator.class.getName(), instance);
+                instance = new FranceLineNetexProfileValidator();
+                context.put(FranceLineNetexProfileValidator.class.getName(), instance);
             }
             return instance;
         }
     }
 
     static {
-        NetexProfileValidatorFactory.factories.put(IDFMLineNetexProfileValidator.class.getName(),
-                new IDFMLineNetexProfileValidator.DefaultValidatorFactory());
+        NetexProfileValidatorFactory.factories.put(FranceLineNetexProfileValidator.class.getName(),
+                new FranceLineNetexProfileValidator.DefaultValidatorFactory());
     }
 
     @Override

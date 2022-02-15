@@ -6,17 +6,17 @@ import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarIDFMProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarFranceProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.DirectionProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.LineFranceProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetworkFranceProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.OrganisationFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.RouteIDFMProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.RouteFranceProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.RouteLinkProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyIDFMProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyPatternIDFMProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyFranceProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyPatternFranceProducer;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Company;
@@ -28,8 +28,6 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.LocationStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
@@ -50,17 +48,17 @@ import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProduce
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PASSENGER_STOP_ASSIGNMENT;
 
-public class NetexLineDataIDFMProducer extends NetexProducer implements Constant {
+public class NetexLineDataFranceProducer extends NetexProducer implements Constant {
 
     private static OrganisationFranceProducer organisationFranceProducer = new OrganisationFranceProducer();
     private static NetworkFranceProducer networkFranceProducer = new NetworkFranceProducer();
     private static LineFranceProducer lineFranceProducer = new LineFranceProducer();
-    private static RouteIDFMProducer routeIDFMProducer = new RouteIDFMProducer();
+    private static RouteFranceProducer routeFranceProducer = new RouteFranceProducer();
     private static RouteLinkProducer routeLinkProducer = new RouteLinkProducer();
-    private static CalendarIDFMProducer calendarIDFMProducer = new CalendarIDFMProducer();
-    private static ServiceJourneyIDFMProducer serviceJourneyIDFMProducer = new ServiceJourneyIDFMProducer();
+    private static CalendarFranceProducer calendarFranceProducer = new CalendarFranceProducer();
+    private static ServiceJourneyFranceProducer serviceJourneyFranceProducer = new ServiceJourneyFranceProducer();
     private static DirectionProducer directionProducer = new DirectionProducer();
-    private static ServiceJourneyPatternIDFMProducer serviceJourneyPatternIDFMProducer = new ServiceJourneyPatternIDFMProducer();
+    private static ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
 
     protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
 
@@ -100,7 +98,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
     }
 
     private void produceAndCollectCalendarData(ExportableData exportableData, ExportableNetexData exportableNetexData) {
-        calendarIDFMProducer.produce(exportableData, exportableNetexData);
+        calendarFranceProducer.produce(exportableData, exportableNetexData);
     }
 
     /**
@@ -196,13 +194,13 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         }
 
         for (mobi.chouette.model.Route neptuneRoute : exportableData.getRoutes()) {
-            exportableNetexData.getRoutes().add(routeIDFMProducer.produce(context, neptuneRoute));
+            exportableNetexData.getRoutes().add(routeFranceProducer.produce(context, neptuneRoute));
         }
 
         producerAndCollectDirection(exportableData.getRoutes(), exportableNetexData);
 
         for (JourneyPattern neptuneJourneyPattern : exportableData.getJourneyPatterns()) {
-            exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternIDFMProducer.produce(neptuneJourneyPattern));
+            exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternFranceProducer.produce(neptuneJourneyPattern));
 
             for (RouteSection routeSection : neptuneJourneyPattern.getRouteSections()) {
                 org.rutebanken.netex.model.RouteLink routeLink = routeLinkProducer.produce(context, routeSection);
@@ -218,7 +216,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
-            exportableNetexData.getServiceJourneys().add(serviceJourneyIDFMProducer.produce(context, vehicleJourney));
+            exportableNetexData.getServiceJourneys().add(serviceJourneyFranceProducer.produce(context, vehicleJourney));
         }
     }
 

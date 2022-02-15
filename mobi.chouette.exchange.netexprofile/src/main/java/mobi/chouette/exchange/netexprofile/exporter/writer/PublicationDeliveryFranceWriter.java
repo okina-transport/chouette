@@ -7,9 +7,9 @@ import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.NetexFragmentMode;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMCalendarNetexProfileValidator;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMCommonNetexProfileValidator;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMLineNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceCalendarNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceCommonNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceLineNetexProfileValidator;
 import org.rutebanken.netex.model.TypeOfFrameRefStructure;
 
 import javax.xml.bind.JAXBException;
@@ -33,7 +33,7 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PARTIC
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PUBLICATION_DELIVERY;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PUBLICATION_TIMESTAMP;
 
-public class PublicationDeliveryIDFMWriter extends AbstractNetexWriter {
+public class PublicationDeliveryFranceWriter extends AbstractNetexWriter {
     public static void write(Context context, XMLStreamWriter writer, ExportableData exportableData, ExportableNetexData exportableNetexData,
                              NetexFragmentMode fragmentMode, Marshaller marshaller) {
 
@@ -78,11 +78,11 @@ public class PublicationDeliveryIDFMWriter extends AbstractNetexWriter {
 
     private static String getProfileVersion(NetexFragmentMode fragmentMode){
         if(fragmentMode.equals(NetexFragmentMode.LINE)){
-            return IDFMLineNetexProfileValidator.NETEX_FRANCE_RESEAU_PROFILE;
+            return FranceLineNetexProfileValidator.NETEX_FRANCE_RESEAU_PROFILE;
         }else if(fragmentMode.equals(NetexFragmentMode.CALENDAR)){
-            return IDFMCalendarNetexProfileValidator.NETEX_FRANCE_CALENDAR_PROFILE;
+            return FranceCalendarNetexProfileValidator.NETEX_FRANCE_CALENDAR_PROFILE;
         }else if(fragmentMode.equals(NetexFragmentMode.COMMON)){
-            return IDFMCommonNetexProfileValidator.NETEX_FRANCE_COMMON_PROFILE;
+            return FranceCommonNetexProfileValidator.NETEX_FRANCE_COMMON_PROFILE;
         }else {
             return NETEX_PROFILE_VERSION;
         }
@@ -92,16 +92,16 @@ public class PublicationDeliveryIDFMWriter extends AbstractNetexWriter {
     private static void writeGeneralFrameElement(Context context, XMLStreamWriter writer, ExportableNetexData exportableNetexData, String timestamp, NetexFragmentMode fragmentMode, Marshaller marshaller) {
 
         if(fragmentMode.equals(NetexFragmentMode.LINE)){
-            GeneralFrameIDFMWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_LIGNE);
-            GeneralFrameIDFMWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_HORAIRE);
+            GeneralFrameFranceWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_LIGNE);
+            GeneralFrameFranceWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_HORAIRE);
         }
 
         if(fragmentMode.equals(NetexFragmentMode.CALENDAR)){
-            GeneralFrameIDFMWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_CALENDRIER);
+            GeneralFrameFranceWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_CALENDRIER);
         }
 
         if(fragmentMode.equals(NetexFragmentMode.COMMON)){
-            GeneralFrameIDFMWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_COMMUN);
+            GeneralFrameFranceWriter.write(writer, context, exportableNetexData, fragmentMode, marshaller, timestamp, NETEX_COMMUN);
         }
     }
 

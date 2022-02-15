@@ -48,17 +48,17 @@ import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.exchange.netexprofile.Constant.EXPORTABLE_NETEX_DATA;
 import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
 
-public class NetexLineDataIDFMProducerTest {
+public class NetexLineDataFranceProducerTest {
 
     @Test
-    public void exportOffreIDFM() throws Exception {
+    public void exportOffreFrance() throws Exception {
 
         Context context = createContext();
 
         context.put(CREATION_DATE,LocalDateTime.now());
 
-        NetexLineDataIDFMProducer netexLineDataIDFMProducer = new NetexLineDataIDFMProducer();
-        netexLineDataIDFMProducer.produce(context);
+        NetexLineDataFranceProducer netexLineDataFranceProducer = new NetexLineDataFranceProducer();
+        netexLineDataFranceProducer.produce(context);
 
         ExportableNetexData exportableNetexDataResult = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
 

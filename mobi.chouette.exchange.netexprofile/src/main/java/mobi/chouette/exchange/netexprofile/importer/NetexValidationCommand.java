@@ -30,7 +30,8 @@ public class NetexValidationCommand implements Command, Constant {
         try {
 
             NetexProfileValidator validator = (NetexProfileValidator) context.get(NETEX_PROFILE_VALIDATOR);
-            validator.validate(context);
+            // TODO Validation propre à l'appli désactivée pour le moment (voir NetexSchemaValidationCommand pour la validation xsd)
+//            validator.validate(context);
 
             result = !reporter.hasFileValidationErrors(context, fileName);
         } catch (Exception e) {

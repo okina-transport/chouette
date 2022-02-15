@@ -81,7 +81,7 @@ public class NetexFranceCommonFileTest {
 
         context.put(CREATION_DATE,LocalDateTime.now());
 
-        NetexLineDataIDFMProducer producer = new NetexLineDataIDFMProducer();
+        NetexLineDataFranceProducer producer = new NetexLineDataFranceProducer();
         producer.produce(context);
 
         NetexCommonDataProducerCommand commonPoducer = new NetexCommonDataProducerCommand();

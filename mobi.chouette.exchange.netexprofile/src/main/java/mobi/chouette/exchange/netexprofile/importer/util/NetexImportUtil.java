@@ -23,7 +23,7 @@ public class NetexImportUtil {
     public static boolean isCommonFile(String fileName){
 
         String fileNameLowerCase = fileName.toLowerCase();
-        List<String> commonFiles = Arrays.asList("calendriers.xml", "commun.xml","arrets.xml ","reseaux.xml");
+        List<String> commonFiles = Arrays.asList("calendriers.xml", "commun.xml","arrets.xml","reseaux.xml");
 
         //mobiiti stops file has a custom file name starting with "ARRET_"
         return fileNameLowerCase.startsWith("arret_") || commonFiles.stream()

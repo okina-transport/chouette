@@ -1,4 +1,4 @@
-package mobi.chouette.exchange.netexprofile.importer.validation.idfm;
+package mobi.chouette.exchange.netexprofile.importer.validation.france;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j
-public abstract class AbstractIDFMNetexProfileValidator extends AbstractNetexProfileValidator {
+public abstract class AbstractFranceNetexProfileValidator extends AbstractNetexProfileValidator {
 
     public static final String PROFILE_IDFM_FR1 = "1.1:FR-NETEX-2.2-z";
 
@@ -168,7 +168,7 @@ public abstract class AbstractIDFMNetexProfileValidator extends AbstractNetexPro
     protected void verifyUseOfVersionOnLocalElements(Context context, Set<IdVersion> localIds) {
         ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
 
-        Set<IdVersion> nonVersionedAnyLocalIds = localIds.stream().filter(e -> e.getVersion() != null && !e.getVersion().equals("any")).collect(Collectors.toSet());
+        Set<IdVersion> nonVersionedAnyLocalIds = localIds.stream().filter(e -> e.getVersion() != null).collect(Collectors.toSet());
         if (nonVersionedAnyLocalIds.size() > 0) {
             for (IdVersion id : nonVersionedAnyLocalIds) {
                 validationReporter.addCheckPointReportError(context, _1_NETEX_IDFM_VERSION_NOT_ANY_ON_LOCAL_ELEMENTS, null, DataLocationHelper.findDataLocation(id),

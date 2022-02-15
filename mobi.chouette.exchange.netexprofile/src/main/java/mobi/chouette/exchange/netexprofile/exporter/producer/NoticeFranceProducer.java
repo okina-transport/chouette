@@ -19,7 +19,7 @@ import java.util.Collection;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NOTICE_ASSIGNMENT;
 
-public class NoticeIDFMProducer {
+public class NoticeFranceProducer {
 
     public static void addNoticeAndNoticeAssignments(Context context, ExportableNetexData exportableNetexData, ServiceJourney serviceJourney,
                                                      Collection<Footnote> footnotes) {

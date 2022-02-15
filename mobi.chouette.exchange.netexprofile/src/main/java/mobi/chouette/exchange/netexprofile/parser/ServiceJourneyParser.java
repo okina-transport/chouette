@@ -197,7 +197,8 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			VehicleJourneyAtStop vehicleJourneyAtStop = ObjectFactory.getVehicleJourneyAtStop(referential, passingTimeId);
 			vehicleJourneyAtStop.setObjectVersion(NetexParserUtils.getVersion(passingTime));
 
-			StopPoint stopPoint = getStopPointFromJourneyPattern(journeyPattern, i );
+//			StopPoint stopPoint = getStopPointFromJourneyPattern(journeyPattern, i);
+			StopPoint stopPoint = journeyPattern.getStopPoints().get(i);
 			vehicleJourneyAtStop.setStopPoint(stopPoint);
 
 			parsePassingTimes(passingTime, vehicleJourneyAtStop);
@@ -222,7 +223,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		return journeyPattern.getStopPoints().stream()
 										     .filter(stopPoint -> stopPoint.getPosition().equals(index))
 				                             .findFirst()
-										     .orElseThrow(() -> new RuntimeException("Unable to find stopPoint with position:" + index  + " in journeyPattern:" + journeyPattern.getObjectId()));
+										     .orElseThrow(() -> new RuntimeException("Unable to find stopPoint with position:" + index  + " in journeyPattern:" + journeyPattern.getObjectId() + " in line : " + journeyPattern.getRoute().getLine().getObjectId()));
 	}
 
 	// TODO add support for other time zones and zone offsets, for now only handling UTC

@@ -17,7 +17,6 @@ import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.LuggageCarriageEnumeration;
-import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.ServiceFacilitySet;
 import org.rutebanken.netex.model.ServiceFacilitySets_RelStructure;
 import org.rutebanken.netex.model.ServiceJourney;
@@ -30,7 +29,7 @@ import java.util.List;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 
-public class ServiceJourneyIDFMProducer {
+public class ServiceJourneyFranceProducer {
 
     private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
 
@@ -48,7 +47,7 @@ public class ServiceJourneyIDFMProducer {
         NetexProducerUtils.populateReferenceIDFM(journeyPattern, journeyPatternRefStruct);
         serviceJourney.setJourneyPatternRef(netexFactory.createJourneyPatternRef(journeyPatternRefStruct));
 
-        NoticeIDFMProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, serviceJourney, vehicleJourney.getFootnotes());
+        NoticeFranceProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, serviceJourney, vehicleJourney.getFootnotes());
 
 
         if (vehicleJourney.getTimetables().size() > 0) {

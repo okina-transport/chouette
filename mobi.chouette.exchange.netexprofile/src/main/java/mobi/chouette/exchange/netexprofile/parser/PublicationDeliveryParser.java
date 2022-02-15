@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +58,10 @@ import org.rutebanken.netex.model.OperatingPeriodsInFrame_RelStructure;
 import org.rutebanken.netex.model.OrganisationsInFrame_RelStructure;
 import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.Quay;
+import org.rutebanken.netex.model.QuayAssignmentView;
+import org.rutebanken.netex.model.QuayRefStructure;
+import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.rutebanken.netex.model.RouteLink;
 import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
@@ -71,6 +76,7 @@ import org.rutebanken.netex.model.SiteConnection;
 import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopAssignment_VersionStructure;
 import org.rutebanken.netex.model.StopAssignmentsInFrame_RelStructure;
+import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
 import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
 import org.rutebanken.netex.model.TimetableFrame;
@@ -205,7 +211,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			}
 			parseServiceFrames(context, serviceFrames, isCommonDelivery);
 			parseServiceCalendarFrame(context, serviceCalendarFrames);
-			parseGeneralFrames(context,generalFrames);
+			parseGeneralFrames(context, generalFrames);
 
 			if (!isCommonDelivery) {
 				parseTimetableFrames(context, timetableFrames);
@@ -485,6 +491,9 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<SiteConnection> siteConnections = NetexObjectUtil.getMembers(org.rutebanken.netex.model.SiteConnection.class, members);
 			parseSiteConnections(context,siteConnections);
 
+			List<StopPlace> stopPlaces = NetexObjectUtil.getMembers(org.rutebanken.netex.model.StopPlace.class, members);
+			List<Quay> quays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.Quay.class, members);
+			parseStopPlaces(context, stopPlaces, quays);
 		}
 	}
 
@@ -902,6 +911,30 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 		context.put(NETEX_LINE_DATA_CONTEXT, siteConnections);
 		siteConnectionParser.parse(context);
+	}
+
+	private void parseStopPlaces(Context context, List<StopPlace> stopPlaces, List<Quay> quays) throws Exception {
+		if (stopPlaces.isEmpty() || quays.isEmpty())
+			return;
+
+		for(StopPlace stopPlace : stopPlaces){
+			List<Quay> quayList = quays
+						.stream()
+						.filter(quay -> stopPlace.getQuays().getQuayRefOrQuay()
+								.stream()
+								.anyMatch(o -> quay.getId().equals(((QuayRefStructure) o).getRef())))
+						.collect(Collectors.toList());
+
+			Quays_RelStructure quays_relStructure = new Quays_RelStructure();
+			quays_relStructure.getQuayRefOrQuay().addAll(quayList);
+			stopPlace.withQuays(quays_relStructure);
+		}
+
+		StopPlacesInFrame_RelStructure stopPlacesStruct = new StopPlacesInFrame_RelStructure();
+		stopPlacesStruct.getStopPlace().addAll(stopPlaces);
+
+		context.put(NETEX_LINE_DATA_CONTEXT, stopPlacesStruct);
+		stopPlaceParser.parse(context);
 	}
 
 	private void parseBranding(Context context, Branding netexBranding) {

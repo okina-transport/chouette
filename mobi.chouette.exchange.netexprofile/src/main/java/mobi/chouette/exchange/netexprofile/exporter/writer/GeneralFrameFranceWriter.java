@@ -15,7 +15,7 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GENERA
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NETEX_HORAIRE;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NETEX_LIGNE;
 
-public class GeneralFrameIDFMWriter {
+public class GeneralFrameFranceWriter {
 
     public static void write(XMLStreamWriter writer, Context context, ExportableNetexData exportableNetexData, NetexFragmentMode fragmentMode,
                              Marshaller marshaller, String timestamp, String typeNetex) {

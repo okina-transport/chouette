@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CalendarIDFMProducer extends NetexProducer {
+public class CalendarFranceProducer extends NetexProducer {
 
     public void produce(ExportableData exportableData, ExportableNetexData exportableNetexData) {
         int uniqueID = 0;

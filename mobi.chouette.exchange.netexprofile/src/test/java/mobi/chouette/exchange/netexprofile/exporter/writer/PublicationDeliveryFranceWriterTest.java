@@ -6,7 +6,6 @@ import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.NetexFragmentMode;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
-import mobi.chouette.exchange.netexprofile.exporter.producer.LineProducer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.RouteProducer;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import org.rutebanken.netex.model.DayTypeRefStructure;
@@ -33,7 +32,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -51,7 +49,7 @@ import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProduce
 import static org.jboss.util.property.jmx.SystemPropertyClassValue.log;
 
 
-public class PublicationDeliveryIDFMWriterTest {
+public class PublicationDeliveryFranceWriterTest {
 
 
     private static RouteProducer routeProducer = new RouteProducer();
@@ -180,7 +178,7 @@ public class PublicationDeliveryIDFMWriterTest {
             writer = NetexXMLProcessingHelperFactory.createXMLWriter(filePath);
 
             writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
-            PublicationDeliveryIDFMWriter.write(context, writer, exportableData, exportableNetexData, NetexFragmentMode.LINE, marshaller);
+            PublicationDeliveryFranceWriter.write(context, writer, exportableData, exportableNetexData, NetexFragmentMode.LINE, marshaller);
 
         } catch (XMLStreamException | IOException e) {
             log.error("Could not produce XML file", e);

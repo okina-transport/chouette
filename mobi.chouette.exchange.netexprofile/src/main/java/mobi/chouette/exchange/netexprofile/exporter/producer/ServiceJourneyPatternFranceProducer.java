@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
+public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
     public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();

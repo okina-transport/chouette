@@ -1,5 +1,4 @@
-package mobi.chouette.exchange.netexprofile.importer.validation.idfm;
-
+package mobi.chouette.exchange.netexprofile.importer.validation.france;
 
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
@@ -23,10 +22,10 @@ import java.util.Set;
 import static mobi.chouette.exchange.netexprofile.NetexTestUtils.createCodespace;
 import static mobi.chouette.exchange.validation.report.ValidationReporter.RESULT.NOK;
 
-public class IDFMCalendarNetexProfileValidatorTest {
+public class FranceLineNetexProfileValidatorTest {
 
     @Test
-    public void testValidateCalendarFile() throws Exception {
+    public void testValidateLineFile() throws Exception {
         NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 
         Context context = createContext(importer);
@@ -39,7 +38,7 @@ public class IDFMCalendarNetexProfileValidatorTest {
         validCodespaces.add(validCodespace);
         context.put(Constant.NETEX_VALID_CODESPACES, validCodespaces);
 
-        File file = new File("src/test/data/idfm/calendriers.xml");
+        File file = new File("src/test/data/idfm/offre_C00482_3615.xml");
         XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>());
         PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>());
 
@@ -62,7 +61,7 @@ public class IDFMCalendarNetexProfileValidatorTest {
     }
 
     private NetexProfileValidator createNetexProfileValidator() {
-        NetexProfileValidator validator = new IDFMCalendarNetexProfileValidator();
+        NetexProfileValidator validator = new FranceLineNetexProfileValidator();
         return validator;
     }
 

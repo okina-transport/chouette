@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 
-public class ServiceCalendarFrameIDFMWriter extends AbstractNetexWriter {
+public class ServiceCalendarFrameFranceWriter extends AbstractNetexWriter {
 
     public static void write(XMLStreamWriter writer, Context context, ExportableNetexData exportableNetexData, Marshaller marshaller) {
 
