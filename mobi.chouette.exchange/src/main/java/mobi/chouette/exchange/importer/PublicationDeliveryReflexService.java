@@ -1,5 +1,7 @@
 package mobi.chouette.exchange.importer;
 
+import lombok.extern.log4j.Log4j;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@Log4j
 public class PublicationDeliveryReflexService {
 
     public static byte[] getAll(String urlTarget) throws MalformedURLException, IOException {
@@ -15,6 +18,7 @@ public class PublicationDeliveryReflexService {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         String icarToken = System.getProperty("iev.icar.token");
+        log.info("Token ICAR utilisé : " + icarToken);
 
         HttpURLConnection connection = null;
         try {
