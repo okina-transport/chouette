@@ -26,6 +26,7 @@ import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.rutebanken.netex.model.FlexibleLineRefStructure;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
@@ -372,6 +373,8 @@ public class NetexProducerUtils {
         org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment = new org.rutebanken.netex.model.AccessibilityAssessment();
         if (sourceAssessment.getMobilityImpairedAccess() != null) {
             accessibilityAssessment.setMobilityImpairedAccess(sourceAssessment.getMobilityImpairedAccess());
+        }else{
+            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.UNKNOWN);
         }
 
         accessibilityAssessment.setVersion("any");
