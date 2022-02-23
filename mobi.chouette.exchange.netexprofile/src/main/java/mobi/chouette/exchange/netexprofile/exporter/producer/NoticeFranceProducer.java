@@ -8,7 +8,7 @@ import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.NoticeAssignments_RelStructure;
 import org.rutebanken.netex.model.NoticeRefStructure;
-import org.rutebanken.netex.model.ServiceJourney;
+import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
 import org.rutebanken.netex.model.TypeOfNoticeRefStructure;
 
 import javax.xml.bind.JAXBElement;
@@ -21,7 +21,7 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NOTICE
 
 public class NoticeFranceProducer {
 
-    public static void addNoticeAndNoticeAssignments(Context context, ExportableNetexData exportableNetexData, ServiceJourney serviceJourney,
+    public static void addNoticeAndNoticeAssignments(Context context, ExportableNetexData exportableNetexData, ServiceJourney_VersionStructure serviceJourney,
                                                      Collection<Footnote> footnotes) {
         for (Footnote footnote : footnotes) {
             Notice notice = netexFactory.createNotice();
