@@ -13,6 +13,7 @@ import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
+import mobi.chouette.exchange.importer.CleanLineInCacheCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
@@ -137,6 +138,11 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                             ImportedLineValidatorCommand.class.getName());
                     chain.add(validate);
                 }
+
+
+                Command clean = CommandFactory.create(initialContext, CleanLineInCacheCommand.class.getName());
+                chain.add(clean);
+
                 commands.add(chain);
             }
             Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
