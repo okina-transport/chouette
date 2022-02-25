@@ -8,6 +8,8 @@ import org.jboss.jca.adapters.jdbc.WrappedConnection;
 import org.postgresql.PGConnection;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
@@ -119,8 +121,8 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 	}
 
 
-
-	private void launchCopy(Connection connection, String currentBatchOfLines) throws SQLException{
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void launchCopy(Connection connection, String currentBatchOfLines) throws SQLException{
 
 		try {
 			StringReader from = new StringReader(currentBatchOfLines);
