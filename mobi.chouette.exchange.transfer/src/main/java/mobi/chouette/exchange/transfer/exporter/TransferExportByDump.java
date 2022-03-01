@@ -45,6 +45,7 @@ public class TransferExportByDump implements Command, Constant {
 
 	private String currentSchema;
 	private String superSpaceSchema;
+	private String dumpFileName;
 	private String connectionUrl ="postgresql://" + PROPERTY_OKINA_DATASOURCE_USER + ":" + PROPERTY_OKINA_DATASOURCE_PASSWORD + "@" + PROPERTY_OKINA_DATASOURCE_HOST + ":" + PROPERTY_OKINA_DATASOURCE_PORT + "/" + PROPERTY_OKINA_DATASOURCE_NAME;
 
 
@@ -56,6 +57,8 @@ public class TransferExportByDump implements Command, Constant {
 
 		currentSchema = ContextHolder.getContext();
 		superSpaceSchema = parameters.getDestReferentialName();
+		dumpFileName = "work_schema_dump_" + currentSchema + ".sql";
+
 
 		log.info("Starting transferring data by dump method");
 		dumpWorkSchema();
@@ -80,7 +83,7 @@ public class TransferExportByDump implements Command, Constant {
 		ProcessBuilder restoreCommand = new ProcessBuilder(
 				"psql",
 				"-d", connectionUrl,
-				"-f", "work_schema_dump.sql"
+				"-f", dumpFileName
 		);
 
 		try {
@@ -113,7 +116,7 @@ public class TransferExportByDump implements Command, Constant {
 				connectionUrl,
 				"-n", currentSchema,
 				"-F", "p",
-				"-f", "work_schema_dump.sql"
+				"-f", dumpFileName
 		);
 
 		try {
