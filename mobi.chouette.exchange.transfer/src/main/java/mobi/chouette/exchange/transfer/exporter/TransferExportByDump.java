@@ -88,6 +88,9 @@ public class TransferExportByDump implements Command, Constant {
 				"-f", dumpFileName
 		);
 
+		restoreCommand.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		restoreCommand.redirectErrorStream(true);
+
 		try {
 			Process restore = restoreCommand.start();
 			BufferedReader r = new BufferedReader(
