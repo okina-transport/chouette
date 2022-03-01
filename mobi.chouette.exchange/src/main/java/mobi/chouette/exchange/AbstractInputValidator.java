@@ -72,6 +72,8 @@ public abstract class AbstractInputValidator implements InputValidator, Constant
 				}
 			} catch (IOException e) {
 				log.error("Erreur ouverture fichier zip " + fileName);
+				log.error(e.getMessage());
+				log.error(e.getStackTrace());
 			} finally {
 				if (file != null) {
 					file.delete();
