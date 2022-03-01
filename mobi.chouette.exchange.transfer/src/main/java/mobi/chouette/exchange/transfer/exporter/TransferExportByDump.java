@@ -61,6 +61,7 @@ public class TransferExportByDump implements Command, Constant {
 
 
 		log.info("Starting transferring data by dump method");
+		log.info("connectionURL:" + connectionUrl);
 		dumpWorkSchema();
 		log.info("work schema dump completed successfully");
 		renameWorkSchema();
@@ -82,6 +83,7 @@ public class TransferExportByDump implements Command, Constant {
 
 		ProcessBuilder restoreCommand = new ProcessBuilder(
 				"psql",
+				"--single-transaction",
 				"-d", connectionUrl,
 				"-f", dumpFileName
 		);
@@ -114,6 +116,7 @@ public class TransferExportByDump implements Command, Constant {
 		ProcessBuilder dumpCommand = new ProcessBuilder(
 				"pg_dump",
 				connectionUrl,
+				"--single-transaction",
 				"-n", currentSchema,
 				"-F", "p",
 				"-f", dumpFileName
