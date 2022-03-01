@@ -116,7 +116,6 @@ public class TransferExportByDump implements Command, Constant {
 		ProcessBuilder dumpCommand = new ProcessBuilder(
 				"pg_dump",
 				connectionUrl,
-				"--single-transaction",
 				"-n", currentSchema,
 				"-F", "p",
 				"-f", dumpFileName
