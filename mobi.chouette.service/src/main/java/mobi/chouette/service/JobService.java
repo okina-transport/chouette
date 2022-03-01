@@ -93,6 +93,7 @@ public class JobService implements JobData, ServiceConstants {
 
             FileStore fileStore = FileStoreFactory.getFileStore();
             log.info("using File Store for parameters file : " + fileStore.toString());
+            log.info("parameters" + getParametersAsString());
             fileStore.writeFile(filePath(PARAMETERS_FILE), IOUtils.toInputStream(getParametersAsString() + "+n", "UTF-8"));
 
             addLink(MediaType.APPLICATION_JSON, Link.PARAMETERS_REL);
