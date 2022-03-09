@@ -17,7 +17,7 @@ resource "google_storage_bucket" "storage_bucket" {
   location           = var.location
   project            = var.gcp_gcs_project
   storage_class      = var.bucket_storage_class
-  labels             = var.labels
+  labels             = merge(var.labels, {offsite_enabled = "false"})
   uniform_bucket_level_access = true
 
   lifecycle_rule {
