@@ -1,13 +1,12 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import java.awt.Color;
+import lombok.Getter;
+import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Objects;
-
-import lombok.Getter;
-import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 
 public abstract class AbstractProducer
 {
@@ -22,20 +21,19 @@ public abstract class AbstractProducer
 
    static protected String toGtfsId(String neptuneId, String prefix, boolean keepOriginal)
    {
-      // @todo OKINA revoir ce foutu truc de keepOriginal
-      /*if(false && keepOriginal) {
-    	  return neptuneId;
-      } else */{
-      String[] tokens = neptuneId.split(":");
-      if(tokens.length == 1)
-         return tokens[0];
-      else if (tokens[0].equalsIgnoreCase(prefix))
-         return tokens[2];
-      else if (tokens.length >= 4)
-         return concatTokens(tokens);
-      else
-         // pour idfm car nos prefix sont MOSAIC et absolument pas SQYBUS ou autre
-         // sinon return tokens[0] + "." + tokens[2];
+      if (keepOriginal) {
+         return neptuneId;
+      } else {
+         String[] tokens = neptuneId.split(":");
+         if (tokens.length == 1)
+            return tokens[0];
+         else if (tokens[0].equalsIgnoreCase(prefix))
+            return tokens[2];
+         else if (tokens.length >= 4)
+            return concatTokens(tokens);
+         else
+            // pour idfm car nos prefix sont MOSAIC et absolument pas SQYBUS ou autre
+            // sinon return tokens[0] + "." + tokens[2];
          return tokens[2];
       }
    }
