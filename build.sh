@@ -10,6 +10,6 @@ MVN_VERSION=$(mvn -q \
     exec:exec)
 
 
-#mvn  install -DskipTests -DskipWildfly=true -DskipInitDb=true
+mvn  install -DskipTests -DskipWildfly=true -DskipInitDb=true
 docker build -t registry.okina.fr/oki/chouette:${MVN_VERSION} -f docker/Dockerfile-build --build-arg CHOUETTE_BASE_VERSION=registry.okina.fr/oki/chouette-base:${CHOUETTE_BASE_VERSION} .
 docker push registry.okina.fr/oki/chouette:${MVN_VERSION}
