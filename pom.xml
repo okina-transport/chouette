@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<wildfly.version>8.2.1.Final</wildfly.version>
+		<wildfly.version>9.0.2.Final</wildfly.version>
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
 		<version.jaxb2.plugin>1.5</version.jaxb2.plugin>
@@ -30,13 +30,13 @@
 		<version.clean.plugin>3.1.0</version.clean.plugin>
 		<version.install.plugin>2.5.2</version.install.plugin>
 		<version.processor.plugin>2.2.4</version.processor.plugin>
-		<shrinkwrap.bom-version>2.1.1</shrinkwrap.bom-version>
+
 		<postgresql.version>42.3.3</postgresql.version>
 		<postgis.version>2.5.1</postgis.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<hibernate-spatial.version>4.3</hibernate-spatial.version>
 		<jts.version>1.13</jts.version>
-		<arquillian-version>1.1.11.Final</arquillian-version>
+
 		<jaxb-version>2.2.11</jaxb-version>
 		<lombok-version>1.18.22</lombok-version>
 		<lombok-maven-plugin-version>1.18.20.0</lombok-maven-plugin-version>
@@ -47,9 +47,12 @@
 
  	    <netex-java-model.version>1.0.13</netex-java-model.version>
 		<rutebanken.helpers.version>1.0.55</rutebanken.helpers.version>
-
-
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
+
+		<shrinkwrap-resolver-bom.version>2.2.2</shrinkwrap-resolver-bom.version>
+		<arquillian-version>1.1.15.Final</arquillian-version>
+		<wildfly-arquillian-container-embedded.version>1.0.2.Final</wildfly-arquillian-container-embedded.version>
+
 
 	</properties>
 	<distributionManagement>
@@ -265,30 +268,6 @@
 									<version>${jts.version}</version>
 									<outputDirectory>
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-impl</artifactId>
-									<version>${jaxb-version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-core</artifactId>
-									<version>${jaxb-version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-xjc</artifactId>
-									<version>${jaxb-version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
 									</outputDirectory>
 								</artifactItem>
 							</artifactItems>
@@ -768,7 +747,16 @@
 				<scope>provided</scope>
 			</dependency>
 
-      <dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-bom</artifactId>
+				<version>3.0.9.Final</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+
+			<dependency>
   			<groupId>org.entur</groupId>
   			<artifactId>netex-java-model</artifactId>
   			<version>${netex-java-model.version}</version>
@@ -820,9 +808,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.wildfly</groupId>
+				<groupId>org.wildfly.arquillian</groupId>
 				<artifactId>wildfly-arquillian-container-embedded</artifactId>
-				<version>${wildfly.version}</version>
+				<version>${wildfly-arquillian-container-embedded.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wildfly</groupId>
@@ -856,22 +844,28 @@
 			<dependency>
 				<groupId>org.jboss.shrinkwrap.resolver</groupId>
 				<artifactId>shrinkwrap-resolver-bom</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
+				<version>${shrinkwrap-resolver-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.shrinkwrap.resolver</groupId>
 				<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
+				<version>${shrinkwrap-resolver-bom.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- shrinkwrap dependency chain -->
 			<dependency>
 				<groupId>org.jboss.shrinkwrap.resolver</groupId>
 				<artifactId>shrinkwrap-resolver-depchain</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
+				<version>${shrinkwrap-resolver-bom.version}</version>
 				<type>pom</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.7.36</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -985,9 +979,27 @@
 				<version>${jaxb-version}</version>
 			</dependency>
 
+
+
 		</dependencies>
 
 	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.36</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
+			<version>3.2.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<profiles>
 		<profile>
 			<id>default</id>
