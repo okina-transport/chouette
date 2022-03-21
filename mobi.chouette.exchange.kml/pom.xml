@@ -28,7 +28,7 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
+         <groupId>org.wildfly.core</groupId>
          <artifactId>wildfly-embedded</artifactId>
          <scope>test</scope>
          <exclusions>
