@@ -22,8 +22,10 @@
          <property name="hibernate.connection.datasource" value="java:jboss/datasources/iev" />
 
          <property name="hibernate.cache.use_second_level_cache" value="true" />
-         <property name="hibernate.cache.region.factory_class" value="org.jboss.as.jpa.hibernate4.infinispan.InfinispanRegionFactory"/>
-         <property name="hibernate.cache.infinispan.cachemanager" value="java:jboss/infinispan/container/hibernate"/>
+
+         <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.InfinispanRegionFactory" />
+         <property name="hibernate.cache.infinispan.cachemanager" value="java:jboss/infinispan/container/hibernate" />
+
          <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
          <property name="hibernate.cache.use_query_cache" value="true" />
 

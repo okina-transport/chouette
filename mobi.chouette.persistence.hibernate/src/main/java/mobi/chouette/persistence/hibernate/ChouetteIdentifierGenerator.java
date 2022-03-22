@@ -6,7 +6,8 @@ import org.hibernate.MappingException;
 import org.hibernate.boot.model.naming.ObjectNameNormalizer;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.engine.jdbc.spi.JdbcServices;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.IdentifierGeneratorHelper;
@@ -71,19 +72,17 @@ public class ChouetteIdentifierGenerator implements IdentifierGenerator,
 	}
 
 	@Override
-	public Serializable generate(SharedSessionContractImplementor session, Object object)
-			throws HibernateException {
-
-		State state = states.get(session.getTenantIdentifier());
+	public Serializable generate(SessionImplementor sessionImplementor, Object o) throws HibernateException {
+		State state = states.get(sessionImplementor.getTenantIdentifier());
 
 		if (state == null)
 		{
 			state = new State();
-			states.put(session.getTenantIdentifier(), state);
+			states.put(sessionImplementor.getTenantIdentifier(), state);
 		}
 
 		if (state.hiValue == null || state.value == null || state.hiValue.lt(state.value) ) {
-			state.hiValue = getNextValue(session);
+			state.hiValue = getNextValue(sessionImplementor);
 			state.value = state.hiValue.copy().subtract(incrementSize);
 			// System.out.println("[DSU] ? nextval --------------> : " + value);
 		}
@@ -92,7 +91,7 @@ public class ChouetteIdentifierGenerator implements IdentifierGenerator,
 		return result;
 	}
 
-	protected IntegralDataTypeHolder getNextValue(SharedSessionContractImplementor session) {
+	protected IntegralDataTypeHolder getNextValue(SessionImplementor session) {
 		try {
 
 			//System.out.println("ChouetteIdentifierGenerator.getNextValue() : " + sql);
@@ -113,7 +112,7 @@ public class ChouetteIdentifierGenerator implements IdentifierGenerator,
 			}
 
 		} catch (SQLException sqle) {
-			throw session.getFactory().getSQLExceptionHelper()
+			throw session.getFactory().getServiceRegistry().getService(JdbcServices.class).getSqlExceptionHelper()
 					.convert(sqle, "could not get next sequence value", sql);
 		}
 
@@ -149,7 +148,6 @@ public class ChouetteIdentifierGenerator implements IdentifierGenerator,
 		return ConfigurationHelper.getInt(INCREMENT_PARAM, params,
 				DEFAULT_INCREMENT_SIZE);
 	}
-
 
 	private class State
 	{

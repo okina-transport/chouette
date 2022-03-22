@@ -37,7 +37,8 @@
 
 		<postgresql.version>42.3.3</postgresql.version>
 		<postgis.version>2.5.1</postgis.version>
-		<hibernate.version>5.3.25.Final</hibernate.version>
+		<hibernate.version>5.0.12.Final</hibernate.version>
+		<usertype.core.version>5.0.0.GA</usertype.core.version>
 		<jts.version>1.13</jts.version>
 
 		<jaxb-version>2.2.11</jaxb-version>
@@ -54,7 +55,8 @@
 
 		<shrinkwrap-resolver-bom.version>2.2.2</shrinkwrap-resolver-bom.version>
 		<arquillian-version>1.1.15.Final</arquillian-version>
-		<wildfly-arquillian-container-embedded.version>1.0.2.Final</wildfly-arquillian-container-embedded.version>
+		<wildfly-arquillian-container-embedded.version>2.2.0.Final</wildfly-arquillian-container-embedded.version>
+
 
 
 	</properties>
@@ -269,7 +271,7 @@
 									<artifactId>hibernate-infinispan</artifactId>
 									<version>${hibernate.version}</version>
 									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/infinispan/main
 									</outputDirectory>
 								</artifactItem>
 
@@ -281,6 +283,16 @@
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
 								</artifactItem>
+
+								<artifactItem>
+									<groupId>org.geolatte</groupId>
+									<artifactId>geolatte-geom</artifactId>
+									<version>1.0.6</version>
+									<outputDirectory>
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
+									</outputDirectory>
+								</artifactItem>
+
 							</artifactItems>
 						</configuration>
 					</execution>
@@ -922,7 +934,7 @@
             <dependency>
                 <groupId>org.jadira.usertype</groupId>
                 <artifactId>usertype.core</artifactId>
-                <version>6.0.1.GA</version>
+                <version>${usertype.core.version}</version>
             </dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>

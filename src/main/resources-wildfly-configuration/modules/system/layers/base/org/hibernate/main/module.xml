@@ -31,6 +31,7 @@
         <resource-root path="hibernate-java8-${hibernate.version}.jar"/>
         <resource-root path="hibernate-spatial-${hibernate.version}.jar"/>
         <resource-root path="jts-1.13.jar"/>
+        <resource-root path="geolatte-geom-1.0.6.jar"/>
     </resources>
 
     <dependencies>

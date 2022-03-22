@@ -86,6 +86,11 @@
              <groupId>org.apache.struts</groupId>
              <artifactId>struts-tiles</artifactId>
           </exclusion>
+          <exclusion>
+              <groupId>dom4j</groupId>
+              <artifactId>dom4j</artifactId>
+          </exclusion>
+
         </exclusions>
 		</dependency>
         <dependency>
