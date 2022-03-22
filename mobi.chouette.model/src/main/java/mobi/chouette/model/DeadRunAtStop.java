@@ -36,8 +36,8 @@ public class DeadRunAtStop extends NeptuneIdentifiedObject implements JourneyAtS
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "dead_run_at_stops_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
-		parameters = {
+	@GenericGenerator(name = "dead_run_at_stops_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
+		parameters = {@Parameter(name = "optimizer", value = "hilo"),
 			@Parameter(name = "sequence_name", value = "dead_run_at_stops_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })
 	@GeneratedValue(generator = "dead_run_at_stops_id_seq")

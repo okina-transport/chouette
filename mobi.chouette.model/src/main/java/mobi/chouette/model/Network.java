@@ -58,8 +58,8 @@ public class Network extends NeptuneIdentifiedObject {
 	@Setter
 //	@SequenceGenerator(name="networks_id_seq", sequenceName="networks_id_seq", allocationSize=1)
 //    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="networks_id_seq")
-	@GenericGenerator(name = "networks_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
-		parameters = {
+	@GenericGenerator(name = "networks_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
+		parameters = {@Parameter(name = "optimizer", value = "hilo"),
 			@Parameter(name = "sequence_name", value = "networks_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "networks_id_seq")
