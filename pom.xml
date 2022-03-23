@@ -40,6 +40,7 @@
 		<hibernate.version>5.0.12.Final</hibernate.version>
 		<usertype.core.version>5.0.0.GA</usertype.core.version>
 		<jts.version>1.13</jts.version>
+		<geolatte-geom.version>1.0.6</geolatte-geom.version>
 
 		<jaxb-version>2.2.11</jaxb-version>
 		<lombok-version>1.18.22</lombok-version>
@@ -287,7 +288,7 @@
 								<artifactItem>
 									<groupId>org.geolatte</groupId>
 									<artifactId>geolatte-geom</artifactId>
-									<version>1.0.6</version>
+									<version>${geolatte-geom.version}</version>
 									<outputDirectory>
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
