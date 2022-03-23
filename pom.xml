@@ -14,7 +14,8 @@
 
 		<wildfly.version>10.1.0.Final</wildfly.version>
 		<wildfly.core.version>2.2.0.Final</wildfly.core.version>
-		<resteasy.version>3.0.19.Final</resteasy.version>
+		<jboss-javaee-7.0.version>1.0.4.Final</jboss-javaee-7.0.version>
+		<wildfly-javaee7-with-tools.version>10.1.1.Final</wildfly-javaee7-with-tools.version>
 
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
@@ -54,9 +55,9 @@
 		<rutebanken.helpers.version>1.0.55</rutebanken.helpers.version>
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
 
-		<shrinkwrap-resolver-bom.version>2.2.2</shrinkwrap-resolver-bom.version>
-		<arquillian-version>1.1.15.Final</arquillian-version>
-		<wildfly-arquillian-container-embedded.version>2.2.0.Final</wildfly-arquillian-container-embedded.version>
+		<shrinkwrap-resolver-bom.version>2.2.4</shrinkwrap-resolver-bom.version>
+		<arquillian-version>1.1.11.Final</arquillian-version>
+		<wildfly-arquillian-container-embedded.version>2.0.0.Final</wildfly-arquillian-container-embedded.version>
 
 
 
@@ -767,17 +768,18 @@
 				<groupId>org.jboss.spec</groupId>
 				<artifactId>jboss-javaee-7.0</artifactId>
 				<type>pom</type>
-				<version>1.0.2.Final</version>
+				<version>${jboss-javaee-7.0.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-bom</artifactId>
-				<version>${resteasy.version}</version>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-javaee7-with-tools</artifactId>
+				<version>${wildfly-javaee7-with-tools.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
 
 
 			<dependency>
@@ -834,6 +836,11 @@
 			<dependency>
 				<groupId>org.wildfly.arquillian</groupId>
 				<artifactId>wildfly-arquillian-container-embedded</artifactId>
+				<version>${wildfly-arquillian-container-embedded.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wildfly.arquillian</groupId>
+				<artifactId>wildfly-arquillian-common</artifactId>
 				<version>${wildfly-arquillian-container-embedded.version}</version>
 			</dependency>
 			<dependency>

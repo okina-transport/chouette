@@ -55,5 +55,6 @@
         <module name="org.hibernate.infinispan" services="import" optional="true"/>
         <module name="org.hibernate.jipijapa-hibernate5" services="import"/>
         <module name="org.postgres"/>
+        <module name="org.slf4j"/>
     </dependencies>
 </module>
