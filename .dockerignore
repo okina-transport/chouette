@@ -1,0 +1,17 @@
+.idea
+.settings
+out
+test-output/
+.DS_Store
+bin/
+.project
+*.iml
+*.launch
+maven-eclipse.xml
+*~
+*.versionsBackup
+.classpath
+
+.circleci
+helm
+terraform
