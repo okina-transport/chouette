@@ -37,7 +37,7 @@ public class Facility extends NeptuneLocalizedObject
    @Getter
 	@Setter
 	@GenericGenerator(name = "facilities_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
-		parameters = {@Parameter(name = "optimizer", value = "hilo"),
+		parameters = {
 			@Parameter(name = "sequence_name", value = "facilities_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })
 	@Id

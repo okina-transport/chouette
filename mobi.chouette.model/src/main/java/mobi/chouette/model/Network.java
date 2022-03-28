@@ -59,7 +59,7 @@ public class Network extends NeptuneIdentifiedObject {
 //	@SequenceGenerator(name="networks_id_seq", sequenceName="networks_id_seq", allocationSize=1)
 //    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="networks_id_seq")
 	@GenericGenerator(name = "networks_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
-		parameters = {@Parameter(name = "optimizer", value = "hilo"),
+		parameters = {
 			@Parameter(name = "sequence_name", value = "networks_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "networks_id_seq")
