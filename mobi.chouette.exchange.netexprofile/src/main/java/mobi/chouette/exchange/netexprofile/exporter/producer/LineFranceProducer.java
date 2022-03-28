@@ -83,13 +83,6 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
             netexLine.setOperatorRef(operatorRefStruct);
         }
 
-        if (CollectionUtils.isNotEmpty(neptuneLine.getGroupOfLines())) {
-            GroupOfLine groupOfLine = neptuneLine.getGroupOfLines().get(0);
-            String groupOfLinesId = netexId(groupOfLine.objectIdPrefix(), GROUP_OF_LINES, groupOfLine.objectIdSuffix());
-            GroupOfLinesRefStructure groupOfLinesRefStruct = netexFactory.createGroupOfLinesRefStructure().withRef(groupOfLinesId);
-            netexLine.setRepresentedByGroupRef(groupOfLinesRefStruct);
-        }
-
         if (neptuneLine.getColor() != null || neptuneLine.getTextColor() != null) {
             HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();
             PresentationStructure presentation = new PresentationStructure();
