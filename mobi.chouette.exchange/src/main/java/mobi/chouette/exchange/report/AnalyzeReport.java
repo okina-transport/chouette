@@ -57,6 +57,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 	@XmlElement(name = "stops")
 	private List<StopArea> stops = new ArrayList<>();
 
+	@XmlElement(name = "newStops")
+	private List<StopArea> newStops = new ArrayList<>();
+
 	@XmlElement(name = "wrongGeolocStopAreas")
 	private List<Pair<StopArea,StopArea>> wrongGeolocStopAreas = new ArrayList<>();
 
@@ -65,6 +68,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
 	@XmlElement(name = "canLaunchImport")
 	private boolean canLaunchImport = true;
+
+	@XmlElement(name = "tooManyNewStops")
+	private boolean tooManyNewStops = false;
 
 	@XmlTransient
 	private Date date = new Date(0);
@@ -112,102 +118,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 	 */
 	protected void addFileReport(FileReport file) {
 		files.add(file);
-	}
-
-
-
-	public JSONObject toJson() throws JSONException {
-		JSONObject analyzeReport = new JSONObject();
-
-
-
-		if (!files.isEmpty()) {
-			JSONArray array = new JSONArray();
-			analyzeReport.put("files", array);
-			for (FileReport file : files) {
-				array.put(file.toJson());
-			}
-		}
-
-		if (!lines.isEmpty()) {
-			JSONArray array = new JSONArray();
-			analyzeReport.put("lines", array);
-			for (String line : lines) {
-				JSONObject object = new JSONObject();
-				object.put("name", line);
-				array.put(object);
-			}
-		}
-
-		if (!journeys.isEmpty()) {
-			analyzeReport.put("number_of_journeys", journeys.size());
-		}
-
-		if (!stops.isEmpty()) {
-			JSONArray array = new JSONArray();
-			analyzeReport.put("stops", array);
-			for (StopArea stop : stops) {
-				JSONObject object = new JSONObject();
-				String stopCode = StringUtils.isEmpty(stop.getName()) ? stop.getObjectId() : stop.getName();
-				object.put("stop_name", stopCode);
-				array.put(object);
-			}
-		}
-
-
-		if (!wrongGeolocStopAreas.isEmpty()){
-			canLaunchImport = false;
-			JSONArray array = new JSONArray();
-			analyzeReport.put("stops", array);
-			for (Pair<StopArea,StopArea> wrongGeolocPair : wrongGeolocStopAreas) {
-				JSONObject object = new JSONObject();
-				StopArea existingStop = wrongGeolocPair.getLeft();
-				StopArea incomingStop = wrongGeolocPair.getRight();
-				object.put("original_stop_id", incomingStop.getOriginalStopId());
-
-				object.put("existingName", existingStop.getName());
-				object.put("existingLatitude", existingStop.getLatitude());
-				object.put("existingLongitude", existingStop.getLongitude());
-
-				object.put("incomingName", incomingStop.getName());
-				object.put("incomingLatitude", incomingStop.getLatitude());
-				object.put("incomingLongitude", incomingStop.getLongitude());
-				array.put(object);
-			}
-		}
-
-		if (!duplicateOriginalStopIds.isEmpty()) {
-			canLaunchImport = false;
-			JSONArray array = new JSONArray();
-			analyzeReport.put("duplicateOriginalStopIds", array);
-			for (String originalStopId : duplicateOriginalStopIds) {
-				JSONObject object = new JSONObject();
-				object.put("original_stop_id",originalStopId);
-				array.put(object);
-			}
-		}
-
-		if (!quayWithDifferentTransportModes.isEmpty()){
-			canLaunchImport = false;
-			JSONArray array = new JSONArray();
-			analyzeReport.put("quays_with_different_transport_modes", array);
-
-			for (String quayId : quayWithDifferentTransportModes) {
-				JSONObject object = new JSONObject();
-				object.put("quay_id", quayId);
-				object.put("used_in_lines", quayLineUse.get(quayId));
-				array.put(object);
-			}
-		}else{
-			//each quay has a single transport mode.
-			// Now checking if each stop place has all children with the same transport mode
-			writeStopPlaceWithDifferentTransportModesInError(analyzeReport);
-		}
-
-		analyzeReport.put("can_launch_import:",canLaunchImport );
-		JSONObject object = new JSONObject();
-		object.put("analyze_report", analyzeReport);
-		return object;
 	}
 
 	private void writeStopPlaceWithDifferentTransportModesInError(JSONObject analyzeReport) throws JSONException {
@@ -297,6 +207,14 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 			printStringList(out,stopList,"stops","stopName");
 		}
 
+		if (!newStops.isEmpty()){
+			List<String> newStopList = newStops.stream()
+					.map(newStop -> StringUtils.isEmpty(newStop.getName()) ? newStop.getObjectId() : newStop.getName())
+					.collect(Collectors.toList());
+
+			printStringList(out, newStopList,"newStops","stopName");
+		}
+
 		if (!wrongGeolocStopAreas.isEmpty()){
 			canLaunchImport = false;
 			printWrongGeolocList(out);
@@ -318,7 +236,8 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 			printStopPlaceWithDifferentTransportModes(out);
 		}
 
-		out.print("\"canLaunchImport\": " + canLaunchImport + "\n");
+		out.print("\"canLaunchImport\": " + canLaunchImport + "\n,");
+		out.print("\"tooManyNewStops\": " + tooManyNewStops + "\n");
 		out.println("\n}}");
 	}
 

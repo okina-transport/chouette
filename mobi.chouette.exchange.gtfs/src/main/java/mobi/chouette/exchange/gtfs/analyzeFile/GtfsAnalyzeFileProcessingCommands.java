@@ -12,6 +12,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
+import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
 import mobi.chouette.exchange.gtfs.importer.GtfsRouteParserCommand;
@@ -95,7 +96,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             Integer cpt = 1;
 
             String splitCharacter = parameters.getSplitCharacter();
-            context.put(TOTAL_NB_OF_LINES,index.getLength());
+            context.put(TOTAL_NB_OF_LINES, index.getLength());
             for (GtfsRoute gtfsRoute : index) {
 
                 if (StringUtils.isNotEmpty(splitCharacter)){
@@ -165,6 +166,8 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
                 Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
                 commands.add(geolocationCheckCommand);
             }
+            Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
+            commands.add(tooManyNewStopsCheckCommand);
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();        }
 

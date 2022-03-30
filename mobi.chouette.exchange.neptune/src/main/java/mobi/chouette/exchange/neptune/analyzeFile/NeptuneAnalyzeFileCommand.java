@@ -44,7 +44,7 @@ public class NeptuneAnalyzeFileCommand extends AbstractImporterCommand implement
         // check params
         Object configuration = context.get(CONFIGURATION);
         if (!(configuration instanceof NeptuneImportParameters)) {
-            reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS,"invalid parameters for gtfs import " + configuration.getClass().getName());
+            reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS,"invalid parameters for neptune import " + configuration.getClass().getName());
             return ERROR;
         }
 
