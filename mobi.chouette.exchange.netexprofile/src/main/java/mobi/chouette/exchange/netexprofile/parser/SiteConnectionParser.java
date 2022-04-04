@@ -48,7 +48,11 @@ public class SiteConnectionParser extends NetexParser implements Parser, Constan
 			connectionLink.setStartOfLink(fromStopArea);
 			connectionLink.setEndOfLink(toStopArea);
 			connectionLink.setLinkDistance(siteConnection.getDistance());
-			connectionLink.setDefaultDuration(TimeUtil.toJodaDuration(siteConnection.getWalkTransferDuration().getDefaultDuration()));
+			if (siteConnection.getWalkTransferDuration() != null) {
+				connectionLink.setDefaultDuration(TimeUtil.toJodaDuration(siteConnection.getWalkTransferDuration().getDefaultDuration()));
+			} else {
+				connectionLink.setDefaultDuration(null);
+			}
 			connectionLink.setName(siteConnection.getName().getValue());
 		}
 

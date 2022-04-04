@@ -6,23 +6,16 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
-import mobi.chouette.exchange.importer.updater.LineOptimiser;
-import mobi.chouette.exchange.importer.updater.LineUpdater;
-import mobi.chouette.exchange.importer.updater.Updater;
 import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.ObjectReference;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
@@ -30,17 +23,13 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +48,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         DateTime startingTime = new DateTime();
         int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
-        context.put(CURRENT_LINE_NB,currentLineNb);
+        context.put(CURRENT_LINE_NB, currentLineNb);
 
         log.info("Starting analysis " + currentLineNb + "/" + context.get(TOTAL_NB_OF_LINES));
         Referential cache = new Referential();
@@ -72,7 +61,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         Line newValue  = referential.getLines().values().iterator().next();
 
         feedAnalysisWithLineData(context, newValue);
-        feedAnalysisWithStopAreaData( newValue);
+        feedAnalysisWithStopAreaData(newValue);
 
         DateTime endingTime = new DateTime();
 
@@ -109,7 +98,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
         stopAreaList.forEach(stopArea -> {
-            if (!analyzeReport.getStops().contains(stopArea)){
+            if (!analyzeReport.getStops().contains(stopArea)) {
                 analyzeReport.getStops().add(stopArea);
             }
         });

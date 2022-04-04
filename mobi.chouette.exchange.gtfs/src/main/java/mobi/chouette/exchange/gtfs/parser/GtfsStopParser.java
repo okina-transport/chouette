@@ -77,7 +77,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 						;//bean.setLocationType(LocationType.Stop);
 					else
 						hasLocationType = true;
-					if(hasLocationType) parser.validate(bean, importer);
+					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
 						gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_STOPS_FILE);
