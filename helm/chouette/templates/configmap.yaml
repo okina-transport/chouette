@@ -21,10 +21,10 @@ data:
     iev.reschedule.interrupted.jobs=true
     iev.directory=/opt/jboss/data
     iev.referential.lock.manager.impl=hazelcastReferentialsLockManager
-    iev.osrm.endpoint.rail={{ .Values.osrmRailUrl }}:5000
-    iev.osrm.endpoint.bus={{ .Values.osrmBusUrl }}:5000
-    iev.osrm.endpoint.water={{ .Values.osrmWaterUrl }}:5000
-    iev.osrm.endpoint.coach={{ .Values.osrmBusUrl }}:5000
+    iev.osrm.endpoint.rail={{ .Values.osrmRailUrl }}
+    iev.osrm.endpoint.bus={{ .Values.osrmBusUrl }}
+    iev.osrm.endpoint.water={{ .Values.osrmWaterUrl }}
+    iev.osrm.endpoint.coach={{ .Values.osrmBusUrl }}
     iev.kubernetes.enabled=true
     iev.kubernetes.namespace={{ .Release.Namespace }}
     iev.route.section.generate.quay.distance.max.meters=100
