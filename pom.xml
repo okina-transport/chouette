@@ -12,7 +12,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 
-		<wildfly.version>10.1.0.Final</wildfly.version>
+		<wildfly.version>15.0.1.Final</wildfly.version>
 		<wildfly.core.version>2.2.0.Final</wildfly.core.version>
 		<jboss-javaee-7.0.version>1.0.4.Final</jboss-javaee-7.0.version>
 		<wildfly-javaee7-with-tools.version>10.1.1.Final</wildfly-javaee7-with-tools.version>
@@ -38,7 +38,7 @@
 
 		<postgresql.version>42.3.3</postgresql.version>
 		<postgis.version>2.5.1</postgis.version>
-		<hibernate.version>5.0.12.Final</hibernate.version>
+		<hibernate.version>5.3.25.Final</hibernate.version>
 		<usertype.core.version>5.0.0.GA</usertype.core.version>
 		<jts.version>1.13</jts.version>
 		<geolatte-geom.version>1.0.6</geolatte-geom.version>
