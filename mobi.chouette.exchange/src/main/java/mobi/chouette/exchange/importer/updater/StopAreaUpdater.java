@@ -94,7 +94,6 @@ public class StopAreaUpdater implements Updater<StopArea> {
 		validationReporter.addItemToValidationReport(context, "2-DATABASE-", "StopArea", 2, "W", "E");
 		validationReporter.addItemToValidationReport(context, DATABASE_ACCESS_POINT_1, "E");
 		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
-		Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
 
 		if (newValue.getAreaType() == null) {
 			log.error("stoparea without mandatory areatype " + newValue.getObjectId());
@@ -132,10 +131,10 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setUrl(newValue.getUrl());
 				oldValue.setOriginalStopId(newValue.getOriginalStopId());
 			}
-			if(!keepStopGeolocalisation || oldValue.getLongitude() == null) {
+			if(oldValue.getLongitude() == null) {
 				oldValue.setLongitude(newValue.getLongitude());
 			}
-			if(!keepStopGeolocalisation || oldValue.getLatitude() == null) {
+			if(oldValue.getLatitude() == null) {
 				oldValue.setLatitude(newValue.getLatitude());
 			}
 		} else {
@@ -226,14 +225,12 @@ public class StopAreaUpdater implements Updater<StopArea> {
 					oldValue.setOriginalStopId(newValue.getOriginalStopId());
 				}
 			}
-			if(!keepStopGeolocalisation) {
 				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
 					oldValue.setLongitude(newValue.getLongitude());
 				}
 				if (newValue.getLatitude() != null && !newValue.getLatitude().equals(oldValue.getLatitude())) {
 					oldValue.setLatitude(newValue.getLatitude());
 				}
-			}
 		}
 
 		// StopArea Parent

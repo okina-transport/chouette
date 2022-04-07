@@ -12,7 +12,7 @@ import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
-import mobi.chouette.exchange.netexprofile.exporter.writer.PublicationDeliveryIDFMWriter;
+import mobi.chouette.exchange.netexprofile.exporter.writer.PublicationDeliveryFranceWriter;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 
 @Log4j
@@ -30,7 +30,7 @@ class NetexFileWriter implements Constant {
 
 			// TODO changer d'un data producer à l'autre pour changer de PROFIL IDFM Norvégien
 //			PublicationDeliveryWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
-			PublicationDeliveryIDFMWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
+			PublicationDeliveryFranceWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
 
 		} catch (XMLStreamException | IOException e) {
 			log.error("Could not produce XML file", e);

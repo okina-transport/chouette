@@ -37,6 +37,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.ws.rs.DefaultValue;
@@ -538,6 +539,12 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Setter
 	@DefaultValue("false")
 	private Boolean supprime = false;
+
+	@Getter
+	@Setter
+	@OneToOne
+	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
+	private AccessibilityAssessment accessibilityAssessment;
 
 	public boolean equals(Object o) {
 		if (this == o) return true;

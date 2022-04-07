@@ -1,0 +1,1016 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gis="http://www.opengis.net/gml/3.2" xmlns:siri="http://www.siri.org.uk/siri" version="1.1:FR-NETEX_CALENDRIER-2.2">
+  <PublicationTimestamp>2021-11-02T16:39:17Z</PublicationTimestamp>
+  <ParticipantRef>LOCGUI11021735DG</ParticipantRef>
+  <dataObjects>
+    <GeneralFrame version="any" id="LOCGUI11021735DG:GeneralFrame:NETEX_CALENDRIER-20211102163917Z:LOC">
+      <ValidBetween>
+        <FromDate>2019-12-30T00:00:00</FromDate>
+        <ToDate>2022-12-31T00:00:00</ToDate>
+      </ValidBetween>
+      <TypeOfFrameRef ref="FR:TypeOfFrame:NETEX_CALENDRIER:">version="1.1:FR-NETEX_CALENDRIER-2.2"</TypeOfFrameRef>
+      <members>
+        <DayType version="any" id="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC">
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType version="any" id="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC">
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType version="any" id="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC">
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType version="any" id="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC">
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType version="any" id="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC">
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <OperatingPeriod version="any" id="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00-0010000:LOC">
+          <FromDate>2020-01-06T00:00:00</FromDate>
+          <ToDate>2022-07-03T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod version="any" id="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00-1101100:LOC">
+          <FromDate>2020-01-06T00:00:00</FromDate>
+          <ToDate>2022-07-03T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod version="any" id="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00:LOC">
+          <FromDate>2020-01-06T00:00:00</FromDate>
+          <ToDate>2022-07-03T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod version="any" id="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-02:LOC">
+          <FromDate>2019-12-30T00:00:00</FromDate>
+          <ToDate>2022-08-28T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod version="any" id="LOCGUI11021735DG:OperatingPeriod:STILE_19_1-Jan2020-Semaine-02:LOC">
+          <FromDate>2021-04-12T00:00:00</FromDate>
+          <ToDate>2022-12-31T00:00:00</ToDate>
+        </OperatingPeriod>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000021:LOC">
+          <OperatingPeriodRef ref="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011000:LOC">
+          <OperatingPeriodRef ref="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0042:LOC">
+          <OperatingPeriodRef ref="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0263:LOC">
+          <OperatingPeriodRef ref="LOCGUI11021735DG:OperatingPeriod:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-020:LOC">
+          <OperatingPeriodRef ref="LOCGUI11021735DG:OperatingPeriod:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000022:LOC">
+          <Date>2020-02-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000023:LOC">
+          <Date>2020-02-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000024:LOC">
+          <Date>2020-02-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000025:LOC">
+          <Date>2020-02-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000026:LOC">
+          <Date>2020-02-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000027:LOC">
+          <Date>2020-02-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000028:LOC">
+          <Date>2020-02-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000029:LOC">
+          <Date>2020-02-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000030:LOC">
+          <Date>2020-02-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000031:LOC">
+          <Date>2020-02-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000032:LOC">
+          <Date>2020-04-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000033:LOC">
+          <Date>2020-04-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000034:LOC">
+          <Date>2020-04-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000035:LOC">
+          <Date>2020-04-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000036:LOC">
+          <Date>2020-04-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000037:LOC">
+          <Date>2020-04-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000038:LOC">
+          <Date>2020-04-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000039:LOC">
+          <Date>2020-04-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000040:LOC">
+          <Date>2020-04-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-001000041:LOC">
+          <Date>2020-04-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-0010000:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110010:LOC">
+          <Date>2020-02-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110011:LOC">
+          <Date>2020-04-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110012:LOC">
+          <Date>2020-04-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110013:LOC">
+          <Date>2020-04-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110014:LOC">
+          <Date>2020-04-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110015:LOC">
+          <Date>2020-04-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110016:LOC">
+          <Date>2020-04-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110017:LOC">
+          <Date>2020-04-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110018:LOC">
+          <Date>2020-04-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110019:LOC">
+          <Date>2020-04-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011001:LOC">
+          <Date>2020-02-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-110110020:LOC">
+          <Date>2020-04-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011002:LOC">
+          <Date>2020-02-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011003:LOC">
+          <Date>2020-02-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011004:LOC">
+          <Date>2020-02-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011005:LOC">
+          <Date>2020-02-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011006:LOC">
+          <Date>2020-02-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011007:LOC">
+          <Date>2020-02-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011008:LOC">
+          <Date>2020-02-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-00-11011009:LOC">
+          <Date>2020-02-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00-1101100:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0043:LOC">
+          <Date>2020-02-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0044:LOC">
+          <Date>2020-02-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0045:LOC">
+          <Date>2020-02-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0046:LOC">
+          <Date>2020-02-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0047:LOC">
+          <Date>2020-02-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0048:LOC">
+          <Date>2020-02-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0049:LOC">
+          <Date>2020-02-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0050:LOC">
+          <Date>2020-02-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0051:LOC">
+          <Date>2020-02-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0052:LOC">
+          <Date>2020-02-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0053:LOC">
+          <Date>2020-04-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0054:LOC">
+          <Date>2020-04-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0055:LOC">
+          <Date>2020-04-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0056:LOC">
+          <Date>2020-04-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0057:LOC">
+          <Date>2020-04-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0058:LOC">
+          <Date>2020-04-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0059:LOC">
+          <Date>2020-04-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0060:LOC">
+          <Date>2020-04-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0061:LOC">
+          <Date>2020-04-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0062:LOC">
+          <Date>2020-04-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-00:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02100:LOC">
+          <Date>2020-03-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02101:LOC">
+          <Date>2020-03-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02102:LOC">
+          <Date>2020-03-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02103:LOC">
+          <Date>2020-03-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02104:LOC">
+          <Date>2020-03-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02105:LOC">
+          <Date>2020-03-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02106:LOC">
+          <Date>2020-03-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02107:LOC">
+          <Date>2020-03-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02108:LOC">
+          <Date>2020-03-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02109:LOC">
+          <Date>2020-03-23</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02110:LOC">
+          <Date>2020-03-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02111:LOC">
+          <Date>2020-03-25</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02112:LOC">
+          <Date>2020-03-26</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02113:LOC">
+          <Date>2020-03-27</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02114:LOC">
+          <Date>2020-03-30</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02115:LOC">
+          <Date>2020-03-31</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02116:LOC">
+          <Date>2020-04-01</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02117:LOC">
+          <Date>2020-04-02</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02118:LOC">
+          <Date>2020-04-03</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02119:LOC">
+          <Date>2020-04-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02120:LOC">
+          <Date>2020-04-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02121:LOC">
+          <Date>2020-04-22</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02122:LOC">
+          <Date>2020-04-23</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02123:LOC">
+          <Date>2020-04-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02124:LOC">
+          <Date>2020-04-27</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02125:LOC">
+          <Date>2020-04-28</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02126:LOC">
+          <Date>2020-04-29</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02127:LOC">
+          <Date>2020-04-30</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02128:LOC">
+          <Date>2020-05-01</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02129:LOC">
+          <Date>2020-05-04</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02130:LOC">
+          <Date>2020-05-05</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02131:LOC">
+          <Date>2020-05-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02132:LOC">
+          <Date>2020-05-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02133:LOC">
+          <Date>2020-05-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02134:LOC">
+          <Date>2020-05-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02135:LOC">
+          <Date>2020-05-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02136:LOC">
+          <Date>2020-05-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02137:LOC">
+          <Date>2020-05-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02138:LOC">
+          <Date>2020-05-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02139:LOC">
+          <Date>2020-05-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02140:LOC">
+          <Date>2020-05-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02141:LOC">
+          <Date>2020-05-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02142:LOC">
+          <Date>2020-05-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02143:LOC">
+          <Date>2020-05-22</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02144:LOC">
+          <Date>2020-05-25</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02145:LOC">
+          <Date>2020-05-26</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02146:LOC">
+          <Date>2020-05-27</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02147:LOC">
+          <Date>2020-05-28</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02148:LOC">
+          <Date>2020-05-29</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02149:LOC">
+          <Date>2020-06-01</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02150:LOC">
+          <Date>2020-06-02</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02151:LOC">
+          <Date>2020-06-03</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02152:LOC">
+          <Date>2020-06-04</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02153:LOC">
+          <Date>2020-06-05</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02154:LOC">
+          <Date>2020-06-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02155:LOC">
+          <Date>2020-06-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02156:LOC">
+          <Date>2020-06-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02157:LOC">
+          <Date>2020-06-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02158:LOC">
+          <Date>2020-06-12</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02159:LOC">
+          <Date>2020-06-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02160:LOC">
+          <Date>2020-06-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02161:LOC">
+          <Date>2020-06-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02162:LOC">
+          <Date>2020-06-18</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02163:LOC">
+          <Date>2020-06-19</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02164:LOC">
+          <Date>2020-06-22</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02165:LOC">
+          <Date>2020-06-23</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02166:LOC">
+          <Date>2020-06-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02167:LOC">
+          <Date>2020-06-25</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02168:LOC">
+          <Date>2020-06-26</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02169:LOC">
+          <Date>2020-06-29</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02170:LOC">
+          <Date>2020-06-30</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02171:LOC">
+          <Date>2020-07-01</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02172:LOC">
+          <Date>2020-07-02</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-02173:LOC">
+          <Date>2020-07-03</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0264:LOC">
+          <Date>2020-01-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0265:LOC">
+          <Date>2020-01-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0266:LOC">
+          <Date>2020-01-08</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0267:LOC">
+          <Date>2020-01-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0268:LOC">
+          <Date>2020-01-10</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0269:LOC">
+          <Date>2020-01-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0270:LOC">
+          <Date>2020-01-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0271:LOC">
+          <Date>2020-01-15</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0272:LOC">
+          <Date>2020-01-16</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0273:LOC">
+          <Date>2020-01-17</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0274:LOC">
+          <Date>2020-01-20</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0275:LOC">
+          <Date>2020-01-21</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0276:LOC">
+          <Date>2020-01-22</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0277:LOC">
+          <Date>2020-01-23</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0278:LOC">
+          <Date>2020-01-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0279:LOC">
+          <Date>2020-01-27</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0280:LOC">
+          <Date>2020-01-28</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0281:LOC">
+          <Date>2020-01-29</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0282:LOC">
+          <Date>2020-01-30</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0283:LOC">
+          <Date>2020-01-31</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0284:LOC">
+          <Date>2020-02-03</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0285:LOC">
+          <Date>2020-02-04</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0286:LOC">
+          <Date>2020-02-05</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0287:LOC">
+          <Date>2020-02-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0288:LOC">
+          <Date>2020-02-07</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0289:LOC">
+          <Date>2020-02-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0290:LOC">
+          <Date>2020-02-25</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0291:LOC">
+          <Date>2020-02-26</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0292:LOC">
+          <Date>2020-02-27</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0293:LOC">
+          <Date>2020-02-28</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0294:LOC">
+          <Date>2020-03-02</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0295:LOC">
+          <Date>2020-03-03</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0296:LOC">
+          <Date>2020-03-04</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0297:LOC">
+          <Date>2020-03-05</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0298:LOC">
+          <Date>2020-03-06</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:PERH18-3615-Semaine-0299:LOC">
+          <Date>2020-03-09</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:PERH18-3615-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-021:LOC">
+          <Date>2021-05-13</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-022:LOC">
+          <Date>2021-05-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-023:LOC">
+          <Date>2021-05-24</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-024:LOC">
+          <Date>2021-07-14</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-025:LOC">
+          <Date>2021-11-01</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+        <DayTypeAssignment order="0" version="any" id="LOCGUI11021735DG:DayTypeAssignment:STILE_19_1-Jan2020-Semaine-026:LOC">
+          <Date>2021-11-11</Date>
+          <DayTypeRef ref="LOCGUI11021735DG:DayType:STILE_19_1-Jan2020-Semaine-02:LOC" version="any"/>
+          <isAvailable>false</isAvailable>
+        </DayTypeAssignment>
+      </members>
+    </GeneralFrame>
+  </dataObjects>
+</PublicationDelivery>

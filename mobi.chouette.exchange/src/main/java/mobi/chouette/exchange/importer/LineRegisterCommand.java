@@ -119,6 +119,9 @@ public class LineRegisterCommand implements Command {
 
 		// Use property based enabling of stop place updater, but allow disabling if property exist in context
 		Line newValue  = referential.getLines().values().iterator().next();
+		context.put(CURRENT_LINE_ID,newValue.getObjectId());
+
+
 //		Line oldValue1 = lineDAO.findByObjectId(newValue.getObjectId());
 //
 //		Long jobid = (Long) context.get(JOB_ID);

@@ -14,7 +14,6 @@ import mobi.chouette.model.Provider;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -32,8 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static mobi.chouette.common.Constant.KEEP_STOP_GEOLOCALISATION;
 
 @Singleton(name = StopAreaService.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
@@ -100,7 +97,6 @@ public class StopAreaService {
 			ContextHolder.clear();
 			ContextHolder.setContext(impactedSchema);
 			resetSavedStatusToFalse(updateContext, impactedSchema);
-			chouetteDbContext.put(KEEP_STOP_GEOLOCALISATION, false);
 			stopAreaUpdateService.createOrUpdateStopAreas(chouetteDbContext, updateContext);
 			log.info("Update completed on schema: " + impactedSchema);
 		}

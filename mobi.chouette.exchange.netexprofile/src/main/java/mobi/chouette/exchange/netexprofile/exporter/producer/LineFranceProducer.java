@@ -46,6 +46,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         }
 
         NetexProducerUtils.populateIdAndVersionIDFM(neptuneLine, netexLine);
+        NetexProducerUtils.populateLineAccessibilityAssessment(neptuneLine, netexLine);
 
         if (isSet(neptuneLine.getName())) {
             netexLine.setName(ConversionUtil.getMultiLingualString(neptuneLine.getName()));
@@ -80,13 +81,6 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
             OperatorRefStructure operatorRefStruct = netexFactory.createOperatorRefStructure();
             NetexProducerUtils.populateReferenceIDFM(neptuneLine.getCompany(), operatorRefStruct);
             netexLine.setOperatorRef(operatorRefStruct);
-        }
-
-        if (CollectionUtils.isNotEmpty(neptuneLine.getGroupOfLines())) {
-            GroupOfLine groupOfLine = neptuneLine.getGroupOfLines().get(0);
-            String groupOfLinesId = netexId(groupOfLine.objectIdPrefix(), GROUP_OF_LINES, groupOfLine.objectIdSuffix());
-            GroupOfLinesRefStructure groupOfLinesRefStruct = netexFactory.createGroupOfLinesRefStructure().withRef(groupOfLinesId);
-            netexLine.setRepresentedByGroupRef(groupOfLinesRefStruct);
         }
 
         if (neptuneLine.getColor() != null || neptuneLine.getTextColor() != null) {

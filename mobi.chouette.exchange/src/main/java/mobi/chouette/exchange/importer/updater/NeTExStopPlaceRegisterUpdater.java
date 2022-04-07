@@ -7,6 +7,10 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.exchange.importer.updater.netex.NavigationPathMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopAreaMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopPlaceMapper;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.validation.ErrorCodeConverter;
+import mobi.chouette.exchange.validation.report.DataLocation;
+import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.*;
 import mobi.chouette.model.Route;
@@ -30,10 +34,13 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,6 +50,7 @@ import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.common.PropertyNames.*;
+
 
 
 @Log4j
@@ -89,30 +97,32 @@ public class NeTExStopPlaceRegisterUpdater {
 
     @PostConstruct
     public void postConstruct() {
-        initializeClient(null);
+        initializeClient(null, false);
     }
 
-    private void initializeClient(String ref){
+    private void initializeClient(String ref, Boolean keepStopGeolocalisation){
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
+
         if(!StringUtils.isEmpty(ref)) {
             if(url.contains("?"))
                 url = url + "&providerCode=" + ref;
             else
                 url = url + "?providerCode=" + ref;
         }
+
+        if(url.contains("?")){
+            url += "&";
+        }
+        else {
+            url += "?";
+        }
+
+        url += ("keepStopGeolocalisation=" + keepStopGeolocalisation);
+
         String clientId = getAndValidateProperty(KC_CLIENT_ID);
         String clientSecret = getAndValidateProperty(KC_CLIENT_SECRET);
         String realm = getAndValidateProperty(KC_CLIENT_REALM);
         String authServerUrl = getAndValidateProperty(KC_CLIENT_AUTH_URL);
-
-        /**
-         * WORKAROUND
-         */
-//        url = "http://kong:8000/api/stop_places/1.0/netex";
-//        clientId = "chouette";
-//        clientSecret = "314a5096-ed83-45ae-8dd6-904639a68806";
-//        realm = "Naq";
-//        authServerUrl = "https://auth-rmr.nouvelle-aquitaine.pro/auth/";
 
         try {
             this.client = new PublicationDeliveryClient(url, false, new TokenService(clientId, clientSecret, realm, authServerUrl));
@@ -127,8 +137,9 @@ public class NeTExStopPlaceRegisterUpdater {
         String ref = (String) context.get("ref");
 
         Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
+        Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
 
-        initializeClient(ref);
+        initializeClient(ref, keepStopGeolocalisation);
 
         if (client == null) {
             throw new RuntimeException("Looks like PublicationDeliveryClient is not set up correctly. Aborting.");
@@ -289,6 +300,10 @@ public class NeTExStopPlaceRegisterUpdater {
             try {
                 response = client.sendPublicationDelivery(publicationDelivery);
             } catch (JAXBException | IOException | SAXException e) {
+
+                // Specific error messages from tiamat must be handled to be written on the report
+                handleSpecificErrorsFromTiamat(context, e);
+
                 throw new RuntimeException("Got exception while sending publication delivery with "
                         + stopPlaces.size()
                         + " stop places to stop place register. correlationId: "
@@ -424,6 +439,50 @@ public class NeTExStopPlaceRegisterUpdater {
         }
 
     }
+
+    /***
+     * Read exception to check if there are specific messages from TIAMAT. If found, error messages are written in the report.
+     * @param context
+     * @param e
+     */
+    private void handleSpecificErrorsFromTiamat(Context context, Exception e){
+
+        if (e.getCause() == null || e.getCause().getMessage() == null)
+            return ;
+
+        JAXBContext jaxbContext = null;
+        try {
+            jaxbContext = JAXBContext.newInstance( ErrorResponseEntity.class );
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            ErrorResponseEntity errorResponseEntity = (ErrorResponseEntity) jaxbUnmarshaller.unmarshal(new StringReader(e.getCause().getMessage()));
+
+
+            for (ErrorResponseEntity.Error error : errorResponseEntity.errors) {
+                log.error("error:" + error.message);
+                TiamatErrorsEnum tiamatError = TiamatErrorsEnum.fromErrorCode(error.errorCode);
+                ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+                String errorType = getErrorTypeFromContext(context, tiamatError);
+                reporter.addCheckPointReportError(context,errorType,error.message ,new DataLocation(""));
+            }
+
+
+        } catch (JAXBException jaxbException) {
+            jaxbException.printStackTrace();
+        }
+    }
+
+    /***
+     * Guess the error type using context
+     * e.g : TRANSPORT_MISMATCH error can be associated to : 2-GTFS-Stop-7 in case of GTFS import or x-neptune-Stop-y in case of neptune import
+     * @param context
+     * @param tiamatError
+     * @return
+     */
+    private String getErrorTypeFromContext(Context context, TiamatErrorsEnum tiamatError){
+        ErrorCodeConverter errorCodeConverter = (ErrorCodeConverter) context.get(TIAMAT_ERROR_CODE_CONVERTER);
+        return errorCodeConverter.convert(tiamatError);
+    }
+
 
     private void feedFileToReferentialMap(Map<String,String> fileToReferentialMap, StopPlace stopPlace){
 

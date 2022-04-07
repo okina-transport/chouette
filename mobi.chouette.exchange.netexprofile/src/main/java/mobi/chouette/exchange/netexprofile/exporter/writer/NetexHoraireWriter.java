@@ -3,7 +3,10 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
+import org.rutebanken.netex.model.HeadwayJourneyGroup;
 import org.rutebanken.netex.model.ServiceJourney;
+import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
+import org.rutebanken.netex.model.TemplateServiceJourney;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -31,10 +34,24 @@ public class NetexHoraireWriter extends AbstractNetexWriter {
     static void writeVehicleJourneysElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
         try {
             if (exportableNetexData.getServiceJourneys() != null && exportableNetexData.getServiceJourneys().size() > 0){
-                for (ServiceJourney serviceJourney : exportableNetexData.getServiceJourneys()) {
-                    marshaller.marshal(netexFactory.createServiceJourney(serviceJourney), writer);
+                for (ServiceJourney_VersionStructure serviceJourney : exportableNetexData.getServiceJourneys()) {
+
+                    if (serviceJourney instanceof ServiceJourney){
+                        marshaller.marshal(netexFactory.createServiceJourney((ServiceJourney) serviceJourney), writer);
+                    }else{
+                        marshaller.marshal(netexFactory.createTemplateServiceJourney((TemplateServiceJourney) serviceJourney), writer);
+                    }
+
                 }
             }
+
+            if (exportableNetexData.getHeadwayJourneys() != null && exportableNetexData.getHeadwayJourneys().size()  > 0 ){
+
+                for (HeadwayJourneyGroup headwayJourney : exportableNetexData.getHeadwayJourneys()) {
+                    marshaller.marshal(netexFactory.createHeadwayJourneyGroup(headwayJourney), writer);
+                }
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>5.1.6-mobi-iti-SNAPSHOT</version>
+		<version>5.2.2-mobi-iti-SNAPSHOT</version>
 
 	</parent>
 	<artifactId>mobi.chouette.model</artifactId>
@@ -119,6 +119,11 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
+
+		<dependency>
+			<groupId>com.okina</groupId>
+			<artifactId>netex-java-model</artifactId>
+		</dependency>
 
 		<!-- Modules -->
 		<dependency>

@@ -985,6 +985,47 @@ ALTER SEQUENCE booking_arrangements_id_seq OWNED BY booking_arrangements.id;
 -- Name: lines; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
 --
 
+CREATE SEQUENCE IF NOT EXISTS accessibility_assessment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+CREATE SEQUENCE IF NOT EXISTS accessibility_limitation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+CREATE TABLE IF NOT EXISTS accessibility_limitation (
+                                                        id bigint NOT NULL,
+                                                        wheelchair_access varchar(255),
+    visual_signs_available varchar(255),
+    step_free_access varchar(255),
+    lift_free_access varchar(255),
+    escalator_free_access varchar(255),
+    audible_signals_available varchar(255),
+    CONSTRAINT accessibility_limitation_pkey PRIMARY KEY (id)
+    );
+
+CREATE TABLE IF NOT EXISTS accessibility_assessment (
+                                                        id bigint NOT NULL,
+                                                        mobility_impaired_access varchar(255),
+    accessibility_limitation_id bigint,
+    CONSTRAINT accessibility_assessment_pkey PRIMARY KEY (id)
+    );
+
+
+
+
+
+
+
 CREATE TABLE lines (
     id bigint NOT NULL,
     network_id bigint,
@@ -1017,6 +1058,9 @@ CREATE TABLE lines (
     pos integer,
     supprime boolean DEFAULT false
 );
+
+ALTER TABLE lines ADD COLUMN IF NOT EXISTS accessibility_assessment_id bigint;
+ALTER TABLE lines ADD CONSTRAINT fk_lines_accessibility_assessment FOREIGN KEY (accessibility_assessment_id) REFERENCES accessibility_assessment(id);
 
 
 ALTER TABLE chouette_gui.lines OWNER TO chouette;
@@ -1232,6 +1276,12 @@ CREATE TABLE routes (
     wayback character varying(255),
     supprime boolean DEFAULT false
 );
+
+
+
+
+ALTER TABLE routes ADD COLUMN IF NOT EXISTS accessibility_assessment_id bigint;
+ALTER TABLE routes ADD CONSTRAINT fk_routes_accessibility_assessment FOREIGN KEY (accessibility_assessment_id) REFERENCES accessibility_assessment(id) ON DELETE CASCADE;
 
 
 ALTER TABLE chouette_gui.routes OWNER TO chouette;

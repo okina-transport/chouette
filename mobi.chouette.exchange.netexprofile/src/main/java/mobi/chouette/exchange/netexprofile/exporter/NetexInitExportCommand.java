@@ -65,13 +65,18 @@ public class NetexInitExportCommand implements Command, Constant {
 		try {
 			JobData jobData = (JobData) context.get(JOB_DATA);
 
-//			String idSite = ProviderReferentialID.providers.get(jobData.getReferential().toUpperCase());
 			String referential = jobData.getReferential();
+			Boolean isSimulationExport = referential.startsWith("simulation_");
             log.info("NetexInitExportCommand.execute : ref => " + referential);
-			Optional<Provider> provider = providerDAO.findBySchema(referential);
-			String idSite = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getCodeIdfm();
-			log.info("NetexInitExportCommand.execute : " + referential + " " + idSite);
 
+            String idSite = "";
+            if (!isSimulationExport) {
+				Optional<Provider> provider = providerDAO.findBySchema(referential);
+				idSite = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getCodeIdfm();
+				log.info("NetexInitExportCommand.execute : " + referential + " " + idSite);
+			} else {
+            	log.info("NetexInitExportCommand.execute : " + referential);
+			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			Date currentDate = new Date();
@@ -81,7 +86,12 @@ public class NetexInitExportCommand implements Command, Constant {
 			if (exportedFileName != null && !"".equals(exportedFileName)){
 				jobData.setOutputFilename(exportedFileName);
 			}else{
-				jobData.setOutputFilename("OFFRE_" + idSite + "_" + sdf.format(currentDate) + "Z.zip");
+				if (isSimulationExport) {
+					jobData.setOutputFilename(referential + "_" + sdf.format(currentDate) + "Z.zip");
+				} else {
+					jobData.setOutputFilename("OFFRE_" + idSite + "_" + sdf.format(currentDate) + "Z.zip");
+				}
+
 			}
 
 			context.put(REFERENTIAL, new Referential());

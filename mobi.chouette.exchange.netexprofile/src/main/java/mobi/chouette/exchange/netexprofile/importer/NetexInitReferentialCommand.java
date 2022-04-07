@@ -3,13 +3,19 @@ package mobi.chouette.exchange.netexprofile.importer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
+import mobi.chouette.model.Line;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 
 import com.jamonapi.Monitor;
@@ -81,6 +87,12 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			context.put(NETEX_DATA_JAVA, netexJava);
 			context.put(NETEX_DATA_DOM, netexDom);
 
+			List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
+			if (incomingLineList == null){
+				context.put(INCOMING_LINE_LIST, new ArrayList());
+			}
+
+
 			if (lineFile) {
 				context.put(NETEX_WITH_COMMON_DATA, Boolean.FALSE);
 			} else {
@@ -90,22 +102,23 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			Map<String, NetexProfileValidator> availableProfileValidators = (Map<String, NetexProfileValidator>) context.get(NETEX_PROFILE_VALIDATORS);
 
 			String profileVersion = netexJava.getVersion();
+			// TODO Validation propre à l'appli désactivée pour le moment (voir NetexSchemaValidationCommand pour la validation xsd)
 //			if (!lineFile) {
 //				profileVersion += "-common";
 //			}
 
-			NetexProfileValidator profileValidator = availableProfileValidators.get(profileVersion);
-			if (profileValidator != null) {
-				profileValidator.initializeCheckPoints(context);
-				context.put(NETEX_PROFILE_VALIDATOR, profileValidator);
-				validationReporter.reportSuccess(context, AbstractNetexProfileValidator._1_NETEX_UNKNOWN_PROFILE);
-			} else {
-				log.error("Unsupported NeTEx profile in PublicationDelivery/@version: " + profileVersion);
-				// TODO fix reporting with lineNumber etc
-				validationReporter.addCheckPointReportError(context, AbstractNetexProfileValidator._1_NETEX_UNKNOWN_PROFILE, null, new DataLocation(fileName),
-						profileVersion);
-				result = ERROR;
-			}
+//			NetexProfileValidator profileValidator = availableProfileValidators.get(profileVersion);
+//			if (profileValidator != null) {
+//				profileValidator.initializeCheckPoints(context);
+//				context.put(NETEX_PROFILE_VALIDATOR, profileValidator);
+//				validationReporter.reportSuccess(context, AbstractNetexProfileValidator._1_NETEX_UNKNOWN_PROFILE);
+//			} else {
+//				log.error("Unsupported NeTEx profile in PublicationDelivery/@version: " + profileVersion);
+//				// TODO fix reporting with lineNumber etc
+//				validationReporter.addCheckPointReportError(context, AbstractNetexProfileValidator._1_NETEX_UNKNOWN_PROFILE, null, new DataLocation(fileName),
+//						profileVersion);
+//				result = ERROR;
+//			}
 
 		} catch (Exception e) {
 			reporter.addFileErrorInReport(context, fileName, ActionReporter.FILE_ERROR_CODE.INTERNAL_ERROR, e.toString());

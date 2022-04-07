@@ -14,6 +14,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
+import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneBrokenRouteFixerCommand;
@@ -166,6 +167,8 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
                 Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
                 commands.add(geolocationCheckCommand);
             }
+            Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
+            commands.add(tooManyNewStopsCheckCommand);
 
         } catch (ClassNotFoundException | IOException e) {
             log.error(e.getStackTrace());

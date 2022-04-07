@@ -11,9 +11,9 @@ import mobi.chouette.dao.CodespaceDAO;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidatorFactory;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMCalendarNetexProfileValidator;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMCommonNetexProfileValidator;
-import mobi.chouette.exchange.netexprofile.importer.validation.idfm.IDFMLineNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceCalendarNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceCommonNetexProfileValidator;
+import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceLineNetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.exchange.report.ActionReporter;
@@ -53,7 +53,7 @@ public class NetexInitImportCommand implements Command, Constant {
 		try {
 			NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 
-			
+
 			NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 			context.put(IMPORTER, importer);
 			context.put(NETEX_XPATH_COMPILER, importer.getXPathCompiler());
@@ -61,6 +61,8 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(NETEX_REFERENTIAL, new NetexReferential());
 			context.put(VALIDATION_DATA, new ValidationData());
 			context.put(OPTIMIZED, false);
+			context.put(FILE_TO_REFERENTIAL_STOP_ID_MAP, new HashMap<String, String>());
+			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
 
 			Map<String, NetexProfileValidator> availableProfileValidators = new HashMap<>();
 
@@ -69,18 +71,18 @@ public class NetexInitImportCommand implements Command, Constant {
 
 			// Register profiles for IDFM
 
-			NetexProfileValidator idfmLineValidator = NetexProfileValidatorFactory.create(IDFMLineNetexProfileValidator.class.getName(), context);
-			NetexProfileValidator idfmCalendarValidator = NetexProfileValidatorFactory.create(IDFMCalendarNetexProfileValidator.class.getName(), context);
-			NetexProfileValidator idfmCommonFileValidator = NetexProfileValidatorFactory.create(IDFMCommonNetexProfileValidator.class.getName(), context);
+			NetexProfileValidator franceLineValidator = NetexProfileValidatorFactory.create(FranceLineNetexProfileValidator.class.getName(), context);
+			NetexProfileValidator franceCalendarValidator = NetexProfileValidatorFactory.create(FranceCalendarNetexProfileValidator.class.getName(), context);
+			NetexProfileValidator franceCommonFileValidator = NetexProfileValidatorFactory.create(FranceCommonNetexProfileValidator.class.getName(), context);
 
 			// Register profiles for Norway
 
 //			NetexProfileValidator norwayLineValidator = NetexProfileValidatorFactory.create(NorwayLineNetexProfileValidator.class.getName(), context);
 //			NetexProfileValidator norwayCommonFileValidator = NetexProfileValidatorFactory.create(NorwayCommonNetexProfileValidator.class.getName(), context);
 
-			registerProfileValidator(availableProfileValidators, idfmLineValidator);
-			registerProfileValidator(availableProfileValidators, idfmCalendarValidator);
-			registerProfileValidator(availableProfileValidators, idfmCommonFileValidator);
+//			registerProfileValidator(availableProfileValidators, franceLineValidator);
+//			registerProfileValidator(availableProfileValidators, franceCalendarValidator);
+//			registerProfileValidator(availableProfileValidators, franceCommonFileValidator);
 
 			context.put(NETEX_PROFILE_VALIDATORS, availableProfileValidators);
 

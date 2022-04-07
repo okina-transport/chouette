@@ -16,6 +16,8 @@ import org.rutebanken.netex.model.ServiceJourneyInterchange;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
+import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
+import org.rutebanken.netex.model.TemplateServiceJourney;
 
 public class TimetableFrameWriter extends AbstractNetexWriter {
 
@@ -43,8 +45,12 @@ public class TimetableFrameWriter extends AbstractNetexWriter {
     private static void writeVehicleJourneysElement(XMLStreamWriter writer, ExportableNetexData exportableData, Marshaller marshaller) {
         try {
             writer.writeStartElement(VEHICLE_JOURNEYS);
-            for (ServiceJourney serviceJourney : exportableData.getServiceJourneys()) {
-                marshaller.marshal(netexFactory.createServiceJourney(serviceJourney), writer);
+            for (ServiceJourney_VersionStructure serviceJourney : exportableData.getServiceJourneys()) {
+                if (serviceJourney instanceof ServiceJourney){
+                    marshaller.marshal(netexFactory.createServiceJourney((ServiceJourney) serviceJourney), writer);
+                }else{
+                    marshaller.marshal(netexFactory.createTemplateServiceJourney((TemplateServiceJourney) serviceJourney), writer);
+                }
             }
             writer.writeEndElement();
         } catch (Exception e) {

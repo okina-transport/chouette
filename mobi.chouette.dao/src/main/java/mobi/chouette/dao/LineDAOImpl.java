@@ -1,5 +1,7 @@
 package mobi.chouette.dao;
 
+import mobi.chouette.core.CoreException;
+import mobi.chouette.core.CoreExceptionCode;
 import mobi.chouette.model.Line;
 
 import javax.ejb.Stateless;
@@ -71,5 +73,24 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 				"                  WHERE l.id IN :ids")
 				.setParameter("ids", ids)
 				.getResultList();
+	}
+
+	@Override
+	public String removeDeletedLines() throws CoreException {
+
+		String deletedLines = "";
+		try {
+			Object result = em.createNativeQuery(
+							"SELECT remove_deleted_lines()")
+							.getSingleResult();
+
+			if (result instanceof String){
+				deletedLines = (String) result;
+			}
+
+			return deletedLines;
+		} catch (Exception e) {
+			throw new CoreException(CoreExceptionCode.DELETE_IMPOSSIBLE,"Error while trying to remove deleted lines");
+		}
 	}
 }

@@ -6,6 +6,8 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DestinationDisplay;
@@ -31,6 +33,7 @@ import org.joda.time.LocalDate;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralFrame;
 import org.rutebanken.netex.model.General_VersionFrameStructure;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.SiteConnection;
 import org.testng.Assert;
@@ -78,6 +81,9 @@ public class NetexFranceCommonFileTest {
 
         context.put(CREATION_DATE,LocalDateTime.now());
 
+        NetexLineDataFranceProducer producer = new NetexLineDataFranceProducer();
+        producer.produce(context);
+
         NetexCommonDataProducerCommand commonPoducer = new NetexCommonDataProducerCommand();
         commonPoducer.execute(context);
 
@@ -124,6 +130,28 @@ public class NetexFranceCommonFileTest {
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);
 
 
+        List<org.rutebanken.netex.model.Line> lines = getLines(firstFrame.getMembers());
+        Assert.assertFalse(lines.isEmpty(),"lines should be there");
+        org.rutebanken.netex.model.Line firstLine = lines.get(0);
+        Assert.assertEquals(firstLine.getName().getValue(),"TestLineName");
+        Assert.assertEquals(firstLine.getShortName().getValue(),"testPublishedName");
+        Assert.assertEquals(firstLine.getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
+
+        org.rutebanken.netex.model.AccessibilityAssessment firstLineAssessment = firstLine.getAccessibilityAssessment();
+        Assert.assertNotNull(firstLineAssessment);
+
+        Assert.assertEquals(firstLineAssessment.getMobilityImpairedAccess(),LimitationStatusEnumeration.PARTIAL);
+
+        org.rutebanken.netex.model.AccessibilityLimitation limitations = firstLineAssessment.getLimitations().getAccessibilityLimitation();
+        Assert.assertNotNull(limitations);
+        Assert.assertNull(limitations.getWheelchairAccess());
+        Assert.assertEquals(limitations.getStepFreeAccess(),LimitationStatusEnumeration.FALSE);
+        Assert.assertEquals(limitations.getEscalatorFreeAccess(),LimitationStatusEnumeration.PARTIAL);
+        Assert.assertEquals(limitations.getLiftFreeAccess(),LimitationStatusEnumeration.TRUE);
+        Assert.assertEquals(limitations.getAudibleSignalsAvailable(),LimitationStatusEnumeration.UNKNOWN);
+
+
+
     }
 
     private List<org.rutebanken.netex.model.SiteConnection> getSiteConnections(General_VersionFrameStructure.Members members){
@@ -131,6 +159,16 @@ public class NetexFranceCommonFileTest {
                 .map(JAXBElement::getValue)
                 .filter(member -> member instanceof org.rutebanken.netex.model.SiteConnection)
                 .map(member -> (org.rutebanken.netex.model.SiteConnection)member )
+                .collect(Collectors.toList());
+
+    }
+
+
+    private List<org.rutebanken.netex.model.Line> getLines(General_VersionFrameStructure.Members members){
+        return members.getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity().stream()
+                .map(JAXBElement::getValue)
+                .filter(member -> member instanceof org.rutebanken.netex.model.Line)
+                .map(member -> (org.rutebanken.netex.model.Line)member )
                 .collect(Collectors.toList());
 
     }
@@ -174,6 +212,22 @@ public class NetexFranceCommonFileTest {
         line.setCodifligne(codifLigne);
         line.setName("TestLineName");
         line.setPublishedName("testPublishedName");
+
+        AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+        accessibilityAssessment.setId(3l);
+        accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
+        AccessibilityLimitation limitations = new AccessibilityLimitation();
+        limitations.setStepFreeAccess(LimitationStatusEnumeration.FALSE);
+        limitations.setLiftFreeAccess(LimitationStatusEnumeration.TRUE);
+        limitations.setEscalatorFreeAccess(LimitationStatusEnumeration.PARTIAL);
+        limitations.setAudibleSignalsAvailable(LimitationStatusEnumeration.UNKNOWN);
+        limitations.setId(4l);
+
+
+        accessibilityAssessment.setLimitations(limitations);
+
+
+        line.setAccessibilityAssessment(accessibilityAssessment);
 
         Network network = new Network();
         Company company = new Company();
@@ -381,7 +435,11 @@ public class NetexFranceCommonFileTest {
 
         exportableNetexData.getConnectionLinks().add(c1);
         context.put(EXPORTABLE_NETEX_DATA, exportableNetexData);
-        context.put(EXPORTABLE_DATA, new ExportableData());
+
+        ExportableData exportableData = new ExportableData();
+        exportableData.setLine(line);
+
+        context.put(EXPORTABLE_DATA, exportableData);
 
 
         return context;

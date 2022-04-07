@@ -66,7 +66,7 @@ public class NetexCalendrierWriter extends AbstractNetexWriter {
 
         writer.writeStartElement(MEMBERS);
 
-        ServiceCalendarFrameIDFMWriter.write(writer, context, exportableNetexData, marshaller);
+        ServiceCalendarFrameFranceWriter.write(writer, context, exportableNetexData, marshaller);
 
         writer.writeEndElement();
     }

@@ -8,6 +8,8 @@ import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -92,30 +94,43 @@ public class StopPlaceParser implements Parser, Constant {
         for (Map.Entry<String, String> item : childMappedAgainstParent.entrySet()) {
             StopArea child = ObjectFactory.getStopArea(referential, item.getKey());
             StopArea parent = ObjectFactory.getStopArea(referential, item.getValue());
-            parent.setAreaType(parentAreaType);
-            child.setParent(parent);
-            copyNameIfMissingRecursively(parent);
-        }
+            if (parent != null) {
+                parent.setAreaType(parentAreaType);
+                child.setParent(parent);
+				copyNameIfMissingRecursively(parent);
+			}
+		}
 	}
 
 	private void copyNameIfMissingRecursively(StopArea parent){
-		for(StopArea child:parent.getContainedStopAreas()) {
-            if (child.getName() == null) {
-                child.setName(parent.getName());
-            }
-            copyNameIfMissingRecursively(child);
-        }
+		for(StopArea child:parent.getContainedStopAreas()){
+			if (child.getName()==null){
+				child.setName(parent.getName());
+			}
+			copyNameIfMissingRecursively(child);
+		}
 	}
 
 
     void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String stopPlaceId;
 
         if (stopPlace.getQuays() == null) {
             return;
         }
 
-        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            stopPlaceId = NetexImportUtil.composeObjectId("StopPlace", parameters.getObjectIdPrefix(), stopPlace.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            stopPlaceId = stopPlace.getId();
+        }
+
+
+        StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlaceId);
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
         stopArea.setObjectVersion(NetexParserUtils.getVersion(stopPlace));
         stopArea.setName(ConversionUtil.getValue(stopPlace.getName()));
@@ -156,8 +171,12 @@ public class StopPlaceParser implements Parser, Constant {
 
         PostalAddress postalAddress = stopPlace.getPostalAddress();
         if (postalAddress != null) {
-            stopArea.setCountryCode(postalAddress.getPostCode());
-            stopArea.setStreetName(postalAddress.getAddressLine1().getValue());
+            if (postalAddress.getPostCode() != null) {
+                stopArea.setCountryCode(postalAddress.getPostCode());
+            }
+            if (postalAddress.getAddressLine1() != null && postalAddress.getAddressLine1().getValue() != null) {
+                stopArea.setStreetName(postalAddress.getAddressLine1().getValue());
+            }
         }
 
         TariffZoneRefs_RelStructure tariffZonesStruct = stopPlace.getTariffZones();
@@ -273,10 +292,18 @@ public class StopPlaceParser implements Parser, Constant {
 
     private void parseQuay(Context context, StopArea parentStopArea, Quay quay) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        String quayId;
+        if (parameters != null){
+            //Netex file import by application : parameters are available
+            quayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), quay.getId());
+        }else{
+            //Irkalla synchronization case : no parameters are defined.
+            quayId = quay.getId();
+        }
 
-        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quay.getId());
+        StopArea boardingPosition = ObjectFactory.getStopArea(referential, quayId);
         boardingPosition.setAreaType(ChouetteAreaEnum.BoardingPosition);
-        //boardingPosition.setAreaType(ChouetteAreaEnum.Quay);
 
         boardingPosition.setObjectVersion(NetexParserUtils.getVersion(quay));
         if (quay.getName() == null) {

@@ -1,6 +1,13 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBElement;
 
@@ -26,29 +33,56 @@ import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
+import org.rutebanken.netex.model.DayTypeAssignment;
+import org.rutebanken.netex.model.DayTypeAssignmentsInFrame_RelStructure;
+import org.rutebanken.netex.model.DayTypesInFrame_RelStructure;
+import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.DestinationDisplaysInFrame_RelStructure;
+import org.rutebanken.netex.model.Direction;
 import org.rutebanken.netex.model.DirectionsInFrame_RelStructure;
+import org.rutebanken.netex.model.EntityStructure;
+import org.rutebanken.netex.model.GeneralFrame;
 import org.rutebanken.netex.model.JourneyInterchangesInFrame_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternsInFrame_RelStructure;
+import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
 import org.rutebanken.netex.model.LinesInFrame_RelStructure;
+import org.rutebanken.netex.model.LinkSequence_VersionStructure;
 import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.NoticeAssignment;
+import org.rutebanken.netex.model.OperatingDay;
+import org.rutebanken.netex.model.OperatingDaysInFrame_RelStructure;
+import org.rutebanken.netex.model.OperatingPeriod_VersionStructure;
+import org.rutebanken.netex.model.OperatingPeriodsInFrame_RelStructure;
 import org.rutebanken.netex.model.OrganisationsInFrame_RelStructure;
+import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.Quay;
+import org.rutebanken.netex.model.QuayAssignmentView;
+import org.rutebanken.netex.model.QuayRefStructure;
+import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.ResourceFrame;
+import org.rutebanken.netex.model.RouteLink;
+import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
 import org.rutebanken.netex.model.RoutesInFrame_RelStructure;
+import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointsInFrame_RelStructure;
 import org.rutebanken.netex.model.ServiceCalendarFrame;
 import org.rutebanken.netex.model.ServiceFrame;
+import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
+import org.rutebanken.netex.model.SiteConnection;
 import org.rutebanken.netex.model.SiteFrame;
+import org.rutebanken.netex.model.StopAssignment_VersionStructure;
+import org.rutebanken.netex.model.StopAssignmentsInFrame_RelStructure;
+import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
 import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
 import org.rutebanken.netex.model.TimetableFrame;
 import org.rutebanken.netex.model.TypesOfValueInFrame_RelStructure;
 import org.rutebanken.netex.model.ValidBetween;
+import org.rutebanken.netex.model.ValidityConditions_RelStructure;
 
 @Log4j
 public class PublicationDeliveryParser extends NetexParser implements Parser, Constant {
@@ -58,9 +92,50 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 	static final String TIMETABLE_FRAME = "timetableFrame";
 	static final String SERVICE_CALENDAR_FRAME = "serviceCalendarFrame";
 	static final String TIMETABLE_ID = "timetableId";
+	private LineParser lineParser;
+	private OrganisationParser organisationParser;
+	private Parser serviceCalendarParser;
+	private RouteParser routeParser;
+	private DirectionParser directionParser;
+	private JourneyPatternParser journeyPatternParser;
+	private ScheduledStopPointParser scheduledStopPointParser;
+	private DestinationDisplayParser destinationDisplayParser;
+	private ServiceJourneyParser serviceJourneyParser;
+	private StopAssignmentParser stopAssignmentParser;
+	private StopPlaceParser stopPlaceParser;
+	private RouteLinkParser routeLinkParser;
+	private SiteConnectionParser siteConnectionParser;
+
+	public static org.rutebanken.netex.model.ObjectFactory netexFactory = null;
+
+	static {
+		try {
+			netexFactory = new org.rutebanken.netex.model.ObjectFactory();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	@Override
 	public void parse(Context context) throws Exception {
+
+		lineParser = (LineParser) ParserFactory.create(LineParser.class.getName());
+		organisationParser = (OrganisationParser) ParserFactory.create(OrganisationParser.class.getName());
+		serviceCalendarParser = ParserFactory.create(ServiceCalendarFrameParser.class.getName());
+		routeParser = (RouteParser) ParserFactory.create(RouteParser.class.getName());
+		directionParser = (DirectionParser) ParserFactory.create(DirectionParser.class.getName());
+		journeyPatternParser = (JourneyPatternParser) ParserFactory.create(JourneyPatternParser.class.getName());
+		scheduledStopPointParser = (ScheduledStopPointParser) ParserFactory.create(ScheduledStopPointParser.class.getName());
+		destinationDisplayParser = (DestinationDisplayParser) ParserFactory.create(DestinationDisplayParser.class.getName());
+		serviceJourneyParser = (ServiceJourneyParser) ParserFactory.create(ServiceJourneyParser.class.getName());
+		stopAssignmentParser = (StopAssignmentParser) ParserFactory.create(StopAssignmentParser.class.getName());
+		stopPlaceParser = (StopPlaceParser) ParserFactory.create(StopPlaceParser.class.getName());
+		routeLinkParser = (RouteLinkParser) ParserFactory.create(RouteLinkParser.class.getName());
+		siteConnectionParser = (SiteConnectionParser) ParserFactory.create(SiteConnectionParser.class.getName());
+
+
+
 		boolean isCommonDelivery = (boolean) context.get(NETEX_WITH_COMMON_DATA);
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
@@ -81,6 +156,14 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				List<SiteFrame> siteFrames = NetexObjectUtil.getFrames(SiteFrame.class, frames);
 				List<ServiceCalendarFrame> serviceCalendarFrames = NetexObjectUtil.getFrames(ServiceCalendarFrame.class, frames);
 				List<TimetableFrame> timetableFrames = NetexObjectUtil.getFrames(TimetableFrame.class, frames);
+				List<GeneralFrame> generalFrames = NetexObjectUtil.getFrames(GeneralFrame.class, frames);
+
+				List<ServiceCalendarFrame> generatedServiceCalendarFrames = generalFrames.stream()
+																						.map(this::buildServiceCalendarFrameFromGeneralFrame)
+																						.filter(Optional::isPresent)
+																						.map(Optional::get)
+																						.collect(Collectors.toList());
+				serviceCalendarFrames.addAll(generatedServiceCalendarFrames);
 
 				// pre processing
 				preParseReferentialDependencies(context, referential, serviceFrames, timetableFrames, isCommonDelivery);
@@ -88,11 +171,13 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				// normal processing
 				parseResourceFrames(context, resourceFrames);
 
+
 				if (configuration.isParseSiteFrames()) {
 					parseSiteFrames(context, siteFrames);
 				}
 				parseServiceFrames(context, serviceFrames, isCommonDelivery);
 				parseServiceCalendarFrame(context, serviceCalendarFrames);
+				parseGeneralFrames(context,generalFrames);
 
 				if (!isCommonDelivery) {
 					parseTimetableFrames(context, timetableFrames);
@@ -106,17 +191,27 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<SiteFrame> siteFrames = NetexObjectUtil.getFrames(SiteFrame.class, dataObjectFrames);
 			List<ServiceCalendarFrame> serviceCalendarFrames = NetexObjectUtil.getFrames(ServiceCalendarFrame.class, dataObjectFrames);
 			List<TimetableFrame> timetableFrames = NetexObjectUtil.getFrames(TimetableFrame.class, dataObjectFrames);
+			List<GeneralFrame> generalFrames = NetexObjectUtil.getFrames(GeneralFrame.class, dataObjectFrames);
+
+			List<ServiceCalendarFrame> generatedServiceCalendarFrames = generalFrames.stream()
+																					 .map(this::buildServiceCalendarFrameFromGeneralFrame)
+																					 .filter(Optional::isPresent)
+																					 .map(Optional::get)
+																					 .collect(Collectors.toList());
+			serviceCalendarFrames.addAll(generatedServiceCalendarFrames);
 
 			// pre processing
 			preParseReferentialDependencies(context, referential, serviceFrames, timetableFrames, isCommonDelivery);
 
 			// normal processing
 			parseResourceFrames(context, resourceFrames);
+
 			if (configuration.isParseSiteFrames()) {
 				parseSiteFrames(context, siteFrames);
 			}
 			parseServiceFrames(context, serviceFrames, isCommonDelivery);
 			parseServiceCalendarFrame(context, serviceCalendarFrames);
+			parseGeneralFrames(context, generalFrames);
 
 			if (!isCommonDelivery) {
 				parseTimetableFrames(context, timetableFrames);
@@ -126,6 +221,417 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		// post processing
 		// sortStopPoints(referential);
 		// updateBoardingAlighting(referential);
+	}
+
+	/**
+	 * Build a resource frame with data stored in "members" element of General Frame
+	 * @param generalFrame
+	 *   A general frame with data in members element
+	 * @return
+	 *   A resource frame
+	 */
+	private ResourceFrame buildResourceFrameFromGeneralFrame(GeneralFrame generalFrame){
+		ResourceFrame resourceFrame = netexFactory.createResourceFrame();
+		List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+
+		// Organisations construction
+		OrganisationsInFrame_RelStructure organisationsInMembers = netexFactory.createOrganisationsInFrame_RelStructure();
+		List<JAXBElement<? extends DataManagedObjectStructure>> organisations = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Operator.class, members);
+		organisations.addAll(NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Authority.class, members));
+		organisationsInMembers.withOrganisation_(organisations);
+		resourceFrame.setOrganisations(organisationsInMembers);
+
+		return resourceFrame;
+	}
+
+	/**
+	 * Build a timetable frame with data stored in "members" element of general frame
+	 * @param generalFrame
+	 *  A general frame with data in members element
+	 * @return
+	 *  A timetable frame
+	 */
+	private TimetableFrame buildTimetableFrameFromGeneralFrame(GeneralFrame generalFrame){
+		TimetableFrame timetableFrame = netexFactory.createTimetableFrame();
+		List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+
+		//Journeys construction
+		JourneysInFrame_RelStructure journeysInFrame_relStructure = netexFactory.createJourneysInFrame_RelStructure();
+		List<Journey_VersionStructure> journeys = new ArrayList<>();
+		List<ServiceJourney> netexJourneyInframe = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ServiceJourney.class, members);
+		journeys.addAll(netexJourneyInframe);
+		journeysInFrame_relStructure.withVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney(journeys);
+
+
+		timetableFrame.setVehicleJourneys(journeysInFrame_relStructure);
+		return timetableFrame;
+	}
+
+
+	/**
+	 * Build service Frames from data in general Frame.
+	 * - 1 main frame is created to store Lines, routes, directions
+	 * - x frames are added for networks (because each network must be stored in a single serviceFrame)
+	 *
+	 * @param generalFrame
+	 * 		General frame that contains all data in members element
+	 * @return
+	 * 		A stream of serviceFrame
+	 */
+	private Stream<ServiceFrame> buildServiceFramesFromGeneralFrame(GeneralFrame generalFrame){
+
+		List<ServiceFrame> resultServiceFrames = new ArrayList<>();
+
+		ServiceFrame mainServiceFrame = netexFactory.createServiceFrame();
+		List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+
+		// Lines construction
+		LinesInFrame_RelStructure linesInFrames = netexFactory.createLinesInFrame_RelStructure();
+		List<JAXBElement<? extends DataManagedObjectStructure>> lines = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Line.class, members);
+		linesInFrames.withLine_(lines);
+		mainServiceFrame.setLines(linesInFrames);
+
+
+		//routes construction
+		RoutesInFrame_RelStructure routesInFrames = netexFactory.createRoutesInFrame_RelStructure();
+		List<JAXBElement<? extends DataManagedObjectStructure>> rawRoutes = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Route.class, members);
+		List<JAXBElement<? extends LinkSequence_VersionStructure>> castedRoutes = rawRoutes.stream()
+																							.map(route -> (JAXBElement<? extends LinkSequence_VersionStructure>) route)
+																							.collect(Collectors.toList());
+		routesInFrames.withRoute_(castedRoutes);
+		mainServiceFrame.setRoutes(routesInFrames);
+
+
+		//direction construction
+		DirectionsInFrame_RelStructure directionsInFrame = netexFactory.createDirectionsInFrame_RelStructure();
+		List<Direction> directions = NetexObjectUtil.getMembers(Direction.class, members);
+		directionsInFrame.withDirection(directions);
+		mainServiceFrame.setDirections(directionsInFrame);
+		resultServiceFrames.add(mainServiceFrame);
+
+		//journeyPattern construction
+		JourneyPatternsInFrame_RelStructure journeyPatternsInFrame = netexFactory.createJourneyPatternsInFrame_RelStructure();
+		List<JAXBElement<?>> journeyPatterns = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.ServiceJourneyPattern.class, members)
+																			.stream()
+																			.map(journeyPattern -> (JAXBElement<?>) journeyPattern)
+																			.collect(Collectors.toList());
+		journeyPatternsInFrame.withJourneyPattern_OrJourneyPatternView(journeyPatterns);
+		mainServiceFrame.setJourneyPatterns(journeyPatternsInFrame);
+
+
+		//ScheduledStopPoints construction
+		ScheduledStopPointsInFrame_RelStructure scheduledStopPointInFrame = netexFactory.createScheduledStopPointsInFrame_RelStructure();
+		List<ScheduledStopPoint> scheduledStopPoints = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ScheduledStopPoint.class, members);
+		scheduledStopPointInFrame.withScheduledStopPoint(scheduledStopPoints);
+		mainServiceFrame.setScheduledStopPoints(scheduledStopPointInFrame);
+
+
+		//Destination display construction
+		DestinationDisplaysInFrame_RelStructure destinationDisplayInFrame = netexFactory.createDestinationDisplaysInFrame_RelStructure();
+		List<DestinationDisplay> destinationDisplays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.DestinationDisplay.class, members);
+		destinationDisplayInFrame.withDestinationDisplay(destinationDisplays);
+		mainServiceFrame.setDestinationDisplays(destinationDisplayInFrame);
+
+
+		//A service Frame is created for each network and added to the result list
+		List<ServiceFrame> networkServiceFrames = buildNetworkServiceFrame(generalFrame);
+		resultServiceFrames.addAll(networkServiceFrames);
+
+
+		return resultServiceFrames.stream();
+	}
+
+	/**
+	 * Build service frames from networks stored in "members" element of general frame
+	 * (1 service frame for each network)
+	 * @param generalFrame
+	 * 		General frame that contains all data in members element
+	 * @return
+	 * 		A list of service frames for all networks
+	 */
+	private List<ServiceFrame> buildNetworkServiceFrame(GeneralFrame generalFrame) {
+		List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+		List<Network> networks = NetexObjectUtil.getMembers(Network.class, members);
+		List<ServiceFrame> resultNetworkFrames = new ArrayList<>();
+
+		for (Network network : networks) {
+			ServiceFrame serviceFrame = netexFactory.createServiceFrame();
+			serviceFrame.setNetwork(network);
+			resultNetworkFrames.add(serviceFrame);
+		}
+
+		return resultNetworkFrames;
+	}
+
+	/**
+	 * Build ServiceCalendar frame with data stored in "members" element of general frame
+	 * @param generalFrame
+	 * 		General frame that contains all data in members element
+	 * @return
+	 * 		A serviceCalendar frame
+	 */
+	private Optional<ServiceCalendarFrame> buildServiceCalendarFrameFromGeneralFrame(GeneralFrame generalFrame){
+		boolean hasServiceCalendarData = false;//
+
+
+		ServiceCalendarFrame serviceCalendarFrame = netexFactory.createServiceCalendarFrame();
+		List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+
+		//daytypes construction
+		List<JAXBElement<? extends DataManagedObjectStructure>> jaxbDayTypes = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.DayType.class, members);
+		if (!jaxbDayTypes.isEmpty()){
+			DayTypesInFrame_RelStructure dayTypes = netexFactory.createDayTypesInFrame_RelStructure();
+			dayTypes.withDayType_(jaxbDayTypes);
+			serviceCalendarFrame.setDayTypes(dayTypes);
+			hasServiceCalendarData = true;
+		}
+
+
+		//daytypes assignments construction
+		List<DayTypeAssignment> dayTypesAssignments = NetexObjectUtil.getMembers(org.rutebanken.netex.model.DayTypeAssignment.class, members);
+		if (!dayTypesAssignments.isEmpty()){
+			DayTypeAssignmentsInFrame_RelStructure daytypesAssignmentsStruct = netexFactory.createDayTypeAssignmentsInFrame_RelStructure();
+			daytypesAssignmentsStruct.withDayTypeAssignment(dayTypesAssignments);
+			serviceCalendarFrame.setDayTypeAssignments(daytypesAssignmentsStruct);
+			hasServiceCalendarData = true;
+		}
+
+
+
+		//operating period construction
+		List<JAXBElement<? extends DataManagedObjectStructure>> rawOperatingPeriods = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.OperatingPeriod.class, members);
+		if (!rawOperatingPeriods.isEmpty()){
+			OperatingPeriodsInFrame_RelStructure operatingPeriodStruct = netexFactory.createOperatingPeriodsInFrame_RelStructure();
+			List<OperatingPeriod_VersionStructure> castedOperatingPeriods = rawOperatingPeriods.stream()
+					.map(jaxbElt -> (OperatingPeriod_VersionStructure) jaxbElt.getValue())
+					.collect(Collectors.toList());
+			operatingPeriodStruct.withOperatingPeriodOrUicOperatingPeriod(castedOperatingPeriods);
+			serviceCalendarFrame.setOperatingPeriods(operatingPeriodStruct);
+			hasServiceCalendarData = true;
+		}
+
+
+
+		//operating days construction
+		List<OperatingDay> operatingDays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.OperatingDay.class, members);
+		if (!operatingDays.isEmpty()){
+			OperatingDaysInFrame_RelStructure operatingDaysStruct = netexFactory.createOperatingDaysInFrame_RelStructure();
+			operatingDaysStruct.withOperatingDay(operatingDays);
+			serviceCalendarFrame.setOperatingDays(operatingDaysStruct);
+			hasServiceCalendarData = true;
+		}
+
+		ValidityConditions_RelStructure validityConditions = netexFactory.createValidityConditions_RelStructure();
+
+
+		//Add valid between to service frame
+		for (ValidBetween validBetween : generalFrame.getValidBetween()) {
+			validityConditions.withValidityConditionRefOrValidBetweenOrValidityCondition_(validBetween);
+		}
+		serviceCalendarFrame.setValidityConditions(validityConditions);
+
+		return hasServiceCalendarData ? Optional.of(serviceCalendarFrame) : Optional.empty();
+	}
+
+
+
+	private void parseGeneralFrames(Context context, List<GeneralFrame> generalFrames) throws Exception {
+		
+		for (GeneralFrame generalFrame : generalFrames ){
+			List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
+
+			List<JAXBElement<? extends DataManagedObjectStructure>> lines = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Line.class, members);
+			parseLines(context,lines);
+
+			List<Network> networks = NetexObjectUtil.getMembers(Network.class, members);
+			for (Network network : networks) {
+				parseNetwork(context,network);
+			}
+
+			List<JAXBElement<? extends DataManagedObjectStructure>> organisations = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Operator.class, members);
+			organisations.addAll(NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Authority.class, members));
+			parseOrganisations(context,organisations);
+
+			List<JAXBElement<? extends DataManagedObjectStructure>> stopAssignments = NetexObjectUtil.getMembersAsJaxb(PassengerStopAssignment.class, members);
+			parseStopAssignments(context,stopAssignments);
+
+
+			List<JAXBElement<? extends DataManagedObjectStructure>> rawRoutes = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.Route.class, members);
+
+
+			List<JAXBElement<? extends LinkSequence_VersionStructure>> castedRoutes = rawRoutes.stream()
+																								.map(route -> (JAXBElement<? extends LinkSequence_VersionStructure>) route)
+																								.collect(Collectors.toList());
+
+			parseRoutes(context,castedRoutes);
+
+			List<Direction> directions = NetexObjectUtil.getMembers(Direction.class, members);
+			parseDirection(context,directions);
+
+			List<RouteLink> routeLinks = NetexObjectUtil.getMembers(org.rutebanken.netex.model.RouteLink.class, members);
+			parseRouteLinks(context,routeLinks);
+
+
+			List<JAXBElement<?>> journeyPatterns = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.ServiceJourneyPattern.class, members)
+																     .stream()
+																	 .map(journeyPattern -> (JAXBElement<?>) journeyPattern)
+																	 .collect(Collectors.toList());
+			parseJourneyPatterns(context,journeyPatterns);
+
+
+			List<ScheduledStopPoint> scheduledStopPoints = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ScheduledStopPoint.class, members);
+			parseScheduledStopPoint(context,scheduledStopPoints);
+
+			List<DestinationDisplay> destinationDisplays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.DestinationDisplay.class, members);
+			parseDestinationDisplay(context,destinationDisplays);
+
+			List<ServiceJourney> journeys = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ServiceJourney.class, members);
+			parseServiceJourney(context,journeys);
+
+			List<SiteConnection> siteConnections = NetexObjectUtil.getMembers(org.rutebanken.netex.model.SiteConnection.class, members);
+			parseSiteConnections(context,siteConnections);
+
+			List<StopPlace> stopPlaces = NetexObjectUtil.getMembers(org.rutebanken.netex.model.StopPlace.class, members);
+			List<Quay> quays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.Quay.class, members);
+			parseStopPlaces(context, stopPlaces, quays);
+		}
+	}
+
+	private void parseRouteLinks(Context context, List<RouteLink> netexRouteLinks) throws Exception {
+
+		if (netexRouteLinks.isEmpty())
+			return;
+
+		RouteLinksInFrame_RelStructure routeLinksInInFrameStruct = netexFactory.createRouteLinksInFrame_RelStructure();
+		routeLinksInInFrameStruct.withRouteLink(netexRouteLinks);
+		context.put(NETEX_LINE_DATA_CONTEXT,routeLinksInInFrameStruct);
+		routeLinkParser.parse(context);
+
+	}
+
+	private void parseStopAssignments(Context context, List<JAXBElement<? extends DataManagedObjectStructure>> netexStopAssignments) throws Exception {
+
+		if (netexStopAssignments.isEmpty())
+			return;
+
+		StopAssignmentsInFrame_RelStructure stopAssignmentsInFrame = netexFactory.createStopAssignmentsInFrame_RelStructure();
+		List<JAXBElement<? extends StopAssignment_VersionStructure>> castedStopAssignments = netexStopAssignments.stream()
+																												.map(stopAssignment -> (JAXBElement<? extends StopAssignment_VersionStructure>) stopAssignment)
+																												.collect(Collectors.toList());
+
+		stopAssignmentsInFrame.withStopAssignment(castedStopAssignments);
+		context.put(NETEX_LINE_DATA_CONTEXT,stopAssignmentsInFrame);
+		stopAssignmentParser.parse(context);
+
+	}
+
+	private void parseServiceJourney(Context context,List<ServiceJourney> netexJourneyInframe) throws Exception {
+
+		if (netexJourneyInframe.isEmpty())
+			return;
+
+		JourneysInFrame_RelStructure journeysInFrame_relStructure = netexFactory.createJourneysInFrame_RelStructure();
+
+		List<Journey_VersionStructure> journeys = new ArrayList<>();
+		journeys.addAll(netexJourneyInframe);
+		journeysInFrame_relStructure.withVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney(journeys);
+		context.put(NETEX_LINE_DATA_CONTEXT, journeysInFrame_relStructure);
+		serviceJourneyParser.parse(context);
+	}
+
+	private void parseDestinationDisplay(Context context,List<DestinationDisplay> netexDestinationDisplays) throws Exception {
+
+		if (netexDestinationDisplays.isEmpty())
+			return;
+
+		DestinationDisplaysInFrame_RelStructure destinationDisplayInFrame = netexFactory.createDestinationDisplaysInFrame_RelStructure();
+		destinationDisplayInFrame.withDestinationDisplay(netexDestinationDisplays);
+		context.put(NETEX_LINE_DATA_CONTEXT, destinationDisplayInFrame);
+		destinationDisplayParser.parse(context);
+	}
+
+	private void parseScheduledStopPoint(Context context,List<ScheduledStopPoint> netexScheduledStopPoint) throws Exception {
+
+		if (netexScheduledStopPoint.isEmpty())
+			return;
+
+		ScheduledStopPointsInFrame_RelStructure scheduledStopPointInFrame = netexFactory.createScheduledStopPointsInFrame_RelStructure();
+		scheduledStopPointInFrame.withScheduledStopPoint(netexScheduledStopPoint);
+		context.put(NETEX_LINE_DATA_CONTEXT, scheduledStopPointInFrame);
+		scheduledStopPointParser.parse(context);
+	}
+
+
+	private void parseJourneyPatterns(Context context,List<JAXBElement<?>> netexJourneyPatterns) throws Exception {
+
+		if (netexJourneyPatterns.isEmpty())
+			return;
+
+
+		JourneyPatternsInFrame_RelStructure journeyPatternsInFrame = netexFactory.createJourneyPatternsInFrame_RelStructure();
+		journeyPatternsInFrame.withJourneyPattern_OrJourneyPatternView(netexJourneyPatterns);
+		context.put(NETEX_LINE_DATA_CONTEXT, journeyPatternsInFrame);
+		journeyPatternParser.parse(context);
+
+	}
+
+
+
+
+	private void parseOrganisations(Context context, List<JAXBElement<? extends DataManagedObjectStructure>> organisations) throws Exception {
+
+		if (organisations.isEmpty())
+			return;
+
+		OrganisationsInFrame_RelStructure organisationsInMembers = netexFactory.createOrganisationsInFrame_RelStructure();
+		organisationsInMembers.withOrganisation_(organisations);
+		context.put(NETEX_LINE_DATA_CONTEXT, organisationsInMembers);
+		organisationParser.parse(context);
+
+	}
+
+	private void parseLines(Context context, List<JAXBElement<? extends DataManagedObjectStructure>> netexLines) throws Exception {
+
+		if (netexLines.isEmpty())
+			return;
+
+		LinesInFrame_RelStructure linesInFrames = netexFactory.createLinesInFrame_RelStructure();
+		linesInFrames.withLine_(netexLines);
+		context.put(NETEX_LINE_DATA_CONTEXT, linesInFrames);
+		lineParser.parse(context);
+		Referential referential = (Referential) context.get(REFERENTIAL);
+		Map<String, Line> lines = referential.getLines();
+
+
+		for (Map.Entry<String, Line> stringLineEntry : lines.entrySet()) {
+			//"lines" property is cleaned each time NetexLineParserCommand is called. So, we need to save Line information coming from common files in "sharedLines" , in order to save them
+			referential.getSharedLines().put(stringLineEntry.getKey(),stringLineEntry.getValue());
+		}
+	}
+
+	private void parseDirection(Context context, List<Direction> netexDirections) throws Exception {
+
+		if (netexDirections.isEmpty())
+			return;
+
+		DirectionsInFrame_RelStructure directionsInFrame = netexFactory.createDirectionsInFrame_RelStructure();
+		directionsInFrame.withDirection(netexDirections);
+		context.put(NETEX_LINE_DATA_CONTEXT, directionsInFrame);
+		directionParser.parse(context);
+
+	}
+
+	private void parseRoutes(Context context, List<JAXBElement<? extends LinkSequence_VersionStructure>> netexRoutes) throws Exception {
+
+		if (netexRoutes.isEmpty())
+			return;
+
+
+		RoutesInFrame_RelStructure routesInFrames = netexFactory.createRoutesInFrame_RelStructure();
+		routesInFrames.withRoute_(netexRoutes);
+		context.put(NETEX_LINE_DATA_CONTEXT, routesInFrames);
+		routeParser.parse(context);
+
 	}
 
 	private void preParseReferentialDependencies(Context context, Referential referential, List<ServiceFrame> serviceFrames,
@@ -145,7 +651,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			// stop assignments
 			if (serviceFrame.getStopAssignments() != null) {
 				context.put(NETEX_LINE_DATA_CONTEXT, serviceFrame.getStopAssignments());
-				Parser stopAssignmentParser = ParserFactory.create(StopAssignmentParser.class.getName());
 				stopAssignmentParser.parse(context);
 			}
 
@@ -159,7 +664,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				TariffZonesInFrame_RelStructure tariffZonesStruct = serviceFrame.getTariffZones();
 				if (tariffZonesStruct != null) {
 					context.put(NETEX_LINE_DATA_CONTEXT, tariffZonesStruct);
-					StopPlaceParser stopPlaceParser = (StopPlaceParser) ParserFactory.create(StopPlaceParser.class.getName());
 					stopPlaceParser.parse(context);
 				}
 			}
@@ -223,7 +727,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			OrganisationsInFrame_RelStructure organisationsInFrameStruct = resourceFrame.getOrganisations();
 			if (organisationsInFrameStruct != null) {
 				context.put(NETEX_LINE_DATA_CONTEXT, organisationsInFrameStruct);
-				OrganisationParser organisationParser = (OrganisationParser) ParserFactory.create(OrganisationParser.class.getName());
 				organisationParser.parse(context);
 			}
 			TypesOfValueInFrame_RelStructure typesOfValueInFrame = resourceFrame.getTypesOfValue();
@@ -242,7 +745,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			StopPlacesInFrame_RelStructure stopPlacesStruct = siteFrame.getStopPlaces();
 			if (stopPlacesStruct != null) {
 				context.put(NETEX_LINE_DATA_CONTEXT, stopPlacesStruct);
-				StopPlaceParser stopPlaceParser = (StopPlaceParser) ParserFactory.create(StopPlaceParser.class.getName());
 				stopPlaceParser.parse(context);
 			}
 		}
@@ -265,14 +767,13 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			if (serviceFrame.getDestinationDisplays() != null) {
 				DestinationDisplaysInFrame_RelStructure destinationDisplaysInFrameStruct = serviceFrame.getDestinationDisplays();
 				context.put(NETEX_LINE_DATA_CONTEXT, destinationDisplaysInFrameStruct);
-				DestinationDisplayParser destinationDisplayParser = (DestinationDisplayParser) ParserFactory.create(DestinationDisplayParser.class.getName());
 				destinationDisplayParser.parse(context);
 
 			}
 			if (serviceFrame.getDirections() != null) {
 				DirectionsInFrame_RelStructure directionsInFrame_RelStructure = serviceFrame.getDirections();
 				context.put(NETEX_LINE_DATA_CONTEXT, directionsInFrame_RelStructure);
-				DirectionParser directionParser = (DirectionParser) ParserFactory.create(DirectionParser.class.getName());
+
 				directionParser.parse(context);
 			}
 			if (serviceFrame.getNotices() != null) {
@@ -291,7 +792,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			if (serviceFrame.getScheduledStopPoints() != null) {
 				ScheduledStopPointsInFrame_RelStructure scheduledStopPointsInFrameStruct = serviceFrame.getScheduledStopPoints();
 				context.put(NETEX_LINE_DATA_CONTEXT, scheduledStopPointsInFrameStruct);
-				ScheduledStopPointParser scheduledStopPointParser = (ScheduledStopPointParser) ParserFactory.create(ScheduledStopPointParser.class.getName());
 				scheduledStopPointParser.parse(context);
 
 			}
@@ -308,19 +808,16 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				LinesInFrame_RelStructure linesInFrameStruct = serviceFrame.getLines();
 				if (linesInFrameStruct != null) {
 					context.put(NETEX_LINE_DATA_CONTEXT, linesInFrameStruct);
-					LineParser lineParser = (LineParser) ParserFactory.create(LineParser.class.getName());
 					lineParser.parse(context);
 				}
 				RoutesInFrame_RelStructure routesInFrameStruct = serviceFrame.getRoutes();
 				if (routesInFrameStruct != null) {
 					context.put(NETEX_LINE_DATA_CONTEXT, routesInFrameStruct);
-					RouteParser routeParser = (RouteParser) ParserFactory.create(RouteParser.class.getName());
 					routeParser.parse(context);
 				}
 				JourneyPatternsInFrame_RelStructure journeyPatternStruct = serviceFrame.getJourneyPatterns();
 				if (journeyPatternStruct != null) {
 					context.put(NETEX_LINE_DATA_CONTEXT, journeyPatternStruct);
-					JourneyPatternParser journeyPatternParser = (JourneyPatternParser) ParserFactory.create(JourneyPatternParser.class.getName());
 					journeyPatternParser.parse(context);
 				}
 			}
@@ -337,9 +834,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		for (ServiceCalendarFrame serviceCalendarFrame : serviceCalendarFrames) {
 
 			parseValidityConditionsInFrame(context, serviceCalendarFrame);
-
 			context.put(NETEX_LINE_DATA_CONTEXT, serviceCalendarFrame);
-			Parser serviceCalendarParser = ParserFactory.create(ServiceCalendarFrameParser.class.getName());
 			serviceCalendarParser.parse(context);
 		}
 	}
@@ -364,7 +859,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 			JourneysInFrame_RelStructure vehicleJourneysStruct = timetableFrame.getVehicleJourneys();
 			context.put(NETEX_LINE_DATA_CONTEXT, vehicleJourneysStruct);
-			Parser serviceJourneyParser = ParserFactory.create(ServiceJourneyParser.class.getName());
 			serviceJourneyParser.parse(context);
 
 			JourneyInterchangesInFrame_RelStructure journeyInterchangesStruct = timetableFrame.getJourneyInterchanges();
@@ -409,6 +903,38 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		Footnote footnote = ObjectFactory.getFootnote(referential, notice.getId());
 		footnote.setLabel(ConversionUtil.getValue(notice.getText()));
 		footnote.setCode(notice.getPublicCode());
+	}
+
+	private void parseSiteConnections(Context context, List<SiteConnection> siteConnections) throws Exception {
+		if (siteConnections.isEmpty())
+			return;
+
+		context.put(NETEX_LINE_DATA_CONTEXT, siteConnections);
+		siteConnectionParser.parse(context);
+	}
+
+	private void parseStopPlaces(Context context, List<StopPlace> stopPlaces, List<Quay> quays) throws Exception {
+		if (stopPlaces.isEmpty() || quays.isEmpty())
+			return;
+
+		for(StopPlace stopPlace : stopPlaces){
+			List<Quay> quayList = quays
+						.stream()
+						.filter(quay -> stopPlace.getQuays().getQuayRefOrQuay()
+								.stream()
+								.anyMatch(o -> quay.getId().equals(((QuayRefStructure) o).getRef())))
+						.collect(Collectors.toList());
+
+			Quays_RelStructure quays_relStructure = new Quays_RelStructure();
+			quays_relStructure.getQuayRefOrQuay().addAll(quayList);
+			stopPlace.withQuays(quays_relStructure);
+		}
+
+		StopPlacesInFrame_RelStructure stopPlacesStruct = new StopPlacesInFrame_RelStructure();
+		stopPlacesStruct.getStopPlace().addAll(stopPlaces);
+
+		context.put(NETEX_LINE_DATA_CONTEXT, stopPlacesStruct);
+		stopPlaceParser.parse(context);
 	}
 
 	private void parseBranding(Context context, Branding netexBranding) {
