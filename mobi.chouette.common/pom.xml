@@ -71,6 +71,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>${jts.version}</version>
+		</dependency>
+
+
 		<!-- Test Dependencies -->
       <dependency>
          <groupId>org.testng</groupId>

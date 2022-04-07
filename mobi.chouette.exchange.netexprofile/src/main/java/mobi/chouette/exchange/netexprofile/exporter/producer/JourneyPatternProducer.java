@@ -22,7 +22,7 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 
-import org.locationtech.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LineString;
 import net.opengis.gml._3.LineStringType;
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.BookingArrangementsStructure;

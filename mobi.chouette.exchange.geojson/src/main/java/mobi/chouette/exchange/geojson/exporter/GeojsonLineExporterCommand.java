@@ -43,7 +43,7 @@ import mobi.chouette.model.util.NamingUtil;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.locationtech.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Coordinate;
 
 @Log4j
 public class GeojsonLineExporterCommand implements Command, Constant {
@@ -176,7 +176,7 @@ public class GeojsonLineExporterCommand implements Command, Constant {
 											.getLatitude().doubleValue());
 								}
 
-								rg.locationtech.jts.geom.LineString geometry = (routeSection.getInputGeometry() != null) ? routeSection
+								com.vividsolutions.jts.geom.LineString geometry = (routeSection.getInputGeometry() != null) ? routeSection
 										.getInputGeometry() : routeSection.getProcessedGeometry();
 								if (geometry != null) {
 									coordinates[i] = getCoordinates(geometry);

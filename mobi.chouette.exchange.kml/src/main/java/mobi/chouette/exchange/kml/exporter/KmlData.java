@@ -15,7 +15,7 @@ import mobi.chouette.model.NeptuneLocalizedObject;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 
-import org.locationtech.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.apache.commons.collections.map.ListOrderedMap;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

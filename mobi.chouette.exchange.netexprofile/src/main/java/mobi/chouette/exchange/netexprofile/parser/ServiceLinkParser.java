@@ -14,7 +14,7 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-import org.locationtech.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LineString;
 import org.rutebanken.netex.model.LinkSequenceProjection_VersionStructure;
 import org.rutebanken.netex.model.ServiceLink;
 import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
