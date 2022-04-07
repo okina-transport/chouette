@@ -126,4 +126,7 @@ public class TimeUtil {
     }
 
 
+    public static long toMillisecondsOfDay(LocalTime localTime) {
+        return localTime.toNanoOfDay()/1000000;
+    }
 }

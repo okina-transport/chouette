@@ -124,7 +124,7 @@ public abstract class AbstractJaxbNeptuneProducer<T extends TridentObjectType, U
 		if (time == null)
 			return null;
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(time.toNanoOfDay()/1000);
+		cal.setTimeInMillis(TimeUtil.toMillisecondsOfDay(time));
 		XMLGregorianCalendar c = typeFactory.newXMLGregorianCalendar(cal);
 		c.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 		c.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
