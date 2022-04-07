@@ -5,6 +5,7 @@ package mobi.chouette.exchange.metadata;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
 import mobi.chouette.exchange.metadata.Metadata.Box;
@@ -63,5 +64,15 @@ public class TextFormater implements Formater
 
       return builder.toString();
    }
+
+   /* (non-Javadoc)
+    * @see fr.certu.chouette.export.metadata.writer.Formater#formatDate(java.util.Calendar)
+    */
+   @Override
+   public synchronized String formatDate(TemporalAccessor date)
+   {
+      return dateFormat.format(date);
+   }
+
 
 }

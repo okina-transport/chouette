@@ -103,7 +103,7 @@ public class DublinCoreMetadataTest
 		String s = FileUtils.readFileToString(f);
 		Reporter.log(s);
 		String model = FileUtils.readFileToString(new File("src/test/data/metadata/metadata_chouette_dc_2.xml"));
-		Assert.assertTrue(s.equals(model), "metadata must be as expected in metadata_chouette_dc_2.xml");
+		Assert.assertEquals(s,model, "metadata must be as expected in metadata_chouette_dc_2.xml");
 
 	}
 
