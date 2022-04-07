@@ -23,8 +23,8 @@ import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
+import java.time.DateTimeConstants;
+import java.time.LocalDate;
 import org.rutebanken.helper.calendar.CalendarPatternAnalyzer;
 
 import static mobi.chouette.common.Constant.*;
@@ -75,7 +75,7 @@ public class RegtoppTimetableParser implements Parser {
 
 		boolean[] includedDays = computeIncludedDays(dayCodesBinaryArray);
 
-		java.time.LocalDate calStartLocalDate= java.time.LocalDate.of(calStartDate.getYear(),calStartDate.getMonthOfYear(),calStartDate.getDayOfMonth());
+		java.time.LocalDate calStartLocalDate= java.time.LocalDate.of(calStartDate.getYear(),calStartDate.getMonthValue(),calStartDate.getDayOfMonth());
 		Set<DayOfWeek> significantDaysInWeek = new CalendarPatternAnalyzer().computeSignificantDays(calStartLocalDate, includedDays);
 		Set<DayTypeEnum> significantDayTypes = new HashSet<>();
 		for(DayOfWeek d : significantDaysInWeek) {
@@ -157,19 +157,19 @@ public class RegtoppTimetableParser implements Parser {
 
 	private DayTypeEnum convertFromJodaTimeDayType(int dayType) {
 		switch (dayType) {
-			case DateTimeConstants.MONDAY:
+			case DayOfWeek.MONDAY:
 				return DayTypeEnum.Monday;
-			case DateTimeConstants.TUESDAY:
+			case DayOfWeek.TUESDAY:
 				return DayTypeEnum.Tuesday;
-			case DateTimeConstants.WEDNESDAY:
+			case DayOfWeek.WEDNESDAY:
 				return DayTypeEnum.Wednesday;
-			case DateTimeConstants.THURSDAY:
+			case DayOfWeek.THURSDAY:
 				return DayTypeEnum.Thursday;
-			case DateTimeConstants.FRIDAY:
+			case DayOfWeek.FRIDAY:
 				return DayTypeEnum.Friday;
-			case DateTimeConstants.SATURDAY:
+			case DayOfWeek.SATURDAY:
 				return DayTypeEnum.Saturday;
-			case DateTimeConstants.SUNDAY:
+			case DayOfWeek.SUNDAY:
 				return DayTypeEnum.Sunday;
 			default:
 				return null;

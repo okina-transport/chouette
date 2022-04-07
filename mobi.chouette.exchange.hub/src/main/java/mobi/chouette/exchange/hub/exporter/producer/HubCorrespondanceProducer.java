@@ -43,7 +43,7 @@ public class HubCorrespondanceProducer extends AbstractProducer {
 		if (neptuneObject.getLinkDistance() != null)
 		   hubObject.setDistance(neptuneObject.getLinkDistance().intValue());
 
-		hubObject.setTempsParcours((int) neptuneObject.getDefaultDuration().getStandardSeconds());
+		hubObject.setTempsParcours((int) neptuneObject.getDefaultDuration().getSeconds());
 		
 		hubObject.setIdentifiant(Integer.valueOf(compteur++));
 

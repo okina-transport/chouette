@@ -11,9 +11,9 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+
+import java.time.format.DateTimeFormatter;
 
 public class ServiceCalendarFrameWriter extends AbstractWriter{
 	
@@ -21,7 +21,7 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 	
 	public static void write(Writer writer, ExportableData data ) throws IOException 
 	{
-		DateTimeFormatter shortDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTimeFormatter shortDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		ModelTranslator modelTranslator = new ModelTranslator();
 		Set<Timetable> timetables = data.getTimetables();
 

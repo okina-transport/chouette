@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.beanio.annotation.Field;
 import org.beanio.annotation.Record;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

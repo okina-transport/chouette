@@ -40,9 +40,9 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
+import java.time.Duration;
+import java.time.LocalTime;
+import org.threeten.extra.Seconds;
 
 import static mobi.chouette.common.Constant.*;
 
@@ -184,7 +184,7 @@ public class RegtoppTripParser extends LineSpecificParser {
 		LocalTime t = null;
 
 		if (start != null && end != null) {
-			t = start.plus(Seconds.secondsBetween(start, end).dividedBy(2));
+			t = start.plus(Seconds.between(start, end).dividedBy(2));
 		}
 		return t;
 	}

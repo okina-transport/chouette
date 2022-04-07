@@ -17,7 +17,7 @@ import mobi.chouette.exchange.regtopp.validation.RegtoppException;
 import mobi.chouette.exchange.regtopp.validation.RegtoppValidationReporter;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.Duration;
+import java.time.Duration;
 
 @Log4j
 public abstract class IndexImpl<T> implements Index<T> {

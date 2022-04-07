@@ -282,19 +282,19 @@ public class SiteFrameWriter extends AbstractWriter{
 		writer.write("      <TransferDuration>\n");
 		//        #if ( $accessLink.defaultDuration)
 		if (isSet(accessLink.getDefaultDuration())) 
-		writer.write("       <DefaultDuration>"+durationFactory.newDuration(accessLink.getDefaultDuration().getMillis())+"</DefaultDuration>\n");
+		writer.write("       <DefaultDuration>"+durationFactory.newDuration(accessLink.getDefaultDuration().toMillis())+"</DefaultDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.frequentTravellerDuration)
 		if (isSet(accessLink.getFrequentTravellerDuration())) 
-		writer.write("        <FrequentTravellerDuration>"+durationFactory.newDuration(accessLink.getFrequentTravellerDuration().getMillis())+"</FrequentTravellerDuration>\n");
+		writer.write("        <FrequentTravellerDuration>"+durationFactory.newDuration(accessLink.getFrequentTravellerDuration().toMillis())+"</FrequentTravellerDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.occasionalTravellerDuration)
 		if (isSet(accessLink.getOccasionalTravellerDuration())) 
-		writer.write("        <OccasionalTravellerDuration>"+durationFactory.newDuration(accessLink.getOccasionalTravellerDuration().getMillis())+"</OccasionalTravellerDuration>\n");
+		writer.write("        <OccasionalTravellerDuration>"+durationFactory.newDuration(accessLink.getOccasionalTravellerDuration().toMillis())+"</OccasionalTravellerDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.mobilityRestrictedTravellerDuration)
 		if (isSet(accessLink.getMobilityRestrictedTravellerDuration())) 
-		writer.write("        <MobilityRestrictedTravellerDuration>"+durationFactory.newDuration(accessLink.getMobilityRestrictedTravellerDuration().getMillis())+"</MobilityRestrictedTravellerDuration>\n");
+		writer.write("        <MobilityRestrictedTravellerDuration>"+durationFactory.newDuration(accessLink.getMobilityRestrictedTravellerDuration().toMillis())+"</MobilityRestrictedTravellerDuration>\n");
 		 //       #end
 		writer.write("      </TransferDuration>\n");
 		}

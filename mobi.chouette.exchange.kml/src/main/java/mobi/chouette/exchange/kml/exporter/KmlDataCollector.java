@@ -4,13 +4,13 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Line;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class KmlDataCollector extends DataCollector{
 
 
-	public KmlDataCollector(mobi.chouette.exchange.exporter.ExportableData collection, Line line, org.joda.time.LocalDate startDate, org.joda.time.LocalDate endDate) {
+	public KmlDataCollector(mobi.chouette.exchange.exporter.ExportableData collection, Line line, java.time.LocalDate startDate, java.time.LocalDate endDate) {
 		super(collection, line, startDate, endDate, true, true);
 	}
 

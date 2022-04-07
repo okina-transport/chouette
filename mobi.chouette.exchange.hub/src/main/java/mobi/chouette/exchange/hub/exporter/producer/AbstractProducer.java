@@ -8,7 +8,7 @@ import mobi.chouette.exchange.hub.model.HubObject;
 import mobi.chouette.exchange.hub.model.exporter.HubExporterInterface;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 @Log4j
 public abstract class AbstractProducer {
@@ -60,7 +60,7 @@ public abstract class AbstractProducer {
 	static protected Integer toHubTime(LocalTime time)
 	{
 		if (time == null) return null;
-		long seconds = ((time.getHourOfDay() * 60) + time.getMinuteOfHour()) * 60 + time.getSecondOfMinute();
+		long seconds = ((time.getHour() * 60) + time.getMinute()) * 60 + time.getSecond();
 		return Integer.valueOf((int) seconds);
 	}
 

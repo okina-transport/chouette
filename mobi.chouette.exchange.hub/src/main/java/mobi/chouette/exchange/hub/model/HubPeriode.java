@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 public class HubPeriode extends HubObject implements Comparable<HubPeriode>{
 	/**

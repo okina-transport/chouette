@@ -1,6 +1,6 @@
 package mobi.chouette.model;
 
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 public interface JourneyAtStop {
 

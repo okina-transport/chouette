@@ -15,8 +15,8 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import org.beanio.*;
 import org.beanio.builder.FixedLengthParserBuilder;
 import org.beanio.builder.StreamBuilder;
-import org.joda.time.Duration;
-import org.joda.time.LocalDate;
+import java.time.Duration;
+import java.time.LocalDate;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

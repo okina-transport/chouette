@@ -40,7 +40,7 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import static mobi.chouette.common.Constant.*;
 

@@ -2,8 +2,8 @@ package mobi.chouette.exchange.regtopp.importer.parser.v11;
 
 import java.util.List;
 
-import org.joda.time.DateMidnight;
-import org.joda.time.LocalDate;
+import java.time.DateMidnight;
+import java.time.LocalDate;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -25,11 +25,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertNotNull(timetable);
 		Assert.assertEquals(new DateMidnight(timetable.getStartOfPeriod()), calStartDate.toDateMidnight());
@@ -46,11 +46,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00000010000001000000100000010000001000000100000010000001000000100000000000001000000100000010000001000000100010010000001100000100000010000001000000100000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getStartOfPeriod()), calStartDate.toDateMidnight());
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(154).toDateMidnight());
@@ -68,11 +68,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00000100000010000001000000100000010000001000000100000010000001000000000000010000001000000100000010000001000000100000010000001000000100000010000001000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(153).toDateMidnight());
 
@@ -89,11 +89,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00001000000100000010000001000000100000010000001000000100000010000000000000100000010000001000000100000010000001000000100000010000001000000100000010000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(152).toDateMidnight());
 
@@ -110,11 +110,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00100000010000001000000100000010000001000000100000010000001000000000000010000001000000100000010000001000000100000010000001000000100000010000001000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(150).toDateMidnight());
 
@@ -131,11 +131,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"00000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 03, 29); // Match 29 2016
+		LocalDate calStartDate = LocalDate.of(2016, 03, 29); // Match 29 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(38).toDateMidnight());
 
@@ -153,11 +153,11 @@ public class RegtoppTimetableParserTest {
 		// Populate with test data
 		RegtoppDayCodeDKO entry = create(
 				"01111000111100011110001111000111100011110001111000111100011110000000000111100011110001111000111100011110001101000111100001110001111000111100011110001111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		LocalDate calStartDate = new LocalDate(2016, 1, 18); // Jan 18 2016
+		LocalDate calStartDate = LocalDate.of(2016, 1, 18); // Jan 18 2016
 
 		RegtoppImportParameters configuration = new RegtoppImportParameters();
 		Referential referential = new Referential();
-		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(new LocalDate(), 1));
+		Timetable timetable = parser.convertTimetable(referential, configuration, calStartDate, entry,new RegtoppDayCodeHeaderDKO(LocalDate.now(), 1));
 
 		Assert.assertEquals(new DateMidnight(timetable.getEndOfPeriod()), calStartDate.plusDays(152).toDateMidnight());
 

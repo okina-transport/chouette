@@ -28,7 +28,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(of = { "id" })
 @ToString(exclude = { "parametersAsString" })

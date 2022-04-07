@@ -12,7 +12,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;

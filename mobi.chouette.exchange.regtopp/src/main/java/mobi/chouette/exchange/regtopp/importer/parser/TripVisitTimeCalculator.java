@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j;
 
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
-import org.joda.time.Period;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.Period;
 
 @Log4j
 public class TripVisitTimeCalculator {
@@ -22,7 +22,7 @@ public class TripVisitTimeCalculator {
             log.trace("Reducing hours to " + period.getHours());
         }
 
-        LocalTime sqlTime = new LocalTime(period.getHours(), period.getMinutes(), period.getSeconds());
+        LocalTime sqlTime = LocalTime.of(period.getHours(), period.getMinutes(), period.getAmount());
 
         return new TripVisitTime(days, sqlTime);
     }

@@ -8,15 +8,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import mobi.chouette.exchange.netex.exporter.ExportableData;
 import mobi.chouette.model.Line;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
 
 public class DeliveryWriter extends AbstractWriter{
 	
 	public static void write(Writer writer, ExportableData data ) throws IOException, DatatypeConfigurationException 
 	{
-		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		Line line = data.getLine();
 		LocalDateTime now = LocalDateTime.now();
 		writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");

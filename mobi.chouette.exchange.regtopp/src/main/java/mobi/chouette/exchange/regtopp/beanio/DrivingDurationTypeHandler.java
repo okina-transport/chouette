@@ -2,7 +2,7 @@ package mobi.chouette.exchange.regtopp.beanio;
 
 import org.beanio.types.TypeConversionException;
 import org.beanio.types.TypeHandler;
-import org.joda.time.Duration;
+import java.time.Duration;
 
 public class DrivingDurationTypeHandler implements TypeHandler {
 
@@ -24,7 +24,7 @@ public class DrivingDurationTypeHandler implements TypeHandler {
 			minutes = minutes.replace(" ", "");
 			
 			// Minutes to ms
-			return new Duration(Long.parseLong(minutes) * 1000 * 60);
+			return Duration.ofMillis(Long.parseLong(minutes) * 1000 * 60);
 		}
 	}
 

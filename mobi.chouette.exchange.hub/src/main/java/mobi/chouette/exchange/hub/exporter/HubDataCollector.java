@@ -9,13 +9,13 @@ import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class HubDataCollector extends DataCollector {
 
 
-	public HubDataCollector(ExportableData collection, Line line, org.joda.time.LocalDate startDate, org.joda.time.LocalDate endDate, boolean skipNoCoordinate, boolean followLinks) {
+	public HubDataCollector(ExportableData collection, Line line, java.time.LocalDate startDate, java.time.LocalDate endDate, boolean skipNoCoordinate, boolean followLinks) {
 		super(collection, line, startDate, endDate, false, false);
 	}
 

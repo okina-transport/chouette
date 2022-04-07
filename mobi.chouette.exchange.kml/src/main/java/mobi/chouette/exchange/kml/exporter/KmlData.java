@@ -17,12 +17,12 @@ import mobi.chouette.model.StopPoint;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.ReadablePartial;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ReadablePartial;
+
+import java.time.format.DateTimeFormatter;
 
 public class KmlData {
 	@Getter
@@ -133,8 +133,8 @@ public class KmlData {
 			this.longitude = x; 
 		}
 	}
-	private static final DateTimeFormatter dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss Z");
-	private static final DateTimeFormatter timeFormat = DateTimeFormat.forPattern("hh:mm:ss");
+	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss Z");
+	private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm:ss");
 
 	private static String valueOf(Object data)
 	{

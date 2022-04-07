@@ -20,7 +20,7 @@ import mobi.chouette.model.util.NamingUtil;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class NetexLineProducerCommand implements Command, Constant {

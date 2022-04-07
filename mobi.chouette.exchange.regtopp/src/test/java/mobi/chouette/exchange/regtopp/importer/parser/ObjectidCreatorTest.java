@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.regtopp.importer.parser;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -20,7 +20,7 @@ public class ObjectidCreatorTest {
 		configuration.setObjectIdPrefix("TST");
 		configuration.setCalendarStrategy(CalendarStrategy.ADD);
 		RegtoppDayCodeHeaderDKO header = new RegtoppDayCodeHeaderDKO();
-		header.setDate(new LocalDate(2016, 1, 1));
+		header.setDate(LocalDate.of(2016, 1, 1));
 		String recomputeTimetableId = ObjectIdCreator.recomputeTimetableId(configuration , "999", tt, header );
 	
 		Assert.assertEquals(recomputeTimetableId, "TST:Timetable:9993456-2016-01-01");
@@ -36,7 +36,7 @@ public class ObjectidCreatorTest {
 		configuration.setObjectIdPrefix("TST");
 		configuration.setCalendarStrategy(CalendarStrategy.UPDATE);
 		RegtoppDayCodeHeaderDKO header = new RegtoppDayCodeHeaderDKO();
-		header.setDate(new LocalDate(2016, 1, 1));
+		header.setDate(LocalDate.of(2016, 1, 1));
 		String recomputeTimetableId = ObjectIdCreator.recomputeTimetableId(configuration , "999", tt, header );
 	
 		Assert.assertEquals(recomputeTimetableId, "TST:Timetable:9993456");

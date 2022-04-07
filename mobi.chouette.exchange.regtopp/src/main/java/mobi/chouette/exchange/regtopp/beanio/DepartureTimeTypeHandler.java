@@ -2,7 +2,7 @@ package mobi.chouette.exchange.regtopp.beanio;
 
 import org.beanio.types.TypeConversionException;
 import org.beanio.types.TypeHandler;
-import org.joda.time.Duration;
+import java.time.Duration;
 
 public class DepartureTimeTypeHandler implements TypeHandler {
 
@@ -24,7 +24,7 @@ public class DepartureTimeTypeHandler implements TypeHandler {
 		long hours = Long.parseLong(hoursString);
 		long minutes = Long.parseLong(minutesString);
 
-		return new Duration(hours * 60 * 60 * 1000 + minutes * 60 * 1000);
+		return Duration.ofMillis(hours * 60 * 60 * 1000 + minutes * 60 * 1000);
 	}
 
 }

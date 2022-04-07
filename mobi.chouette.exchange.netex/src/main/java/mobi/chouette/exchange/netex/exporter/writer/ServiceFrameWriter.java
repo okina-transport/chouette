@@ -20,8 +20,8 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+
+import java.time.format.DateTimeFormatter;
 
 public class ServiceFrameWriter extends AbstractWriter{
 	
@@ -29,7 +29,7 @@ public class ServiceFrameWriter extends AbstractWriter{
 	
 	public static void write(Writer writer, ExportableData data ) throws IOException, DatatypeConfigurationException 
 	{
-		DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		DatatypeFactory durationFactory = DatatypeFactory.newInstance();
 		Line line = data.getLine();
 		Network network = line.getNetwork();
@@ -317,19 +317,19 @@ public class ServiceFrameWriter extends AbstractWriter{
 		writer.write("      <TransferDuration>\n");
 		//        #if ( $connectionLink.defaultDuration)
 		if (isSet(connectionLink.getDefaultDuration())) 
-		writer.write("       <DefaultDuration>"+durationFactory.newDuration(connectionLink.getDefaultDuration().getMillis())+"</DefaultDuration>\n");
+		writer.write("       <DefaultDuration>"+durationFactory.newDuration(connectionLink.getDefaultDuration().toMillis())+"</DefaultDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.frequentTravellerDuration)
 		if (isSet(connectionLink.getFrequentTravellerDuration())) 
-		writer.write("        <FrequentTravellerDuration>"+durationFactory.newDuration(connectionLink.getFrequentTravellerDuration().getMillis())+"</FrequentTravellerDuration>\n");
+		writer.write("        <FrequentTravellerDuration>"+durationFactory.newDuration(connectionLink.getFrequentTravellerDuration().toMillis())+"</FrequentTravellerDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.occasionalTravellerDuration)
 		if (isSet(connectionLink.getOccasionalTravellerDuration())) 
-		writer.write("        <OccasionalTravellerDuration>"+durationFactory.newDuration(connectionLink.getOccasionalTravellerDuration().getMillis())+"</OccasionalTravellerDuration>\n");
+		writer.write("        <OccasionalTravellerDuration>"+durationFactory.newDuration(connectionLink.getOccasionalTravellerDuration().toMillis())+"</OccasionalTravellerDuration>\n");
 		//        #end
 		//        #if ( $connectionLink.mobilityRestrictedTravellerDuration)
 		if (isSet(connectionLink.getMobilityRestrictedTravellerDuration())) 
-		writer.write("        <MobilityRestrictedTravellerDuration>"+durationFactory.newDuration(connectionLink.getMobilityRestrictedTravellerDuration().getMillis())+"</MobilityRestrictedTravellerDuration>\n");
+		writer.write("        <MobilityRestrictedTravellerDuration>"+durationFactory.newDuration(connectionLink.getMobilityRestrictedTravellerDuration().toMillis())+"</MobilityRestrictedTravellerDuration>\n");
 		//        #end
 		writer.write("      </TransferDuration>\n");
 		}
