@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.util;
 
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LineStringType;
 import org.testng.Assert;

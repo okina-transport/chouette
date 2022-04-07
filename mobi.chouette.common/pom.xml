@@ -54,6 +54,22 @@
 			<artifactId>threeten-extra</artifactId>
 			<version>1.7.0</version>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Test Dependencies -->
       <dependency>

@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.importer;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.GeometryUtil;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
@@ -12,6 +10,8 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

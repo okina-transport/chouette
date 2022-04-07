@@ -15,7 +15,7 @@ import mobi.chouette.model.NeptuneLocalizedObject;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import org.apache.commons.collections.map.ListOrderedMap;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,7 +97,7 @@ public class KmlData {
 			}
 				
 		}
-		public void addLineString(com.vividsolutions.jts.geom.LineString geometry)
+		public void addLineString(rg.locationtech.jts.geom.LineString geometry)
 		{
 			if (multiLineString == null) multiLineString = new ArrayList<>();
 			List<KmlPoint> ls = new ArrayList<>();

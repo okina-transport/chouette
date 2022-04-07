@@ -254,7 +254,7 @@ public class KmlLineProducerCommand implements Command, Constant {
 						}
 						if (!filteredRouteSection.isEmpty()) {
 							for (RouteSection routeSection : filteredRouteSection) {
-								com.vividsolutions.jts.geom.LineString geometry = (routeSection.getInputGeometry() != null) ? routeSection
+								rg.locationtech.jts.geom.LineString geometry = (routeSection.getInputGeometry() != null) ? routeSection
 										.getInputGeometry() : routeSection.getProcessedGeometry();
 								if (geometry != null) {
 									jpItem.addLineString(geometry);
