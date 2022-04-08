@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class TimebandUpdater implements Updater<Timeband> {
 
 	public static final String BEAN_NAME = "TimebandUpdater";
+	public static final DateTimeFormatter DATE_TIME_FORMATTER_HH_MM = DateTimeFormatter.ofPattern("HH:mm");
 
 	@EJB 
 	private TimebandDAO timebandDAO;
@@ -55,8 +56,7 @@ public class TimebandUpdater implements Updater<Timeband> {
 			oldValue.setEndTime(newValue.getEndTime());
 		}
 		if (oldValue.getName() == null || oldValue.getName().isEmpty()) {
-			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:MM");
-			oldValue.setName(timeFormatter.format(oldValue.getStartTime())+" - "+timeFormatter.format(oldValue.getEndTime()));
+			oldValue.setName(DATE_TIME_FORMATTER_HH_MM.format(oldValue.getStartTime())+" - "+ DATE_TIME_FORMATTER_HH_MM.format(oldValue.getEndTime()));
 		}
 		if (timebandDAO.findByObjectId(oldValue.getObjectId()) == null)
 			timebandDAO.create(oldValue);
