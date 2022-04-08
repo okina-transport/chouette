@@ -25,6 +25,7 @@ import org.xmlpull.v1.XmlPullParser;
 @Log4j
 public class TimeSlotParser implements Parser, Constant {
 
+	public static final DateTimeFormatter DATE_TIME_FORMATTER_HH_MM = DateTimeFormatter.ofPattern("HH:mm");
 	private static final String CHILD_TAG = "TimeSlot";
 
 	@Override
@@ -83,8 +84,7 @@ public class TimeSlotParser implements Parser, Constant {
 				XPPUtil.skipSubTree(log, xpp);
 			}
 		}
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:MM");
-		timeband.setName(timeFormatter.format(timeband.getStartTime())+"->"+timeFormatter.format(timeband.getEndTime()));
+		timeband.setName(DATE_TIME_FORMATTER_HH_MM.format(timeband.getStartTime())+"->"+ DATE_TIME_FORMATTER_HH_MM.format(timeband.getEndTime()));
 		validator.addLocation(context, timeSlot, lineNumber, columnNumber);
 	}
 
