@@ -97,7 +97,7 @@ public class KmlData {
 			}
 				
 		}
-		public void addLineString(rg.locationtech.jts.geom.LineString geometry)
+		public void addLineString(com.vividsolutions.jts.geom.LineString geometry)
 		{
 			if (multiLineString == null) multiLineString = new ArrayList<>();
 			List<KmlPoint> ls = new ArrayList<>();

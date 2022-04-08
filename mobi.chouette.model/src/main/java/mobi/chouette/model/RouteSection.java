@@ -20,11 +20,11 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.GeometryUtil;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Chouette Route Section : geographic route between to stop areas

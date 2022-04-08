@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.importer.geometry.osrm;
 
-import mobi.chouette.model.type.TransportModeNameEnum;
 import com.vividsolutions.jts.geom.Coordinate;
+import mobi.chouette.model.type.TransportModeNameEnum;
 
 import java.util.Objects;
 

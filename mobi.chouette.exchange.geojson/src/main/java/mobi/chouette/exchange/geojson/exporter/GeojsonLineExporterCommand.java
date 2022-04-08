@@ -429,7 +429,7 @@ public class GeojsonLineExporterCommand implements Command, Constant {
 		return feature;
 	}
 
-	private double[][] getCoordinates(rg.locationtech.jts.geom.LineString geometry) {
+	private double[][] getCoordinates(com.vividsolutions.jts.geom.LineString geometry) {
 		Coordinate[] coordinates = geometry.getCoordinates();
 		double[][] result = new double[coordinates.length][2];
 		for (int i = 0; i < coordinates.length; i++) {

@@ -1,10 +1,9 @@
 package mobi.chouette.exchange.importer.geometry;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Port to Java of Mark McClures Javascript PolylineEncoder :

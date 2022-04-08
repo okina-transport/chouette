@@ -2,8 +2,8 @@ package mobi.chouette.exchange.importer.geometry.osrm;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import com.vividsolutions.jts.geom.LineString;
+import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
