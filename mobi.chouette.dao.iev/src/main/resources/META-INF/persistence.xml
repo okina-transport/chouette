@@ -23,16 +23,25 @@
          <property name="hibernate.connection.datasource" value="java:jboss/datasources/iev" />
 
          <property name="hibernate.cache.use_second_level_cache" value="true" />
-
-         <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
          <property name="hibernate.cache.use_query_cache" value="true" />
-
-         <property name="hibernate.id.new_generator_mappings" value="false" />
 
          <property name="javax.persistence.validation.mode" value="none" />
          <property name="hibernate.hbm2ddl.auto" value="update" />
          <property name="hibernate.default_schema" value="public" />
          <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect" />
+
+         <!-- Force legacy options to maintain existing application behavior -->
+         <property name="hibernate.id.new_generator_mappings" value="false" />
+         <property name="hibernate.allow_update_outside_transaction" value="true"/>
+         <!--Disable JPA compliance options to maintain existing application behavior: these options are set to 'true' by Wildfly -->
+         <property name="hibernate.jpa.compliance.transaction" value="false"/>
+         <property name="hibernate.jpa.compliance.query" value="false"/>
+         <property name="hibernate.jpa.compliance.list" value="false"/>
+         <property name="hibernate.jpa.compliance.closed" value="false"/>
+         <property name="hibernate.jpa.compliance.proxy" value="false"/>
+         <property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
+         <property name="hibernate.jpa.compliance.caching" value="false"/>
+
       </properties>
    </persistence-unit>
 

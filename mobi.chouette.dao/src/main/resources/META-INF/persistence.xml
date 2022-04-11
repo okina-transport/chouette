@@ -26,14 +26,10 @@
 			<property name="hibernate.order_inserts" value="true" />
 			<property name="hibernate.order_updates" value="true" />
 
-			<property name="hibernate.id.new_generator_mappings" value="false" />
-
 			<property name="hibernate.default_batch_fetch_size" value="100" />
 			<property name="hibernate.connection.datasource" value="java:jboss/datasources/chouette" />
 
 			<property name="hibernate.cache.use_second_level_cache" value="true" />
-
-			<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
 			<property name="hibernate.cache.use_query_cache" value="true" />
 
 			<property name="javax.persistence.validation.mode" value="none" />
@@ -41,7 +37,20 @@
 			<property name="hibernate.default_schema" value="public" />
 			<property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
 
-			<property name="hibernate.ejb.interceptor" value="mobi.chouette.dao.interceptor.StopAreaRelationInterceptor"/>
+			<property name="hibernate.session_factory.interceptor" value="mobi.chouette.dao.interceptor.StopAreaRelationInterceptor"/>
+
+			<!-- Force legacy options to maintain existing application behavior -->
+			<property name="hibernate.id.new_generator_mappings" value="false" />
+			<property name="hibernate.allow_update_outside_transaction" value="true"/>
+			<!--Disable JPA compliance options to maintain existing application behavior: these options are set to 'true' by Wildfly -->
+			<property name="hibernate.jpa.compliance.transaction" value="false"/>
+			<property name="hibernate.jpa.compliance.query" value="false"/>
+			<property name="hibernate.jpa.compliance.list" value="false"/>
+			<property name="hibernate.jpa.compliance.closed" value="false"/>
+			<property name="hibernate.jpa.compliance.proxy" value="false"/>
+			<property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
+			<property name="hibernate.jpa.compliance.caching" value="false"/>
+
 		</properties>
 		
 		
@@ -96,8 +105,6 @@
 			<property name="hibernate.order_inserts" value="true" />
 			<property name="hibernate.order_updates" value="true" />
 
-			<property name="hibernate.id.new_generator_mappings" value="false" />
-
 			<property name="hibernate.default_batch_fetch_size" value="2000" />
 			<property name="hibernate.multiTenancy" value="SCHEMA" />
 			<property name="hibernate.connection.datasource" value="java:jboss/datasources/chouette" />
@@ -107,13 +114,24 @@
 				value="mobi.chouette.persistence.hibernate.DefaultConnectionProvider" />
 
 			<property name="hibernate.cache.use_second_level_cache" value="true" />
-
-			<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
 			<property name="hibernate.cache.use_query_cache" value="true" />
 
-         <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
+            <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
 			<property name="javax.persistence.validation.mode" value="none" />
-			<property name="hibernate.ejb.interceptor" value="mobi.chouette.dao.interceptor.RelationsToStopAreaInterceptor"/>
+			<property name="hibernate.session_factory.interceptor" value="mobi.chouette.dao.interceptor.RelationsToStopAreaInterceptor"/>
+
+			<!-- Force legacy options to maintain existing application behavior -->
+			<property name="hibernate.id.new_generator_mappings" value="false" />
+			<property name="hibernate.allow_update_outside_transaction" value="true"/>
+			<!--Disable JPA compliance options to maintain existing application behavior: these options are set to 'true' by Wildfly -->
+			<property name="hibernate.jpa.compliance.transaction" value="false"/>
+			<property name="hibernate.jpa.compliance.query" value="false"/>
+			<property name="hibernate.jpa.compliance.list" value="false"/>
+			<property name="hibernate.jpa.compliance.closed" value="false"/>
+			<property name="hibernate.jpa.compliance.proxy" value="false"/>
+			<property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
+			<property name="hibernate.jpa.compliance.caching" value="false"/>
+
 		</properties>
 	</persistence-unit>
 
