@@ -12,8 +12,10 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BikeAccessEnum;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
+import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.TadEnum;
 import mobi.chouette.model.type.WheelchairAccessEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -113,14 +115,24 @@ public class UpdateLineInfosCommand implements Command, Constant {
                 .map(VehicleJourney::getVehicleJourneyAtStops)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-        int nbVehicleJourneyAtStop = vehicleJourneyAtStopList.size();
-        int nbVJASWithTAD = (int) vehicleJourneyAtStopList.stream().filter(this::isVJASTAD).count();
-        if (nbVJASWithTAD == 0) {
-            lineToUpdate.setTad(TadEnum.NO_TAD);
-        } else if (nbVJASWithTAD == nbVehicleJourneyAtStop) {
-            lineToUpdate.setTad(TadEnum.FULL_TAD);
-        } else {
-            lineToUpdate.setTad(TadEnum.PARTIAL_TAD);
+
+        if(TadEnum.FULL_TAD.equals(lineToUpdate.getTad())){
+            for(VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStopList){
+                vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest);
+                vehicleJourneyAtStop.getStopPoint().setForBoarding(BoardingPossibilityEnum.is_flexible);
+                vehicleJourneyAtStop.getStopPoint().setForAlighting(AlightingPossibilityEnum.is_flexible);
+            }
+        }
+        else{
+            int nbVehicleJourneyAtStop = vehicleJourneyAtStopList.size();
+            int nbVJASWithTAD = (int) vehicleJourneyAtStopList.stream().filter(this::isVJASTAD).count();
+            if (nbVJASWithTAD == 0) {
+                lineToUpdate.setTad(TadEnum.NO_TAD);
+            } else if (nbVJASWithTAD == nbVehicleJourneyAtStop) {
+                lineToUpdate.setTad(TadEnum.FULL_TAD);
+            } else {
+                lineToUpdate.setTad(TadEnum.PARTIAL_TAD);
+            }
         }
     }
 
