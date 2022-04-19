@@ -2,7 +2,7 @@
 
 <!--
   ~ JBoss, Home of Professional Open Source.
-  ~ Copyright 2011, Red Hat, Inc., and individual contributors
+  ~ Copyright 2015, Red Hat, Inc., and individual contributors
   ~ as indicated by the @author tags. See the copyright.txt file in the
   ~ distribution for a full listing of individual contributors.
   ~
@@ -22,26 +22,23 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="com.sun.xml.bind">
+<module xmlns="urn:jboss:module:1.3" name="org.hibernate.infinispan">
+
     <properties>
         <property name="jboss.api" value="private"/>
     </properties>
 
+
     <resources>
-        <resource-root path="jaxb-impl-2.2.11.jar"/>
-        <resource-root path="jaxb-core-2.2.11.jar"/>
-        <resource-root path="jaxb-xjc-2.2.11.jar"/>
+        <resource-root path="hibernate-infinispan-${hibernate.version}.jar"/>
     </resources>
 
     <dependencies>
-        <module name="com.github.relaxng" export="true" />
-        <module name="com.sun.codemodel" export="true" />
-        <module name="com.sun.istack" export="true" />
-        <module name="com.sun.xml.txw2" export="true" />
-        <module name="com.sun.xsom" export="true" />
-        <module name="javax.api" />
-        <module name="javax.xml.bind.api" />
-        <module name="javax.xml.stream.api" />
-        <module name="org.kohsuke.rngom" export="true" />
+        <module name="org.hibernate"/>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+        <module name="org.infinispan" services="import"/>
+        <module name="org.infinispan.commons"/>
+        <module name="org.jboss.logging"/>
     </dependencies>
 </module>
