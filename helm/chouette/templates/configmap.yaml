@@ -1,10 +1,10 @@
 apiVersion: v1
 data:
   application.properties: |+
-    iev.stop.place.register.mapping.stopplace=http://tiamat/services/stop_places/mapping/stop_place?recordsPerRoundTrip=220000&includeFuture=true
-    iev.stop.place.register.mapping.quay=http://tiamat/services/stop_places/mapping/quay?recordsPerRoundTrip=500000&includeFuture=true
-    iev.stop.place.register.id.stopplace=http://tiamat/services/stop_places/id/stop_place?includeFuture=true
-    iev.stop.place.register.id.quay=http://tiamat/services/stop_places/id/quay?includeFuture=true
+    iev.stop.place.register.mapping.stopplace={{ .Values.tiamatUrl }}/services/stop_places/mapping/stop_place?recordsPerRoundTrip=220000&includeFuture=true
+    iev.stop.place.register.mapping.quay={{ .Values.tiamatUrl }}/services/stop_places/mapping/quay?recordsPerRoundTrip=500000&includeFuture=true
+    iev.stop.place.register.id.stopplace={{ .Values.tiamatUrl }}/services/stop_places/id/stop_place?includeFuture=true
+    iev.stop.place.register.id.quay={{ .Values.tiamatUrl }}/services/stop_places/id/quay?includeFuture=true
     iev.stop.place.id.mapping=true
     iev.stop.place.register.mapping.ttl.ms=600000
     iev.admin.key=rutebanken
@@ -21,10 +21,10 @@ data:
     iev.reschedule.interrupted.jobs=true
     iev.directory=/opt/jboss/data
     iev.referential.lock.manager.impl=hazelcastReferentialsLockManager
-    iev.osrm.endpoint.rail=http://osrm-rail:5000
-    iev.osrm.endpoint.bus=http://osrm-bus:5000
-    iev.osrm.endpoint.water=http://osrm-water:5000
-    iev.osrm.endpoint.coach=http://osrm-bus:5000
+    iev.osrm.endpoint.rail={{ .Values.osrmRailUrl }}
+    iev.osrm.endpoint.bus={{ .Values.osrmBusUrl }}
+    iev.osrm.endpoint.water={{ .Values.osrmWaterUrl }}
+    iev.osrm.endpoint.coach={{ .Values.osrmBusUrl }}
     iev.kubernetes.enabled=true
     iev.kubernetes.namespace={{ .Release.Namespace }}
     iev.route.section.generate.quay.distance.max.meters=100
