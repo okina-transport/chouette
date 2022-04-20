@@ -14,7 +14,7 @@
 
 		<wildfly.version>15.0.1.Final</wildfly.version>
 		<wildfly.core.version>7.0.0.Final</wildfly.core.version>
-		<jboss-javaee-7.0.version>1.0.4.Final</jboss-javaee-7.0.version>
+		<jboss-javaee-8.0.version>1.0.4.Final</jboss-javaee-8.0.version>
 		<wildfly-javaee8-with-tools.version>15.0.1.Final</wildfly-javaee8-with-tools.version>
 
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
@@ -767,9 +767,9 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-7.0</artifactId>
+				<artifactId>jboss-javaee-8.0</artifactId>
 				<type>pom</type>
-				<version>${jboss-javaee-7.0.version}</version>
+				<version>${jboss-javaee-8.0.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
