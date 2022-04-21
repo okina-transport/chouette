@@ -21,7 +21,7 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
         NetexProducerUtils.populateId(neptuneNetwork, netexNetwork);
 
         if (isSet(neptuneNetwork.getVersionDate())) {
-            LocalDateTime changedDateTime = TimeUtil.toLocalDateFromJoda(neptuneNetwork.getVersionDate()).atStartOfDay();
+            LocalDateTime changedDateTime = neptuneNetwork.getVersionDate().atStartOfDay();
             netexNetwork.setChanged(changedDateTime);
         }
 

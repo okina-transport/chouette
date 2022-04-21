@@ -120,7 +120,7 @@ public class ServiceJourneyProducer extends NetexProducer {
 				if (departureTime != null) {
 					if ((i + 1 < vehicleJourneyAtStops.size())) {
 						NetexTimeConversionUtil.populatePassingTimeUtc(timetabledPassingTime, false, vehicleJourneyAtStop);
-						timetabledPassingTime.setDepartureTime(TimeUtil.toLocalTimeFromJoda(departureTime));
+						timetabledPassingTime.setDepartureTime(departureTime);
 						if (vehicleJourneyAtStop.getDepartureDayOffset() > 0) {
 							timetabledPassingTime.setDepartureDayOffset(BigInteger.valueOf(vehicleJourneyAtStop.getDepartureDayOffset()));
 						}
@@ -155,8 +155,8 @@ public class ServiceJourneyProducer extends NetexProducer {
 					if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
 						netexFSP.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
 					}
-					netexFSP.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-					netexFSP.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+					netexFSP.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+					netexFSP.setMinimumBookingPeriod(bookingArrangement.getMinimumBookingPeriod());
 
 					netexFSP.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));
 				}

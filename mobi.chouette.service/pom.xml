@@ -35,7 +35,7 @@
 
     <dependency>
         <groupId>org.jboss.spec</groupId>
-        <artifactId>jboss-javaee-7.0</artifactId>
+        <artifactId>jboss-javaee-8.0</artifactId>
         <type>pom</type>
         <scope>provided</scope>
     </dependency>
@@ -119,10 +119,6 @@
          <artifactId>jettison</artifactId>
          <scope>provided</scope>
       </dependency>
-      <dependency>
-		<groupId>joda-time</groupId>
-		<artifactId>joda-time</artifactId>
-		</dependency>
        <dependency>
            <groupId>org.entur.helpers</groupId>
            <artifactId>calendar-helper</artifactId>

@@ -14,7 +14,7 @@
 
 		<wildfly.version>15.0.1.Final</wildfly.version>
 		<wildfly.core.version>7.0.0.Final</wildfly.core.version>
-		<jboss-javaee-7.0.version>1.0.4.Final</jboss-javaee-7.0.version>
+		<jboss-javaee-8.0.version>1.0.4.Final</jboss-javaee-8.0.version>
 		<wildfly-javaee8-with-tools.version>15.0.1.Final</wildfly-javaee8-with-tools.version>
 
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
@@ -45,6 +45,7 @@
 		<geotools.version>19.3</geotools.version>
 
 		<jaxb-version>2.3.3</jaxb-version>
+		<dom4j.version>2.1.1</dom4j.version>
 		<lombok-version>1.18.22</lombok-version>
 		<lombok-maven-plugin-version>1.18.20.0</lombok-maven-plugin-version>
 		<prometheus.agent.version>0.16.1</prometheus.agent.version>
@@ -758,9 +759,9 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-7.0</artifactId>
+				<artifactId>jboss-javaee-8.0</artifactId>
 				<type>pom</type>
-				<version>${jboss-javaee-7.0.version}</version>
+				<version>${jboss-javaee-8.0.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -926,12 +927,7 @@
 			</dependency>
 
 			<!-- Utilities Dependencies -->
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>2.10.13</version>
-            </dependency>
-            <dependency>
+			<dependency>
                 <groupId>org.jadira.usertype</groupId>
                 <artifactId>usertype.core</artifactId>
                 <version>${usertype.core.version}</version>
@@ -1140,22 +1136,14 @@
 		<module>mobi.chouette.dao.iev</module>
 		<module>mobi.chouette.exchange</module>
  		<module>mobi.chouette.exchange.neptune</module>
- 		<!--<module>mobi.chouette.exchange.netex</module>-->
 		<module>mobi.chouette.exchange.netexprofile</module>
-<!-- 		<module>mobi.chouette.exchange.kml</module> -->
-<!-- 		<module>mobi.chouette.exchange.hub</module> -->
 		<module>mobi.chouette.exchange.gtfs</module>
-<!-- 		<module>mobi.chouette.exchange.geojson</module> -->
-<!--         <module>mobi.chouette.exchange.sig</module> -->
-		<!--<module>mobi.chouette.exchange.regtopp</module>-->
 		<module>mobi.chouette.exchange.stopplace</module>
 		<module>mobi.chouette.exchange.validator</module>
-<!-- 		<module>mobi.chouette.exchange.converter</module> -->
 		<module>mobi.chouette.exchange.transfer</module>
 		<module>mobi.chouette.service</module>
 		<module>mobi.chouette.schema.checker</module>
 		<module>mobi.chouette.ws</module>
-<!-- 		<module>mobi.chouette.command</module> -->
 		<module>chouette_iev</module>
 	</modules>
 
