@@ -3,7 +3,6 @@ package mobi.chouette.exchange.netexprofile.parser;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -122,7 +121,7 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 				List<java.time.LocalDate> includedDates = t.getPeculiarDates();
 				Set<LocalDate> includedDays = new HashSet<LocalDate>();
 				for (java.time.LocalDate d : includedDates) {
-					includedDays.add(TimeUtil.toLocalDateFromJoda(d));
+					includedDays.add(d);
 				}
 
 				CalendarPattern pattern = new CalendarPatternAnalyzer().computeCalendarPattern(includedDays);
@@ -134,8 +133,8 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 					t.getCalendarDays().clear();
 
 					// Add the period detected
-					java.time.LocalDate from = TimeUtil.toJodaLocalDate(pattern.from);
-					java.time.LocalDate to = TimeUtil.toJodaLocalDate(pattern.to);
+					java.time.LocalDate from = pattern.from;
+					java.time.LocalDate to = pattern.to;
 					t.addPeriod(new Period(from, to));
 
 					// Convert from java.time.DayOfWeek to chouette DayTypeEnum
@@ -151,10 +150,10 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 					// Add extra inclusions and exclusions
 					for (LocalDate d : pattern.additionalDates) {
-						t.addCalendarDay(new CalendarDay(TimeUtil.toJodaLocalDate(d), true));
+						t.addCalendarDay(new CalendarDay(d, true));
 					}
 					for (LocalDate d : pattern.excludedDates) {
-						t.addCalendarDay(new CalendarDay(TimeUtil.toJodaLocalDate(d), false));
+						t.addCalendarDay(new CalendarDay(d, false));
 					}
 				}
 			}
@@ -197,11 +196,11 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 			Timetable timetable = ObjectFactory.getTimetable(referential, dayType.getId());
 			if(validBetweenTimetable.getFromDate() != null) {
-				timetable.setStartOfPeriod(TimeUtil.toJodaLocalDateIgnoreTime(validBetweenTimetable.getFromDate()));
+				timetable.setStartOfPeriod(TimeUtil.toLocalDateIgnoreTime(validBetweenTimetable.getFromDate()));
 			}
 
 			if(validBetweenTimetable.getToDate() != null) {
-				timetable.setEndOfPeriod(TimeUtil.toJodaLocalDateIgnoreTime(validBetweenTimetable.getToDate()));
+				timetable.setEndOfPeriod(TimeUtil.toLocalDateIgnoreTime(validBetweenTimetable.getToDate()));
 			}
 			if (dayType.getProperties() != null) {
 				for (PropertyOfDay propertyOfDay : dayType.getProperties().getPropertyOfDay()) {
@@ -227,7 +226,7 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 				if (isWithinValidRange(date, validBetween)) {
 					boolean included = dayTypeAssignment.isIsAvailable() != null ? dayTypeAssignment.isIsAvailable() : Boolean.TRUE;
-					timetable.addCalendarDay(new CalendarDay(TimeUtil.toJodaLocalDate(date.toLocalDate()), included));
+					timetable.addCalendarDay(new CalendarDay(date.toLocalDate(), included));
 				}
 			} else if (dayTypeAssignment.getOperatingDayRef() != null) {
 				String operatingDayIdRef = dayTypeAssignment.getOperatingDayRef().getRef();
@@ -235,7 +234,7 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 				if (operatingDay.getCalendarDate() != null && isWithinValidRange(operatingDay.getCalendarDate(), validBetween)) {
 					boolean included = dayTypeAssignment.isIsAvailable() != null ? dayTypeAssignment.isIsAvailable() : Boolean.TRUE;
-					timetable.addCalendarDay(new CalendarDay(TimeUtil.toJodaLocalDate(operatingDay.getCalendarDate().toLocalDate()), included));
+					timetable.addCalendarDay(new CalendarDay(operatingDay.getCalendarDate().toLocalDate(), included));
 				}
 
 			} else if (dayTypeAssignment.getOperatingPeriodRef() != null) {
@@ -247,26 +246,26 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 
 				if (operatingPeriod.getFromOperatingDayRef() != null) {
 					OperatingDay operatingDay = NetexObjectUtil.getOperatingDay(netexReferential, operatingPeriod.getFromOperatingDayRef().getRef());
-					startDate = TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate());
+					startDate = TimeUtil.toLocalDateIgnoreTime(operatingDay.getCalendarDate());
 				} else {
-					startDate = TimeUtil.toJodaLocalDateIgnoreTime(operatingPeriod.getFromDate());
+					startDate = TimeUtil.toLocalDateIgnoreTime(operatingPeriod.getFromDate());
 				}
 				if (operatingPeriod.getToOperatingDayRef() != null) {
 					OperatingDay operatingDay = NetexObjectUtil.getOperatingDay(netexReferential, operatingPeriod.getToOperatingDayRef().getRef());
-					endDate = TimeUtil.toJodaLocalDateIgnoreTime(operatingDay.getCalendarDate());
+					endDate = TimeUtil.toLocalDateIgnoreTime(operatingDay.getCalendarDate());
 				} else {
-					endDate = TimeUtil.toJodaLocalDateIgnoreTime(operatingPeriod.getToDate());
+					endDate = TimeUtil.toLocalDateIgnoreTime(operatingPeriod.getToDate());
 				}
 
 				// Cut of operating period to validity condition
 				java.time.LocalDate validFrom = null;
 				if(validBetween.getFromDate() != null) {
-					validFrom = TimeUtil.toJodaLocalDateIgnoreTime(validBetween.getFromDate());
+					validFrom = TimeUtil.toLocalDateIgnoreTime(validBetween.getFromDate());
 			
 				}
 				java.time.LocalDate validTo = null;
 				if (validBetween.getToDate() != null) {
-					validTo = TimeUtil.toJodaLocalDateIgnoreTime(validBetween.getToDate());
+					validTo = TimeUtil.toLocalDateIgnoreTime(validBetween.getToDate());
 				}
 				
 				if((validFrom != null && endDate.isBefore(validFrom)) || (validTo != null && startDate.isAfter(validTo))) {

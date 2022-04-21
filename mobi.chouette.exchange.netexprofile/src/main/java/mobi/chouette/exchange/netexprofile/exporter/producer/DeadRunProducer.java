@@ -84,7 +84,7 @@ public class DeadRunProducer extends NetexProducer {
                 if (departureTime != null) {
                     if ((i + 1 < deadRunAtStops.size())) {
                         NetexTimeConversionUtil.populatePassingTimeUtc(timetabledPassingTime, false, deadRunAtStop);
-                        timetabledPassingTime.setDepartureTime(TimeUtil.toLocalTimeFromJoda(departureTime));
+                        timetabledPassingTime.setDepartureTime(departureTime);
                         if (deadRunAtStop.getDepartureDayOffset() > 0) {
                             timetabledPassingTime.setDepartureDayOffset(BigInteger.valueOf(deadRunAtStop.getDepartureDayOffset()));
                         }

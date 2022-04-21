@@ -64,7 +64,7 @@ public class DatedServiceJourneyProducer extends NetexProducer {
 			OperatingDay netexOperatingDay= netexFactory.createOperatingDay();
 			netexOperatingDay.setVersion("1");
 			netexOperatingDay.setId(operatingDayId);
-			netexOperatingDay.setCalendarDate(TimeUtil.toLocalDateFromJoda(operatingDay).atStartOfDay());
+			netexOperatingDay.setCalendarDate(operatingDay.atStartOfDay());
 			exportableNetexData.getSharedOperatingDays().put(netexOperatingDay.getId(), netexOperatingDay);
 		}
 

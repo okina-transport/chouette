@@ -33,10 +33,10 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         chouetteNetwork.setObjectVersion(NetexParserUtils.getVersion(netexNetwork));
 
         if (netexNetwork.getCreated() != null) {
-            chouetteNetwork.setCreationTime(TimeUtil.toJodaLocalDateTime(netexNetwork.getCreated()));
+            chouetteNetwork.setCreationTime(netexNetwork.getCreated());
         }
         if (netexNetwork.getChanged() != null) {
-            chouetteNetwork.setVersionDate(TimeUtil.toJodaLocalDateTime(netexNetwork.getChanged()).toLocalDate());
+            chouetteNetwork.setVersionDate(netexNetwork.getChanged().toLocalDate());
         }
 
         chouetteNetwork.setName(netexNetwork.getName().getValue());
