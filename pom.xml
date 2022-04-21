@@ -255,31 +255,6 @@
 									</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.hibernate</groupId>
-									<artifactId>hibernate-entitymanager</artifactId>
-									<version>${hibernate.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.hibernate</groupId>
-									<artifactId>hibernate-java8</artifactId>
-									<version>${hibernate.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.hibernate</groupId>
-									<artifactId>hibernate-infinispan</artifactId>
-									<version>${hibernate.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/infinispan/main
-									</outputDirectory>
-								</artifactItem>
-
-								<artifactItem>
 									<groupId>com.vividsolutions</groupId>
 									<artifactId>jts</artifactId>
 									<version>${jts.version}</version>
@@ -287,7 +262,6 @@
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
 								</artifactItem>
-
 								<artifactItem>
 									<groupId>org.geolatte</groupId>
 									<artifactId>geolatte-geom</artifactId>
