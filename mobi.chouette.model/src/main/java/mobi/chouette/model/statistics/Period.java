@@ -15,7 +15,7 @@ import lombok.Getter;
 @XmlType(propOrder = { "from", "to" })
 @Getter
 public class Period implements Comparable<Period> {
-	// Use sql date for reliable serialization of date only (Should have been java.time/joda LocalDate)
+	// Use sql date for reliable serialization of date only (Should have been java.time.LocalDate)
 	private java.sql.Date from;
 	private java.sql.Date to;
 
