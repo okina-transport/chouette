@@ -30,39 +30,12 @@ public class TimeUtil {
         return Duration.ofSeconds(seconds);
     }
 
-    public static java.time.LocalTime toLocalTimeFromJoda(java.time.LocalTime jodaTime) {
-       return jodaTime;
-    }
-
-    public static java.time.LocalTime toJodaLocalTime(java.time.LocalTime localTime) {
-        return localTime;
-    }
-
-    public static java.time.Duration toJodaDuration(java.time.Duration duration) {
-        return duration;
-    }
-
-    public static java.time.Duration toDurationFromJodaDuration(Duration jodaDuration) {
-        return jodaDuration;
-    }
-
-    public static java.time.LocalDate toJodaLocalDate(LocalDate localDate) {
-        return localDate;
-    }
-
-    public static LocalDate toLocalDateFromJoda(java.time.LocalDate jodaDate) {
-        return jodaDate;
-    }
-
-    public static java.time.LocalDateTime toJodaLocalDateTime(java.time.LocalDateTime localDateTime) {
-        return localDateTime;
-    }
     /**
-     * Convert localDateTime to joda LocalDate, ignoring time.
+     * Convert localDateTime to LocalDate, ignoring time.
      *
      * This is a bit shady, but necessary as long as incoming data, while semantically a LocalDate, is represented as xs:dateTime.
      */
-    public static java.time.LocalDate toJodaLocalDateIgnoreTime(java.time.LocalDateTime localDateTime) {
+    public static java.time.LocalDate toLocalDateIgnoreTime(java.time.LocalDateTime localDateTime) {
         return localDateTime.toLocalDate();
     }
 

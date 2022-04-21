@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1"
+<persistence version="2.2"
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
 
 
 	<persistence-unit name="public" transaction-type="JTA">
 
 		<jta-data-source>java:jboss/datasources/chouette</jta-data-source>
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 
 		<class>mobi.chouette.model.AccessLink</class>
 		<class>mobi.chouette.model.AccessPoint</class>
@@ -15,6 +14,7 @@
 		<class>mobi.chouette.model.StopArea</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>NONE</validation-mode>
 
 		<properties>
@@ -59,7 +59,6 @@
 	<persistence-unit name="referential" transaction-type="JTA">
 
 		<jta-data-source>java:jboss/datasources/chouette</jta-data-source>
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 
         <class>mobi.chouette.model.BookingArrangement</class>
 		<class>mobi.chouette.model.Branding</class>
@@ -92,7 +91,9 @@
 		<class>mobi.chouette.model.DeadRun</class>
 		<class>mobi.chouette.model.DeadRunAtStop</class>
 		<class>mobi.chouette.model.Interchange</class>
+
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>NONE</validation-mode>
 
 		<properties>

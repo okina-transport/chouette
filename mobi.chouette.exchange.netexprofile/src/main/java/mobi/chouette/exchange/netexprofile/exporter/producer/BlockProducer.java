@@ -53,12 +53,12 @@ public class BlockProducer extends NetexProducer {
 
         // start time
         if(block.getStartTime() != null) {
-            netexBlock.setStartTime(TimeUtil.toLocalTimeFromJoda(block.getStartTime()));
+            netexBlock.setStartTime(block.getStartTime());
         }
 
         // end time
         if(block.getEndTime() != null) {
-            netexBlock.setEndTime(TimeUtil.toLocalTimeFromJoda(block.getEndTime()));
+            netexBlock.setEndTime(block.getEndTime());
         }
 
         // end time day offset

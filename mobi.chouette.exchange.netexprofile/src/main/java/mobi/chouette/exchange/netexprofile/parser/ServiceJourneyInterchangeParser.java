@@ -42,8 +42,8 @@ public class ServiceJourneyInterchangeParser implements Parser, Constant {
 				interchange.setAdvertised(netexInterchange.isAdvertised());
 				interchange.setGuaranteed(netexInterchange.isGuaranteed());
 
-				interchange.setMaximumWaitTime(TimeUtil.toJodaDuration(netexInterchange.getMaximumWaitTime()));
-				interchange.setMinimumTransferTime(TimeUtil.toJodaDuration(netexInterchange.getMinimumTransferTime()));
+				interchange.setMaximumWaitTime(netexInterchange.getMaximumWaitTime());
+				interchange.setMinimumTransferTime(netexInterchange.getMinimumTransferTime());
 
 				// Parse journeys
 				String feederVehicleJourneyObjectId = netexInterchange.getFromJourneyRef().getRef();
