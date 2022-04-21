@@ -1,7 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;

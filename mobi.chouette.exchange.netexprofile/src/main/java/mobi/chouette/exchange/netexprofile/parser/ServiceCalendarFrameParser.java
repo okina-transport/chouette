@@ -118,15 +118,9 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
 			if (t.getPeriods().size() == 0 && t.getDayTypes().size() == 0 && t.getPeculiarDates().size() > 0 && t.getExcludedDates().size() == 0) {
 				// Only handle simple included days for now
 
-				List<java.time.LocalDate> includedDates = t.getPeculiarDates();
-				Set<LocalDate> includedDays = new HashSet<LocalDate>();
-				for (java.time.LocalDate d : includedDates) {
-					includedDays.add(d);
-				}
-
+				Set<LocalDate> includedDays = new HashSet<>(t.getPeculiarDates());
 				CalendarPattern pattern = new CalendarPatternAnalyzer().computeCalendarPattern(includedDays);
-				
-				
+
 				if (pattern != null && !pattern.significantDays.isEmpty()) {
 
 					// Remove and re-add

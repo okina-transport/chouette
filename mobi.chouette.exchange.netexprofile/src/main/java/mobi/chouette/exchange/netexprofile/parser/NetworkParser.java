@@ -9,7 +9,6 @@ import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.OrganisationRefStructure;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;

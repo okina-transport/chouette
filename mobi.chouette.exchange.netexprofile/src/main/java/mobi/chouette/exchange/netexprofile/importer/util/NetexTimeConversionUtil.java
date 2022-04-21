@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalTime;
 
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.model.JourneyAtStop;
 
 import org.rutebanken.netex.model.TimetabledPassingTime;
