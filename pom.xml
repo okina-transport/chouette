@@ -14,8 +14,8 @@
 
 		<wildfly.version>19.1.0.Final</wildfly.version>
 		<wildfly.core.version>11.1.1.Final</wildfly.core.version>
-		<jboss-javaee-8.0.version>1.0.4.Final</jboss-javaee-8.0.version>
-		<wildfly-javaee8-with-tools.version>15.0.1.Final</wildfly-javaee8-with-tools.version>
+		<jboss-jakartaee-8.0.version>1.0.1.Final</jboss-jakartaee-8.0.version>
+		<wildfly-jakartaee8-with-tools.version>19.1.0.Final</wildfly-jakartaee8-with-tools.version>
 
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
@@ -733,16 +733,16 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-8.0</artifactId>
+				<artifactId>jboss-jakartaee-8.0</artifactId>
 				<type>pom</type>
-				<version>${jboss-javaee-8.0.version}</version>
+				<version>${jboss-jakartaee-8.0.version}</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.wildfly.bom</groupId>
-				<artifactId>wildfly-javaee8-with-tools</artifactId>
-				<version>${wildfly-javaee8-with-tools.version}</version>
+				<artifactId>wildfly-jakartaee8-with-tools</artifactId>
+				<version>${wildfly-jakartaee8-with-tools.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
