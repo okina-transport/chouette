@@ -48,6 +48,12 @@
       <dependency>
          <groupId>org.jboss.ironjacamar</groupId>
          <artifactId>ironjacamar-jdbc</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.picketbox</groupId>
+               <artifactId>picketbox</artifactId>
+            </exclusion>
+         </exclusions>
          <scope>provided</scope>
       </dependency>
       <dependency>

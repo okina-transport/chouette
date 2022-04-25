@@ -59,6 +59,12 @@
 			<groupId>org.jboss.ironjacamar</groupId>
 			<artifactId>ironjacamar-jdbc</artifactId>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.picketbox</groupId>
+					<artifactId>picketbox</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

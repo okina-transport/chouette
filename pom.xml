@@ -12,10 +12,10 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 
-		<wildfly.version>19.1.0.Final</wildfly.version>
-		<wildfly.core.version>11.1.1.Final</wildfly.core.version>
+		<wildfly.version>26.0.1.Final</wildfly.version>
+		<wildfly.core.version>18.0.4.Final</wildfly.core.version>
 		<jboss-jakartaee-8.0.version>1.0.1.Final</jboss-jakartaee-8.0.version>
-		<wildfly-jakartaee8-with-tools.version>19.1.0.Final</wildfly-jakartaee8-with-tools.version>
+		<wildfly-jakartaee8-with-tools.version>26.0.1.Final</wildfly-jakartaee8-with-tools.version>
 
 		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
@@ -46,6 +46,8 @@
 
 		<jaxb-version>2.3.3</jaxb-version>
 		<dom4j.version>2.1.3</dom4j.version>
+		<jettison.version>1.4.1</jettison.version>
+
 		<lombok-version>1.18.22</lombok-version>
 		<lombok-maven-plugin-version>1.18.20.0</lombok-maven-plugin-version>
 		<prometheus.agent.version>0.16.1</prometheus.agent.version>
@@ -745,6 +747,12 @@
 				<version>${wildfly-jakartaee8-with-tools.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.jettison</groupId>
+				<artifactId>jettison</artifactId>
+				<version>${jettison.version}</version>
 			</dependency>
 
 
