@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 
 public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
 
-    public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
+    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ServiceJourneyPatternIDFMProducer.class);
+
+    public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern){
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();
 
         NetexProducerUtils.populateIdAndVersionIDFM(journeyPattern, netexServiceJourneyPattern);
@@ -52,6 +54,8 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
         for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
             StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
             NetexProducerUtils.populateIdAndVersionIDFM(stopPoint, stopPointInJourneyPattern);
+
+            addJourneyPatternIdInStopPointId(stopPointInJourneyPattern, journeyPattern.getId());
 
             stopPointInJourneyPattern.setOrder(BigInteger.valueOf(stopPoint.getPosition() + 1));
 
@@ -120,5 +124,19 @@ public class ServiceJourneyPatternIDFMProducer extends NetexProducer {
         netexServiceJourneyPattern.setServiceJourneyPatternType(ServiceJourneyPatternTypeEnumeration.PASSENGER);
 
         return netexServiceJourneyPattern;
+    }
+
+    private void addJourneyPatternIdInStopPointId(StopPointInJourneyPattern stopPointInJourneyPattern, Long journeyPatternId){
+
+        String oldId = stopPointInJourneyPattern.getId();
+        String[] idArray = oldId.split(":");
+
+        if( idArray.length != 4){
+            log.error("Unable to add journeyPatternId because id is malformed : " + oldId);
+            return;
+        }
+
+        stopPointInJourneyPattern.setId(idArray[0] + ":" + idArray[1] + ":" + journeyPatternId + "_" +  idArray[2] + ":"  + idArray[3]);
+
     }
 }
