@@ -173,6 +173,10 @@ public class ValidationReporterImpl implements ValidationReporter, Constant {
 
 	private OBJECT_TYPE getType(Path object) {
 		String name = object.getObjectClass().replaceAll("(.)(\\p{Upper})", "$1_$2").toUpperCase();
+		// if the object is still an Hiberante proxy, extract the original entity class name
+		if(name.contains("HIBERNATE_PROXY")){
+			name = name.substring(0, name.indexOf("HIBERNATE_PROXY") -2);
+		}
 		try {
 			return OBJECT_TYPE.valueOf(name);
 		} catch (Exception ex) {
