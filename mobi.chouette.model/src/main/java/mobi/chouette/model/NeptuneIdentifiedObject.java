@@ -49,7 +49,7 @@ public abstract class NeptuneIdentifiedObject extends NeptuneObject implements
 	 * @return The actual value
 	 */
 	@Getter
-	@NaturalId
+	@NaturalId(mutable = true)
 	@Column(name = "objectid", nullable = false, unique = true)
 	protected String objectId;
 
