@@ -61,7 +61,7 @@
 		<rutebanken.helpers.version>1.0.55</rutebanken.helpers.version>
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
 
-		<wildfly-arquillian-container-embedded.version>2.2.0.Final</wildfly-arquillian-container-embedded.version>
+		<wildfly-arquillian-container-embedded.version>3.0.1.Final</wildfly-arquillian-container-embedded.version>
 
 
 	</properties>
@@ -914,6 +914,15 @@
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>3.2.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<profiles>
