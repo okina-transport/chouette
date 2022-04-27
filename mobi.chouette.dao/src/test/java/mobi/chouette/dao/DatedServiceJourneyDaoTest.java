@@ -63,7 +63,7 @@ public class DatedServiceJourneyDaoTest extends Arquillian {
 
             DatedServiceJourney dsj = new DatedServiceJourney();
             dsj.setObjectId("TST:DatedServiceJourney:" + UUID.randomUUID());
-            dsj.setObjectVersion(1);
+            dsj.setObjectVersion(1L);
             dsj.setOperatingDay(LocalDate.now());
             dsj.setVehicleJourney(vehicleJourney);
 
