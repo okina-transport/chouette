@@ -21,6 +21,7 @@ import org.rutebanken.netex.model.StopTypeEnumeration;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
+import static mobi.chouette.common.Constant.SELECTED_ID;
 
 @Log4j
 public class NeTExStopPlaceUtil {
@@ -94,8 +95,27 @@ public class NeTExStopPlaceUtil {
 		if (importedIds.size() == 0)
 			return Optional.empty();
 
-		if (importedIds.size() > 1)
-			log.warn("Multiple Ids found for object:"+stopPlace.getId());
+		return Optional.of(importedIds.get(0));
+
+	}
+
+	public static Optional<String> getSelectedId(Zone_VersionStructure stopPlace){
+
+		String currentSchema = ContextHolder.getContext();
+
+		if (stopPlace.getKeyList() == null)
+			return Optional.empty();
+
+		List<String> importedIds = stopPlace.getKeyList().getKeyValue().stream()
+				.filter(kv -> SELECTED_ID.equals(kv.getKey()))
+				.map(kv -> kv.getValue().split(","))
+				.flatMap(Stream::of)
+				.filter(importedId -> importedId != null && importedId.toLowerCase().startsWith(currentSchema))
+				.collect(Collectors.toList());
+
+
+		if (importedIds.size() == 0)
+			return Optional.empty();
 
 		return Optional.of(importedIds.get(0));
 

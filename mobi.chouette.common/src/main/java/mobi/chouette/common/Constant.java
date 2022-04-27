@@ -80,6 +80,7 @@ public interface Constant {
 	public static final String QUAY_TO_STOPPLACE_MAP = "quayToStopPlaceMap";
 
 	public static final String IMPORTED_ID = "imported-id";
+	public static final String SELECTED_ID = "selected-id";
 
 	public static final String MOBIITI_PREFIX = "MOBIITI";
 	public static final String COLON_REPLACEMENT_CODE="##3A##";

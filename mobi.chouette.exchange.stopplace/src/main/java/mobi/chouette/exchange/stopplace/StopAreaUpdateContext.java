@@ -25,6 +25,8 @@ public class StopAreaUpdateContext {
 	private Map<String, List<String>> impactedStopAreasBySchema = new HashMap<>();
 	@Getter
 	private Map<String, List<String>> importedIdsByNetexId = new HashMap<>();
+	@Getter
+	private Map<String, List<String>> selectedIdsByNetexId = new HashMap<>();
 
 
 

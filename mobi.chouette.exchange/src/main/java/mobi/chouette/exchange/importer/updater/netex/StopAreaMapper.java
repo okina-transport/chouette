@@ -158,7 +158,24 @@ public class StopAreaMapper {
         return stopArea;
     }
 
+
+    /**
+     * Read netex stop place key values to find an id to set in original_stop_id
+     * - If a selected-id exists : it is set in original_stop_id
+     * - if a selected-id does not exist : the search is made in imported-ids
+     * @param srcZone
+     *   the original zone with imported-id and selected-ids
+     * @param createdStopArea
+     *   the stopArea for which original_stop_id must be set
+     */
     private void mapOriginalStopId(Zone_VersionStructure srcZone, StopArea createdStopArea){
+        Optional<String> selectedIdOpt = NeTExStopPlaceUtil.getSelectedId(srcZone);
+        if (selectedIdOpt.isPresent()){
+            createdStopArea.setOriginalStopId(NeTExStopPlaceUtil.extractIdPostfix(selectedIdOpt.get()));
+            //selected-id has higher priority than imported-id. If it exists, it is set in original_stop_id
+            return;
+        }
+
         Optional<String> importedIdOpt = NeTExStopPlaceUtil.getImportedId(srcZone);
         importedIdOpt.ifPresent(importedId->createdStopArea.setOriginalStopId(NeTExStopPlaceUtil.extractIdPostfix(importedId)));
     }

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -144,24 +145,65 @@ public class StopAreaService {
 	}
 
 	/**
-	 * Read the NetexId of the stop area and recover the associated importedId to set it as "originalStopId" in the StopArea
+	 * Read the NetexId of the stop area and recover the associated importedId to set it as "originalStopId" in the StopArea.
+	 *
+	 * 2 cases :
+	 * 	- a selected-id has been defined for this schema : this selected-id is set as original_stop_id
+	 * 	- no selected-id is defined for this schema : an imported-id is set as original_stop_id
 	 *
 	 * @param stopAreaToFeed
 	 * @param updateContext
 	 * @param currentSchemaName
 	 */
 	private void setOriginalStopId(StopArea stopAreaToFeed, StopAreaUpdateContext updateContext, String currentSchemaName){
-		List<String> importedIds = updateContext.getImportedIdsByNetexId().get(stopAreaToFeed.getObjectId());
+		String stopAreaObjectId = stopAreaToFeed.getObjectId();
 
+		if (updateContext.getSelectedIdsByNetexId().containsKey(stopAreaObjectId)){
+
+			List<String> selectedIds = updateContext.getSelectedIdsByNetexId().get(stopAreaObjectId);
+			boolean hasBeenUpdated = setOriginalStopIdFromList(stopAreaToFeed, selectedIds, currentSchemaName);
+			if (hasBeenUpdated){
+				//a selected-id has been found for this point. No need to look in imported-id list
+				return;
+			}
+		}
+
+		List<String> importedIds = updateContext.getImportedIdsByNetexId().get(stopAreaObjectId);
 
 		if (importedIds == null || importedIds.isEmpty())
 			return;
 
-		importedIds.stream()
-					.filter(id->id.contains(":") && id.split(":").length == 3 && id.split(":")[0].toLowerCase().equals(currentSchemaName))
-					.map(id->id.split(":")[2])
-					.findFirst()
-					.ifPresent(stopAreaToFeed::setOriginalStopId);
+		setOriginalStopIdFromList(stopAreaToFeed, importedIds, currentSchemaName);
+	}
+
+
+	/***
+	 *  Read a list of ids and search for an id starting with "schemaName:".
+	 *  If found, set original_stop_id with the found id
+	 * @param stopAreaToUpdate
+	 * 	The stop area for wich the original_stop_id must be set
+	 * @param idList
+	 * 	a list of id containing schemanames (e.g : ORG1:StopPlace:xxx, ORG2:Quay:yyyy)
+	 * @param schemaName
+	 * the schemato search
+	 * @return
+	 * 		true : an update of original_stop_id has been made
+	 * 		false : no update has been made
+	 */
+	private boolean setOriginalStopIdFromList(StopArea stopAreaToUpdate, List<String> idList, String schemaName){
+
+
+		Optional<String> foundId = idList.stream()
+					.filter(id -> id.contains(":") && id.split(":").length == 3 && id.split(":")[0].toLowerCase().equals(schemaName))
+					.map(id -> id.split(":")[2])
+					.findFirst();
+
+		if (!foundId.isPresent()){
+			return false;
+		}
+
+		stopAreaToUpdate.setOriginalStopId(foundId.get());
+		return true;
 	}
 
 	private void updateStopAreaReferencesPerReferential(StopAreaUpdateContext updateContext) {
