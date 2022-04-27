@@ -57,8 +57,6 @@
 		<rutebanken.helpers.version>1.0.55</rutebanken.helpers.version>
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
 
-		<shrinkwrap-resolver-bom.version>2.2.6</shrinkwrap-resolver-bom.version>
-		<arquillian-version>1.4.1.Final</arquillian-version>
 		<wildfly-arquillian-container-embedded.version>2.2.0.Final</wildfly-arquillian-container-embedded.version>
 
 
@@ -89,18 +87,6 @@
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://download.osgeo.org/webdav/geotools/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<!--Adding explicitly Maven Central so that Shrinkwrap can download artifacts
-		  (in the version of Shrinkwrap used by Chouette, the URL for Maven Central is hardcoded to http://. not https://)
-		  -->
-		<repository>
-			<id>maven-central-https</id>
-			<name>Maven Central HTTPS</name>
-			<url>https://repo1.maven.org/maven2/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -801,16 +787,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.wildfly.arquillian</groupId>
-				<artifactId>wildfly-arquillian-container-embedded</artifactId>
-				<version>${wildfly-arquillian-container-embedded.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wildfly.core</groupId>
-				<artifactId>wildfly-embedded</artifactId>
-				<version>${wildfly.core.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
@@ -838,47 +814,25 @@
 				<version>0.6.0</version>
 				<scope>test</scope>
 			</dependency>
-			<!-- postgres intergration in arquillian -->
-			<!-- shrinkwrap BOM -->
+
 			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-bom</artifactId>
-				<version>${shrinkwrap-resolver-bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>org.wildfly.arquillian</groupId>
+				<artifactId>wildfly-arquillian-container-embedded</artifactId>
+				<version>${wildfly-arquillian-container-embedded.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-				<version>${shrinkwrap-resolver-bom.version}</version>
-				<scope>test</scope>
+				<groupId>org.wildfly.core</groupId>
+				<artifactId>wildfly-embedded</artifactId>
+				<version>${wildfly.core.version}</version>
 			</dependency>
-			<!-- shrinkwrap dependency chain -->
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-depchain</artifactId>
-				<version>${shrinkwrap-resolver-bom.version}</version>
-				<type>pom</type>
-				<scope>test</scope>
-			</dependency>
+
+			<!-- Other Dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>1.7.36</version>
 				<scope>test</scope>
 			</dependency>
-
-			<!-- arquillian itself -->
-			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${arquillian-version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-
-
-			<!-- Other Dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>log4j-over-slf4j</artifactId>
