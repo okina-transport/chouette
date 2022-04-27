@@ -111,7 +111,7 @@
                 <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
             </formatter>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:batch-jberet:2.0">
+        <subsystem xmlns="urn:jboss:domain:batch-jberet:3.0">
             <default-job-repository name="in-memory"/>
             <default-thread-pool name="batch"/>
             <job-repository name="in-memory">
@@ -124,7 +124,7 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:datasources:6.0">
+        <subsystem xmlns="urn:jboss:domain:datasources:7.0">
             <datasources>
                 <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
                     <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
@@ -220,7 +220,7 @@
             <statistics enabled="${wildfly.ejb3.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
             <log-system-exceptions value="true"/>
         </subsystem>
-        <subsystem xmlns="urn:wildfly:elytron:15.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+        <subsystem xmlns="urn:wildfly:elytron:15.1" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
             <providers>
                 <aggregate-providers name="combined-providers">
                     <providers name="elytron"/>
@@ -425,7 +425,7 @@
             </mail-session>
         </subsystem>
         <subsystem xmlns="urn:wildfly:metrics:1.0" security-enabled="false" exposed-subsystems="*" prefix="${wildfly.metrics.prefix:wildfly}"/>
-        <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0"/>
+        <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:2.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-jwt-smallrye:1.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-opentracing-smallrye:3.0" default-tracer="jaeger">
             <jaeger-tracer name="jaeger">
@@ -440,7 +440,7 @@
             <http-connector name="http-remoting-connector" connector-ref="default" sasl-authentication-factory="application-sasl-authentication"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:resource-adapters:6.0"/>
+        <subsystem xmlns="urn:jboss:domain:resource-adapters:6.1"/>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
         <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
             <deployment-permissions>
@@ -462,8 +462,8 @@
         <subsystem xmlns="urn:jboss:domain:undertow:12.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <buffer-cache name="default"/>
             <server name="default-server">
-                <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true"/>
-                <https-listener name="https" socket-binding="https" ssl-context="applicationSSC" enable-http2="true"/>
+                <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true" max-post-size="200000000"/>
+                <https-listener name="https" socket-binding="https" ssl-context="applicationSSC" enable-http2="true" max-post-size="200000000"/>
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
                     <http-invoker http-authentication-factory="application-http-authentication"/>
