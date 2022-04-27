@@ -17,7 +17,7 @@
 		<jboss-jakartaee-8.0.version>1.0.1.Final</jboss-jakartaee-8.0.version>
 		<wildfly-jakartaee8-with-tools.version>19.1.0.Final</wildfly-jakartaee8-with-tools.version>
 
-		<version.wildfly.maven.plugin>1.2.2.Final</version.wildfly.maven.plugin>
+		<version.wildfly.maven.plugin>3.0.0.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
 		<version.jaxb2.plugin>1.5</version.jaxb2.plugin>
 		<version.jar.plugin>3.2.2</version.jar.plugin>
@@ -803,11 +803,6 @@
 			<dependency>
 				<groupId>org.wildfly.arquillian</groupId>
 				<artifactId>wildfly-arquillian-container-embedded</artifactId>
-				<version>${wildfly-arquillian-container-embedded.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wildfly.arquillian</groupId>
-				<artifactId>wildfly-arquillian-common</artifactId>
 				<version>${wildfly-arquillian-container-embedded.version}</version>
 			</dependency>
 			<dependency>
