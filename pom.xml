@@ -17,6 +17,8 @@
 		<jboss-jakartaee-8.0.version>1.0.1.Final</jboss-jakartaee-8.0.version>
 		<wildfly-jakartaee8-with-tools.version>26.0.1.Final</wildfly-jakartaee8-with-tools.version>
 
+		<slf4j.version>1.7.36</slf4j.version>
+
 		<version.wildfly.maven.plugin>3.0.0.Final</version.wildfly.maven.plugin>
 		<version.compiler.plugin>3.10.0</version.compiler.plugin>
 		<version.jaxb2.plugin>1.5</version.jaxb2.plugin>
@@ -60,7 +62,6 @@
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
 
 		<wildfly-arquillian-container-embedded.version>2.2.0.Final</wildfly-arquillian-container-embedded.version>
-
 
 
 	</properties>
@@ -259,28 +260,6 @@
 									</outputDirectory>
 								</artifactItem>
 
-							</artifactItems>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>copy-prometheus-agent</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<verbose>true</verbose>
-							<artifactItems>
-								<artifactItem>
-									<groupId>io.prometheus.jmx</groupId>
-									<artifactId>jmx_prometheus_javaagent</artifactId>
-									<version>${prometheus.agent.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/docker/wildfly/prometheus
-									</outputDirectory>
-									<destFileName>jmx_prometheus_javaagent.jar</destFileName>
-								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>
@@ -664,16 +643,6 @@
 				<artifactId>mobi.chouette.exchange.netexprofile</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-		<!-- 	<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.kml</artifactId>
-				<version>${project.version}</version>
-			</dependency> -->
-		<!-- 	<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.hub</artifactId>
-				<version>${project.version}</version>
-			</dependency> -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>mobi.chouette.exchange.regtopp</artifactId>
@@ -694,12 +663,7 @@
 				<artifactId>mobi.chouette.exchange.stopplace</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-<!-- 			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.converter</artifactId>
-				<version>${project.version}</version>
-			</dependency>
- -->			<dependency>
+			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>mobi.chouette.service</artifactId>
 				<version>${project.version}</version>
@@ -838,13 +802,13 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
-				<version>1.7.36</version>
+				<version>${slf4j.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>log4j-over-slf4j</artifactId>
-				<version>1.7.36</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
@@ -947,13 +911,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.36</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-aether-provider</artifactId>
-			<version>3.2.5</version>
+			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
