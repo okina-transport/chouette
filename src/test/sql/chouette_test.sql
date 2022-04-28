@@ -1840,7 +1840,7 @@ ALTER TABLE chouette_gui.routes_route_points OWNER TO chouette;
 
 CREATE SEQUENCE chouette_gui.routes_route_points_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2610,7 +2610,7 @@ ALTER TABLE public.blocks_dead_runs OWNER TO chouette;
 
 CREATE SEQUENCE public.blocks_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2685,7 +2685,7 @@ ALTER TABLE public.booking_arrangements_buy_when OWNER TO chouette;
 
 CREATE SEQUENCE public.booking_arrangements_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2725,7 +2725,7 @@ ALTER TABLE public.brandings OWNER TO chouette;
 
 CREATE SEQUENCE public.brandings_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2761,7 +2761,7 @@ ALTER TABLE public.codespaces OWNER TO chouette;
 
 CREATE SEQUENCE public.codespaces_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2814,7 +2814,7 @@ ALTER TABLE public.companies OWNER TO chouette;
 
 CREATE SEQUENCE public.companies_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2902,7 +2902,7 @@ ALTER TABLE public.contact_structures OWNER TO chouette;
 
 CREATE SEQUENCE public.contact_structures_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2953,7 +2953,7 @@ ALTER TABLE public.dated_service_journeys OWNER TO chouette;
 
 CREATE SEQUENCE public.dated_service_journeys_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -2995,7 +2995,7 @@ ALTER TABLE public.dead_run_at_stops OWNER TO chouette;
 
 CREATE SEQUENCE public.dead_run_at_stops_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3032,7 +3032,7 @@ ALTER TABLE public.dead_runs OWNER TO chouette;
 
 CREATE SEQUENCE public.dead_runs_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3129,7 +3129,7 @@ ALTER TABLE public.destination_displays OWNER TO chouette;
 
 CREATE SEQUENCE public.destination_displays_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3234,7 +3234,7 @@ ALTER TABLE public.facilities_features OWNER TO chouette;
 
 CREATE SEQUENCE public.facilities_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3274,7 +3274,7 @@ ALTER TABLE public.flexible_service_properties OWNER TO chouette;
 
 CREATE SEQUENCE public.flexible_service_properties_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3313,7 +3313,7 @@ ALTER TABLE public.footnote_alternative_texts OWNER TO chouette;
 
 CREATE SEQUENCE public.footnote_alternative_texts_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3351,7 +3351,7 @@ ALTER TABLE public.footnotes OWNER TO chouette;
 
 CREATE SEQUENCE public.footnotes_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3450,7 +3450,7 @@ ALTER TABLE public.group_of_lines OWNER TO chouette;
 
 CREATE SEQUENCE public.group_of_lines_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3512,7 +3512,7 @@ ALTER TABLE public.interchanges OWNER TO chouette;
 
 CREATE SEQUENCE public.interchanges_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3552,7 +3552,7 @@ ALTER TABLE public.journey_frequencies OWNER TO chouette;
 
 CREATE SEQUENCE public.journey_frequencies_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3633,7 +3633,7 @@ ALTER TABLE public.journey_patterns OWNER TO chouette;
 
 CREATE SEQUENCE public.journey_patterns_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 20
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3699,7 +3699,7 @@ ALTER TABLE public.lines OWNER TO chouette;
 
 CREATE SEQUENCE public.lines_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3758,7 +3758,7 @@ ALTER TABLE public.networks OWNER TO chouette;
 
 CREATE SEQUENCE public.networks_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3836,7 +3836,7 @@ ALTER TABLE public.pt_links OWNER TO chouette;
 
 CREATE SEQUENCE public.pt_links_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3953,7 +3953,7 @@ ALTER TABLE public.route_points OWNER TO chouette;
 
 CREATE SEQUENCE public.route_points_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -3995,7 +3995,7 @@ ALTER TABLE public.route_sections OWNER TO chouette;
 
 CREATE SEQUENCE public.route_sections_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4039,7 +4039,7 @@ ALTER TABLE public.routes OWNER TO chouette;
 
 CREATE SEQUENCE public.routes_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 50
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4162,7 +4162,7 @@ ALTER TABLE public.scheduled_stop_points OWNER TO chouette;
 
 CREATE SEQUENCE public.scheduled_stop_points_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4288,7 +4288,7 @@ ALTER TABLE public.stop_points OWNER TO chouette;
 
 CREATE SEQUENCE public.stop_points_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4498,7 +4498,7 @@ ALTER TABLE public.time_tables_dead_runs OWNER TO chouette;
 
 CREATE SEQUENCE public.time_tables_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4551,7 +4551,7 @@ ALTER TABLE public.timebands OWNER TO chouette;
 
 CREATE SEQUENCE public.timebands_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4661,7 +4661,7 @@ ALTER TABLE public.vehicle_journey_at_stops OWNER TO chouette;
 
 CREATE SEQUENCE public.vehicle_journey_at_stops_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
@@ -4716,7 +4716,7 @@ ALTER TABLE public.vehicle_journeys OWNER TO chouette;
 
 CREATE SEQUENCE public.vehicle_journeys_id_seq
     START WITH 1
-    INCREMENT BY 1
+    INCREMENT BY 100
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
