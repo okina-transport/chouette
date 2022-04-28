@@ -35,7 +35,7 @@
 			<property name="javax.persistence.validation.mode" value="none" />
 			<property name="hibernate.hbm2ddl.auto" value="none" />
 			<property name="hibernate.default_schema" value="public" />
-			<property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
+			<property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect" />
 
 			<property name="hibernate.session_factory.interceptor" value="mobi.chouette.dao.interceptor.StopAreaRelationInterceptor"/>
 
@@ -117,7 +117,7 @@
 			<property name="hibernate.cache.use_second_level_cache" value="true" />
 			<property name="hibernate.cache.use_query_cache" value="true" />
 
-            <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
+            <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect" />
 			<property name="javax.persistence.validation.mode" value="none" />
 			<property name="hibernate.session_factory.interceptor" value="mobi.chouette.dao.interceptor.RelationsToStopAreaInterceptor"/>
 
