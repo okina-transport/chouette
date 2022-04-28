@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.importer.geometry.osrm;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import mobi.chouette.model.type.TransportModeNameEnum;
 
 import java.util.Objects;

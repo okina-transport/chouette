@@ -63,6 +63,14 @@
                <groupId>org.dom4j</groupId>
                <artifactId>dom4j</artifactId>
             </exclusion>
+            <exclusion>
+               <groupId>org.hibernate</groupId>
+               <artifactId>hibernate-core</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.hibernate</groupId>
+               <artifactId>hibernate-entitymanager</artifactId>
+            </exclusion>
          </exclusions>
       </dependency>
       <dependency>

@@ -38,7 +38,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 
 @Log4j
 public class ValidationStopAreas extends AbstractTestValidation {

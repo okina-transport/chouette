@@ -2,7 +2,7 @@ package mobi.chouette.exchange.importer.geometry.osrm;
 
 import java.io.File;
 
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
