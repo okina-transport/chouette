@@ -1789,7 +1789,7 @@ ALTER TABLE chouette_gui.route_sections OWNER TO chouette;
 
 CREATE SEQUENCE chouette_gui.routes_id_seq
     START WITH 1
-    INCREMENT BY 100
+    INCREMENT BY 50
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
