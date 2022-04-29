@@ -57,7 +57,7 @@ public class LineFilter {
 
 							Timetable timetable = timetableI.next();
 
-							boolean validTimetable = isTimetableValid(timetable, startDate, endDate);
+							boolean validTimetable = isTimetableValidNowAndFuture(timetable, startDate);
 							if (!validTimetable) {
 								timetableI.remove();
 								continue;
@@ -89,6 +89,14 @@ public class LineFilter {
 		else
 			return timetable.isActiveOnPeriod(new LocalDate(startDate), new LocalDate(endDate));
 
+	}
+
+	private boolean isTimetableValidNowAndFuture(Timetable timetable, Date startDate) {
+		if (timetable.getPeriods().isEmpty() && timetable.getCalendarDays().isEmpty()) {
+			return false;
+		}
+
+		return timetable.isActiveAfter(new LocalDate(startDate));
 	}
 
 }
