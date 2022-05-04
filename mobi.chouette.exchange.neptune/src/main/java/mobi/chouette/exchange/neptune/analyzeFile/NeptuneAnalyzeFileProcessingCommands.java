@@ -14,6 +14,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
+import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
@@ -69,6 +70,10 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             commands.add(CommandFactory.create(initialContext, NeptuneComplianceCheckerCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
+
+            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+
+
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");
@@ -169,6 +174,11 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             }
             Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
             commands.add(tooManyNewStopsCheckCommand);
+
+            if (!parameters.isCleanRepository()){
+                Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
+                commands.add(timetableCheckCommand);
+            }
 
         } catch (ClassNotFoundException | IOException e) {
             log.error(e.getStackTrace());

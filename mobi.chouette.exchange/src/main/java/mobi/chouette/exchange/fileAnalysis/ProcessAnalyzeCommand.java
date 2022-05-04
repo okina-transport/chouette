@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
     public static final String COMMAND = "ProcessAnalyzeCommand";
     private AnalyzeReport analyzeReport;
+    private boolean cleanRepository;
 
 
     @Override
@@ -49,6 +51,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         DateTime startingTime = new DateTime();
         int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
         context.put(CURRENT_LINE_NB, currentLineNb);
+
+        cleanRepository = (boolean) context.get(CLEAR_FOR_IMPORT);
 
         log.info("Starting analysis " + currentLineNb + "/" + context.get(TOTAL_NB_OF_LINES));
         Referential cache = new Referential();
@@ -114,7 +118,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         List<String> vehicleJourneys = new ArrayList<>();
 
+        String networkName = line.getNetwork().getName();
 
+        Map<String, Set<String>> networksByTimetable = analyzeReport.getNetworksByTimetable();
 
         String lineName = line.getName();
 
@@ -136,6 +142,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                     vehicleJourneys.add(vehicleJourney.getObjectId());
 
                     for (Timetable timetable : vehicleJourney.getTimetables()) {
+
+                        if (!cleanRepository){
+                            String timetableName = timetable.getComment();
+                            networksByTimetable.putIfAbsent(timetableName, new HashSet<>());
+                            Set<String> networkSet = networksByTimetable.get(timetableName);
+                            networkSet.add(networkName);
+                        }
+
 
                         Optional<LocalDate> startOfPeriod = getMinDateOfTimeTable(timetable);
                         Optional<LocalDate> endOfPeriod = getMaxDateOfTimeTable(timetable);

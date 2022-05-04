@@ -12,6 +12,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
+import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
@@ -58,6 +59,9 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
+
+            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");
@@ -168,6 +172,12 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             }
             Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
             commands.add(tooManyNewStopsCheckCommand);
+
+            if (!parameters.isCleanRepository()){
+                Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
+                commands.add(timetableCheckCommand);
+            }
+
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();        }
 

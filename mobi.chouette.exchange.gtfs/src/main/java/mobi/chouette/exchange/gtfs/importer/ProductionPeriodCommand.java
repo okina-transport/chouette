@@ -14,6 +14,7 @@ import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.updater.TimetableUpdater;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
@@ -27,6 +28,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Log4j
@@ -70,6 +72,19 @@ public class ProductionPeriodCommand implements Command, Constant {
                             }
                         }
                     }
+
+                    for (CalendarDay calDay : timetable.getCalendarDays()) {
+                        if (!calDay.getIncluded())
+                            continue;
+
+                        if (minStartDate == null) {
+                            minStartDate = calDay.getDate();
+                        } else {
+                            if (calDay.getDate().compareTo(minStartDate) < 0) {
+                                minStartDate = calDay.getDate();
+                            }
+                        }
+                    }
                 }
             }
 
@@ -82,6 +97,17 @@ public class ProductionPeriodCommand implements Command, Constant {
                     if (period.getEndDate().compareTo(finalMinStartDate) >= 0)
                         period.setEndDate(finalMinStartDate);
                 });
+
+                List<CalendarDay> calendarDays = oldTimetable.getCalendarDays();
+
+                LocalDate finalMinStartDate1 = minStartDate;
+                calendarDays = calendarDays.stream()
+                                            .filter(calendarDay -> !calendarDay.getIncluded() || calendarDay.getDate().isBefore(finalMinStartDate1))
+                                            .collect(Collectors.toList());
+
+                oldTimetable.setCalendarDays(calendarDays);
+
+
             }
             timetableDAO.flush();
 

@@ -335,11 +335,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			timetableUpdater.update(context, pair.getLeft(), pair.getRight());
 		}
 
-		Collection<Timetable> removedTimetable = CollectionUtil.substract(oldValue.getTimetables(),
-				newValue.getTimetables(), NeptuneIdentifiedObjectComparator.INSTANCE);
-		for (Timetable timetable : removedTimetable) {
-			timetable.removeVehicleJourney(oldValue);
-		}
 
 		// journey frequency
 		/* if (!optimized) */{

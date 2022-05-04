@@ -13,7 +13,10 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.parallel.ParallelExecutionCommand;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
+import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
+import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
+import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.netexprofile.importer.DuplicateIdCheckerCommand;
@@ -85,6 +88,9 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
             commands.add(initChain);
+
+            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");
@@ -315,7 +321,21 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        return new ArrayList<>();
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+        List<Command> commands = new ArrayList<>();
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        try {
+
+            if (!parameters.isCleanRepository()){
+                Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
+                commands.add(timetableCheckCommand);
+            }
+
+        } catch (ClassNotFoundException | IOException e) {
+            log.error(e.getStackTrace());
+        }
+
+        return commands;
     }
 
 }
