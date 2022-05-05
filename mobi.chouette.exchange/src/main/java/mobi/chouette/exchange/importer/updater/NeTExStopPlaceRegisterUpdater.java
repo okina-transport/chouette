@@ -409,7 +409,6 @@ public class NeTExStopPlaceRegisterUpdater {
             }
         }
 
-        updateCommercialStopPoints(stopPlaceRegisterMap,referential);
 
         for (RouteSection rs : referential.getRouteSections().values()) {
 //            updateStopArea(correlationId, stopPlaceRegisterMap, referential, discardedStopAreas, rs, "arrival");
@@ -528,22 +527,6 @@ public class NeTExStopPlaceRegisterUpdater {
         }
     }
 
-    private void updateCommercialStopPoints(Map<String, String> stopPlaceRegisterMap, Referential referential){
-        stopPlaceRegisterMap.entrySet().stream()
-                                       .filter(entry-> !entry.getKey().contains(MOBI_ITI_PREFIX))
-                                       .forEach(entry-> updateCommercialStopPoint(referential,entry.getKey(),entry.getValue()));
-    }
-
-    private void updateCommercialStopPoint(Referential referential, String srcStopAreaId, String dstStopAreaId){
-
-        StopArea dstStopArea = referential.getSharedStopAreas().get(dstStopAreaId);
-        StopArea srcStopArea = referential.getSharedStopAreas().get(srcStopAreaId);
-
-        if (srcStopArea != null && dstStopArea!=null && StringUtils.isNotEmpty(srcStopArea.getOriginalStopId()))
-            dstStopArea.setOriginalStopId(srcStopArea.getOriginalStopId());
-    }
-
-
     private List<NavigationPath> findAndMapConnectionLinks(Referential referential, String correlationId, SiteFrame siteFrame, Map<String, String> m) {
         referential.getSharedConnectionLinks().clear(); // Nuke connection links
         // fully to avoid old
@@ -623,8 +606,7 @@ public class NeTExStopPlaceRegisterUpdater {
                     StopArea newStopArea = referential.getSharedStopAreas().get(newObjectId);
                     if (newStopArea != null) {
                         newStopArea.setFareCode(stopArea.getFareCode());
-                        if(StringUtils.isNotEmpty(stopArea.getOriginalStopId()))
-                            newStopArea.setOriginalStopId(stopArea.getOriginalStopId());
+
 
                         scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(newStopArea));
                         discardedStopAreas.add(currentObjectId);

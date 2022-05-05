@@ -38,6 +38,7 @@ import static mobi.chouette.exchange.netexprofile.Constant.NETEX_LINE_DATA_CONTE
 @Log4j
 public class PublicationDeliveryStopPlaceParser {
     private static final String IMPORT_ID_KEY = "imported-id";
+    private static final String SELECTED_ID_KEY = "selected-id";
     private static final String MERGED_ID_KEY = "merged-id";
     private static final String ID_VALUE_SEPARATOR = ",";
     private InputStream inputStream;
@@ -181,7 +182,20 @@ public class PublicationDeliveryStopPlaceParser {
             importedIdByNetex.put(netexId, importedIds);
         }
         importedIds.add(importedId);
+    }
 
+    private void collectSelectedIds(String netexId, String rawSelectedIds){
+        Map<String, List<String>> selectIdByNetex = updateContext.getSelectedIdsByNetexId();
+        List<String> selectedIdToCollect = Arrays.asList(rawSelectedIds.split(","));
+
+        List<String> selectedIds;
+        if (selectIdByNetex.containsKey(netexId)) {
+            selectedIds = selectIdByNetex.get(netexId);
+        } else {
+            selectedIds = new ArrayList<String>();
+            selectIdByNetex.put(netexId, selectedIds);
+        }
+        selectedIds.addAll(selectedIdToCollect);
     }
 
     private void collectMergedIdForQuay(Object quayObj) {
@@ -193,6 +207,9 @@ public class PublicationDeliveryStopPlaceParser {
                                                                                                                 addMergedIds(quay.getId(), kv.getValue());
                                                                                                                 splitAndCollectIds(kv.getValue(),quay.getId());
                                                                                                                 });
+                quay.getKeyList().getKeyValue().stream()
+                                               .filter(kv -> SELECTED_ID_KEY.equals(kv.getKey()))
+                                               .forEach(kv -> collectSelectedIds(quay.getId(),kv.getValue()));
             }
         }
     }
