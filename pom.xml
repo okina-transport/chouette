@@ -42,6 +42,7 @@
 		<usertype.core.version>6.0.1.GA</usertype.core.version>
 		<jts.version>1.13</jts.version>
 		<geolatte-geom.version>1.0.6</geolatte-geom.version>
+		<geotools.version>10.5</geotools.version>
 
 		<jaxb-version>2.2.11</jaxb-version>
 		<dom4j.version>2.1.1</dom4j.version>
@@ -958,17 +959,17 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-jts-wrapper</artifactId>
-				<version>10.5</version>
+				<version>${geotools.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-epsg-wkt</artifactId>
-				<version>10.5</version>
+				<version>${geotools.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-epsg-hsql</artifactId>
-				<version>10.5</version>
+				<version>${geotools.version}</version>
 			</dependency>
 			<dependency>
 	            <groupId>javax.xml.bind</groupId>
