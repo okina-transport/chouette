@@ -13,12 +13,10 @@ RUN chmod a+w /opt/jboss/wildfly/build.log
 
 # Copy EAR
 COPY chouette_iev/target/chouette.ear /opt/jboss/wildfly/standalone/deployments/
-# Copy customized Wildfly modules and Prometheus agent
+# Copy customized Wildfly modules
 COPY target/docker/wildfly /opt/jboss/wildfly/
 # Copy customized Wildfly configuration file
 COPY docker/files/wildfly/standalone.conf /opt/jboss/wildfly/bin
-# Copy Prometheus agent configuration file
-COPY docker/files/jmx_exporter_config.yml /opt/jboss/wildfly/prometheus
 
 # From http://stackoverflow.com/questions/20965737/docker-jboss7-war-commit-server-boot-failed-in-an-unrecoverable-manner
 RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \

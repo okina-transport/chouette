@@ -48,7 +48,6 @@
 		<dom4j.version>2.1.1</dom4j.version>
 		<lombok-version>1.18.22</lombok-version>
 		<lombok-maven-plugin-version>1.18.20.0</lombok-maven-plugin-version>
-		<prometheus.agent.version>0.16.1</prometheus.agent.version>
 		<guava.version>31.1-jre</guava.version>
 
 		<project.rootDir>${project.basedir}</project.rootDir>
@@ -274,29 +273,6 @@
 							</artifactItems>
 						</configuration>
 					</execution>
-
-					<execution>
-						<id>copy-prometheus-agent</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<verbose>true</verbose>
-							<artifactItems>
-								<artifactItem>
-									<groupId>io.prometheus.jmx</groupId>
-									<artifactId>jmx_prometheus_javaagent</artifactId>
-									<version>${prometheus.agent.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/docker/wildfly/prometheus
-									</outputDirectory>
-									<destFileName>jmx_prometheus_javaagent.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-
 				</executions>
 			</plugin>
 			<plugin>
