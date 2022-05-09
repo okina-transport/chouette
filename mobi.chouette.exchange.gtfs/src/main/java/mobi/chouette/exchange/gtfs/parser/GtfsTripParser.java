@@ -63,7 +63,6 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
 
@@ -1111,7 +1110,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             if (shapeId == null) {
                 shapeId = gtfsShape.getShapeId();
             }
-
             OrderedCoordinate current = new OrderedCoordinate(gtfsShape.getShapePtLon().doubleValue(), gtfsShape
                     .getShapePtLat().doubleValue(), gtfsShape.getShapePtSequence());
             if (previous != null) {
@@ -1145,57 +1143,84 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         String prefix = journeyPattern.objectIdPrefix();
         StopArea previousLocation = null;
         ScheduledStopPoint previousScheduledStopPoint = null;
-
-        // sequence index to read the complete shape and divide it into sections
-        int currentSequence = coordinates.get(0).order;
-
-        journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-
         for (StopPoint stop : journeyPattern.getStopPoints()) {
-
-            if (previousLocation == null){
-                previousLocation = stop.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
-                previousScheduledStopPoint = stop.getScheduledStopPoint();
-                continue;
+            // find nearest segment and project point on it
+            StopArea location = stop.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
+            Coordinate point = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude()
+                    .doubleValue());
+            double distance_min = Double.MAX_VALUE;
+            int rank = 0;
+            for (int i = segmentRank; i < segments.size(); i++) {
+                double distance = segments.get(i).distance(point);
+                if (distance < distance_min) {
+                    distance_min = distance;
+                    rank = i;
+                }
             }
-
-            StopArea arrivalStopArea = stop.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
-
-
-        List<OrderedCoordinate> sectionPoints = createSectionPoints(coordinates, currentSequence, arrivalStopArea);
-
-        sectionPoints.sort(COORDINATE_SORTER);
-
-        //last sequence of the section will became currentSequence number
-        currentSequence = sectionPoints.get(sectionPoints.size() - 1).order;
-
-
-            List<Coordinate> coords = new ArrayList<>();
-            sectionPoints.stream().forEach(coords::add);
-
-
-
-
-
-        String routeSectionId = prefix + ":" + RouteSection.ROUTE_SECTION_KEY + ":" + journeyPattern.objectIdSuffix() + "_" + shapeId + "_"
-                    + previousLocation.objectIdSuffix() + "_" + arrivalStopArea.objectIdSuffix();
-        RouteSection section = ObjectFactory.getRouteSection(referential, routeSectionId);
-            if (!section.isFilled()) {
-
-                Coordinate[] inputCoords = new Coordinate[2];
-                section.setFromScheduledStopPoint(previousScheduledStopPoint);
-                inputCoords[0] = new Coordinate(previousLocation.getLongitude().doubleValue(), previousLocation.getLatitude().doubleValue());
-                section.setToScheduledStopPoint(stop.getScheduledStopPoint());
-                inputCoords[1] = new Coordinate(arrivalStopArea.getLongitude().doubleValue(), arrivalStopArea.getLatitude().doubleValue());
-                section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[coords.size()])));
-                section.setInputGeometry(factory.createLineString(inputCoords));
-                section.setNoProcessing(false);
+            // compose routeSection
+            Coordinate projection = null;
+            boolean lastSegmentIncluded = false;
+            double factor = segments.get(rank).projectionFactor(point);
+            int intFactor = (int) (factor * 100.);
+            if (factor <= 0.05) {
+                // projection near or before first point
+                projection = segments.get(rank).getCoordinate(0);
+                intFactor = 0;
+            } else if (factor >= 0.95) {
+                // projection near or after last point
+                projection = segments.get(rank).getCoordinate(1);
+                lastSegmentIncluded = true;
+                intFactor = 100;
+            } else {
+                // projection inside segment
+                projection = segments.get(rank).project(point);
+            }
+            if (previous != null) {
+                List<Coordinate> coords = new ArrayList<>();
+                coords.add(previous);
+                for (int i = segmentRank; i < rank; i++) {
+                    coords.add(segments.get(i).getCoordinate(1));
+                }
+                coords.add(projection);
+                if (lastSegmentIncluded)
+                    rank++;
+                String routeSectionId = prefix + ":" + RouteSection.ROUTE_SECTION_KEY + ":" + journeyPattern.objectIdSuffix() + "_" + shapeId + "_"
+                        + previousLocation.objectIdSuffix() + "_" + location.objectIdSuffix() + "_" + intFactor;
+                RouteSection section = ObjectFactory.getRouteSection(referential, routeSectionId);
+                if (!section.isFilled()) {
+                    Coordinate[] inputCoords = new Coordinate[2];
+                    section.setFromScheduledStopPoint(previousScheduledStopPoint);
+                    inputCoords[0] = new Coordinate(previousLocation.getLongitude().doubleValue(), previousLocation
+                            .getLatitude().doubleValue());
+                    section.setToScheduledStopPoint(stop.getScheduledStopPoint());
+                    inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude()
+                            .doubleValue());
+                    section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[coords.size()])));
+                    section.setInputGeometry(factory.createLineString(inputCoords));
+                    section.setNoProcessing(false);
+                    try {
+                        double distance = section.getProcessedGeometry().getLength();
+                        distance *= (Math.PI / 180) * 6378137;
+                        section.setDistance(BigDecimal.valueOf(distance));
+                    } catch (NumberFormatException e) {
+                        log.error(shapeId + " : problem with section between " + previousLocation.getName() + "("
+                                + previousLocation.getObjectId() + " and " + location.getName() + "("
+                                + location.getObjectId());
+                        log.error("coords (" + coords.size() + ") :");
+                        for (Coordinate coordinate : coords) {
+                            log.error("lat = " + coordinate.y + " , lon = " + coordinate.x);
+                        }
+                        sections.clear();
+                        return sections;
+                    }
+                }
                 section.setFilled(true);
                 sections.add(section);
             }
-
-            previousLocation = stop.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
+            previous = projection;
+            previousLocation = location;
             previousScheduledStopPoint = stop.getScheduledStopPoint();
+            segmentRank = rank;
 
         }
 
@@ -1203,85 +1228,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
 
-    /**
-     * Create the list of coordinates that will be inserted in the route section processed geometry
-     * @param coordinates
-     *      Complete list of coordinates, coming from shapes.txt
-     * @param currentSequence
-     *      sequence on which which the section starts
-     * @param arrivalStopArea
-     *      arrival stop area of the section
-     * @return
-     *      The list of coordinates
-     */
-    private List<OrderedCoordinate> createSectionPoints(List<OrderedCoordinate> coordinates, int currentSequence, StopArea arrivalStopArea) {
-
-        List<OrderedCoordinate> resultList = new ArrayList<>();
-
-        //sequence number of the arrival point
-        int arrilvalStopSequence = getEndSequenceForSection(coordinates, currentSequence, arrivalStopArea);
-
-        coordinates.stream()
-                   .filter(coord -> coord.order >= currentSequence && coord.order <= arrilvalStopSequence)
-                   .forEach(resultList::add);
-
-
-        return resultList;
-    }
-
-
-    /**
-     * Calculates the sequence of the end of the section
-     * @param coordinates
-     *      Complete list of coordinates, coming from shapes.txt
-     * @param sectionStartSequence
-     *      sequence on which which the section starts
-     * @param arrivalStopArea
-     *      arrival stop area of the section
-     * @return
-     *      the sequence on which the section ends
-     */
-    private int getEndSequenceForSection(List<OrderedCoordinate> coordinates, int sectionStartSequence, StopArea arrivalStopArea){
-
-
-
-        Coordinate sourceCoordinate = new Coordinate(arrivalStopArea.getLongitude().doubleValue(), arrivalStopArea.getLatitude().doubleValue());
-
-
-        // List of all points remaining in hte pattern, with their distance from the arrivalStopArea
-        List<Pair<Double,OrderedCoordinate>> pointsByDistance = new ArrayList<>();
-
-
-        coordinates.stream()
-                   .filter(coord -> coord.order > sectionStartSequence)
-                   .forEach(coord -> {
-                       double distance = sourceCoordinate.distance(coord);
-                       pointsByDistance.add(Pair.of(distance, coord));
-                   });
-
-
-
-        pointsByDistance.sort(new Comparator<Pair<Double,OrderedCoordinate>>() {
-            @Override
-            public int compare(Pair<Double,OrderedCoordinate> o1, Pair<Double,OrderedCoordinate> o2) {
-                return o1.getLeft().compareTo(o2.getLeft());
-            }
-        });
-
-
-        Double minDistance = pointsByDistance.get(0).getLeft();
-
-        //detect if there are 2 points near stop area
-
-        List<Pair<Double, OrderedCoordinate>> minPairs = pointsByDistance.stream()
-                                                                    .filter(pair -> pair.getLeft().equals(minDistance))
-                                                                    .collect(Collectors.toList());
-
-
-
-        //taking the first point (to avoid issues when there is a loop in the pattern
-        return minPairs.get(0).getRight().order;
-    }
 
 
     /**
