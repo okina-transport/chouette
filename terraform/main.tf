@@ -121,6 +121,9 @@ resource "google_sql_database_instance" "db_instance" {
       name = "log_min_duration_statement"
       value = "200"
     }
+    insights_config {
+      query_insights_enabled = true
+    }
   }
 }
 
