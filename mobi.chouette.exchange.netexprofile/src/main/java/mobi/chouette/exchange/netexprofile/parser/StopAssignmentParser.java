@@ -38,7 +38,7 @@ public class StopAssignmentParser extends NetexParser implements Parser, Constan
 				// TODO à revoir pour changement de profil
 //				ScheduledStopPointRefStructure scheduledStopPointRef = stopAssignment.getScheduledStopPointRef();
 
-				QuayRefStructure quayRef = stopAssignment.getQuayRef();
+				QuayRefStructure quayRef = stopAssignment.getQuayRef().getValue();
 
 
 				NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);

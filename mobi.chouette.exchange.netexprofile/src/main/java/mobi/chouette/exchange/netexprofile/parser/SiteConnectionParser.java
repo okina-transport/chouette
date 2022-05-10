@@ -37,10 +37,10 @@ public class SiteConnectionParser extends NetexParser implements Parser, Constan
 
 		for (SiteConnection siteConnection : siteConnections) {
 
-			String fromQuayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), siteConnection.getFrom().getQuayRef().getRef());
+			String fromQuayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), siteConnection.getFrom().getQuayRef().getValue().getRef());
 			StopArea fromStopArea = ObjectFactory.getStopArea(referential,fromQuayId);
 
-			String toQuayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), siteConnection.getTo().getQuayRef().getRef());
+			String toQuayId = NetexImportUtil.composeObjectId("Quay", parameters.getObjectIdPrefix(), siteConnection.getTo().getQuayRef().getValue().getRef());
 			StopArea toStopArea = ObjectFactory.getStopArea(referential,toQuayId);
 
 			String siteConnectionId = NetexImportUtil.composeObjectIdFromNetexId("ConnectionLink", parameters.getObjectIdPrefix(), siteConnection.getId());

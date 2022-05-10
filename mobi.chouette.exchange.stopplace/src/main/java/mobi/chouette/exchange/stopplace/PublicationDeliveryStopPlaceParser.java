@@ -103,7 +103,7 @@ public class PublicationDeliveryStopPlaceParser {
                     stopPlaceParser.parse(context);
 
 
-                    for (StopPlace stopPlace : siteFrame.getStopPlaces().getStopPlace()) {
+                    for (StopPlace stopPlace : siteFrame.getStopPlaces().getStopPlace_().stream().map(sp -> (StopPlace) sp.getValue()).collect(Collectors.toList())) {
                         feedImportedIds(stopPlace);
 
                         if (!isActive(stopPlace, now)) {

@@ -70,6 +70,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
     public static final String MOBI_ITI_PREFIX = "MOBIITI:";
 
+    public static final ObjectFactory netexObjectFactory = new ObjectFactory();
+
     private PublicationDeliveryClient client;
 
     private final StopPlaceMapper stopPlaceMapper = new StopPlaceMapper();
@@ -278,7 +280,7 @@ public class NeTExStopPlaceRegisterUpdater {
             stopPlaces.removeAll(stopPlacesToDelete);
             checkQuayAttachment(context,stopPlaces);
 
-            siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace(stopPlaces));
+            siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace_(stopPlaces.stream().map(netexObjectFactory::createStopPlace).collect(Collectors.toList())));
 
             log.info("Create site frame with " + stopPlaces.size() + " stop places. correlationId: " + correlationId);
         }
@@ -327,15 +329,18 @@ public class NeTExStopPlaceRegisterUpdater {
                     .filter(jaxbElement -> jaxbElement.getValue() instanceof SiteFrame)
                     .map(jaxbElement -> (SiteFrame) jaxbElement.getValue())
                     .filter(receivedSiteFrame -> receivedSiteFrame.getStopPlaces() != null)
-                    .filter(receivedSiteFrame -> receivedSiteFrame.getStopPlaces().getStopPlace() != null)
-                    .flatMap(receivedSiteFrame -> receivedSiteFrame.getStopPlaces().getStopPlace().stream())
-                    .peek(stopPlace -> log.info("got stop place with ID "
-                            + stopPlace.getId()
+                    .filter(receivedSiteFrame -> receivedSiteFrame.getStopPlaces().getStopPlace_() != null)
+                    .flatMap(receivedSiteFrame -> receivedSiteFrame.getStopPlaces().getStopPlace_().stream())
+                    .peek(stopPlace -> {
+                        StopPlace sp = (StopPlace) stopPlace.getValue();
+                        log.info("got stop place with ID "
+                            + sp.getId()
                             + " and name "
-                            + stopPlace.getName()
+                            + sp.getName()
                             + " back. correlationId: "
-                            + correlationId))
-
+                            + correlationId);
+                    })
+                    .map(sp -> (StopPlace) sp.getValue())
                     .collect(Collectors.toList());
 
             log.info("Collected "
@@ -363,7 +368,7 @@ public class NeTExStopPlaceRegisterUpdater {
 
                 Quays_RelStructure quays = newStopPlace.getQuays();
                 if (quays != null && quays.getQuayRefOrQuay() != null) {
-                    for (Object b : quays.getQuayRefOrQuay()) {
+                    for (Object b : quays.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList())) {
                         Quay q = (Quay) b;
                         KeyListStructure qKeyList = q.getKeyList();
                         addIdsToLookupMap(stopPlaceRegisterMap, qKeyList, q.getId());

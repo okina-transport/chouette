@@ -72,7 +72,7 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
                                 .withOrder(BigInteger.valueOf(0))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
-                                .withOperatingPeriodRef(operatingPeriodRef);
+                                .withOperatingPeriodRef(netexFactory.createOperatingPeriodRef(operatingPeriodRef));
                     }
                     else{
                         dayTypeAssignment = netexFactory.createDayTypeAssignment()

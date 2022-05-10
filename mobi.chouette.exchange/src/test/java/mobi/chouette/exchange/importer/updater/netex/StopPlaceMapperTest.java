@@ -37,7 +37,7 @@ public class StopPlaceMapperTest {
 
         assertNotNull(netexStopPlace.getQuays(), "Quays shall not be null.");
         assertEquals(netexStopPlace.getQuays().getQuayRefOrQuay().size(), 3);
-        Quay firstQuay = (Quay) netexStopPlace.getQuays().getQuayRefOrQuay().get(0);
+        Quay firstQuay = (Quay) netexStopPlace.getQuays().getQuayRefOrQuay().get(0).getValue();
         assertEquals(firstQuay.getName().getValue(), stopPlace.getName());
     }
 

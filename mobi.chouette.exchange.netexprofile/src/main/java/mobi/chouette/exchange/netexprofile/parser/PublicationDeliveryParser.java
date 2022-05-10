@@ -922,16 +922,16 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 						.stream()
 						.filter(quay -> stopPlace.getQuays().getQuayRefOrQuay()
 								.stream()
-								.anyMatch(o -> quay.getId().equals(((QuayRefStructure) o).getRef())))
+								.anyMatch(o -> quay.getId().equals(((QuayRefStructure) o.getValue()).getRef())))
 						.collect(Collectors.toList());
 
 			Quays_RelStructure quays_relStructure = new Quays_RelStructure();
-			quays_relStructure.getQuayRefOrQuay().addAll(quayList);
+			quays_relStructure.getQuayRefOrQuay().addAll(quayList.stream().map(netexFactory::createQuay).collect(Collectors.toList()));
 			stopPlace.withQuays(quays_relStructure);
 		}
 
 		StopPlacesInFrame_RelStructure stopPlacesStruct = new StopPlacesInFrame_RelStructure();
-		stopPlacesStruct.getStopPlace().addAll(stopPlaces);
+		stopPlacesStruct.getStopPlace_().addAll(stopPlaces.stream().map(netexFactory::createStopPlace).collect(Collectors.toList()));
 
 		context.put(NETEX_LINE_DATA_CONTEXT, stopPlacesStruct);
 		stopPlaceParser.parse(context);

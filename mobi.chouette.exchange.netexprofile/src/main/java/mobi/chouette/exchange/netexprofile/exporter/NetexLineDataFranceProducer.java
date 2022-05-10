@@ -28,13 +28,7 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.LocationStructure;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.Marshaller;
 import java.io.File;
@@ -59,6 +53,8 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     private static ServiceJourneyFranceProducer serviceJourneyFranceProducer = new ServiceJourneyFranceProducer();
     private static DirectionProducer directionProducer = new DirectionProducer();
     private static ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
+
+    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
     protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
 
@@ -334,7 +330,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
             quayRefStruct.setVersionRef("any");
 
-            passengerStopAssignment.setQuayRef(quayRefStruct);
+            passengerStopAssignment.setQuayRef(netexObjectFactory.createQuayRef(quayRefStruct));
         }
 
         passengerStopAssignment.setId(passengerStopAssignment.getId() + ":LOC");

@@ -61,6 +61,8 @@ public class NeTExIdfmStopPlaceRegisterUpdater {
 
     public static final String BEAN_NAME = "NeTExIdfmStopPlaceRegisterUpdater";
 
+    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
+
     private PublicationDeliveryClient client;
 
     private final StopPlaceMapper stopPlaceMapper = new StopPlaceMapper();
@@ -203,7 +205,7 @@ public class NeTExIdfmStopPlaceRegisterUpdater {
 //                }
 //            }
 
-            siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace(stopPlaces));
+            siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace_(stopPlaces.stream().map(netexObjectFactory::createStopPlace).collect(Collectors.toList())));
         }
 
         if (stopPlaces != null && !stopPlaces.isEmpty()) {

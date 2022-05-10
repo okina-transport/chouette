@@ -146,9 +146,9 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             StopPlaceRefStructure fromStopPlaceRef = netexFactory.createStopPlaceRefStructure();
             setTransportMode(fromArea, connectionLink.getStartOfLink());
             fromStopPlaceRef.withRef(connectionLink.getStartOfLink().getParent().getObjectId());
-            fromArea.setStopPlaceRef(fromStopPlaceRef);
+            fromArea.setStopPlaceRef(netexFactory.createStopPlaceRef(fromStopPlaceRef));
             fromQuayRef.withRef(connectionLink.getStartOfLink().getObjectId());
-            fromArea.setQuayRef(fromQuayRef);
+            fromArea.setQuayRef(netexFactory.createQuayRef(fromQuayRef));
             siteConnection.withFrom(fromArea);
 
 
@@ -157,9 +157,9 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             StopPlaceRefStructure toStopPlaceRef = netexFactory.createStopPlaceRefStructure();
             setTransportMode(toArea, connectionLink.getEndOfLink());
             toStopPlaceRef.withRef(connectionLink.getEndOfLink().getParent().getObjectId());
-            toArea.setStopPlaceRef(toStopPlaceRef);
+            toArea.setStopPlaceRef(netexFactory.createStopPlaceRef(toStopPlaceRef));
             toQuayRef.withRef(connectionLink.getEndOfLink().getObjectId());
-            toArea.setQuayRef(toQuayRef);
+            toArea.setQuayRef(netexFactory.createQuayRef(toQuayRef));
             siteConnection.withTo(toArea);
 
             MultilingualString name = new MultilingualString();
