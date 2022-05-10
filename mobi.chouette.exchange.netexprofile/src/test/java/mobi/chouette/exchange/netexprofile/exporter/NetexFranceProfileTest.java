@@ -301,7 +301,7 @@ public class NetexFranceProfileTest {
         ScheduledStopPointRefStructure firstScheduledPointRef = firstAssignment.getScheduledStopPointRef().getValue();
         Assert.assertEquals(firstScheduledPointRef.getRef(), "TEST:ScheduledStopPoint:ssp3:LOC", "wrong ref");
         Assert.assertEquals(firstScheduledPointRef.getVersion(), "any", "wrong version");
-        QuayRefStructure quayRef = firstAssignment.getQuayRef();
+        QuayRefStructure quayRef = firstAssignment.getQuayRef().getValue();
         Assert.assertEquals(quayRef.getRef(), "TEST:Quay:quay3", "wrong ref");
 
 
@@ -312,7 +312,7 @@ public class NetexFranceProfileTest {
         ScheduledStopPointRefStructure secondScheduledPointRef = secondAssignment.getScheduledStopPointRef().getValue();
         Assert.assertEquals(secondScheduledPointRef.getRef(), "TEST:ScheduledStopPoint:ssp2:LOC", "wrong ref");
         Assert.assertEquals(secondScheduledPointRef.getVersion(), "any", "wrong version");
-        QuayRefStructure secondQuayRef = secondAssignment.getQuayRef();
+        QuayRefStructure secondQuayRef = secondAssignment.getQuayRef().getValue();
         Assert.assertEquals(secondQuayRef.getRef(), "TEST:Quay:quay2", "wrong ref");
 
 
@@ -323,7 +323,7 @@ public class NetexFranceProfileTest {
         ScheduledStopPointRefStructure thirdScheduledPointRef = thirdAssignment.getScheduledStopPointRef().getValue();
         Assert.assertEquals(thirdScheduledPointRef.getRef(), "TEST:ScheduledStopPoint:ssp1:LOC", "wrong ref");
         Assert.assertEquals(thirdScheduledPointRef.getVersion(), "any", "wrong version");
-        QuayRefStructure thirdQuayRef = thirdAssignment.getQuayRef();
+        QuayRefStructure thirdQuayRef = thirdAssignment.getQuayRef().getValue();
         Assert.assertEquals(thirdQuayRef.getRef(), "TEST:Quay:quay1", "wrong ref");
 
 

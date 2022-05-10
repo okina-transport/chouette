@@ -118,13 +118,13 @@ public class NetexFranceCommonFileTest {
         SiteConnection firstSiteConnection = siteConnections.get(0);
         Assert.assertEquals(firstSiteConnection.getName().getValue(),"nameC1");
         Assert.assertEquals(firstSiteConnection.getId(),"TEST:ConnectionLink:uffcarr_uffcarr2");
-        Assert.assertEquals(firstSiteConnection.getFrom().getQuayRef().getRef(),"TEST:Quay:quay1");
-        Assert.assertEquals(firstSiteConnection.getTo().getQuayRef().getRef(),"TEST:Quay:quay2");
+        Assert.assertEquals(firstSiteConnection.getFrom().getQuayRef().getValue().getRef(),"TEST:Quay:quay1");
+        Assert.assertEquals(firstSiteConnection.getTo().getQuayRef().getValue().getRef(),"TEST:Quay:quay2");
         Assert.assertEquals(firstSiteConnection.getTo().getTransportMode(), AllVehicleModesOfTransportEnumeration.BUS);
         Assert.assertEquals(firstSiteConnection.getFrom().getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
 
-        Assert.assertEquals(firstSiteConnection.getFrom().getStopPlaceRef().getRef(),"TEST:StopPlace:SP1");
-        Assert.assertEquals(firstSiteConnection.getTo().getStopPlaceRef().getRef(),"TEST:StopPlace:SP2");
+        Assert.assertEquals(firstSiteConnection.getFrom().getStopPlaceRef().getValue().getRef(),"TEST:StopPlace:SP1");
+        Assert.assertEquals(firstSiteConnection.getTo().getStopPlaceRef().getValue().getRef(),"TEST:StopPlace:SP2");
         Assert.assertEquals(firstSiteConnection.getDistance(),new BigDecimal(5));
         java.time.Duration expectedDuration = java.time.Duration.parse(Duration.parse("PT76400S").toString());
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);

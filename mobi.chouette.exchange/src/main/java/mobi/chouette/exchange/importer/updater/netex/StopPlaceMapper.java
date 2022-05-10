@@ -11,21 +11,7 @@ import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.runtime.directive.Stop;
 import org.checkerframework.checker.units.qual.A;
-import org.rutebanken.netex.model.AccessibilityAssessment;
-import org.rutebanken.netex.model.AccessibilityLimitation;
-import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
-import org.rutebanken.netex.model.EntityInVersionStructure;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
-import org.rutebanken.netex.model.LocationStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.Quays_RelStructure;
-import org.rutebanken.netex.model.SimplePoint_VersionStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.StopTypeEnumeration;
-import org.rutebanken.netex.model.Zone_VersionStructure;
+import org.rutebanken.netex.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +27,8 @@ import static mobi.chouette.common.Constant.IMPORTED_ID;
 public class StopPlaceMapper {
 
     private static final String VERSION = "1";
+
+    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
     /**
      * Map stop area with contained stop areas.
@@ -60,7 +48,7 @@ public class StopPlaceMapper {
                     continue;
 
                 Quay quay = mapQuay(children);
-                stopPlace.getQuays().getQuayRefOrQuay().add(quay);
+                stopPlace.getQuays().getQuayRefOrQuay().add(netexObjectFactory.createQuay(quay));
                 alreadyProcessedQuays.add(children.getObjectId());
             }
         }

@@ -128,9 +128,9 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp2:LOC").getScheduledStopPointRef().getValue().getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp3:LOC").getScheduledStopPointRef().getValue().getVersion(), "any");
 
-        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp1:LOC").getQuayRef().getRef(), "TEST:Quay:quay1");
-        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp2:LOC").getQuayRef().getRef(), "TEST:Quay:quay2");
-        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp3:LOC").getQuayRef().getRef(), "TEST:Quay:quay3");
+        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp1:LOC").getQuayRef().getValue().getRef(), "TEST:Quay:quay1");
+        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp2:LOC").getQuayRef().getValue().getRef(), "TEST:Quay:quay2");
+        Assert.assertEquals(exportableNetexDataResult.getStopAssignments().get("TEST:PassengerStopAssignment:ssp3:LOC").getQuayRef().getValue().getRef(), "TEST:Quay:quay3");
 
         Assert.assertEquals(exportableNetexDataResult.getDestinationDisplays().get("TEST:DestinationDisplay:dd1:LOC").getId(), "TEST:DestinationDisplay:dd1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getDestinationDisplays().get("TEST:DestinationDisplay:dd1:LOC").getVersion(), "any");
@@ -169,7 +169,7 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(dayTypesRef.get(0).getValue().getRef(), "TEST:DayType:t1:LOC");
         Assert.assertEquals(dayTypesRef.get(0).getValue().getVersion(), "any");
 
-        List<OperatingPeriodRefStructure> operatingPeriodsRef = exportableNetexDataResult.getSharedDayTypeAssignments().stream().map(DayTypeAssignment_VersionStructure::getOperatingPeriodRef).collect(Collectors.toList());
+        List<OperatingPeriodRefStructure> operatingPeriodsRef = exportableNetexDataResult.getSharedDayTypeAssignments().stream().map(opr -> opr.getOperatingPeriodRef().getValue()).collect(Collectors.toList());
         Assert.assertEquals(operatingPeriodsRef.get(0).getRef(), "TEST:OperatingPeriod:t1:LOC");
         Assert.assertEquals(operatingPeriodsRef.get(0).getVersion(), "any");
 
