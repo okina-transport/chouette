@@ -16,10 +16,6 @@ import java.util.Collection;
 public class GtfsDataCollector extends DataCollector {
 	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
 		boolean res = collect(collection, line, startDate, endDate, false, false);
-		if (Boolean.TRUE.equals(line.getFlexibleService())) {
-			log.info("Omitting flexible line from gtfs export: " + line.getObjectId());
-			return false;
-		}
 		if (res) {
 //			collectAgencyCompany(line, collection);
 			collectOperatorCompany(line, collection);
