@@ -264,6 +264,28 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>copy-prometheus-agent</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<verbose>true</verbose>
+							<artifactItems>
+								<artifactItem>
+									<groupId>io.prometheus.jmx</groupId>
+									<artifactId>jmx_prometheus_javaagent</artifactId>
+									<version>${prometheus.agent.version}</version>
+									<outputDirectory>
+										${project.rootDir}/target/docker/wildfly/prometheus
+									</outputDirectory>
+									<destFileName>jmx_prometheus_javaagent.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+
 				</executions>
 			</plugin>
 			<plugin>
