@@ -186,15 +186,7 @@ data:
             <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
             <subsystem xmlns="urn:jboss:domain:datasources:5.0">
                 <datasources>
-                    <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
-                        <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                        <driver>h2</driver>
-                        <security>
-                            <user-name>sa</user-name>
-                            <password>sa</password>
-                        </security>
-                    </datasource>
-                    <datasource jndi-name="java:jboss/datasources/iev" pool-name="iev" enabled="true">
+                    <datasource jndi-name="java:jboss/datasources/iev" pool-name="iev" enabled="true" statistics-enabled="true">
                         <connection-url>jdbc:postgresql://localhost:5432/iev?ApplicationName=JBOSS-IEV&amp;reWriteBatchedInserts=true</connection-url>
                         <driver>postgresql</driver>
                         <pool>
@@ -216,7 +208,7 @@ data:
                             <share-prepared-statements>false</share-prepared-statements>
                         </statement>
                     </datasource>
-                    <datasource jndi-name="java:jboss/datasources/chouette" pool-name="chouette" enabled="true">
+                    <datasource jndi-name="java:jboss/datasources/chouette" pool-name="chouette" enabled="true" statistics-enabled="true">
                         <connection-url>jdbc:postgresql_postGIS://localhost:5432/chouette?preparedStatementCacheQueries=1024&amp;preparedStatementCacheSizeMiB=15&amp;ApplicationName=JBOSS-CHOUETTE&amp;reWriteBatchedInserts=true</connection-url>
                         <driver-class>mobi.chouette.ChouettePostGisDriverWrapper</driver-class>
                         <driver>postgresql</driver>
@@ -240,9 +232,6 @@ data:
                         </statement>
                     </datasource>
                     <drivers>
-                        <driver name="h2" module="com.h2database.h2">
-                            <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                        </driver>
                         <driver name="postgresql" module="org.postgres">
                             <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
                         </driver>
@@ -269,7 +258,7 @@ data:
                         <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-threshold="60000" keepalive-time="3000"/>
                     </managed-scheduled-executor-services>
                 </concurrent>
-                <default-bindings context-service="java:jboss/ee/concurrency/context/default" datasource="java:jboss/datasources/ExampleDS" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
+                <default-bindings context-service="java:jboss/ee/concurrency/context/default" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
             </subsystem>
             <subsystem xmlns="urn:jboss:domain:ee-security:1.0"/>
             <subsystem xmlns="urn:jboss:domain:ejb3:5.0">
@@ -549,7 +538,7 @@ data:
                 <recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager"/>
                 <object-store path="tx-object-store" relative-to="jboss.server.data.dir"/>
             </subsystem>
-            <subsystem xmlns="urn:jboss:domain:undertow:8.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other">
+            <subsystem xmlns="urn:jboss:domain:undertow:8.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="true">
                 <buffer-cache name="default"/>
                 <server name="default-server">
                     <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true" max-post-size="200000000"/>
