@@ -15,8 +15,8 @@ public class DestinationDisplayUpdater implements Updater<DestinationDisplay> {
 	@Override
 	public void update(Context context, DestinationDisplay oldValue, DestinationDisplay newValue) {
 
-		if (log.isDebugEnabled()) {
-			log.debug("Updating " + oldValue + " with " + newValue);
+		if (log.isTraceEnabled()) {
+			log.trace("Updating " + oldValue + " with " + newValue);
 
 		}
 		if (newValue.getName() != null
