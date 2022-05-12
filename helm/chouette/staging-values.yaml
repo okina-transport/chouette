@@ -1,4 +1,4 @@
-env: staging
+env: test
 gcpProjectId: entur-ror-test
 gcpDatabaseInstance: entur-ror-test:europe-west1:chouette-db-pg13=tcp:5432
 gcpBucketName: ror-chouette-test
