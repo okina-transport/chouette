@@ -1,5 +1,10 @@
 FROM jboss/wildfly:15.0.1.Final
 
+USER root
+RUN yum -y update && yum clean all
+USER jboss
+
+
 # Copy iev.properties
 COPY docker/files/wildfly/iev.properties /etc/chouette/iev/
 
