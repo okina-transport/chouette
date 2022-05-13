@@ -76,14 +76,14 @@ public class NetexLineProducerCommand implements Command, Constant {
             }
 
             LocalDate startDate = null;
-            if (configuration.getStartDate() != null) {
-                startDate = new LocalDate(configuration.getStartDate());
-            }
+//            if (configuration.getStartDate() != null) {
+//                startDate = new LocalDate(configuration.getStartDate());
+//            }
 
             LocalDate endDate = null;
-            if (configuration.getEndDate() != null) {
-                endDate = new LocalDate(configuration.getEndDate());
-            }
+//            if (configuration.getEndDate() != null) {
+//                endDate = new LocalDate(configuration.getEndDate());
+//            }
 
             NetexDataCollector collector = new NetexDataCollector();
             boolean cont = (collector.collect(collection, line, startDate, endDate));

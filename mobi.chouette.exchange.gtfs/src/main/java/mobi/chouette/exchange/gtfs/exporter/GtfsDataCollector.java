@@ -4,10 +4,8 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
-import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.joda.time.LocalDate;
 
 import java.util.Collection;
@@ -90,7 +88,11 @@ public class GtfsDataCollector extends DataCollector {
 			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks);
 			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks);
 			for (StopArea sa : stopArea.getContainedStopAreas()) {
-				collectStopAreas(collection, sa, skipNoCoordinates, followLinks);
+				boolean ifSaIsUsed = collection.getStopPoints().stream()
+						.anyMatch(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().equals(sa));
+				if (ifSaIsUsed) {
+					collectStopAreas(collection, sa, skipNoCoordinates, followLinks);
+				}
 			}
 		}
 	}
