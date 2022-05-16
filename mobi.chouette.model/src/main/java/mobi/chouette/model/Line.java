@@ -536,14 +536,14 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 						vehicleJourney.getDatedServiceJourneys().removeIf(dsj -> !activeDatedServiceJourneyOnPeriod.contains(dsj));
 					// filter out Vehicle Journey without timetables nor dated service journey
 					if(!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
-						if (log.isDebugEnabled()) {
-							log.debug("Removing VJ with no valid timetables nor valid dated service journeys: " + vehicleJourney.getObjectId());
+						if (log.isTraceEnabled()) {
+							log.trace("Removing VJ with no valid timetables nor valid dated service journeys: " + vehicleJourney.getObjectId());
 						}
 						vjI.remove();
 					}
 					if(onlyPublicData && !vehicleJourney.isPublic()) {
-						if (log.isDebugEnabled()) {
-							log.debug("Removing vj with restricted publication since only public data are retained: " + vehicleJourney.getObjectId());
+						if (log.isTraceEnabled()) {
+							log.trace("Removing vj with restricted publication since only public data are retained: " + vehicleJourney.getObjectId());
 						}
 						vjI.remove();
 					}
