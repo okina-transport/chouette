@@ -1,10 +1,8 @@
-FROM jboss/wildfly:15.0.1.Final
+FROM quay.io/wildfly/wildfly:26.1.0.Final
 
 USER root
-RUN yum -y update && yum -y remove java && yum -y install wget java-1.8.0-openjdk java-1.8.0-openjdk-devel  && yum clean all
+RUN yum -y update && yum clean all
 USER jboss
-
-
 # Copy iev.properties
 COPY docker/files/wildfly/iev.properties /etc/chouette/iev/
 
