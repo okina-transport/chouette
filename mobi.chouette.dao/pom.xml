@@ -33,15 +33,20 @@
 			<artifactId>hibernate-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.spec.javax.transaction</groupId>
-			<artifactId>jboss-transaction-api_1.3_spec</artifactId>
+			<artifactId>jboss-transaction-api_1.2_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-jakartaee-8.0</artifactId>
+			<artifactId>jboss-javaee-8.0</artifactId>
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
@@ -54,12 +59,6 @@
 			<groupId>org.jboss.ironjacamar</groupId>
 			<artifactId>ironjacamar-jdbc</artifactId>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.picketbox</groupId>
-					<artifactId>picketbox</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

@@ -45,7 +45,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-jakartaee-8.0</artifactId>
+			<artifactId>jboss-javaee-8.0</artifactId>
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
@@ -54,29 +54,6 @@
 			<artifactId>threeten-extra</artifactId>
 			<version>1.7.0</version>
 		</dependency>
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>${jts.version}</version>
-		</dependency>
-
 
 		<!-- Test Dependencies -->
       <dependency>
@@ -136,6 +113,7 @@
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Modules Dependencies -->
@@ -146,6 +124,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ejb-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Dependencies>org.codehaus.jettison</Dependencies>
+						</manifestEntries>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
