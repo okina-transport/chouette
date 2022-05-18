@@ -9,6 +9,7 @@
             <property name="modulePath">../target/wildfly-${wildfly.version}/modules</property>
             <property name="managementPort">10290</property>
             <property name="serverConfig">standalone.xml</property>
+            <property name="javaVmArguments">--add-modules=java.se --add-opens=java.base/java.util=ALL-UNNAMED</property>
        </configuration>
     </container>
 </arquillian>
