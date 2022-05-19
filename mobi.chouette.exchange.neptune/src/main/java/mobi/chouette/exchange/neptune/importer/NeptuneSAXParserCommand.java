@@ -62,7 +62,7 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 		if (schema == null) {
 			SchemaFactory factory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			schema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource(SCHEMA_FILE));
+			schema = factory.newSchema(getClass().getResource(SCHEMA_FILE));
 			context.put(SCHEMA, schema);
 		}
 
