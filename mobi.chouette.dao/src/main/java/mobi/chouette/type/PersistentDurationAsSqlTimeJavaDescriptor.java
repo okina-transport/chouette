@@ -24,11 +24,17 @@ public class PersistentDurationAsSqlTimeJavaDescriptor extends AbstractTypeDescr
 
     @Override
     public String toString(Duration value) {
+        if (value == null) {
+            return "null";
+        }
         return LOCAL_TIME_FORMATTER.format(LocalTime.ofNanoOfDay(value.toNanos()));
     }
 
     @Override
     public Duration fromString(String string) {
+        if (string == null) {
+            return null;
+        }
         return Duration.ofSeconds(Seconds.between(LocalTime.of(0, 0), LocalTime.parse(string)).getAmount());
     }
 
