@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mobi.chouette.common.TimeUtil;
@@ -62,12 +63,15 @@ public class JobInfo implements ServiceConstants {
 	@XmlElement(name = "type")
 	private String type;
 
+	@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 	@XmlElement(name = "created", required = true)
 	private Date created;
 
+	@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 	@XmlElement(name = "started")
 	private Date started;
 
+	@JsonFormat(shape = JsonFormat.Shape.NUMBER)
 	@XmlElement(name = "updated")
 	private Date updated;
 
