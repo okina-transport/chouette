@@ -58,7 +58,7 @@
 		<project.rootDir>${project.basedir}</project.rootDir>
 
  	    <netex-java-model.version>1.0.13</netex-java-model.version>
-		<rutebanken.helpers.version>1.0.55</rutebanken.helpers.version>
+		<rutebanken.helpers.version>1.0.71</rutebanken.helpers.version>
 		<owasp-dependency-check-plugin.version>6.5.3</owasp-dependency-check-plugin.version>
 
 		<wildfly-arquillian-container-embedded.version>3.0.1.Final</wildfly-arquillian-container-embedded.version>
@@ -746,13 +746,6 @@
 				<groupId>org.entur.helpers</groupId>
 				<artifactId>hazelcast4-helper</artifactId>
 				<version>${rutebanken.helpers.version}</version>
-			</dependency>
-			<!--kubernetes-client version that is compatible with jackson 2.4.1 provided by JBoss-->
-			<dependency>
-				<groupId>io.fabric8</groupId>
-				<artifactId>kubernetes-client</artifactId>
-				<version>2.2.7</version>
-				<scope>runtime</scope>
 			</dependency>
 
 			<dependency>
