@@ -15,7 +15,7 @@
 		<wildfly.version>26.1.0.Final</wildfly.version>
 		<wildfly.core.version>18.1.0.Final</wildfly.core.version>
 		<jboss-jakartaee-8.0.version>1.0.1.Final</jboss-jakartaee-8.0.version>
-		<wildfly-jakartaee8-with-tools.version>26.1.0.Final</wildfly-jakartaee8-with-tools.version>
+		<wildfly-jakartaee8-with-tools.version>26.1.1.Final</wildfly-jakartaee8-with-tools.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
 
