@@ -147,7 +147,7 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 
 
 	private Long toLong(Object o){
-		return Long.valueOf(((BigInteger) o).longValue());
+		return ((BigInteger) o).longValue();
 	}
 
 }
