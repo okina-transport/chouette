@@ -51,6 +51,12 @@ public class NetexImporterCommand extends AbstractImporterCommand implements Com
 			return false;
 		}
 
+			NetexImportParameters parameters = (NetexImportParameters) configuration;
+			String closeOldCalendarsPropStr = System.getProperty("iev.close.old.calendars");
+			if (closeOldCalendarsPropStr != null ){
+				context.put(CLOSE_OLD_CALENDARS, Boolean.parseBoolean(closeOldCalendarsPropStr));
+			}
+
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NetexImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);
 

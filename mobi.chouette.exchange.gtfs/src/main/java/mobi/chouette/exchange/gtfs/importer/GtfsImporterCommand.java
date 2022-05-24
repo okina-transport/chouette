@@ -49,6 +49,11 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			}
 
 			GtfsImportParameters parameters = (GtfsImportParameters) configuration;
+
+			String closeOldCalendarsPropStr = System.getProperty("iev.close.old.calendars");
+			if (closeOldCalendarsPropStr != null ){
+				context.put(CLOSE_OLD_CALENDARS, Boolean.parseBoolean(closeOldCalendarsPropStr));
+			}
 			// Pour éviter une import cyclique de GtfsImportParameters
 			context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 

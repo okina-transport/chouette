@@ -92,7 +92,9 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                 commands.add(chain);
             }
 
-            {
+
+            Boolean closeCalendar = (Boolean)context.get(CLOSE_OLD_CALENDARS);
+            if (closeCalendar != null && closeCalendar){
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 Command productionPeriods = CommandFactory.create(initialContext, ProductionPeriodCommand.class.getName());
                 chain.add(productionPeriods);

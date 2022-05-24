@@ -64,7 +64,15 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 			return ERROR;
 		}
 
+
 		NeptuneImportParameters parameters = (NeptuneImportParameters) configuration;
+
+
+		String closeOldCalendarsPropStr = System.getProperty("iev.close.old.calendars");
+		if (closeOldCalendarsPropStr != null ){
+			context.put(CLOSE_OLD_CALENDARS, Boolean.parseBoolean(closeOldCalendarsPropStr));
+		}
+
 		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 		
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NeptuneImporterProcessingCommands.class.getName());
