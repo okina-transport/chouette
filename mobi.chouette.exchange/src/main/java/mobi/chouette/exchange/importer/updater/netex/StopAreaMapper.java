@@ -19,8 +19,10 @@ import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 
+import javax.xml.bind.JAXBElement;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
 
@@ -50,7 +52,7 @@ public class StopAreaMapper {
 
         Quays_RelStructure quays = stopPlace.getQuays();
         if (quays != null) {
-            for (Object q : quays.getQuayRefOrQuay()) {
+            for (Object q : quays.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList())) {
                 StopArea boardingPosition = mapBoardingPosition(referential, stopPlace, (Quay) q);
                 boardingPosition.setParent(stopArea);
             }

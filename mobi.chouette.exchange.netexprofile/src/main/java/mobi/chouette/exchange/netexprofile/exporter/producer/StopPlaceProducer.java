@@ -86,7 +86,7 @@ public class StopPlaceProducer extends NetexProducer implements NetexEntityProdu
 					quay.setCentroid(pointStruct);
 				}
 
-				quayStruct.getQuayRefOrQuay().add(quay);
+				quayStruct.getQuayRefOrQuay().add(netexFactory.createQuay(quay));
 			}
 
 			stopPlace.setQuays(quayStruct);

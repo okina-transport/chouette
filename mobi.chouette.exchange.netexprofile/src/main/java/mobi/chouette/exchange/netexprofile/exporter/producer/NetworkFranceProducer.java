@@ -4,11 +4,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.model.Line;
-import org.rutebanken.netex.model.AuthorityRefStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.LineRefStructure;
-import org.rutebanken.netex.model.LineRefs_RelStructure;
-import org.rutebanken.netex.model.PrivateCodeStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.time.LocalDateTime;
@@ -41,9 +37,9 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
         netexNetwork.setDescription(ConversionUtil.getMultiLingualString(neptuneNetwork.getDescription()));
 
         if (neptuneNetwork.getCompany() != null) {
-            AuthorityRefStructure authorityRefStruct = netexFactory.createAuthorityRefStructure();
-            NetexProducerUtils.populateReferenceIDFM(neptuneNetwork.getCompany(), authorityRefStruct);
-            netexNetwork.setTransportOrganisationRef(netexFactory.createAuthorityRef(authorityRefStruct));
+            AuthorityRef authorityRef = netexFactory.createAuthorityRef();
+            NetexProducerUtils.populateReferenceIDFM(neptuneNetwork.getCompany(), authorityRef);
+            netexNetwork.setTransportOrganisationRef(netexFactory.createAuthorityRef(authorityRef));
         }
 
         if (isSet(neptuneNetwork.getRegistrationNumber())) {

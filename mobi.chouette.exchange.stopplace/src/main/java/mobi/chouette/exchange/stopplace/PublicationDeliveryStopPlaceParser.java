@@ -103,7 +103,7 @@ public class PublicationDeliveryStopPlaceParser {
                     stopPlaceParser.parse(context);
 
 
-                    for (StopPlace stopPlace : siteFrame.getStopPlaces().getStopPlace()) {
+                    for (StopPlace stopPlace : siteFrame.getStopPlaces().getStopPlace_().stream().map(sp -> (StopPlace) sp.getValue()).collect(Collectors.toList())) {
                         feedImportedIds(stopPlace);
 
                         if (!isActive(stopPlace, now)) {
@@ -199,8 +199,8 @@ public class PublicationDeliveryStopPlaceParser {
     }
 
     private void collectMergedIdForQuay(Object quayObj) {
-        if (quayObj instanceof Quay) {
-            Quay quay = (Quay) quayObj;
+        if (quayObj instanceof JAXBElement && ((JAXBElement<?>) quayObj).getValue() instanceof Quay) {
+            Quay quay = (Quay) ((JAXBElement<?>) quayObj).getValue();
             if (quay.getKeyList() != null && quay.getKeyList().getKeyValue() != null) {
                 quay.getKeyList().getKeyValue().stream().filter(kv -> MERGED_ID_KEY.equals(kv.getKey())).forEach(kv -> addMergedIds(quay.getId(), kv.getValue()));
                 quay.getKeyList().getKeyValue().stream().filter(kv -> IMPORT_ID_KEY.equals(kv.getKey())).forEach(kv -> {

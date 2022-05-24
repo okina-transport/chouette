@@ -141,7 +141,7 @@ public class PublicationDeliveryFranceWriterTest {
 
         QuayRefStructure quayRefStruct = netexFactory.createQuayRefStructure();
 
-        passengerStopAssignment.setQuayRef(quayRefStruct);
+        passengerStopAssignment.setQuayRef(netexFactory.createQuayRef(quayRefStruct));
 
         ServiceJourney serviceJourney = netexFactory.createServiceJourney();
         DayTypeRefs_RelStructure dayType = netexFactory.createDayTypeRefs_RelStructure();

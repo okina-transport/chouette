@@ -8,7 +8,6 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
-import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.rutebanken.netex.client.PublicationDeliveryClient;
 import org.rutebanken.netex.model.*;
@@ -28,11 +27,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class NeTExStopPlaceRegisterUpdaterTest {
+
+    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
 //    @Test
 //    public void convertStopAreaAndConnectionLink() throws Exception {
@@ -117,7 +119,7 @@ public class NeTExStopPlaceRegisterUpdaterTest {
 
                 validate(publicationDelivery);
 
-                Assert.assertEquals(1, ((SiteFrame) publicationDelivery.getDataObjects().getCompositeFrameOrCommonFrame().get(0).getValue()).getStopPlaces().getStopPlace().size(), "StopPlaces not unique");
+                Assert.assertEquals(1, ((SiteFrame) publicationDelivery.getDataObjects().getCompositeFrameOrCommonFrame().get(0).getValue()).getStopPlaces().getStopPlace_().size(), "StopPlaces not unique");
 
                 SimplePoint_VersionStructure centroid = new SimplePoint_VersionStructure()
                         .withLocation(new LocationStructure().withLatitude(stopArea.getLatitude())
@@ -142,15 +144,15 @@ public class NeTExStopPlaceRegisterUpdaterTest {
                 q3.setCentroid(centroid);
 
                 Quays_RelStructure quays = new Quays_RelStructure();
-                quays.getQuayRefOrQuay().add(q2);
-                quays.getQuayRefOrQuay().add(q3);
+                quays.getQuayRefOrQuay().add(netexObjectFactory.createQuay(q2));
+                quays.getQuayRefOrQuay().add(netexObjectFactory.createQuay(q3));
                 stopPlace.setQuays(quays);
 
                 List<StopPlace> stopPlaces = new ArrayList<>();
                 stopPlaces.add(stopPlace);
 
                 SiteFrame siteFrame = new SiteFrame();
-                siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace(stopPlaces));
+                siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace_(stopPlaces.stream().map(netexObjectFactory::createStopPlace).collect(Collectors.toList())));
 
                 org.rutebanken.netex.model.ObjectFactory objectFactory = new org.rutebanken.netex.model.ObjectFactory();
                 JAXBElement<SiteFrame> jaxSiteFrame = objectFactory.createSiteFrame(siteFrame);
