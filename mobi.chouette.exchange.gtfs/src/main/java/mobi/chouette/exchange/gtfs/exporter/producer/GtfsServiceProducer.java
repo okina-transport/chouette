@@ -59,10 +59,12 @@ AbstractProducer
       if (reduced == null) return false;
 
       String serviceId = toGtfsId(reduced.getObjectId(), prefix, keepOriginalId);
+      calendar.setServiceId(serviceId);
+      clear(calendar);
 
       if (!isEmpty(reduced.getPeriods()))
       {
-         clear(calendar);
+
          for (DayTypeEnum dayType : reduced.getDayTypes())
          {
             switch (dayType)
@@ -103,7 +105,7 @@ AbstractProducer
                // nothing to do
             }
          }
-         calendar.setServiceId(serviceId);
+
 
          Period period = reduced.getPeriods().get(0);
 
@@ -122,25 +124,50 @@ AbstractProducer
             calendar.setEndDate(period.getEndDate());
          }
 
-         try
-         {
-            getExporter().getCalendarExporter().export(calendar);
-         }
-         catch (Exception e)
-         {
-            log.error(e.getMessage(),e);
-            return false;
-         }
+
       }
       if (!isEmpty(reduced.getCalendarDays()))
       {
-         for (CalendarDay day : reduced.getCalendarDays())
+         List<CalendarDay> calendarDays = reduced.getCalendarDays();
+
+         LocalDate currentMin = null;
+         LocalDate currentMax = null;
+
+         for (CalendarDay day : calendarDays)
          {
             if(startDate == null && endDate == null ||
                     startDate != null && endDate != null && !day.getDate().isBefore(startDate) && !day.getDate().isAfter(endDate)) {
                saveDay(serviceId,day);
             }
+
+            if (currentMin == null || currentMin.isAfter(day.getDate())){
+               currentMin = day.getDate();
+            }
+
+            if (currentMax == null || currentMax.isBefore(day.getDate())){
+               currentMax = day.getDate();
+            }
+
          }
+
+
+         if (calendar.getStartDate() == null || calendar.getStartDate().isAfter(currentMin)){
+            calendar.setStartDate(currentMin);
+         }
+
+         if (calendar.getEndDate() == null || calendar.getEndDate().isBefore(currentMax)){
+            calendar.setEndDate(currentMax);
+         }
+      }
+
+      try
+      {
+         getExporter().getCalendarExporter().export(calendar);
+      }
+      catch (Exception e)
+      {
+         log.error(e.getMessage(),e);
+         return false;
       }
 
       return true;
