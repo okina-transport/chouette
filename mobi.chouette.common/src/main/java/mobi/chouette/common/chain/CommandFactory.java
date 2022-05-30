@@ -1,7 +1,6 @@
 package mobi.chouette.common.chain;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,11 +8,11 @@ import javax.naming.InitialContext;
 
 public abstract class CommandFactory {
 
-	   public static final Map<String, CommandFactory> factories = Collections.synchronizedMap(new HashMap<>());
+	   public static Map<String, CommandFactory> factories = new HashMap<String, CommandFactory>();
 
 	   protected abstract Command create(InitialContext context) throws IOException;
 
-	   public static Command create(InitialContext context, String name)
+	   public static final Command create(InitialContext context, String name)
 	         throws ClassNotFoundException, IOException
 
 	   {
@@ -24,6 +23,6 @@ public abstract class CommandFactory {
 	         if (!factories.containsKey(name))
 	            throw new ClassNotFoundException(name);
 	      }
-	      return factories.get(name).create(context);
+	      return ((CommandFactory) factories.get(name)).create(context);
 	   }
 }
