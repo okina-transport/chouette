@@ -55,8 +55,7 @@ public class NetexValidatorInputValidator extends NetexImporterInputValidator {
 	
 	@Override
 	public List<TestDescription> getTestList() {
-		List<TestDescription> lstResults = new ArrayList<TestDescription>();
-		lstResults.addAll(AbstractValidation.getTestLevel3FileList());
+		List<TestDescription> lstResults = new ArrayList<TestDescription>(AbstractValidation.getTestLevel3FileList());
 		
 		return lstResults;
 	}
