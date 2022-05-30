@@ -321,44 +321,13 @@ public class LineOptimiser {
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 
-		/**Set<String> routeReferencedStopAreasObjectIds = routePoints.stream()
-				.map(RoutePoint::getScheduledStopPoint)
-				.filter(Objects::nonNull)
-				.map(ScheduledStopPoint::getContainedInStopAreaRef)
-				.filter(Objects::nonNull)
-				.map(ObjectReference::getObject)
-				.filter(Objects::nonNull)
-				.map(NeptuneIdentifiedObject::getObjectId)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
-
-		stopPointReferencedStopAreasObjectIds.addAll(routeReferencedStopAreasObjectIds);**/
-
 		List<StopArea> referencedStopAreas = stopAreaDAO.findByObjectId(stopPointReferencedStopAreasObjectIds);
-		for (StopArea referencedStopArea: referencedStopAreas) {
+		for (StopArea referencedStopArea : referencedStopAreas) {
 			cache.getStopAreas().put(referencedStopArea.getObjectId(), referencedStopArea);
-			for(ScheduledStopPoint scheduledStopPoint: referencedStopArea.getContainedScheduledStopPoints()) {
+			for (ScheduledStopPoint scheduledStopPoint : referencedStopArea.getContainedScheduledStopPoints()) {
 				cache.getScheduledStopPoints().put(scheduledStopPoint.getObjectId(), scheduledStopPoint);
 			}
 		}
-
-		/**Set<String> stopPointReferencedScheduledStopPoints = stopPoints.stream()
-				.map(StopPoint::getScheduledStopPoint)
-				.map(ScheduledStopPoint::getObjectId).collect(Collectors.toSet());
-
-		Set<String> routePointReferencedScheduledStopPoints = routePoints.stream()
-				.map(RoutePoint::getScheduledStopPoint)
-				.map(ScheduledStopPoint::getObjectId).collect(Collectors.toSet());
-
-		stopPointReferencedScheduledStopPoints.addAll(routePointReferencedScheduledStopPoints);
-
-		List<ScheduledStopPoint> objects = scheduledStopPointDAO.findByObjectId(stopPointReferencedScheduledStopPoints);
-		objects.stream().forEach(ssp -> ssp.getContainedInStopAreaRef().getObject().getObjectId());
-		for (ScheduledStopPoint object : objects) {
-			object.getContainedInStopAreaRef().getObject().getContainedScheduledStopPoints();
-
-		}
-		 **/
 
 	}
 
