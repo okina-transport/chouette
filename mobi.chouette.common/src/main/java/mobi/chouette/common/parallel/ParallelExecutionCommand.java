@@ -101,7 +101,7 @@ public class ParallelExecutionCommand implements Command {
 		return result;
 	}
 
-	private static class CommandTask implements Callable<Boolean> {
+	private class CommandTask implements Callable<Boolean> {
 
 		private Command command;
 

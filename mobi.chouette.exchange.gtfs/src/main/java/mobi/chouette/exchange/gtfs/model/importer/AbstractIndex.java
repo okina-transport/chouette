@@ -36,8 +36,7 @@ public abstract class AbstractIndex<T> implements Index<T> {
 	protected boolean withValidation = false;
 
 	@ToString
-    static
-    class Token {
+	class Token {
 		int offset = -1;
 		int lenght = 0;
 	}

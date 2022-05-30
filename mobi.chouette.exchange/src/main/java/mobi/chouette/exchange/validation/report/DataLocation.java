@@ -203,7 +203,7 @@ public class DataLocation {
 	//
 	// }
 
-	public static class Path {
+	public class Path {
 		@Getter
 		String objectClass;
 		@Getter

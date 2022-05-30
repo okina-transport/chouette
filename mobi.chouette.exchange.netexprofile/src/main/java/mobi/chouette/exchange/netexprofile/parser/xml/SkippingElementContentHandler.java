@@ -35,7 +35,7 @@ public class SkippingElementContentHandler extends DefaultHandler {
 		return elementsToSkip.contains(new QName(uri, localName));
 	}
 
-	private static class IgnoringContentHandler extends DefaultHandler {
+	private class IgnoringContentHandler extends DefaultHandler {
 
 	    private int depth = 1;
 	    private XMLReader xmlReader;

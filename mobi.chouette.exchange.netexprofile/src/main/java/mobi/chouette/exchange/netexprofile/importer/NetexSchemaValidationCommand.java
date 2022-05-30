@@ -119,7 +119,7 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 		return result;
 	}
 
-	static class SchemaValidationTask implements Callable<SchemaValidationTask> {
+	class SchemaValidationTask implements Callable<SchemaValidationTask> {
 
 		public static final int MAX_ERROR_COUNT = 100;
 

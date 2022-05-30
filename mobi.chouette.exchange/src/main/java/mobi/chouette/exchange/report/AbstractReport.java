@@ -29,7 +29,8 @@ public abstract class AbstractReport {
 	}
 
 	public StringBuilder addLevel(StringBuilder ret, int level) {
-		ret.append("  ".repeat(Math.max(0, level)));
+		for (int i = 0; i < level; i++)
+			ret.append("  ");
 		return ret;
 	}
 
