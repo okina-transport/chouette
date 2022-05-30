@@ -22,6 +22,7 @@ import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
@@ -77,7 +78,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 		List<Command> commands = new ArrayList<>();
 		try {
 			Chain initChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-			if (withDao && parameters.isCleanRepository()) {
+			if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
 				initChain.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
 			}
 			initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));

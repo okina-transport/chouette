@@ -16,6 +16,7 @@ import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 
@@ -50,7 +51,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 		NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 		List<Command> commands = new ArrayList<>();
 		try {
-			if (withDao && parameters.isCleanRepository()) {
+			if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
 				commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
 			}
 			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));

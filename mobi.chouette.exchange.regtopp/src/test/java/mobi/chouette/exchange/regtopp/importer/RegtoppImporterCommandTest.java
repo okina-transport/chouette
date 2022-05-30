@@ -124,7 +124,7 @@ public class RegtoppImporterCommandTest extends Arquillian implements mobi.choue
 		configuration.setName("name");
 		configuration.setUserName("userName");
 		configuration.setNoSave(true);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setOrganisationName("organisation");
 		configuration.setReferentialName("test");
 		JobDataTest jobData = new JobDataTest();

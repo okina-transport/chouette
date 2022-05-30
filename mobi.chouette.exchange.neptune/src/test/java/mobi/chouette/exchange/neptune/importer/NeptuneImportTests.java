@@ -156,7 +156,7 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		configuration.setName("name");
 		configuration.setUserName("userName");
 		configuration.setNoSave(true);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setOrganisationName("organisation");
 		configuration.setReferentialName("test");
 		JobDataTest jobData = new JobDataTest();
@@ -277,7 +277,7 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		jobData.setInputFilename("C_NEPTUNE_1.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -322,7 +322,7 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		jobData.setInputFilename("Neptune_With_Frequencies.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

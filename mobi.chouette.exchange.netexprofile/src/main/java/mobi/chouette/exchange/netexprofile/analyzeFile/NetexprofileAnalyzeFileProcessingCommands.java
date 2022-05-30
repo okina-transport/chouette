@@ -31,6 +31,7 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileLineDeleteCommand;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import org.apache.commons.lang.StringUtils;
@@ -82,14 +83,14 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         List<Command> commands = new ArrayList<>();
         try {
             Chain initChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-            if (withDao && parameters.isCleanRepository()) {
+            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
                 initChain.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
             }
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
             commands.add(initChain);
 
-            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+            context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
         } catch (Exception e) {
             log.error(e, e);
@@ -326,7 +327,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
         try {
 
-            if (!parameters.isCleanRepository()){
+            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
                 Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
                 commands.add(timetableCheckCommand);
             }

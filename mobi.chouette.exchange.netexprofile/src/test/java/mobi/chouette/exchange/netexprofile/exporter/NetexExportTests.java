@@ -165,7 +165,7 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
         configuration.setName("name");
         configuration.setUserName("userName");
         configuration.setNoSave(false);
-        configuration.setCleanRepository(true);
+        configuration.setCleanMode("purge");
         configuration.setOrganisationName("organisation");
         configuration.setReferentialName("test");
 
@@ -720,7 +720,7 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
 
         NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
         configuration.setNoSave(false);
-        configuration.setCleanRepository(true);
+        configuration.setCleanMode("purge");
         configuration.setParseSiteFrames(true);
         configuration.setObjectIdPrefix("AVI");
 

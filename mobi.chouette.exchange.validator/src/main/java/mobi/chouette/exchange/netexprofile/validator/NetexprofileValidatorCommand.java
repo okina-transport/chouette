@@ -31,7 +31,7 @@ public class NetexprofileValidatorCommand extends NetexprofileImporterCommand {
 			// set default parameters
 			AbstractImportParameter parameters = (AbstractImportParameter) context.get(CONFIGURATION);
 			parameters.setNoSave(true);
-			parameters.setCleanRepository(false);
+			parameters.setCleanMode("purge");
 
 			return super.execute(context);
 		} finally {

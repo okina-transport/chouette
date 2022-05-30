@@ -134,7 +134,7 @@ public class ValidationStopPointsUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_Stop_Point_Position_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -173,7 +173,7 @@ public class ValidationStopPointsUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_Stop_Point_ContainedInArea_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

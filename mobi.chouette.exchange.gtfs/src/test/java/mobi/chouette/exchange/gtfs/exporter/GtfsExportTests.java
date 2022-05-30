@@ -171,7 +171,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		context.put(REPORT, new ActionReport());
 		context.put(VALIDATION_REPORT, new ValidationReport());
 
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setNoSave(false);
 		context.put(CONFIGURATION, configuration);
 		configuration.setName("name");
@@ -448,7 +448,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		test.setInputFilename( file);
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setObjectIdPrefix("CITURA");
 		try {
 			command.execute(context);
@@ -487,7 +487,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		test.setInputFilename( file);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

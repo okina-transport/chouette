@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 @NoArgsConstructor
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "noSave", "cleanRepository", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines",
+@XmlType(propOrder = { "noSave", "cleanMode", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines",
 		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation" }, name = "actionImportParameter")
 public class AbstractImportParameter extends AbstractParameter {
 
@@ -30,10 +30,10 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Setter
 	private boolean noSave = false;
 
-	@XmlElement(name = "clean_repository", defaultValue = "false")
+	@XmlElement(name = "clean_mode", required=true)
 	@Getter
 	@Setter
-	private boolean cleanRepository = false;
+	private String cleanMode;
 
 	/**
 	 * Whether or not stop area ids from import files should be mapped against remote stop area registry (ie NSR).

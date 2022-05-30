@@ -28,6 +28,7 @@ import mobi.chouette.exchange.neptune.importer.NeptuneSAXParserCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneSetDefaultValuesCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneTimeTablePeriodFixerCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneValidationCommand;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 
@@ -62,7 +63,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
         NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
         List<Command> commands = new ArrayList<>();
         try {
-            if (withDao && parameters.isCleanRepository()) {
+            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
                 commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
             }
             commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
@@ -71,7 +72,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
 
-            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+            context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
 
         } catch (Exception e) {
@@ -175,7 +176,7 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
             commands.add(tooManyNewStopsCheckCommand);
 
-            if (!parameters.isCleanRepository()){
+            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
                 Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
                 commands.add(timetableCheckCommand);
             }

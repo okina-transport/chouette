@@ -135,7 +135,7 @@ public class ValidationJourneyPatternsUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_VehicleJourney_JourneyPattern_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

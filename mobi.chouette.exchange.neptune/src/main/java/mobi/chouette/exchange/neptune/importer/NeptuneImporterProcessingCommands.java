@@ -17,6 +17,7 @@ import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
 import mobi.chouette.exchange.report.IO_TYPE;
@@ -54,7 +55,7 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
 		List<Command> commands = new ArrayList<>();
 		try {
-			if (withDao && parameters.isCleanRepository()) {
+			if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
 				commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
 			}
 			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
@@ -77,6 +78,7 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 		List<Command> commands = new ArrayList<>();
 		JobData jobData = (JobData) context.get(JOB_DATA);
 		Path path = Paths.get(jobData.getPathName(), INPUT);
+
 
 		try {
 			List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");

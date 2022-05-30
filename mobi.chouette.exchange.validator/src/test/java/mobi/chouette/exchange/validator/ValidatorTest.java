@@ -77,7 +77,7 @@ public class ValidatorTest extends Arquillian implements Constant,ReportConstant
 		context.put(REPORT, new ActionReport());
 		context.put(VALIDATION_REPORT, new ValidationReport());
 		NeptuneImportParameters configuration = new NeptuneImportParameters();
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setNoSave(false);
 		context.put(CONFIGURATION, configuration);
 		configuration.setName("name");
@@ -130,7 +130,7 @@ public class ValidatorTest extends Arquillian implements Constant,ReportConstant
 		test.setInputFilename( file);
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

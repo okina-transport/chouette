@@ -135,7 +135,7 @@ public class ValidationRoutesUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_JourneyPattern_Route_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -174,7 +174,7 @@ public class ValidationRoutesUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_Stop_Point_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

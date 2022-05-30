@@ -147,7 +147,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 		configuration.setName("name");
 		configuration.setUserName("userName");
 		configuration.setNoSave(true);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setOrganisationName("organisation");
 		configuration.setReferentialName("test");
 		configuration.setObjectIdPrefix("TST");
@@ -279,7 +279,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setStopAreaImportMode(importMode);
 
 		try {
@@ -366,7 +366,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 		configuration.setStopAreaImportMode(stopAreaImportMode);
 
 		context.put(StopArea.IMPORT_MODE,stopAreaImportMode);
@@ -432,7 +432,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -532,7 +532,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -589,7 +589,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -707,7 +707,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -828,7 +828,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -944,7 +944,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -1029,7 +1029,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -1111,7 +1111,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -1194,7 +1194,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {
@@ -1252,7 +1252,7 @@ public class NetexImporterCommandTest extends Arquillian implements Constant, Re
 
 		NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(true);
+		configuration.setCleanMode("purge");
 
 		boolean result;
 		try {

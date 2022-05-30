@@ -24,6 +24,7 @@ import mobi.chouette.exchange.importer.MergeTripIdCommand;
 import mobi.chouette.exchange.importer.StopAreaRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,7 +58,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
         GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
         List<Command> commands = new ArrayList<>();
         try {
-            if (withDao && parameters.isCleanRepository()) {
+            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
                 context.put(CLEAR_FOR_IMPORT, Boolean.TRUE);
                 commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
             }
@@ -93,8 +94,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             }
 
 
-            Boolean closeCalendar = (Boolean)context.get(CLOSE_OLD_CALENDARS);
-            if (closeCalendar != null && closeCalendar){
+            if (CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.CONTIGUOUS)){
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 Command productionPeriods = CommandFactory.create(initialContext, ProductionPeriodCommand.class.getName());
                 chain.add(productionPeriods);

@@ -18,6 +18,7 @@ import mobi.chouette.dao.LineDAO;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.importer.NeptuneImporterCommand;
 import mobi.chouette.exchange.importer.updater.AbstractTestValidation;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
@@ -134,7 +135,7 @@ public class ValidationVehicleJourneysUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_VehicleJourney_Company_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode(CleanModeEnum.CONTIGUOUS.toString());
 		try {
 			command.execute(context);
 		} catch (Exception ex) {

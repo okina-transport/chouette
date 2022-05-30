@@ -25,6 +25,7 @@ import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import org.apache.commons.lang.StringUtils;
 
 import javax.naming.InitialContext;
@@ -60,7 +61,8 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
 
-            context.put(CLEAR_FOR_IMPORT, parameters.isCleanRepository());
+
+            context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
         } catch (Exception e) {
             log.error(e, e);
@@ -173,7 +175,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
             commands.add(tooManyNewStopsCheckCommand);
 
-            if (!parameters.isCleanRepository()){
+            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
                 Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
                 commands.add(timetableCheckCommand);
             }

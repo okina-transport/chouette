@@ -134,7 +134,7 @@ public class ValidationStopAreasUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_Stop_Area_Parent_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -173,7 +173,7 @@ public class ValidationStopAreasUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_Stop_Area_Type_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -212,7 +212,7 @@ public class ValidationStopAreasUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_AccessPoint_ContainedInStopArea_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -251,7 +251,7 @@ public class ValidationStopAreasUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_ConnectionLink_1_1_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
@@ -290,7 +290,7 @@ public class ValidationStopAreasUpdater extends AbstractTestValidation {
 		test.setInputFilename("Ligne_2_Database_ConnectionLink_1_2_Test.xml");
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 		configuration.setNoSave(false);
-		configuration.setCleanRepository(false);
+		configuration.setCleanMode("contiguous");
 		try {
 			command.execute(context);
 		} catch (Exception ex) {
