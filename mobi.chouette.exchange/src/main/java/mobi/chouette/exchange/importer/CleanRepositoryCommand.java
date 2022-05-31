@@ -182,7 +182,7 @@ public class CleanRepositoryCommand implements Command {
 				stopAreaDAO.truncate();
 			} else {
 				// si import on conserve lignes et arrêts
-				context.remove(CLEAR_FOR_IMPORT);
+				context.put(CLEAR_FOR_IMPORT, false);
 			}
 			result = SUCCESS;
 		} catch (Exception e) {

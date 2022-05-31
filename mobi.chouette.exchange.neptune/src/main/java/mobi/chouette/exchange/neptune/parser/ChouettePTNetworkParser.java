@@ -146,6 +146,25 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 
 		removedCommercialPoints.forEach(stopAreaToRemove -> stopAreaContext.remove(stopAreaToRemove));
 
+		removeAreaCentroidValidationData(context);
+
+	}
+
+	/**
+	 * If user selected "ignoreCommercialPoints" => all validation data about areaCentroid must be ignored
+	 * @param context
+	 */
+	private void removeAreaCentroidValidationData(Context context) {
+		Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
+		Context areaCentroidContext = (Context) validationContext.get("AreaCentroid");
+		validationContext.remove("AreaCentroid");
+
+		Context stopAreaContext = (Context) validationContext.get("StopArea");
+		for (Object value : stopAreaContext.values()) {
+			Context objectContext = (Context) value;
+			objectContext.remove("centroidOfArea");
+		}
+
 	}
 
 	private void buildCommercialPoints(Context context){
