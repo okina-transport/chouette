@@ -694,114 +694,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
         route.setFilled(true);
 
-        reOrderStopPointsInRoute(route);
     }
-
-
-    /***
-     * Read all journeys and reorder points in route, if needed
-     * @param route
-     *  The route on which stopPoints must be reordered
-     */
-    private void reOrderStopPointsInRoute(Route route){
-
-        for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-            reorderStopPointsInRoute(route, journeyPattern);
-        }
-    }
-
-    private void reorderStopPointsInRoute(Route route, JourneyPattern journeyPattern){
-        journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-        Map<String, Integer> occurenceMap = new HashMap<>();
-
-        Integer previousStopPointPositionInRoute = null;
-        int currentOccurence;
-
-        for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-
-            String stopAreaId = stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
-
-            if (!occurenceMap.containsKey(stopAreaId)){
-                currentOccurence = 1;
-                occurenceMap.put(stopAreaId, currentOccurence);
-            }else{
-                currentOccurence = occurenceMap.get(stopAreaId) + 1;
-                occurenceMap.put(stopAreaId, currentOccurence);
-            }
-
-
-            int currentPointPositionInRoute = getPositionInRoute(route, stopAreaId,  currentOccurence);
-
-            if (previousStopPointPositionInRoute != null && currentPointPositionInRoute < previousStopPointPositionInRoute){
-                    //there is an issue. The current point has been located before his predecessor. It must be moved
-                    moveStopPointInRoute(route, currentPointPositionInRoute,previousStopPointPositionInRoute);
-                    previousStopPointPositionInRoute = getPositionInRoute(route, stopAreaId,  currentOccurence);
-                    continue;
-            }
-
-            previousStopPointPositionInRoute = currentPointPositionInRoute;
-
-        }
-    }
-
-
-    /**
-     * Moves a stop point to a target position
-     * e.g:
-     *          Route : C-A-B-D
-     *          currentPointPositionInRoute : 0
-     *          targetPositionInRoute : 2
-     *          C point will be moved to index 2
-     *          A and B will be shifted to get : A-B-C-D at indexes 0-1-2-3
-     *
-     * @param route
-     *      The route on which the reorder must be made
-     * @param currentPointPositionInRoute
-     *      The position on which the point to move is actually stored
-     * @param targetPositionInRoute
-     *      The position on which the
-     */
-    private void moveStopPointInRoute(Route route, int currentPointPositionInRoute, int targetPositionInRoute){
-        StopPoint stopPointToMove = route.getStopPoints().stream()
-                                                         .filter(sp-> sp.getPosition() == currentPointPositionInRoute)
-                                                         .findFirst()
-                                                         .orElseThrow(() -> new IllegalArgumentException("Point not found in route. position:" + currentPointPositionInRoute));
-
-        List<StopPoint> impactedPointsToShift = route.getStopPoints().stream()
-                                                                     .filter(sp-> sp.getPosition() > currentPointPositionInRoute && sp.getPosition() <= targetPositionInRoute)
-                                                                     .collect(Collectors.toList());
-        stopPointToMove.setPosition(targetPositionInRoute);
-
-        impactedPointsToShift.forEach(sp-> sp.setPosition(sp.getPosition() - 1));
-
-    }
-
-    private int getPositionInRoute(Route route, String stopAreaId, int occurenceNb){
-
-        route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-        Map<String, Integer> occurenceMap = new HashMap<>();
-        int currentOccurence;
-
-        for (StopPoint stopPoint : route.getStopPoints()) {
-
-             String currentStopAreaId = stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
-
-             if (!occurenceMap.containsKey(currentStopAreaId)){
-                currentOccurence = 1;
-                occurenceMap.put(currentStopAreaId, currentOccurence);
-            }else{
-                currentOccurence = occurenceMap.get(currentStopAreaId) + 1;
-                occurenceMap.put(currentStopAreaId, currentOccurence);
-            }
-
-            if (currentStopAreaId.equals(stopAreaId) && currentOccurence == occurenceNb){
-                return stopPoint.getPosition();
-            }
-        }
-
-        throw new IllegalArgumentException(" Unable to found point : " + stopAreaId + ", occurence :" + occurenceNb + " , in route :" + route.getObjectId());
-    }
-
 
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
@@ -811,7 +704,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         String result = null;
 
 //        if (drop == DropOffType.Scheduled && pickup == PickupType.Scheduled) {
-            result = vehicleJourneyAtStop.stopId;
+        result = vehicleJourneyAtStop.stopId;
 //        } else {
 //            result = vehicleJourneyAtStop.stopId + "." + drop.ordinal() + "" + pickup.ordinal();
 //        }
@@ -1453,9 +1346,12 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 // a stop point with the correct StopAreaId has been found in route
 
                 if (currentOccurence == occurenceNb){
+
+                    checkRoutePointConsistency(route,stopPoint);
                     String previousStopPoint = stopAreaId + "_" + occurenceNb;
                     alredyProcessedStopPoints.put(previousStopPoint, stopPoint);
                     previousProcessedStopPoint = previousStopPoint;
+
                     //This is the correct occurence, we can get this stopPoint
                     return stopPoint;
                 }else{
@@ -1469,7 +1365,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         //StopPoint has not be found in the route. we need to create a new one
         StopPoint stopPoint = ObjectFactory.getStopPoint(referential, stopKey);
 
-        int targetedPosition = calculateTargetPosition(stopAreaId, occurenceNb);
+        int targetedPosition = calculateTargetPosition();
         shiftSuccessors(route, targetedPosition);
         stopPoint.setPosition(targetedPosition);
         stopPoint.setRoute(route);
@@ -1481,14 +1377,57 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
     }
 
+    /**
+     * When a point is found in route as "already existing point", we need to check if it is correctly spotted
+     * e.g:
+     *  journey pattern1 :A,B,C
+     *  journey pattern2 :A,B,D
+     *  journey pattern3 :A,B,C,D
+     *
+     *  When recovering D from the route points (while processing jp3), we need to check if it is spotted after C
+     */
+    private void checkRoutePointConsistency(Route route, StopPoint currentlyProcessedStopPoint){
+
+        if (previousProcessedStopPoint == null)
+            //no previous point were processed before. So, no consistency to check
+            return;
+
+        StopPoint previousStopPoint = alredyProcessedStopPoints.get(previousProcessedStopPoint);
+
+        if (previousStopPoint.getPosition() < currentlyProcessedStopPoint.getPosition()){
+            //no issue detected. Previous point of the journey pattern is before current point of the journey pattern
+            return;
+        }
+
+        //issue found: we need to move points
+        int targetPosition = calculateTargetPosition();
+        shiftSuccessors(route, targetPosition);
+        currentlyProcessedStopPoint.setPosition(targetPosition);
+        reInitStopPointPositions(route);
+    }
+
+
+    /**
+     * To avoid gaps in stop point positions, re-initialization of all the positions
+     * @param route
+     *      route on which position must be re-initialized
+     */
+    private void reInitStopPointPositions(Route route){
+        route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
+
+        for (int i = 0; i < route.getStopPoints().size(); i++){
+            route.getStopPoints().get(i).setPosition(i);
+        }
+    }
+
     private void shiftSuccessors(Route route, int newPointPosition){
         route.getStopPoints().stream()
-                            .filter(stopPoint -> stopPoint.getPosition() >= newPointPosition)
-                            .forEach(stopPoint -> stopPoint.setPosition(stopPoint.getPosition() + 1));
+                .filter(stopPoint -> stopPoint.getPosition() >= newPointPosition)
+                .forEach(stopPoint -> stopPoint.setPosition(stopPoint.getPosition() + 1));
 
     }
 
-    private int calculateTargetPosition(String stopAreaId, int occurenceNb) {
+    private int calculateTargetPosition() {
 
         if (StringUtils.isEmpty(previousProcessedStopPoint)){
             //there is no previous point. Current point is the first of the pattern. We place it at the beginning
