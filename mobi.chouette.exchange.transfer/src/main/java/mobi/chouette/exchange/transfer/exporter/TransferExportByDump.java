@@ -1,19 +1,12 @@
 package mobi.chouette.exchange.transfer.exporter;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.core.ChouetteRuntimeException;
-import mobi.chouette.dao.FeedInfoDAO;
-import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.ReferentialDAO;
-import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.transfer.Constant;
-import mobi.chouette.model.FeedInfo;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.StopArea;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
@@ -23,16 +16,10 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Log4j
 @Stateless(name = TransferExportByDump.COMMAND)
@@ -68,7 +55,39 @@ public class TransferExportByDump implements Command, Constant {
 		log.info("starting work schema restoration");
 		restoreWorkSchema();
 		log.info("Transferring by dump completed");
+		deleteWorkDump();
+		log.info("Deleting dump file completed");
 		return true;
+	}
+
+	private void deleteWorkDump() throws IOException, InterruptedException {
+
+		log.info("Deleting work dump file : " + dumpFileName);
+		ProcessBuilder deleteCommand = new ProcessBuilder(
+				"rm", dumpFileName
+		);
+
+		deleteCommand.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		deleteCommand.redirectErrorStream(true);
+
+		try {
+			Process delete = deleteCommand.start();
+			BufferedReader r = new BufferedReader(
+					new InputStreamReader(delete.getErrorStream()));
+
+			String line = r.readLine();
+			while (line != null) {
+				log.error(line);
+				line = r.readLine();
+			}
+			r.close();
+			delete.waitFor();
+			log.info("Deletion return:" +  delete.exitValue());
+
+		} catch (IOException | InterruptedException e) {
+			log.error("Error while deleting work dump file ");
+			throw e;
+		}
 	}
 
 
@@ -113,9 +132,6 @@ public class TransferExportByDump implements Command, Constant {
 
 
 	private void dumpWorkSchema() throws IOException, InterruptedException {
-
-
-
 		ProcessBuilder dumpCommand = new ProcessBuilder(
 				"pg_dump",
 				connectionUrl,
@@ -125,11 +141,6 @@ public class TransferExportByDump implements Command, Constant {
 		);
 
 		try {
-
-
-
-
-
 			Process dump = dumpCommand.start();
 			BufferedReader r = new BufferedReader(
 					new InputStreamReader(dump.getErrorStream()));
