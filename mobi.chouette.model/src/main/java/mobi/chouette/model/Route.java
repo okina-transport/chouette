@@ -19,6 +19,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -276,5 +278,19 @@ public class Route extends NeptuneIdentifiedObject {
 		setPublishedName(source.getPublishedName());
 		setWayBack(source.getWayBack());
 	}
+
+	/**
+	 * sharedRoutePoints
+	 *
+	 * @param sharedRoutePoints
+	 * New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ManyToMany(cascade = {CascadeType.PERSIST})
+	@OrderColumn(name = "position")
+	@JoinTable(name = "routes_route_points", joinColumns = {@JoinColumn(name = "route_id", nullable = false, updatable = false)}, inverseJoinColumns = {@JoinColumn(name = "route_point_id", nullable = false, updatable = false)})
+	private List<RoutePoint> routePoints = new ArrayList<>(0);
 	
 }
