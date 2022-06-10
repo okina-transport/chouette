@@ -651,9 +651,102 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
 
         completeRoutesInformations(referential);
-
+        checkJourneyPatternStopPointsConsistency(referential);
         // dispose collections
         journeyPatternByStopSequence.clear();
+    }
+
+    /**
+     * Check stop points order in journey patterns and fix them if needed
+     * @param referential
+     */
+    private void checkJourneyPatternStopPointsConsistency(Referential referential) {
+        for (Route route : referential.getRoutes().values()) {
+            checkJourneyPatternStopPointsConsistency(route);
+        }
+    }
+
+    private void checkJourneyPatternStopPointsConsistency(Route route) {
+        route.getJourneyPatterns().forEach(this :: checkJourneyPatternStopPointsConsistency);
+    }
+
+    /**
+     * Read stop points in journey patterns and check their order
+     * @param journeyPattern
+     */
+    private void checkJourneyPatternStopPointsConsistency(JourneyPattern journeyPattern) {
+
+
+        Integer previousPosition = null;
+        List<StopPoint> resultStopPointList = new ArrayList<>();
+        journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
+
+        for (int i = 0; i < journeyPattern.getStopPoints().size(); i++) {
+
+            StopPoint stopPoint = journeyPattern.getStopPoints().get(i);
+            int currentPosition = stopPoint.getPosition();
+
+            if (previousPosition == null || currentPosition > previousPosition){
+                //Normal case. first point read or current point is after previous. We can move on
+                previousPosition = currentPosition;
+                resultStopPointList.add(stopPoint);
+                continue;
+            }
+
+            //Error detected. We need to search for another point with same stopArea but AFTER the previous point
+            StopPoint newStopPoint = searchStopPointInRoute(journeyPattern.getRoute(), previousPosition, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId());
+            replaceStopPointInVehicleJourneyAtStops(journeyPattern, stopPoint ,newStopPoint);
+            resultStopPointList.add(newStopPoint);
+        }
+
+        journeyPattern.getStopPoints().clear();
+        journeyPattern.getStopPoints().addAll(resultStopPointList);
+    }
+
+
+    /***
+     * Replace old stop point by new stop point, in vehicleJourneyAt stop
+     * @param journeyPattern
+     * @param oldStopPoint
+     * @param newStopPoint
+     */
+    private void replaceStopPointInVehicleJourneyAtStops(JourneyPattern journeyPattern, StopPoint oldStopPoint, StopPoint newStopPoint){
+
+        for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
+            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
+                if (vehicleJourneyAtStop.getStopPoint().equals(oldStopPoint)){
+                    vehicleJourneyAtStop.setStopPoint(newStopPoint);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Search for a stop point, after a position given as parameter
+     *
+     * @param route
+     * @param startPositionSearch
+     * @param stopAreaId
+     * @return
+     */
+    private StopPoint searchStopPointInRoute(Route route, int startPositionSearch, String stopAreaId){
+
+        int currentPosition = 0;
+
+        for (StopPoint stopPoint : route.getStopPoints()) {
+
+            if (currentPosition <= startPositionSearch || !stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(stopAreaId)){
+                currentPosition++;
+                continue;
+            }
+
+            //we have found a stopPoint matching stopAreaId and located AFTER startPositionSearch
+            return stopPoint;
+        }
+
+        throw new IllegalArgumentException("Unable to find a stopPoint for stopArea :" + stopAreaId + ", after position:" + startPositionSearch + ", in route : " + route.getObjectId());
+
     }
 
     private void completeRoutesInformations(Referential referential){
