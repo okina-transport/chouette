@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds"})
+@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport"})
 
 public class GtfsExportParameters  extends AbstractExportParameter {
 		
@@ -61,6 +61,10 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	@Getter @Setter
 	@XmlElement(name = "commercial_point_id_prefix",required = false)
 	private String commercialPointIdPrefix;
+
+	@Getter @Setter
+	@XmlElement(name = "commercial_point_export", required = false)
+	private Boolean commercialPointExport;
 
 	@Getter
 	@Setter

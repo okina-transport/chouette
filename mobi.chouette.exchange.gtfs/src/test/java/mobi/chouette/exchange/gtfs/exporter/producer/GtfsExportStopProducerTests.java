@@ -57,7 +57,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test", false);
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStopWithFullData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -103,7 +103,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test", false);
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStopWithLessData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -152,7 +152,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test");
+      producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test", false);
       GtfsStop gtfsObject = mock.getExportedStops().get(0);
       Reporter.log("verifyStopProducerStationWithFullData");
       Reporter.log(StopExporter.CONVERTER.to(context, gtfsObject));
@@ -199,7 +199,7 @@ public class GtfsExportStopProducerTests
 
       IdParameters idParams = new IdParameters(null, null, null, null, null);
 
-      Assert.assertFalse(producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test"));
+      Assert.assertFalse(producer.save(neptuneObject, parents,false,false, neptuneObject.getOriginalStopId(), idParams, "test", false));
 
    }
 
