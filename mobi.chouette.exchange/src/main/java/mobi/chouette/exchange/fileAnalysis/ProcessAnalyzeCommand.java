@@ -6,12 +6,16 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
+import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.AnalyzeReport;
+import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
+import mobi.chouette.model.RouteSection;
+import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
@@ -19,6 +23,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
@@ -28,6 +33,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +48,17 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     public static final String COMMAND = "ProcessAnalyzeCommand";
     private AnalyzeReport analyzeReport;
     private boolean cleanRepository;
+    private String currentFileName;
+    private Map<String, Set<String>> missingRouteLinks;
+
+
+    public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
+        @Override
+        public int compare(StopPoint sp1, StopPoint sp2) {
+            return Integer.compare(sp1.getPosition(), sp2.getPosition());
+        }
+    };
+
 
 
     @Override
@@ -59,6 +76,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         context.put(CACHE, cache);
         context.put(OPTIMIZED, Boolean.FALSE);
         analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
+        currentFileName =  (String) context.get(FILE_NAME);
+
+        missingRouteLinks =analyzeReport.getMissingRouteLinks();
+
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -66,6 +87,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
+
+        newValue.getRoutes().forEach(route -> checkRouteLinksInRoute(referential, route));
 
         DateTime endingTime = new DateTime();
 
@@ -75,6 +98,55 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
         return result;
+    }
+
+    private void checkRouteLinksInRoute(Referential referential, Route currentRoute){
+        currentRoute.getJourneyPatterns().forEach(journeyPattern -> checkRouteLinksForJourneyPattern(referential, journeyPattern));
+    }
+
+    private void checkRouteLinksForJourneyPattern(Referential referential, JourneyPattern journeyPattern) {
+        journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
+
+        StopPoint previousStopPoint = null;
+
+        for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+
+            if (previousStopPoint == null){
+                previousStopPoint = stopPoint;
+                continue;
+            }
+
+            if (!checkRouteLinkPresence(referential, previousStopPoint, stopPoint)){
+
+                String fromScheduledId = previousStopPoint.getScheduledStopPoint().getObjectId();
+                String toScheduledId = stopPoint.getScheduledStopPoint().getObjectId();
+
+                Set<String> routeLinks = null;
+                if (missingRouteLinks.containsKey(currentFileName)){
+                    routeLinks = missingRouteLinks.get(currentFileName);
+                }else{
+                    routeLinks = new HashSet<>();
+                    missingRouteLinks.put(currentFileName, routeLinks);
+                }
+
+                routeLinks.add( fromScheduledId + "->" + toScheduledId);
+            }
+            previousStopPoint = stopPoint;
+        }
+
+    }
+
+    private boolean checkRouteLinkPresence(Referential referential, StopPoint startPoint, StopPoint endPoint) {
+
+        ScheduledStopPoint startScheduledStopPoint = startPoint.getScheduledStopPoint();
+        ScheduledStopPoint endScheduledStopPoint = endPoint.getScheduledStopPoint();
+
+        for (RouteSection routeSection : referential.getRouteSections().values()) {
+            if (routeSection.getFromScheduledStopPoint().equals(startScheduledStopPoint) && routeSection.getToScheduledStopPoint().equals(endScheduledStopPoint)){
+                return true;
+            }
+        }
+        return false;
     }
 
 

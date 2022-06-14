@@ -84,6 +84,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "modifiedTimetables")
     private List<Pair<Timetable, Timetable>> modifiedTimetables = new ArrayList<>();
 
+    @XmlElement(name = "missingRouteLinks")
+    private Map<String, Set<String>> missingRouteLinks = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -232,7 +235,13 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             printMultipleUsedTimetablesFromDB(out);
         }
 
+
         printMultipleUsedTimetablesFromInputFile(out);
+
+        if (!missingRouteLinks.isEmpty()){
+            canLaunchImport = false;
+            printMissingRouteLink(out);
+        }
 
         if (!modifiedTimetables.isEmpty()) {
             printModifiedTimetables(out);
@@ -258,6 +267,30 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         out.print("\"canLaunchImport\": " + canLaunchImport + "\n,");
         out.print("\"tooManyNewStops\": " + tooManyNewStops + "\n");
         out.println("\n}}");
+    }
+
+    private void printMissingRouteLink(PrintStream out) {
+
+        out.print(",\n");
+        out.print("\"missingRouteLinks\": [\n");
+
+        String endOfline;
+
+        int i = 0;
+
+        for (Map.Entry<String, Set<String>> missingRouteLinkEntry : missingRouteLinks.entrySet()) {
+
+            endOfline = i == missingRouteLinks.size() - 1 ? " }\n" : " },\n";
+
+            out.print("{ \"fileName\":\"" + missingRouteLinkEntry.getKey() + "\",\n");
+            out.print(" \"routeLinks\": [");
+            writeStringSet(out, missingRouteLinkEntry.getValue());
+            out.print("]" + endOfline);
+            i++;
+        }
+
+        out.println("]");
+
     }
 
     private void printModifiedTimetables(PrintStream out) {
@@ -302,6 +335,17 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             CalendarDay calendarDay = calendarDays.get(i);
             String inclOrExcl = calendarDay.getIncluded() ? "incl" : "excl";
             out.print("\"" + calendarDay.getDate().toString() + " " + inclOrExcl + endOfline);
+        }
+    }
+
+    private void writeStringSet(PrintStream out, Set<String> dataToWrite) {
+        String endOfline;
+
+        List objetsList = new ArrayList(dataToWrite);
+
+        for (int i = 0; i < objetsList.size(); i++) {
+            endOfline = i == objetsList.size() - 1 ? "\"" : "\",\n";
+            out.print("\"" + objetsList.get(i) + endOfline);
         }
     }
 

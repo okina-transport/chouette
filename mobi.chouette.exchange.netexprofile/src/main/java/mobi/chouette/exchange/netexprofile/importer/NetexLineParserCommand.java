@@ -64,6 +64,7 @@ public class NetexLineParserCommand implements Command, Constant {
         } catch (Exception e) {
             log.error("ERROR",e);
         	reporter.addFileErrorInReport(context, fileName, FILE_ERROR_CODE.INTERNAL_ERROR, e.toString());
+            reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_DATA, "Error");
             throw e;
         } finally {
             log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
