@@ -35,6 +35,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,9 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     private static ServiceJourneyFranceProducer serviceJourneyFranceProducer = new ServiceJourneyFranceProducer();
     private static DirectionProducer directionProducer = new DirectionProducer();
     private static ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
+    private List<String> alreadyProcessedRouteSections = new ArrayList<>();
+
+
 
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
@@ -62,6 +66,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     public void produce(Context context) throws Exception {
 
         NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
+        alreadyProcessedRouteSections.clear();
 
         ActionReporter reporter = ActionReporter.Factory.getInstance();
         JobData jobData = (JobData) context.get(JOB_DATA);
@@ -199,8 +204,13 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternFranceProducer.produce(neptuneJourneyPattern));
 
             for (RouteSection routeSection : neptuneJourneyPattern.getRouteSections()) {
-                org.rutebanken.netex.model.RouteLink routeLink = routeLinkProducer.produce(context, routeSection);
-                exportableNetexData.getRouteLinks().add(routeLink);
+
+                if (!alreadyProcessedRouteSections.contains(routeSection.getObjectId())){
+                    org.rutebanken.netex.model.RouteLink routeLink = routeLinkProducer.produce(context, routeSection);
+                    exportableNetexData.getRouteLinks().add(routeLink);
+                    alreadyProcessedRouteSections.add(routeSection.getObjectId());
+                }
+
             }
         }
 

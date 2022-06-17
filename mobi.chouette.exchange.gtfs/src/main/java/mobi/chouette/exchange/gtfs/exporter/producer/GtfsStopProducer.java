@@ -34,12 +34,12 @@ public class GtfsStopProducer extends AbstractProducer {
 		super(exporter);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix, Boolean exportCommercialPoints) {
 		String stopId = GtfsStopUtils.getNewStopId(neptuneObject, idParams, keepOriginalId, schemaPrefix);
-		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix);
+		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix, exportCommercialPoints);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix, Boolean exportCommercialPoints) {
 		Optional<StopArea> parent = Optional.ofNullable(neptuneObject.getParent());
 		if (validParents != null && !validParents.isEmpty() && parent.isPresent()) {
 			if (parent.get().getObjectId().equals(neptuneObject.getObjectId())) {
@@ -52,8 +52,12 @@ public class GtfsStopProducer extends AbstractProducer {
 			stop.setLocationType(GtfsStop.LocationType.Stop);
 		else if (chouetteAreaType.compareTo(ChouetteAreaEnum.Quay) == 0)
 			stop.setLocationType(GtfsStop.LocationType.Stop);
-		else if (chouetteAreaType.compareTo(ChouetteAreaEnum.CommercialStopPoint) == 0)
+		else if (chouetteAreaType.compareTo(ChouetteAreaEnum.CommercialStopPoint) == 0) {
+			if (exportCommercialPoints != null && exportCommercialPoints) {
+				return false;
+			}
 			stop.setLocationType(GtfsStop.LocationType.Station);
+		}
 		// else if(chouetteAreaType.compareTo(ChouetteAreaEnum.STOPPLACE) == 0)
 		// stop.setLocationType(GtfsStop.STATION);
 		else
