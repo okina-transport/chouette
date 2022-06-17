@@ -3,6 +3,7 @@ package mobi.chouette.exchange.fileAnalysis;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
@@ -88,7 +89,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
 
-        newValue.getRoutes().forEach(route -> checkRouteLinksInRoute(referential, route));
+        checkRouteLinksIfNeeded(context, newValue);
 
         DateTime endingTime = new DateTime();
 
@@ -98,6 +99,15 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
         return result;
+    }
+
+    private void checkRouteLinksIfNeeded(Context context, Line line){
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        JobData jobData = (JobData) context.get(JOB_DATA);
+        if(jobData.getType().equals("netexprofile")){
+            line.getRoutes().forEach(route -> checkRouteLinksInRoute(referential, route));
+        }
+
     }
 
     private void checkRouteLinksInRoute(Referential referential, Route currentRoute){
