@@ -168,6 +168,18 @@ public class StopPoint extends NeptuneIdentifiedObject {
 			route.getStopPoints().add(this);
 		}
 	}
+
+	/**
+	 * current destination display for this stop point
+	 *
+	 * @param destinationDisplay
+	 * New value
+	 */
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+	@JoinColumn(name = "destination_display_id")
+	private DestinationDisplay destinationDisplay;
 	
 	/**
 	 * comment : not saved, use for extension
