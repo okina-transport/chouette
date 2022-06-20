@@ -97,5 +97,6 @@ public interface Constant {
 	public static final String SUPERSPACE_PREFIX = System.getProperty("iev.superspace.prefix");
 
 	public static final String CURRENT_LINE_ID="currentLineId";
+	public static final String CURRENT_SCHEDULED_STOP_POINT="currentScheduledStopPoint";
 
 }

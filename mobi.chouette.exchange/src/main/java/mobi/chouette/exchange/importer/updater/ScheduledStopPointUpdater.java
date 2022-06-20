@@ -59,6 +59,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 			oldValue.setDetached(false);
 		} else {
 			if(!isReadOnlyMode){
+				context.put(CURRENT_SCHEDULED_STOP_POINT, oldValue.getObjectId());
 				twoDatabaseStopPointThreeTest(validationReporter, context, oldValue.getContainedInStopAreaRef().getObject(), newValue.getContainedInStopAreaRef().getObject(), data);
 			}
 
@@ -128,6 +129,10 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 	 */
 	private void twoDatabaseStopPointThreeTest(ValidationReporter validationReporter, Context context, StopArea oldSA, StopArea newSA, ValidationData data) {
 		if(!NeptuneUtil.sameValue(oldSA, newSA)) {
+			log.error("Inconsistency found on scheduledStopPoint:" + context.get(CURRENT_SCHEDULED_STOP_POINT));
+			log.error("expected id:" + oldSA.getOriginalStopId());
+			log.error("found id:" + newSA.getOriginalStopId());
+
 			if(validationReporter == null) {
 				log.error("ValidationReporter (validationReporter) is null");
 			}
