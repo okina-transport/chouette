@@ -93,13 +93,14 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
 					for (int i = 0 ; i < linesToCopy.length ; i++){
 
-						if (currentBatchOfLines != null ){
-							currentBatchOfLines = currentBatchOfLines + linesToCopy[i] + "\n";
-						}else{
-							currentBatchOfLines = linesToCopy[i] + "\n";
+						if (!linesToCopy[i].isEmpty()) {
+							if (currentBatchOfLines != null) {
+								currentBatchOfLines = currentBatchOfLines + linesToCopy[i] + "\n";
+							} else {
+								currentBatchOfLines = linesToCopy[i] + "\n";
+							}
+							nbOfLinesInBatch++;
 						}
-
-						nbOfLinesInBatch++;
 
 						if (nbOfLinesInBatch == MAX_NB_OF_LINES){
 							launchCopy(connection,currentBatchOfLines);

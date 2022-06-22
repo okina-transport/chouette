@@ -303,6 +303,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		configuration.setReferencesType("stop_area");
 		configuration.setObjectIdPrefix("CITURA");
 		configuration.setTimeZone("Europe/Paris");
+		configuration.setCommercialPointExport(false);
 		Command command = (Command) CommandFactory.create(initialContext,
 				GtfsExporterCommand.class.getName());
 
