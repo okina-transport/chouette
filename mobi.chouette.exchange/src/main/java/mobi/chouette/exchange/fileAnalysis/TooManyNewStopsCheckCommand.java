@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.fileAnalysis;
 
+import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -16,6 +17,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class used to check if new incoming StopAreas are too many
@@ -37,28 +39,29 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
 
     @Override
     public boolean execute(Context context) throws Exception {
+        log.info("Starting too many new stops check :");
         AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
-        List<StopArea> stopAreaList = analyzeReport.getStops();
+        List<String> stopAreaOriginalIdList = analyzeReport.getStops().stream()
+                .map(StopArea::getOriginalStopId)
+                .collect(Collectors.toList());
 
-        if (!stopAreaDAO.findAll().isEmpty()) {
-            stopAreaList.forEach(stopArea -> {
-                if (!analyzeReport.getNewStops().contains(stopArea)) {
-                    List<StopArea> stopAreas = stopAreaDAO.findByOriginalId(stopArea.getOriginalStopId());
-                    if (stopAreas.isEmpty()) {
-                        analyzeReport.getNewStops().add(stopArea);
-                    }
-                }
-            });
+        List<List<String>> list = Lists.partition(stopAreaOriginalIdList, 1000);
 
-            if (!analyzeReport.getStops().isEmpty() && !analyzeReport.getNewStops().isEmpty()) {
-                List<StopArea> allStopAreas = stopAreaDAO.findAll();
-                float percentageNewStops = (float) (analyzeReport.getNewStops().size() * 100) / allStopAreas.size();
-                if (percentageNewStops > 20) {
-                    analyzeReport.setTooManyNewStops(true);
-                }
+        for(List<String> subList : list){
+            List<StopArea> stopAreas = stopAreaDAO.findNotExistByOriginalIds(subList);
+            analyzeReport.getNewStops().addAll(stopAreas);
+        }
+
+        if (!analyzeReport.getStops().isEmpty() && !analyzeReport.getNewStops().isEmpty()) {
+            List<StopArea> allStopAreas = stopAreaDAO.findAll();
+            float percentageNewStops = (float) (analyzeReport.getNewStops().size() * 100) / allStopAreas.size();
+            if (percentageNewStops > 20) {
+                analyzeReport.setTooManyNewStops(true);
             }
         }
 
+        log.info("Too many new stops check completed");
+        
         return SUCCESS;
     }
 

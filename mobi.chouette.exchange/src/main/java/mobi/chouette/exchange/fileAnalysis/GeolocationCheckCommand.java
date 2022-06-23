@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.fileAnalysis;
 
+import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -12,13 +13,14 @@ import mobi.chouette.exchange.validation.checkpoint.AbstractValidation;
 import mobi.chouette.model.StopArea;
 import org.apache.commons.lang3.tuple.Pair;
 
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *  Class used to check if incoming StopArea is too far from existing StopArea
@@ -39,38 +41,50 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
 
     @Override
     public boolean execute(Context context) throws Exception {
-        AnalyzeReport analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
+        log.info("Starting geolocation check :");
+        AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
         List<StopArea> stopList = analyzeReport.getStops();
+        List<String> originalStopIds = analyzeReport.getStops().stream()
+                .map(StopArea::getOriginalStopId)
+                .collect(Collectors.toList());
 
-        for (StopArea incomingStopArea : stopList) {
-            String originalStopId = incomingStopArea.getOriginalStopId();
+        List<List<String>> list = Lists.partition(originalStopIds, 1000);
 
-            List<StopArea> existingStops = stopAreaDAO.findByOriginalId(originalStopId);
+        List<StopArea> existingStops = new ArrayList<>();
+        for(List<String> subList : list){
+            existingStops.addAll(stopAreaDAO.findByOriginalIds(subList));
+        }
 
-            if (existingStops.isEmpty()){
-                continue;
-            }
+        for (StopArea stopArea : existingStops) {
+            boolean moreOne = existingStops.stream()
+                    .filter(stopArea1 -> stopArea.getOriginalStopId().equals(stopArea1.getOriginalStopId()))
+                    .count() > 1;
 
-            if (existingStops.size() > 1){
-                log.error("Multiple points for originalStopId : " + originalStopId);
+            if (moreOne) {
+                log.error("Multiple points for originalStopId : " + stopArea.getOriginalStopId());
                 //block import launch because DB has inconsistent data
-                analyzeReport.getDuplicateOriginalStopIds().add(originalStopId);
-            }
-
-
-
-            StopArea existingStop = existingStops.get(0);
-
-            double distance = AbstractValidation.quickDistanceFromCoordinates(existingStop.getLatitude().doubleValue(), incomingStopArea.getLatitude().doubleValue(),
-                                                                              existingStop.getLongitude().doubleValue(), incomingStopArea.getLongitude().doubleValue());
-
-
-            if (Double.compare(distance, MAX_ALLOWED_DISTANCE) > 0){
-                //Distance between incoming StopArea and existing StopArea is superior to max allowed distance.
-                //StopArea is added to wrongGeolocList
-                analyzeReport.getWrongGeolocStopAreas().add(Pair.of(existingStop, incomingStopArea));
+                analyzeReport.getDuplicateOriginalStopIds().add(stopArea.getOriginalStopId());
             }
         }
+
+
+        for (StopArea incomingStopArea : stopList) {
+            for (StopArea existingStop : existingStops) {
+                if (incomingStopArea.getOriginalStopId().equals(existingStop.getOriginalStopId())) {
+                    double distance = AbstractValidation.quickDistanceFromCoordinates(existingStop.getLatitude().doubleValue(), incomingStopArea.getLatitude().doubleValue(),
+                            existingStop.getLongitude().doubleValue(), incomingStopArea.getLongitude().doubleValue());
+
+                    if (Double.compare(distance, MAX_ALLOWED_DISTANCE) > 0) {
+                        //Distance between incoming StopArea and existing StopArea is superior to max allowed distance.
+                        //StopArea is added to wrongGeolocList
+                        analyzeReport.getWrongGeolocStopAreas().add(Pair.of(existingStop, incomingStopArea));
+                    }
+                }
+
+            }
+        }
+
+        log.info("Geolocation check finished");
 
         return SUCCESS;
     }

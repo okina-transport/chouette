@@ -49,12 +49,29 @@ public class StopAreaDAOImpl extends GenericDAOImpl<StopArea> implements StopAre
         }
     }
 
-    @Override
     public List<StopArea> findByOriginalId(String originalId) {
         return em.createQuery("SELECT s " +
                 "                   FROM StopArea s " +
                 "                  WHERE s.originalStopId = :originalStopId", StopArea.class)
                 .setParameter("originalStopId", originalId)
+                .getResultList();
+    }
+
+    @Override
+    public List<StopArea> findNotExistByOriginalIds(List<String> originalIds) {
+        return em.createQuery("SELECT s " +
+                "                   FROM StopArea s " +
+                "                  WHERE s.originalStopId NOT IN (:originalStopIds)", StopArea.class)
+                .setParameter("originalStopIds", originalIds)
+                .getResultList();
+    }
+
+    @Override
+    public List<StopArea> findByOriginalIds(List<String> originalIds) {
+        return em.createQuery("SELECT s " +
+                "                   FROM StopArea s " +
+                "                  WHERE s.originalStopId IN (:originalStopIds)", StopArea.class)
+                .setParameter("originalStopIds", originalIds)
                 .getResultList();
     }
 }
