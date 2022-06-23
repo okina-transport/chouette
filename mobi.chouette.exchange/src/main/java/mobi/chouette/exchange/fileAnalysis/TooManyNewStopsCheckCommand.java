@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,16 +42,27 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
     public boolean execute(Context context) throws Exception {
         log.info("Starting too many new stops check :");
         AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
-        List<String> stopAreaOriginalIdList = analyzeReport.getStops().stream()
-                .map(StopArea::getOriginalStopId)
-                .collect(Collectors.toList());
 
-        List<List<String>> list = Lists.partition(stopAreaOriginalIdList, 1000);
+        List<List<StopArea>> list = Lists.partition(analyzeReport.getStops(), 1000);
+        List<StopArea> newStops = new ArrayList<>();
 
-        for(List<String> subList : list){
-            List<StopArea> stopAreas = stopAreaDAO.findNotExistByOriginalIds(subList);
-            analyzeReport.getNewStops().addAll(stopAreas);
+        for (List<StopArea> stopAreasIncoming : list) {
+            List<String> stopAreaOriginalIdList = stopAreasIncoming.stream()
+                    .map(StopArea::getOriginalStopId)
+                    .collect(Collectors.toList());
+
+            List<StopArea> subListStopAreasAlreadyInDB = stopAreaDAO.findByOriginalIds(stopAreaOriginalIdList);
+
+            newStops.addAll(stopAreasIncoming.stream()
+                    .filter(incomingStopArea -> subListStopAreasAlreadyInDB.stream()
+                            .noneMatch(stopAreaInDB ->
+                                    stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId())
+                            )
+                    )
+                    .collect(Collectors.toList()));
         }
+
+        analyzeReport.getNewStops().addAll(newStops);
 
         if (!analyzeReport.getStops().isEmpty() && !analyzeReport.getNewStops().isEmpty()) {
             List<StopArea> allStopAreas = stopAreaDAO.findAll();
