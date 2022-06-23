@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ejb.EJB;
+import javax.transaction.Transactional;
 
 import static mobi.chouette.common.Constant.ANALYSIS_REPORT;
 
@@ -22,6 +23,7 @@ public class TooManyNewStopsCheckCommandTest {
     TooManyNewStopsCheckCommand tooManyNewStopsCheckCommand;
 
     @Test
+    @Transactional
     public void testTooManyNewStopsCheckCommand() throws Exception {
         Context context = new Context();
         AnalyzeReport analyzeReport = new AnalyzeReport();
