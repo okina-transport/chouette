@@ -3380,6 +3380,15 @@ CREATE TABLE tro.stop_areas (
     platform_code character varying(255)
 );
 
+
+ALTER TABLE ONLY tro.stop_areas
+    ADD CONSTRAINT stop_areas_objectid_key UNIQUE (objectid);
+
+
+
+ALTER TABLE ONLY tro.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
+
 ALTER TABLE tro.stop_areas OWNER TO chouette;
 
 
@@ -3537,6 +3546,14 @@ CREATE TABLE sky.stop_areas (
     platform_code character varying(255)
 );
 
+ALTER TABLE ONLY sky.stop_areas
+    ADD CONSTRAINT stop_areas_objectid_key UNIQUE (objectid);
+
+
+
+ALTER TABLE ONLY sky.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
+
 
 CREATE SEQUENCE sky.stop_areas_id_seq
     START WITH 1
@@ -3686,6 +3703,15 @@ CREATE TABLE rut.stop_areas (
     is_external boolean DEFAULT false,
     platform_code character varying(255)
 );
+
+
+ALTER TABLE ONLY rut.stop_areas
+    ADD CONSTRAINT stop_areas_objectid_key UNIQUE (objectid);
+
+
+
+ALTER TABLE ONLY rut.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
 
 
 CREATE SEQUENCE rut.stop_areas_id_seq
@@ -3838,6 +3864,15 @@ CREATE TABLE nri.stop_areas (
 );
 
 
+ALTER TABLE ONLY nri.stop_areas
+    ADD CONSTRAINT stop_areas_objectid_key UNIQUE (objectid);
+
+
+
+ALTER TABLE ONLY nri.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
+
+
 CREATE SEQUENCE nri.stop_areas_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -3986,6 +4021,14 @@ CREATE TABLE akt.stop_areas (
     is_external boolean DEFAULT false,
     platform_code character varying(255)
 );
+
+ALTER TABLE ONLY akt.stop_areas
+    ADD CONSTRAINT stop_areas_objectid_key UNIQUE (objectid);
+
+
+
+ALTER TABLE ONLY akt.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
 
 
 CREATE SEQUENCE akt.stop_areas_id_seq
@@ -4279,6 +4322,200 @@ CREATE SEQUENCE sky.contact_structures_id_seq
 ALTER TABLE sky.contact_structures_id_seq OWNER TO chouette;
 
 
+
+CREATE TABLE rut.stop_points (
+                                 dtype character varying(31),
+                                 id bigint NOT NULL,
+                                 creation_time timestamp without time zone,
+                                 creator_id character varying(255),
+                                 objectid character varying(255) NOT NULL,
+                                 object_version integer,
+                                 for_alighting character varying(255),
+                                 for_boarding character varying(255),
+                                 "position" integer,
+                                 stop_area_id bigint,
+                                 route_id bigint,
+                                 destination_display_id bigint,
+                                 scheduled_stop_point_id bigint,
+                                 booking_arrangement_id bigint
+);
+
+ALTER TABLE rut.stop_points OWNER TO chouette;
+
+CREATE TABLE nri.stop_points (
+                                 dtype character varying(31),
+                                 id bigint NOT NULL,
+                                 creation_time timestamp without time zone,
+                                 creator_id character varying(255),
+                                 objectid character varying(255) NOT NULL,
+                                 object_version integer,
+                                 for_alighting character varying(255),
+                                 for_boarding character varying(255),
+                                 "position" integer,
+                                 stop_area_id bigint,
+                                 route_id bigint,
+                                 destination_display_id bigint,
+                                 scheduled_stop_point_id bigint,
+                                 booking_arrangement_id bigint
+);
+
+ALTER TABLE nri.stop_points OWNER TO chouette;
+
+CREATE TABLE tro.stop_points (
+                                 dtype character varying(31),
+                                 id bigint NOT NULL,
+                                 creation_time timestamp without time zone,
+                                 creator_id character varying(255),
+                                 objectid character varying(255) NOT NULL,
+                                 object_version integer,
+                                 for_alighting character varying(255),
+                                 for_boarding character varying(255),
+                                 "position" integer,
+                                 stop_area_id bigint,
+                                 route_id bigint,
+                                 destination_display_id bigint,
+                                 scheduled_stop_point_id bigint,
+                                 booking_arrangement_id bigint
+);
+
+ALTER TABLE tro.stop_points OWNER TO chouette;
+
+CREATE TABLE akt.stop_points (
+                                 dtype character varying(31),
+                                 id bigint NOT NULL,
+                                 creation_time timestamp without time zone,
+                                 creator_id character varying(255),
+                                 objectid character varying(255) NOT NULL,
+                                 object_version integer,
+                                 for_alighting character varying(255),
+                                 for_boarding character varying(255),
+                                 "position" integer,
+                                 stop_area_id bigint,
+                                 route_id bigint,
+                                 destination_display_id bigint,
+                                 scheduled_stop_point_id bigint,
+                                 booking_arrangement_id bigint
+);
+
+ALTER TABLE akt.stop_points OWNER TO chouette;
+
+CREATE TABLE sky.disruption (
+                                id bigserial NOT NULL,
+                                message varchar(255) NOT NULL,
+                                comment text NULL,
+                                creationdatetime timestamp NOT NULL,
+                                updatedatetime timestamp,
+                                startdatetime timestamp,
+                                enddatetime timestamp,
+                                deletedatetime timestamp,
+                                CONSTRAINT disruption_pkey PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE sky.disruption_stop_area (
+                                          disruption_id int8 NOT NULL,
+                                          stop_area_id int8 NOT NULL,
+                                          CONSTRAINT disruption_stop_area_pkey PRIMARY KEY (disruption_id, stop_area_id)
+);
+
+ALTER TABLE sky.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES sky.disruption(id) ON DELETE CASCADE;
+ALTER TABLE sky.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES sky.stop_areas(id) ON DELETE CASCADE;
+
+
+
+CREATE TABLE rut.disruption (
+                                id bigserial NOT NULL,
+                                message varchar(255) NOT NULL,
+                                comment text NULL,
+                                creationdatetime timestamp NOT NULL,
+                                updatedatetime timestamp,
+                                startdatetime timestamp,
+                                enddatetime timestamp,
+                                deletedatetime timestamp,
+                                CONSTRAINT disruption_pkey PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE rut.disruption_stop_area (
+                                          disruption_id int8 NOT NULL,
+                                          stop_area_id int8 NOT NULL,
+                                          CONSTRAINT disruption_stop_area_pkey PRIMARY KEY (disruption_id, stop_area_id)
+);
+
+ALTER TABLE rut.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES rut.disruption(id) ON DELETE CASCADE;
+ALTER TABLE rut.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES rut.stop_areas(id) ON DELETE CASCADE;
+
+
+CREATE TABLE nri.disruption (
+                                id bigserial NOT NULL,
+                                message varchar(255) NOT NULL,
+                                comment text NULL,
+                                creationdatetime timestamp NOT NULL,
+                                updatedatetime timestamp,
+                                startdatetime timestamp,
+                                enddatetime timestamp,
+                                deletedatetime timestamp,
+                                CONSTRAINT disruption_pkey PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE nri.disruption_stop_area (
+                                          disruption_id int8 NOT NULL,
+                                          stop_area_id int8 NOT NULL,
+                                          CONSTRAINT disruption_stop_area_pkey PRIMARY KEY (disruption_id, stop_area_id)
+);
+
+ALTER TABLE nri.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES nri.disruption(id) ON DELETE CASCADE;
+ALTER TABLE nri.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES nri.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE tro.disruption (
+                                id bigserial NOT NULL,
+                                message varchar(255) NOT NULL,
+                                comment text NULL,
+                                creationdatetime timestamp NOT NULL,
+                                updatedatetime timestamp,
+                                startdatetime timestamp,
+                                enddatetime timestamp,
+                                deletedatetime timestamp,
+                                CONSTRAINT disruption_pkey PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE tro.disruption_stop_area (
+                                          disruption_id int8 NOT NULL,
+                                          stop_area_id int8 NOT NULL,
+                                          CONSTRAINT disruption_stop_area_pkey PRIMARY KEY (disruption_id, stop_area_id)
+);
+
+ALTER TABLE tro.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES tro.disruption(id) ON DELETE CASCADE;
+ALTER TABLE tro.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES tro.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE akt.disruption (
+                                id bigserial NOT NULL,
+                                message varchar(255) NOT NULL,
+                                comment text NULL,
+                                creationdatetime timestamp NOT NULL,
+                                updatedatetime timestamp,
+                                startdatetime timestamp,
+                                enddatetime timestamp,
+                                deletedatetime timestamp,
+                                CONSTRAINT disruption_pkey PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE akt.disruption_stop_area (
+                                          disruption_id int8 NOT NULL,
+                                          stop_area_id int8 NOT NULL,
+                                          CONSTRAINT disruption_stop_area_pkey PRIMARY KEY (disruption_id, stop_area_id)
+);
+
+ALTER TABLE akt.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES akt.disruption(id) ON DELETE CASCADE;
+ALTER TABLE akt.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES akt.stop_areas(id) ON DELETE CASCADE;
 
 
 GRANT ALL ON SCHEMA akt TO chouette;
