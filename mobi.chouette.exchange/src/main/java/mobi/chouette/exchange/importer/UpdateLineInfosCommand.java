@@ -9,8 +9,16 @@ import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.*;
-import mobi.chouette.model.type.*;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
+import mobi.chouette.model.JourneyPattern;
+import mobi.chouette.model.Line;
+import mobi.chouette.model.Route;
+import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.type.BikeAccessEnum;
+import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
+import mobi.chouette.model.type.TadEnum;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
@@ -66,58 +74,43 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
     private void managePMR(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {
         // PMR
-        if(lineToUpdate.getWheelchairAccess() != null && lineToUpdate.getWheelchairAccess().equals(WheelchairAccessEnum.FULL_ACCESS)){
+        if (lineToUpdate.getAccessibilityAssessment() != null &&
+                lineToUpdate.getAccessibilityAssessment().getLimitations() != null &&
+                lineToUpdate.getAccessibilityAssessment().getLimitations().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)) {
+
             vehicleJourneyList.forEach(vehicleJourney -> {
                 vehicleJourney.setMobilityRestrictedSuitability(true);
                 vehicleJourneyDAO.update(vehicleJourney);
+
             });
         } else {
+            AccessibilityAssessment accessibilityAssessment;
+            AccessibilityLimitation accessibilityLimitation;
+
+            if (lineToUpdate.getAccessibilityAssessment() == null) {
+                accessibilityAssessment = new AccessibilityAssessment();
+                accessibilityAssessment.setLine(lineToUpdate);
+            } else {
+                accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
+            }
+
+            accessibilityLimitation = accessibilityAssessment.getLimitations() == null ? new AccessibilityLimitation() : accessibilityAssessment.getLimitations();
+
             int nbVehicleJourneyWithPMR = (int) vehicleJourneyList.stream()
                     .filter(vehicleJourney -> vehicleJourney.getMobilityRestrictedSuitability() != null && vehicleJourney.getMobilityRestrictedSuitability()).count();
             if (nbVehicleJourneyWithPMR == 0) {
-                lineToUpdate.setWheelchairAccess(WheelchairAccessEnum.NO_ACCESS);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
             } else if (nbVehicleJourneyWithPMR == nbVehicleJourney) {
-                lineToUpdate.setWheelchairAccess(WheelchairAccessEnum.FULL_ACCESS);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
             } else {
-                lineToUpdate.setWheelchairAccess(WheelchairAccessEnum.PARTIAL_ACCESS);
+                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
             }
 
-            manageAccessibilty(lineToUpdate);
-
+            accessibilityLimitationDAO.create(accessibilityLimitation);
+            accessibilityAssessment.setLimitations(accessibilityLimitation);
+            accessibilityAssessmentDAO.create(accessibilityAssessment);
+            lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
         }
-    }
-
-    private void manageAccessibilty(Line lineToUpdate){
-
-        AccessibilityAssessment accessibilityAssessment = null;
-        AccessibilityLimitation accessibilityLimitation = null;
-
-        if(lineToUpdate.getAccessibilityAssessment()== null){
-            accessibilityAssessment = new AccessibilityAssessment();
-            accessibilityAssessment.setLine(lineToUpdate);
-        }else{
-            accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
-        }
-
-        accessibilityLimitation = accessibilityAssessment.getLimitations() == null?
-                new AccessibilityLimitation():
-                accessibilityAssessment.getLimitations();
-
-        switch (lineToUpdate.getWheelchairAccess()) {
-            case NO_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE.FALSE);
-                break;
-            case PARTIAL_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
-                break;
-            case FULL_ACCESS:
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
-                break;
-        }
-        accessibilityLimitationDAO.create(accessibilityLimitation);
-        accessibilityAssessment.setLimitations(accessibilityLimitation);
-        accessibilityAssessmentDAO.create(accessibilityAssessment);
-        lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
     }
 
     private void manageBike(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {

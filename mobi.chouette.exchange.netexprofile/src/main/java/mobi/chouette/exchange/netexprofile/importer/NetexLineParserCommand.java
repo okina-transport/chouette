@@ -181,10 +181,6 @@ public class NetexLineParserCommand implements Command, Constant {
                 currentLine.setTransportSubModeName(currentLineInfo.getTransportSubModeName());
             }
 
-            if (currentLine.getWheelchairAccess() == null  ){
-                currentLine.setWheelchairAccess(currentLineInfo.getWheelchairAccess());
-            }
-
             if (currentLine.getUserNeeds() == null  ){
                 currentLine.setUserNeeds(currentLineInfo.getUserNeeds());
             }

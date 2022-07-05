@@ -517,12 +517,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Getter
 	@Setter
 	@Enumerated(EnumType.STRING)
-	@Column(name = "pmr")
-	private WheelchairAccessEnum wheelchairAccess;
-
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
 	@Column(name = "bike")
 	private BikeAccessEnum bike;
 
