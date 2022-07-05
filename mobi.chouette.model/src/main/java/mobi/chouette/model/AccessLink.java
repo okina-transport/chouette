@@ -166,7 +166,7 @@ public class AccessLink extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@Column(name = "default_duration")
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration defaultDuration;
 
 	/**
@@ -179,7 +179,7 @@ public class AccessLink extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@Column(name = "frequent_traveller_duration")
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration frequentTravellerDuration;
 
 	/**
@@ -193,7 +193,7 @@ public class AccessLink extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@Column(name = "occasional_traveller_duration")
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration occasionalTravellerDuration;
 
 	/**
@@ -206,7 +206,7 @@ public class AccessLink extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@Column(name = "mobility_restricted_traveller_duration")
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration mobilityRestrictedTravellerDuration;
 
 	/**
