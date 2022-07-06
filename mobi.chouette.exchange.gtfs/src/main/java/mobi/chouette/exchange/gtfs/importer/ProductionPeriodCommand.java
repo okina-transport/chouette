@@ -9,12 +9,14 @@ import mobi.chouette.dao.TimetableDAO;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
+import mobi.chouette.exchange.gtfs.parser.GtfsAgencyParser;
 import mobi.chouette.exchange.gtfs.parser.GtfsCalendarParser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.updater.TimetableUpdater;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.CalendarDay;
+import mobi.chouette.model.Company;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
@@ -27,6 +29,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +64,10 @@ public class ProductionPeriodCommand implements Command, Constant {
                     .create(GtfsCalendarParser.class.getName());
             gtfsCalendarParser.parse(context);
 
+            /// On parse les agency concernées par ces calendriers
+            GtfsAgencyParser gtfsAgencyParser = (GtfsAgencyParser) ParserFactory.create(GtfsAgencyParser.class.getName());
+            gtfsAgencyParser.parse(context);
+
             if (referential != null) {
                 for (Timetable timetable : referential.getTimetables().values()) {
                     for (Period period : timetable.getPeriods()) {
@@ -89,7 +96,14 @@ public class ProductionPeriodCommand implements Command, Constant {
             }
 
             // On retaille les calendriers déjà présents en base avec le start date récupéré plus haut
-            List<Timetable> timetableList = timetableDAO.findAll();
+            List<Timetable> timetableList = new ArrayList<>();
+            if (referential != null && referential.getCompanies() != null) {
+                for (Company c : referential.getCompanies().values()) {
+                    timetableList.addAll(timetableDAO.getByCompanyRegistrationNumber(c.getRegistrationNumber()));
+                }
+            } else {
+                timetableList = timetableDAO.findAll();
+            }
 
             for (Timetable oldTimetable : timetableList) {
                 LocalDate finalMinStartDate = minStartDate != null ? minStartDate.minusDays(1) : null;
