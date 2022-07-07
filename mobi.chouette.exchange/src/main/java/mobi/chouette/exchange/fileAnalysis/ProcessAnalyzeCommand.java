@@ -33,13 +33,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -51,6 +45,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private boolean cleanRepository;
     private String currentFileName;
     private Map<String, Set<String>> missingRouteLinks;
+    private Map<String, Set<String>> wrongRouteLinks;
 
 
     public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
@@ -80,6 +75,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         currentFileName =  (String) context.get(FILE_NAME);
 
         missingRouteLinks =analyzeReport.getMissingRouteLinks();
+        wrongRouteLinks = analyzeReport.getWrongRouteLinks();
 
 
         Referential referential = (Referential) context.get(REFERENTIAL);
@@ -89,7 +85,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
 
+        containsWrongRouteLink(context, referential.getRouteSections().values());
         checkRouteLinksIfNeeded(context, newValue);
+
 
         DateTime endingTime = new DateTime();
 
@@ -159,7 +157,23 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         return false;
     }
 
+    private void containsWrongRouteLink(Context context, Collection<RouteSection> routeSections) {
 
+        List<String> wrongRouteSections = (List<String>) context.get(WRONG_ROUTE_SECTIONS);
+
+        if (wrongRouteSections != null) {
+            Set<String> routeLinks = null;
+            if (wrongRouteLinks.containsKey(currentFileName)) {
+                routeLinks = wrongRouteLinks.get(currentFileName);
+            } else {
+                routeLinks = new HashSet<>();
+            }
+            for (String rsId : wrongRouteSections) {
+                routeLinks.add(rsId + " exists more than once with different stop points");
+                wrongRouteLinks.put(currentFileName, routeLinks);
+            }
+        }
+    }
 
     /**
      * recover all data of stopAreas and write analysis results into analyzeReport     *

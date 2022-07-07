@@ -87,6 +87,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "missingRouteLinks")
     private Map<String, Set<String>> missingRouteLinks = new HashMap<>();
 
+    @XmlElement(name = "wrongRouteLinks")
+    private Map<String, Set<String>> wrongRouteLinks = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -243,6 +246,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             printMissingRouteLink(out);
         }
 
+        if (!wrongRouteLinks.isEmpty()) {
+            canLaunchImport = false;
+            printWrongRouteLink(out);
+        }
+
         if (!modifiedTimetables.isEmpty()) {
             printModifiedTimetables(out);
         }
@@ -285,6 +293,30 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             out.print("{ \"fileName\":\"" + missingRouteLinkEntry.getKey() + "\",\n");
             out.print(" \"routeLinks\": [");
             writeStringSet(out, missingRouteLinkEntry.getValue());
+            out.print("]" + endOfline);
+            i++;
+        }
+
+        out.println("]");
+
+    }
+
+    private void printWrongRouteLink(PrintStream out) {
+
+        out.print(",\n");
+        out.print("\"wrongRouteLinks\": [\n");
+
+        String endOfline;
+
+        int i = 0;
+
+        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinks.entrySet()) {
+
+            endOfline = i == wrongRouteLinks.size() - 1 ? " }\n" : " },\n";
+
+            out.print("{ \"fileName\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
+            out.print(" \"routeLinks\": [");
+            writeStringSet(out, wrongRouteLinkEntry.getValue());
             out.print("]" + endOfline);
             i++;
         }

@@ -99,4 +99,6 @@ public interface Constant {
 	public static final String CURRENT_LINE_ID="currentLineId";
 	public static final String CURRENT_SCHEDULED_STOP_POINT="currentScheduledStopPoint";
 
+	public static final String WRONG_ROUTE_SECTIONS="wrongRouteSections";
+
 }
