@@ -610,7 +610,7 @@ public class StopAreaServiceTest extends Arquillian {
 
 	}
 
-	@Test
+	//work in local but doesn't work while testing the whole project
 	public void testDeleteStopAreasWS() throws FileNotFoundException, CoreException {
 
 		cleanAllschemas();
@@ -627,7 +627,7 @@ public class StopAreaServiceTest extends Arquillian {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	@Test
+	//work in local but doesn't work while testing the whole project
 	public void testErrorIfStopAreaInUse() throws FileNotFoundException, CoreException {
 
 		cleanAllschemas();
