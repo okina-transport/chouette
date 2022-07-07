@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:acbs="http://www.ifopt.org.uk/acsb" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:ifopt="http://www.ifopt.org.uk/ifopt" xmlns:siri="http://www.siri.org.uk/siri" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1:FR-NETEX-2.2">
+    <PublicationTimestamp>2022-06-22T15:41:35.877Z</PublicationTimestamp>
+    <ParticipantRef>MOBIITI</ParticipantRef>
+    <dataObjects>
+        <GeneralFrame id="MOBI-ITI:GeneralFrame:NETEX_ARRET_20220622T134056Z:LOC" modification="revise" version="1">
+            <TypeOfFrameRef ref="FR:TypeOfFrame:NETEX_ARRET">version="1.1:FR-NETEX_ARRET-2.2"</TypeOfFrameRef>
+            <members>
+                <Quay id="MOBIITI:Quay:1" modification="new" version="1">
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Longues gare SNCF</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                    </keyList>
+                    <Name>Longues gare SNCF</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>3.208305</Longitude>
+                            <Latitude>45.665113</Latitude>
+                        </Location>
+                    </Centroid>
+                    <PostalAddress id="MOBIITI:PostalAddress:4407" version="196">
+                        <Name>Longues gare SNCF</Name>
+                        <PostalRegion>63457</PostalRegion>
+                    </PostalAddress>
+                    <AccessibilityAssessment id="MOBIITI:AccessibilityAssessment:6801" modification="new" version="1">
+                        <MobilityImpairedAccess>unknown</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="6810" modification="new" version="1">
+<WheelchairAccess>unknown</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <SiteRef ref="MOBIITI:StopPlace:2394"/>
+                    <TransportMode>bus</TransportMode>
+                </Quay>
+              
+                <Quay id="MOBIITI:Quay:4416" modification="new" version="1">
+                    <keyList>
+                        <KeyValue>
+                            <Key>imported-name</Key>
+                            <Value>Gare SNCF</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-id</Key>
+                            <Value/>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>imported-stopcode</Key>
+                            <Value/>
+                        </KeyValue>
+                    </keyList>
+                    <Name>Gare SNCF</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>3.193337</Longitude>
+                            <Latitude>45.686996</Latitude>
+                        </Location>
+                    </Centroid>
+                    <PostalAddress id="MOBIITI:PostalAddress:4416" version="196">
+                        <Name>Gare SNCF</Name>
+                        <PostalRegion>63214</PostalRegion>
+                    </PostalAddress>
+                    <AccessibilityAssessment id="MOBIITI:AccessibilityAssessment:6819" modification="new" version="1">
+                        <MobilityImpairedAccess>unknown</MobilityImpairedAccess>
+                        <limitations>
+                            <AccessibilityLimitation id="6830" modification="new" version="1">
+<WheelchairAccess>unknown</WheelchairAccess>
+                            </AccessibilityLimitation>
+                        </limitations>
+                    </AccessibilityAssessment>
+                    <SiteRef ref="MOBIITI:StopPlace:2403"/>
+                    <TransportMode>bus</TransportMode>
+                </Quay>
+              </members>
+        </GeneralFrame>
+    </dataObjects>
+</PublicationDelivery>
