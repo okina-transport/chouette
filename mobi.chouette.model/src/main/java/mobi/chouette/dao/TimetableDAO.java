@@ -8,4 +8,6 @@ import mobi.chouette.model.statistics.LineAndTimetable;
 public interface TimetableDAO extends GenericDAO<Timetable> {
 
 	Collection<LineAndTimetable> getAllTimetableForAllLines();
+
+	Collection<Timetable>getByCompanyRegistrationNumber(String companyRegistrationNumber);
 }

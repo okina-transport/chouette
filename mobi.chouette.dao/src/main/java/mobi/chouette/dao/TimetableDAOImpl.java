@@ -23,6 +23,20 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 	}
 
 	@Override
+	public List<Timetable> getByCompanyRegistrationNumber(String companyRegistrationNumber) {
+		Query q =  em.createNativeQuery("select distinct tt.* from time_tables as tt "
+			+ "left join time_tables_vehicle_journeys ttvj on ttvj.time_table_id=tt.id "
+			+ "left join vehicle_journeys as vj on vj.id=ttvj.vehicle_journey_id "
+			+ "left join routes as r on r.id=vj.route_id "
+			+ "left join lines as l on l.id=r.line_id "
+			+ "left join companies as c on c.id=l.company_id "
+			+ "where c.registration_number='" + companyRegistrationNumber + "'",Timetable.class);
+
+		List<Timetable> tt = q.getResultList();
+		return tt;
+	}
+
+	@Override
 	public Collection<LineAndTimetable> getAllTimetableForAllLines() {
 
 		Query q = em.createNativeQuery("select distinct l.id as line_id, vjt.time_table_id as timetable_id "
@@ -69,6 +83,8 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 		return lineToTimetablesMap.values();
 
 	}
+
+
 
 
 	private Long toLong(Object o){

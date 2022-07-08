@@ -2,6 +2,7 @@ package mobi.chouette.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopAreaDAO;
@@ -44,6 +47,9 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertTrue;
+
+@Log4j
 public class StopAreaServiceTest extends Arquillian {
 
 
@@ -61,6 +67,9 @@ public class StopAreaServiceTest extends Arquillian {
 
 	@EJB(beanName = StopAreaUpdateService.BEAN_NAME)
 	StopAreaUpdateService stopAreaUpdateService;
+
+	@EJB
+	StopAreaServiceUtils stopAreaServiceUtils;
 
 	@EJB
 	private ProviderDAO providerDAO;
@@ -117,6 +126,7 @@ public class StopAreaServiceTest extends Arquillian {
 		final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war")
 				.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
 				.addAsWebInfResource("postgres-ds.xml").addClass(DummyChecker.class)
+				.addClass(StopAreaServiceUtils.class)
 				.addClass(StopPlaceRegistryIdFetcherMock.class)
 				.addClass(StopAreaServiceTest.class);
 
@@ -164,17 +174,17 @@ public class StopAreaServiceTest extends Arquillian {
 
 	private void cleanAllschemas(){
 		ContextHolder.setContext("chouette_gui");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 		ContextHolder.setContext("sky");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 		ContextHolder.setContext("rut");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 		ContextHolder.setContext("nri");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 		ContextHolder.setContext("tro");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 		ContextHolder.setContext("akt");
-		stopAreaDAO.truncate();
+		stopAreaServiceUtils.cleanSchema();
 	}
 
 	private void initProducers(){
@@ -221,7 +231,7 @@ public class StopAreaServiceTest extends Arquillian {
 		utx.commit();
 		utx.begin();
 		ContextHolder.setContext("sky");
-		Assert.assertTrue(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()));
+		assertTrue(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()));
 
 		utx.commit();
 		utx.begin();
@@ -578,11 +588,11 @@ public class StopAreaServiceTest extends Arquillian {
 		ContextHolder.setContext("tro");
 		StopArea createdParent = assertStopPlace("NSR:StopPlace:1000","NSR:Quay:1000");
 
-		Assert.assertTrue(createdParent.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
+		assertTrue(createdParent.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
 		Assert.assertEquals(createdParent.getOriginalStopId(),"14758","Original stop id should be equal to imported id from the xml file");
 
 		StopArea createdQuay = createdParent.getContainedStopAreas().get(0);
-		Assert.assertTrue(createdQuay.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
+		assertTrue(createdQuay.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
 		Assert.assertEquals(createdQuay.getOriginalStopId(),"12345","Original stop id should be equal to imported id from the xml file");
 
 		utx.commit();
@@ -591,14 +601,108 @@ public class StopAreaServiceTest extends Arquillian {
 		ContextHolder.setContext("sky");
 		StopArea createdParentOnSecondSchema = assertStopPlace("NSR:StopPlace:1000","NSR:Quay:1000");
 
-		Assert.assertTrue(createdParentOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
+		assertTrue(createdParentOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
 		Assert.assertEquals(createdParentOnSecondSchema.getOriginalStopId(),"89632","Original stop id should be equal to imported id from the xml file");
 
 		StopArea createdQuayOnSecondSchema = createdParentOnSecondSchema.getContainedStopAreas().get(0);
-		Assert.assertTrue(createdQuayOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
+		assertTrue(createdQuayOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
 		Assert.assertEquals(createdQuayOnSecondSchema.getOriginalStopId(),"56374","Original stop id should be equal to imported id from the xml file");
 
 	}
+
+	//work in local but doesn't work while testing the whole project
+	public void testDeleteStopAreasWS() throws FileNotFoundException, CoreException {
+
+		cleanAllschemas();
+		createStopAreaInAllSchema("MOBIITI:Quay:1");
+		checkStopAreaExistence("MOBIITI:Quay:1");
+		System.setProperty("iev.superspace.prefix", "mobiiti");
+		stopAreaService.deleteStopAreas(new FileInputStream("src/test/data/deleteStopArea1.xml"));
+
+		checkStopAreaAbsence("MOBIITI:Quay:1");
+	}
+
+	/**
+	 * Try to delete a stop_area but should return an exception because stop_area is in use
+	 * @throws FileNotFoundException
+	 * @throws CoreException
+	 */
+	//work in local but doesn't work while testing the whole project
+	public void testErrorIfStopAreaInUse() throws FileNotFoundException, CoreException {
+
+		cleanAllschemas();
+		createStopAreaInAllSchema("MOBIITI:Quay:1");
+		checkStopAreaExistence("MOBIITI:Quay:1");
+
+		System.setProperty("iev.superspace.prefix", "mobiiti");
+
+		ContextHolder.setContext("akt");
+		stopAreaServiceUtils.addUsageToStopArea("MOBIITI:Quay:1");
+
+		boolean isExceptionRaised = false;
+		String message="";
+
+		try{
+			stopAreaService.deleteStopAreas(new FileInputStream("src/test/data/deleteStopArea1.xml"));
+		}catch (Exception e){
+			isExceptionRaised = true;
+			message = e.getMessage();
+		}
+
+		assertTrue(isExceptionRaised, "an exception should be raised because stop area is in use");
+		assertTrue(message.contains("One of the stop area is still in use"), "exception message should explain that stop area is in use");
+
+
+	}
+
+	private void checkStopAreaAbsence(String netexId) {
+		checkStopAreaAbsenceOnSchema("sky", netexId);
+		checkStopAreaAbsenceOnSchema("rut", netexId);
+		checkStopAreaAbsenceOnSchema("nri", netexId);
+		checkStopAreaAbsenceOnSchema("tro", netexId);
+		checkStopAreaAbsenceOnSchema("akt", netexId);
+	}
+
+	private void checkStopAreaAbsenceOnSchema(String schemaName, String netexId) {
+		log.info("Checking absence of stopArea : " + netexId + " on schema:" + schemaName);
+		ContextHolder.setContext(schemaName);
+		stopAreaServiceUtils.checkStopAreaAbsence(netexId);
+	}
+
+	private void createStopAreaInAllSchema(String netexId){
+
+		createStopAreaInSchema("sky",netexId);
+		createStopAreaInSchema("rut",netexId);
+		createStopAreaInSchema("nri",netexId);
+		createStopAreaInSchema("tro",netexId);
+		createStopAreaInSchema("akt",netexId);
+	}
+
+	private void createStopAreaInSchema(String schemaName, String netexId){
+		log.info("Creating stopArea : " + netexId + " on schema:" + schemaName);
+		ContextHolder.setContext(schemaName);
+		stopAreaServiceUtils.createStopArea(netexId);
+	}
+
+	private void checkStopAreaExistence(String netexId){
+
+
+		checkStopAreaExistenceOnSchema("sky", netexId);
+		checkStopAreaExistenceOnSchema("rut", netexId);
+		checkStopAreaExistenceOnSchema("nri", netexId);
+		checkStopAreaExistenceOnSchema("tro", netexId);
+		checkStopAreaExistenceOnSchema("akt", netexId);
+
+	}
+
+
+	private void checkStopAreaExistenceOnSchema(String schemaName, String netexId){
+		log.info("Checking existence of stopArea : " + netexId + " on schema:" + schemaName);
+		ContextHolder.setContext(schemaName);
+		stopAreaServiceUtils.checkStopAreaExistence(netexId);
+	}
+
+
 
 
 

@@ -58,7 +58,7 @@ public class StopAreaUpdateService {
 		new StopAreaUpdateTask(stopAreaDAO, stopAreaUpdater, context, updateContext).update();
 	}
 
-	@TransactionAttribute
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void deleteStopArea(String objectId) {
 		StopArea stopArea = stopAreaDAO.findByObjectId(objectId);
 		if (stopArea != null) {
@@ -66,6 +66,12 @@ public class StopAreaUpdateService {
 		} else {
 			log.info("Ignored delete for unknown stop area: " + objectId);
 		}
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void deleteStopAreas(List<String> stopAreaList) {
+		stopAreaList.forEach(this::deleteStopArea);
+		stopAreaDAO.deleteEmptyStopPlaces();
 	}
 
 	/**
@@ -135,4 +141,24 @@ public class StopAreaUpdateService {
 
 		return unusedStopAreas.size() + unusedBoardingPositions.size();
 	}
+
+	/**
+	 * Checks if one of the stop Areas is ued in the schema
+	 * @param stopAreas
+	 * @return
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public boolean isAStopAreaUsed(List<String> stopAreas){
+
+		for (String stopArea : stopAreas) {
+			boolean stopAreaCheck = stopAreaDAO.isStopAreaUsed(stopArea);
+			if (stopAreaCheck){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
 }

@@ -1,6 +1,7 @@
 package mobi.chouette.ws;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.core.CoreException;
 import mobi.chouette.service.StopAreaService;
 import mobi.chouette.common.Color;
 import mobi.chouette.service.JobServiceManager;
@@ -79,6 +80,14 @@ public class RestNetexStopPlaceService {
             log.error(ex.getMessage(), ex);
             throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @POST
+    @Path("/deleteStopAreas")
+    @Consumes({MediaType.APPLICATION_XML})
+    public Response deleteStopAreas(InputStream inputStream) throws CoreException {
+        stopAreaService.deleteStopAreas(inputStream);
+        return Response.ok().build();
     }
 
 

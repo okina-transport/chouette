@@ -124,7 +124,6 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 			
 			gtfsValidationReporter.validateOkCSV(context, GTFS_CALENDAR_DATES_FILE);
 
-		
 			if (calendarDateParser == null) { // importer.getCalendarDateByService() fails for any other reason
 				gtfsValidationReporter.throwUnknownError(context, new Exception("Cannot instantiate CalendarDateByService class"), GTFS_CALENDAR_DATES_FILE);
 			} else {

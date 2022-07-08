@@ -6,6 +6,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.exchange.stopplace.PublicationDeliveryQuayParser;
 import mobi.chouette.exchange.stopplace.PublicationDeliveryStopPlaceParser;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateContext;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateService;
@@ -259,6 +260,43 @@ public class StopAreaService {
 		}
 
 		log.info("Deleted " + deletedStopPointCnt + " stop points");
+	}
+
+
+	/**
+	 * Delete stop_areas quays that are listed in the netex file in parameter.
+	 * After the delete are completed, delete empty commercial stop areas (with no child)
+	 *
+	 * @param inputStream
+	 * @throws CoreException
+	 */
+	public void deleteStopAreas(InputStream inputStream) throws CoreException {
+
+		PublicationDeliveryQuayParser parser = new PublicationDeliveryQuayParser(inputStream);
+		StopAreaUpdateContext updateContext = parser.getUpdateContext();
+
+		ContextHolder.setContext("admin");
+		List<String> schemaList = providerDAO.getAllWorkingSchemas();
+		List<String> stopAreasToDelete = new ArrayList<>(updateContext.getInactiveStopAreaIds());
+
+		for (String referential : schemaList) {
+			log.info("Starting stopArea usage check on schema: " + referential);
+			ContextHolder.clear();
+			ContextHolder.setContext(referential);
+			if (stopAreaUpdateService.isAStopAreaUsed(stopAreasToDelete)){
+				throw new IllegalArgumentException("One of the stop area is still in use");
+			}
+			log.info("Check completed. StopAreas not in use on schema : " + referential);
+		}
+
+
+		for (String referential : schemaList) {
+			log.info("Starting stopArea delete on schema: " + referential);
+			ContextHolder.clear();
+			ContextHolder.setContext(referential);
+			stopAreaUpdateService.deleteStopAreas(stopAreasToDelete);
+			log.info("Delete completed on schema: " + referential);
+		}
 	}
 
 
