@@ -23,6 +23,7 @@ import org.rutebanken.netex.model.ServiceLink;
 import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
 
 import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j
@@ -43,6 +44,14 @@ public class RouteLinkParser extends NetexParser implements Parser, Constant {
 			routeSection.setObjectVersion(NetexParserUtils.getVersion(routeLink));
 
 			String fromScheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint", routeLink.getFromPointRef().getRef());
+			if (routeSection.getFromScheduledStopPoint() != null && !routeSection.getFromScheduledStopPoint().getObjectId().equals(fromScheduledStopPointId)) {
+				List<String> wrongRouteSections = (List<String>) context.get(WRONG_ROUTE_SECTIONS);
+				if (wrongRouteSections == null) {
+					wrongRouteSections = new ArrayList<>();
+				}
+				wrongRouteSections.add(routeSection.getObjectId());
+				context.put(WRONG_ROUTE_SECTIONS, wrongRouteSections);
+			}
 			routeSection.setFromScheduledStopPoint(ObjectFactory.getScheduledStopPoint(referential, fromScheduledStopPointId));
 			String toScheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint", routeLink.getToPointRef().getRef());
 			routeSection.setToScheduledStopPoint(ObjectFactory.getScheduledStopPoint(referential,toScheduledStopPointId));
