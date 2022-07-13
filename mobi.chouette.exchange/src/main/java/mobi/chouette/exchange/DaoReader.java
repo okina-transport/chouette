@@ -73,8 +73,27 @@ public class DaoReader {
 		@Override
 		public int compare(Line o1, Line o2) {
 
-			if (o1.getPosition() != null && o2.getPosition() != null){
-				return o1.getPosition().compareTo(o2.getPosition());
+			Integer posO1 = null;
+			Integer posO2 = null;
+
+			if (o1.getPosition() != null) {
+				if (o1.getNetwork() != null && o1.getNetwork().getPosition() != null) {
+					posO1 = o1.getPosition() + (o1.getNetwork().getPosition() * 1000);
+				} else  {
+					posO1 = o1.getPosition();
+				}
+			}
+
+			if (o2.getPosition() != null) {
+				if (o2.getNetwork() != null && o2.getNetwork().getPosition() != null) {
+					posO2 = o2.getPosition() + (o2.getNetwork().getPosition() * 1000);
+				} else {
+					posO2 = o2.getPosition();
+				}
+			}
+
+			if (posO1 != null && posO2 != null){
+				return posO1.compareTo(posO2);
 			}
 
 			if (o1.getPublishedName() != null && o2.getPublishedName() != null){

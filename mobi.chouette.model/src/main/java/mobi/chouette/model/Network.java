@@ -239,4 +239,12 @@ public class Network extends NeptuneIdentifiedObject {
 	@OneToMany(mappedBy = "network")
 	private List<Line> lines = new ArrayList<Line>(0);
 
+	/**
+	 * Position des réseaux
+	 */
+	@Getter
+	@Setter
+	@Column(name = "pos")
+	private Integer position;
+
 }

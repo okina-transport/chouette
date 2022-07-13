@@ -98,7 +98,14 @@ public class GtfsRouteProducer extends AbstractProducer
       route.setRouteColor(getColor(neptuneObject.getColor()));
       route.setRouteTextColor(getColor(neptuneObject.getTextColor()));
       route.setRouteUrl(getUrl(neptuneObject.getUrl()));
-      route.setPosition(neptuneObject.getPosition());
+
+      if (neptuneObject.getNetwork().getPosition() != null) {
+          Integer pos = neptuneObject.getNetwork().getPosition() * 1000;
+          pos += neptuneObject.getPosition();
+          route.setPosition(pos);
+      } else {
+          route.setPosition(neptuneObject.getPosition());
+      }
 
       if (neptuneObject.getTransportModeName() != null)
       {
