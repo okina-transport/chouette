@@ -115,7 +115,7 @@ resource "google_sql_database_instance" "db_instance" {
     }
     database_flags {
       name = "work_mem"
-      value = "15000"
+      value = "30000"
     }
     database_flags {
       name = "log_min_duration_statement"
