@@ -1108,7 +1108,8 @@ CREATE TABLE networks (
     source_name character varying(255),
     source_type character varying(255),
     source_identifier character varying(255),
-    comment character varying(255)
+    comment character varying(255),
+    pos integer
 );
 
 
