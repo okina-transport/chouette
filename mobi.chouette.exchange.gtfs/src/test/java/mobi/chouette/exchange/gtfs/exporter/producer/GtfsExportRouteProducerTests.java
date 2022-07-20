@@ -11,6 +11,7 @@ import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;
 
+import mobi.chouette.model.Network;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -64,6 +65,8 @@ public class GtfsExportRouteProducerTests
       company.setObjectId("GTFS:Company:1234");
       company.setName("name");
       neptuneObject.setCompany(company);
+      Network lineNetwork = new Network();
+      neptuneObject.setNetwork(lineNetwork);
       return neptuneObject;
    }
 
@@ -153,6 +156,7 @@ public class GtfsExportRouteProducerTests
       company.setObjectId("GTFS:Company:1234");
       company.setName("name");
       neptuneObject.setCompany(company);
+      neptuneObject.setNetwork(new Network());
       producer.save(neptuneObject,"GTFS",false,false,new IdParameters());
       Reporter.log("verifyRouteProducerWithNoShortName");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
@@ -178,6 +182,8 @@ public class GtfsExportRouteProducerTests
       Company company = new Company();
       company.setObjectId("GTFS:Company:1234");
       company.setName("name");
+      Network lineNetwork = new Network();
+      neptuneObject.setNetwork(lineNetwork);
       neptuneObject.setCompany(company);
       producer.save(neptuneObject,  "GTFS",false,false,new IdParameters());
       Reporter.log("verifyRouteProducerWithNoLongName");
@@ -220,6 +226,7 @@ public class GtfsExportRouteProducerTests
       company.setObjectId("TFS:Company:1234");
       line.setCompany(company);
       line.setTransportModeName(TransportModeNameEnum.Air);
+      line.setNetwork(new Network());
 
       boolean result = routeProducer.save(line, "prefix", false,true,new IdParameters());
       Assert.assertTrue(result);
