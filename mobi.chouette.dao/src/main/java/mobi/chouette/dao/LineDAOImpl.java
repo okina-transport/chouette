@@ -2,6 +2,7 @@ package mobi.chouette.dao;
 
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Operator;
+import org.hibernate.Hibernate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -80,5 +81,17 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 		long count =  ((BigInteger) em.createNativeQuery("select COUNT(*) from " + schema + ".lines")
 				.getSingleResult()).longValue();
 		return count > 0;
+	}
+
+	@Override
+	public Line findByObjectIdAndInitialize(String objectId) {
+
+		Line  result = findByObjectId(objectId);
+
+		if (result != null){
+			Hibernate.initialize(result.getRoutes());
+		}
+
+		return result;
 	}
 }

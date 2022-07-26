@@ -10,15 +10,15 @@
 -- USAGE : psql -h 127.0.0.1 -U chouette -v SCH=chouette_gui  -d chouette_test -f chouette_test.sql'
 
 SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SET check_function_bodies = false;
+    SET client_min_messages = warning;
 
 
-SET default_tablespace = '';
+    SET default_tablespace = '';
 
-SET default_with_oids = false;
+    SET default_with_oids = false;
 
 DROP SCHEMA IF EXISTS chouette_gui CASCADE;
 CREATE SCHEMA chouette_gui ;
@@ -30,34 +30,34 @@ DROP EXTENSION IF EXISTS postgis CASCADE;
 CREATE SCHEMA IF NOT EXISTS shared_extensions;
 CREATE EXTENSION postgis SCHEMA shared_extensions;
 
-SET search_path = chouette_gui, pg_catalog;
+    SET search_path = chouette_gui, pg_catalog;
 
---
--- TOC entry 174 (class 1259 OID 938851)
--- Name: access_links; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 174 (class 1259 OID 938851)
+    -- Name: access_links; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
 CREATE TABLE public.access_links (
-    id bigint NOT NULL,
-    access_point_id bigint,
-    stop_area_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    link_distance numeric(19,2),
-    lift_availability boolean,
-    mobility_restricted_suitability boolean,
-    stairs_availability boolean,
-    default_duration time without time zone,
-    frequent_traveller_duration time without time zone,
-    occasional_traveller_duration time without time zone,
-    mobility_restricted_traveller_duration time without time zone,
-    link_type character varying(255),
-    int_user_needs integer,
-    link_orientation character varying(255)
+                                     id bigint NOT NULL,
+                                     access_point_id bigint,
+                                     stop_area_id bigint,
+                                     objectid character varying(255) NOT NULL,
+                                     object_version integer,
+                                     creation_time timestamp without time zone,
+                                     creator_id character varying(255),
+                                     name character varying(255),
+                                     comment character varying(255),
+                                     link_distance numeric(19,2),
+                                     lift_availability boolean,
+                                     mobility_restricted_suitability boolean,
+                                     stairs_availability boolean,
+                                     default_duration time without time zone,
+                                     frequent_traveller_duration time without time zone,
+                                     occasional_traveller_duration time without time zone,
+                                     mobility_restricted_traveller_duration time without time zone,
+                                     link_type character varying(255),
+                                     int_user_needs integer,
+                                     link_orientation character varying(255)
 );
 
 
@@ -93,28 +93,28 @@ ALTER SEQUENCE public.access_links_id_seq OWNED BY public.access_links.id;
 --
 
 CREATE TABLE public.access_points (
-    id bigint NOT NULL,
-    objectid character varying(255),
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    longitude numeric(19,16),
-    latitude numeric(19,16),
-    long_lat_type character varying(255),
-    country_code character varying(255),
-    street_name character varying(255),
-    contained_in character varying(255),
-    openning_time time without time zone,
-    closing_time time without time zone,
-    access_type character varying(255),
-    lift_availability boolean,
-    mobility_restricted_suitability boolean,
-    stairs_availability boolean,
-    stop_area_id bigint,
-    zip_code character varying(255),
-    city_name character varying(255)
+                                      id bigint NOT NULL,
+                                      objectid character varying(255),
+                                      object_version integer,
+                                      creation_time timestamp without time zone,
+                                      creator_id character varying(255),
+                                      name character varying(255),
+                                      comment character varying(255),
+                                      longitude numeric(19,16),
+                                      latitude numeric(19,16),
+                                      long_lat_type character varying(255),
+                                      country_code character varying(255),
+                                      street_name character varying(255),
+                                      contained_in character varying(255),
+                                      openning_time time without time zone,
+                                      closing_time time without time zone,
+                                      access_type character varying(255),
+                                      lift_availability boolean,
+                                      mobility_restricted_suitability boolean,
+                                      stairs_availability boolean,
+                                      stop_area_id bigint,
+                                      zip_code character varying(255),
+                                      city_name character varying(255)
 );
 
 
@@ -148,11 +148,11 @@ ALTER SEQUENCE public.access_points_id_seq OWNED BY public.access_points.id;
 --
 
 CREATE TABLE codespaces (
-    id bigint NOT NULL,
-    xmlns character(3),
-    xmlns_url character varying(255),
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+                            id bigint NOT NULL,
+                            xmlns character(3),
+                            xmlns_url character varying(255),
+                            created_at timestamp without time zone,
+                            updated_at timestamp without time zone
 );
 
 
@@ -186,45 +186,57 @@ ALTER SEQUENCE codespaces_id_seq OWNED BY codespaces.id;
 -- Name: companies; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
 --
 
-CREATE TABLE companies (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    short_name character varying(255),
-    legal_name character varying(255),
-    organisation_type character varying(255),
-    organizational_unit character varying(255),
-    operating_department_name character varying(255),
-    code character varying(255),
-    phone character varying(255),
-    fax character varying(255),
-    email character varying(255),
-    public_email character varying(255),
-    public_url character varying(255),
-    public_phone character varying(255),
-    registration_number character varying(255),
-    url character varying(255),
-    time_zone character varying(255),
-    branding_id bigint
+CREATE TABLE chouette_gui.companies (
+                                        id bigserial NOT NULL,
+                                        code varchar(255) NULL,
+                                        creation_time date NULL,
+                                        creator_id varchar(255) NULL,
+                                        date_counting_campaign date NULL,
+                                        email varchar(255) NULL,
+                                        fax varchar(255) NULL,
+                                        name varchar(255) NULL,
+                                        nb_pt_network int4 NULL,
+                                        objectid varchar(255) NULL,
+                                        object_version int4 NULL,
+                                        operating_department_name varchar(255) NULL,
+                                        organizational_unit varchar(255) NULL,
+                                        password_company varchar(255) NULL,
+                                        phone varchar(255) NULL,
+                                        registration_number varchar(255) NULL,
+                                        short_name varchar(255) NULL,
+                                        startsubscriptionnumber int8 NULL,
+                                        time_zone varchar(255) NULL,
+                                        url varchar(255) NULL,
+                                        dtype varchar(31) NULL,
+                                        active bool NULL,
+                                        organisation_type varchar(255) NULL,
+                                        legal_name varchar(255) NULL,
+                                        public_email varchar(255) NULL,
+                                        public_url varchar(255) NULL,
+                                        public_phone varchar(255) NULL,
+                                        branding_id int8 NULL,
+                                        agency_id varchar(255) NULL,
+                                        lang varchar(255) NULL,
+                                        fare_url varchar(255) NULL,
+                                        default_company bool NOT NULL DEFAULT false,
+                                        CONSTRAINT companies_pkey PRIMARY KEY (id)
 );
 
 
 ALTER TABLE chouette_gui.companies OWNER TO chouette;
+
 
 --
 -- TOC entry 181 (class 1259 OID 938881)
 -- Name: companies_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
 --
 
-CREATE SEQUENCE companies_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+CREATE SEQUENCE if not exists companies_id_seq
+        START WITH 1
+        INCREMENT BY 1
+        NO MINVALUE
+        NO MAXVALUE
+        CACHE 1;
 
 
 ALTER TABLE chouette_gui.companies_id_seq OWNER TO chouette;
@@ -244,25 +256,25 @@ ALTER SEQUENCE companies_id_seq OWNED BY companies.id;
 --
 
 CREATE TABLE public.connection_links (
-    id bigint NOT NULL,
-    departure_id bigint,
-    arrival_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    link_distance numeric(19,2),
-    link_type character varying(255),
-    default_duration time without time zone,
-    frequent_traveller_duration time without time zone,
-    occasional_traveller_duration time without time zone,
-    mobility_restricted_traveller_duration time without time zone,
-    mobility_restricted_suitability boolean,
-    stairs_availability boolean,
-    lift_availability boolean,
-    int_user_needs integer
+                                         id bigint NOT NULL,
+                                         departure_id bigint,
+                                         arrival_id bigint,
+                                         objectid character varying(255) NOT NULL,
+                                         object_version integer,
+                                         creation_time timestamp without time zone,
+                                         creator_id character varying(255),
+                                         name character varying(255),
+                                         comment character varying(255),
+                                         link_distance numeric(19,2),
+                                         link_type character varying(255),
+                                         default_duration time without time zone,
+                                         frequent_traveller_duration time without time zone,
+                                         occasional_traveller_duration time without time zone,
+                                         mobility_restricted_traveller_duration time without time zone,
+                                         mobility_restricted_suitability boolean,
+                                         stairs_availability boolean,
+                                         lift_availability boolean,
+                                         int_user_needs integer
 );
 
 
@@ -297,14 +309,14 @@ ALTER SEQUENCE public.connection_links_id_seq OWNED BY public.connection_links.i
 --
 
 CREATE TABLE destination_displays (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    side_text character varying(255),
-    front_text character varying(255)
+                                      id bigint NOT NULL,
+                                      objectid character varying(255) NOT NULL,
+                                      object_version integer,
+                                      creation_time timestamp without time zone,
+                                      creator_id character varying(255),
+                                      name character varying(255),
+                                      side_text character varying(255),
+                                      front_text character varying(255)
 );
 
 
@@ -312,11 +324,11 @@ ALTER TABLE chouette_gui.destination_displays OWNER TO chouette;
 
 
 CREATE SEQUENCE destination_displays_id_seq
-START WITH 1
-INCREMENT BY 1
-NO MINVALUE
-NO MAXVALUE
-CACHE 1;
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 ALTER TABLE chouette_gui.destination_displays_id_seq OWNER TO chouette;
@@ -333,10 +345,10 @@ CREATE TABLE destination_display_via
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
 
 ALTER TABLE destination_display_via OWNER to chouette;
 
@@ -345,40 +357,40 @@ ALTER TABLE destination_display_via OWNER to chouette;
 -- DROP INDEX bra.index_destination_display_id_on_destination_display_via;
 
 CREATE INDEX index_destination_display_id_on_destination_display_via
-    ON destination_display_via USING btree
-    (destination_display_id)
-    TABLESPACE pg_default;
+        ON destination_display_via USING btree
+        (destination_display_id)
+        TABLESPACE pg_default;
 
 
 
---
--- TOC entry 188 (class 1259 OID 938909)
--- Name: facilities; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 188 (class 1259 OID 938909)
+    -- Name: facilities; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
 CREATE TABLE facilities (
-    id bigint NOT NULL,
-    stop_area_id bigint,
-    line_id bigint,
-    connection_link_id bigint,
-    stop_point_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    description character varying(255),
-    free_access boolean,
-    longitude numeric(19,16),
-    latitude numeric(19,16),
-    long_lat_type character varying(255),
-    x numeric(19,2),
-    y numeric(19,2),
-    projection_type character varying(255),
-    country_code character varying(255),
-    street_name character varying(255),
-    contained_in character varying(255)
+                            id bigint NOT NULL,
+                            stop_area_id bigint,
+                            line_id bigint,
+                            connection_link_id bigint,
+                            stop_point_id bigint,
+                            objectid character varying(255) NOT NULL,
+                            object_version integer,
+                            creation_time timestamp without time zone,
+                            creator_id character varying(255),
+                            name character varying(255),
+                            comment character varying(255),
+                            description character varying(255),
+                            free_access boolean,
+                            longitude numeric(19,16),
+                            latitude numeric(19,16),
+                            long_lat_type character varying(255),
+                            x numeric(19,2),
+                            y numeric(19,2),
+                            projection_type character varying(255),
+                            country_code character varying(255),
+                            street_name character varying(255),
+                            contained_in character varying(255)
 );
 
 
@@ -390,8 +402,8 @@ ALTER TABLE chouette_gui.facilities OWNER TO chouette;
 --
 
 CREATE TABLE facilities_features (
-    facility_id bigint,
-    choice_code integer
+                                     facility_id bigint,
+                                     choice_code integer
 );
 
 
@@ -425,27 +437,27 @@ ALTER SEQUENCE facilities_id_seq OWNED BY facilities.id;
 -- Name: footnotes; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
 --
 CREATE TABLE footnotes (
-    id bigint NOT NULL,
-    code character varying(255),
-    label character varying(255),
-    creation_time timestamp without time zone,
-    objectid character varying COLLATE pg_catalog."default" NOT NULL,
-    object_version integer,
-    creator_id character varying COLLATE pg_catalog."default"
-    );
+                           id bigint NOT NULL,
+                           code character varying(255),
+                           label character varying(255),
+                           creation_time timestamp without time zone,
+                           objectid character varying COLLATE pg_catalog."default" NOT NULL,
+                           object_version integer,
+                           creator_id character varying COLLATE pg_catalog."default"
+);
 
 
 ALTER TABLE chouette_gui.footnotes OWNER TO chouette;
 
 CREATE UNIQUE INDEX footnotes_objectid_idx
-    ON chouette_gui.footnotes USING btree
-    (objectid COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+        ON chouette_gui.footnotes USING btree
+        (objectid COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
---
--- TOC entry 192 (class 1259 OID 938926)
--- Name: footnotes_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 192 (class 1259 OID 938926)
+    -- Name: footnotes_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
+    --
 
 CREATE SEQUENCE footnotes_id_seq
     START WITH 1
@@ -476,8 +488,8 @@ ALTER SEQUENCE footnotes_id_seq OWNED BY footnotes.id;
 --
 
 CREATE TABLE footnotes_vehicle_journeys (
-    vehicle_journey_id bigint,
-    footnote_id bigint
+                                            vehicle_journey_id bigint,
+                                            footnote_id bigint
 );
 
 
@@ -485,70 +497,70 @@ ALTER TABLE chouette_gui.footnotes_vehicle_journeys OWNER TO chouette;
 
 
 CREATE TABLE footnotes_lines (
-    line_id bigint,
-    footnote_id bigint
+                                 line_id bigint,
+                                 footnote_id bigint
 );
 
 
 ALTER TABLE chouette_gui.footnotes_lines OWNER TO chouette;
 
 CREATE TABLE footnotes_journey_patterns (
-    journey_pattern_id bigint,
-    footnote_id bigint
+                                            journey_pattern_id bigint,
+                                            footnote_id bigint
 );
 
 
 ALTER TABLE chouette_gui.footnotes_journey_patterns OWNER TO chouette;
 
 CREATE TABLE footnotes_stop_points (
-    stop_point_id bigint,
-    footnote_id bigint
+                                       stop_point_id bigint,
+                                       footnote_id bigint
 );
 
 
 ALTER TABLE chouette_gui.footnotes_stop_points OWNER TO chouette;
 
 CREATE TABLE footnotes_vehicle_journey_at_stops (
-    vehicle_journey_at_stop_id bigint,
-    footnote_id bigint
+                                                    vehicle_journey_at_stop_id bigint,
+                                                    footnote_id bigint
 );
 
 
 ALTER TABLE chouette_gui.footnotes_vehicle_journey_at_stops OWNER TO chouette;
 
 CREATE TABLE booking_arrangements_buy_when (
-    booking_arrangement_id bigint NOT NULL,
-    buy_when character varying(255)
-    );
+                                               booking_arrangement_id bigint NOT NULL,
+                                               buy_when character varying(255)
+);
 
 
 ALTER TABLE chouette_gui.booking_arrangements_buy_when OWNER TO chouette;
 
 CREATE TABLE booking_arrangements_booking_methods (
-    booking_arrangement_id bigint NOT NULL,
-    booking_method character varying(255)
-    );
+                                                      booking_arrangement_id bigint NOT NULL,
+                                                      booking_method character varying(255)
+);
 
 
 ALTER TABLE chouette_gui.booking_arrangements_booking_methods OWNER TO chouette;
 
 CREATE TABLE lines_key_values (
-    line_id bigint NOT NULL,
-    type_of_key character varying,
-    key character varying,
-    value character varying
-    );
+                                  line_id bigint NOT NULL,
+                                  type_of_key character varying,
+                                  key character varying,
+                                  value character varying
+);
 
 
 ALTER TABLE chouette_gui.lines_key_values OWNER TO chouette;
 
 
 CREATE TABLE vehicle_journeys_key_values (
-    vehicle_journey_id bigint NOT NULL,
-    type_of_key character varying,
-    key character varying,
-    value character varying
-    );
+                                             vehicle_journey_id bigint NOT NULL,
+                                             type_of_key character varying,
+                                             key character varying,
+                                             value character varying
+);
 
 
 ALTER TABLE chouette_gui.vehicle_journeys_key_values OWNER TO chouette;
@@ -556,29 +568,29 @@ ALTER TABLE chouette_gui.vehicle_journeys_key_values OWNER TO chouette;
 
 
 CREATE TABLE brandings (
-    id bigint NOT NULL,
-    name character varying,
-    description character varying,
-    url character varying,
-    image character varying,
-    creation_time timestamp without time zone,
-    objectid character varying COLLATE pg_catalog."default" NOT NULL,
-    object_version integer,
-    creator_id character varying COLLATE pg_catalog."default"
-    );
+                           id bigint NOT NULL,
+                           name character varying,
+                           description character varying,
+                           url character varying,
+                           image character varying,
+                           creation_time timestamp without time zone,
+                           objectid character varying COLLATE pg_catalog."default" NOT NULL,
+                           object_version integer,
+                           creator_id character varying COLLATE pg_catalog."default"
+);
 
 
 ALTER TABLE chouette_gui.brandings OWNER TO chouette;
 
 CREATE UNIQUE INDEX brandings_objectid_idx
-    ON chouette_gui.brandings USING btree
-    (objectid COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+        ON chouette_gui.brandings USING btree
+        (objectid COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
---
--- TOC entry 192 (class 1259 OID 938926)
--- Name: brandings_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 192 (class 1259 OID 938926)
+    -- Name: brandings_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
+    --
 
 CREATE SEQUENCE brandings_id_seq
     START WITH 1
@@ -604,14 +616,14 @@ ALTER SEQUENCE brandings_id_seq OWNED BY brandings.id;
 --
 
 CREATE TABLE group_of_lines (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    registration_number character varying(255)
+                                id bigint NOT NULL,
+                                objectid character varying(255) NOT NULL,
+                                object_version integer,
+                                creation_time timestamp without time zone,
+                                creator_id character varying(255),
+                                name character varying(255),
+                                comment character varying(255),
+                                registration_number character varying(255)
 );
 
 
@@ -647,8 +659,8 @@ ALTER SEQUENCE group_of_lines_id_seq OWNED BY group_of_lines.id;
 --
 
 CREATE TABLE group_of_lines_lines (
-    group_of_line_id bigint,
-    line_id bigint
+                                      group_of_line_id bigint,
+                                      line_id bigint
 );
 
 
@@ -660,15 +672,15 @@ ALTER TABLE chouette_gui.group_of_lines_lines OWNER TO chouette;
 --
 
 CREATE TABLE journey_frequencies (
-    id bigint NOT NULL,
-    vehicle_journey_id integer,
-    scheduled_headway_interval time without time zone NOT NULL,
-    first_departure_time time without time zone NOT NULL,
-    last_departure_time time without time zone,
-    exact_time boolean DEFAULT false,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    timeband_id integer
+                                     id bigint NOT NULL,
+                                     vehicle_journey_id integer,
+                                     scheduled_headway_interval time without time zone NOT NULL,
+                                     first_departure_time time without time zone NOT NULL,
+                                     last_departure_time time without time zone,
+                                     exact_time boolean DEFAULT false,
+                                     created_at timestamp without time zone,
+                                     updated_at timestamp without time zone,
+                                     timeband_id integer
 );
 
 
@@ -704,12 +716,12 @@ ALTER SEQUENCE journey_frequencies_id_seq OWNED BY journey_frequencies.id;
 --
 
 CREATE TABLE journey_pattern_sections (
-    id bigint NOT NULL,
-    journey_pattern_id integer NOT NULL,
-    route_section_id integer NOT NULL,
-    rank integer NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+                                          id bigint NOT NULL,
+                                          journey_pattern_id integer NOT NULL,
+                                          route_section_id integer NOT NULL,
+                                          rank integer NOT NULL,
+                                          created_at timestamp without time zone,
+                                          updated_at timestamp without time zone
 );
 
 
@@ -746,10 +758,10 @@ ALTER SEQUENCE journey_pattern_sections_id_seq OWNED BY journey_pattern_sections
 
 CREATE SEQUENCE interchanges_id_seq
     INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
+        START 1
+        MINVALUE 1
+        MAXVALUE 9223372036854775807
+        CACHE 1;
 
 ALTER SEQUENCE interchanges_id_seq
     OWNER TO chouette;
@@ -778,10 +790,10 @@ CREATE TABLE interchanges
 
     CONSTRAINT interchanges_pkey PRIMARY KEY (id)
 )
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
 
 ALTER TABLE interchanges
     OWNER to chouette;
@@ -791,67 +803,67 @@ ALTER TABLE interchanges
 -- DROP INDEX fin.interchanges_from_point_key;
 
 CREATE INDEX interchanges_from_point_key
-    ON interchanges USING btree
-    (from_point COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+        ON interchanges USING btree
+        (from_point COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
--- Index: interchanges_from_vehicle_journey_key
+    -- Index: interchanges_from_vehicle_journey_key
 
--- DROP INDEX fin.interchanges_from_vehicle_journey_key;
+    -- DROP INDEX fin.interchanges_from_vehicle_journey_key;
 
-CREATE INDEX interchanges_from_vehicle_journey_key
-    ON interchanges USING btree
-    (from_vehicle_journey COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+    CREATE INDEX interchanges_from_vehicle_journey_key
+        ON interchanges USING btree
+        (from_vehicle_journey COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
--- Index: interchanges_objectid_key
+    -- Index: interchanges_objectid_key
 
--- DROP INDEX fin.interchanges_objectid_key;
+    -- DROP INDEX fin.interchanges_objectid_key;
 
-CREATE UNIQUE INDEX interchanges_objectid_key
-    ON interchanges USING btree
-    (objectid COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+    CREATE UNIQUE INDEX interchanges_objectid_key
+        ON interchanges USING btree
+        (objectid COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
--- Index: interchanges_to_poinnt_key
+    -- Index: interchanges_to_poinnt_key
 
--- DROP INDEX fin.interchanges_to_poinnt_key;
+    -- DROP INDEX fin.interchanges_to_poinnt_key;
 
-CREATE INDEX interchanges_to_poinnt_key
-    ON interchanges USING btree
-    (to_point COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+    CREATE INDEX interchanges_to_poinnt_key
+        ON interchanges USING btree
+        (to_point COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
--- Index: interchanges_to_vehicle_journey_key
+    -- Index: interchanges_to_vehicle_journey_key
 
--- DROP INDEX fin.interchanges_to_vehicle_journey_key;
+    -- DROP INDEX fin.interchanges_to_vehicle_journey_key;
 
-CREATE INDEX interchanges_to_vehicle_journey_key
-    ON interchanges USING btree
-    (objectid COLLATE pg_catalog."default")
-    TABLESPACE pg_default;
+    CREATE INDEX interchanges_to_vehicle_journey_key
+        ON interchanges USING btree
+        (objectid COLLATE pg_catalog."default")
+        TABLESPACE pg_default;
 
 
 
---
--- TOC entry 197 (class 1259 OID 938943)
--- Name: journey_patterns; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 197 (class 1259 OID 938943)
+    -- Name: journey_patterns; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
 CREATE TABLE journey_patterns (
-    id bigint NOT NULL,
-    route_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    registration_number character varying(255),
-    published_name character varying(255),
-    departure_stop_point_id bigint,
-    arrival_stop_point_id bigint,
-    section_status integer DEFAULT 0 NOT NULL
+                                  id bigint NOT NULL,
+                                  route_id bigint,
+                                  objectid character varying(255) NOT NULL,
+                                  object_version integer,
+                                  creation_time timestamp without time zone,
+                                  creator_id character varying(255),
+                                  name character varying(255),
+                                  comment character varying(255),
+                                  registration_number character varying(255),
+                                  published_name character varying(255),
+                                  departure_stop_point_id bigint,
+                                  arrival_stop_point_id bigint,
+                                  section_status integer DEFAULT 0 NOT NULL
 );
 
 
@@ -887,8 +899,8 @@ ALTER SEQUENCE journey_patterns_id_seq OWNED BY journey_patterns.id;
 --
 
 CREATE TABLE journey_patterns_stop_points (
-    journey_pattern_id bigint,
-    stop_point_id bigint
+                                              journey_pattern_id bigint,
+                                              stop_point_id bigint
 );
 
 
@@ -897,13 +909,13 @@ ALTER TABLE chouette_gui.journey_patterns_stop_points OWNER TO chouette;
 
 
 CREATE TABLE contact_structures (
-    id bigint NOT NULL,
-    contact_person CHARACTER VARYING,
-    email CHARACTER VARYING,
-    phone CHARACTER VARYING,
-    fax CHARACTER VARYING,
-    url CHARACTER VARYING,
-    further_details CHARACTER VARYING
+                                    id bigint NOT NULL,
+                                    contact_person CHARACTER VARYING,
+                                    email CHARACTER VARYING,
+                                    phone CHARACTER VARYING,
+                                    fax CHARACTER VARYING,
+                                    url CHARACTER VARYING,
+                                    further_details CHARACTER VARYING
 );
 
 ALTER TABLE chouette_gui.contact_structures OWNER TO chouette;
@@ -922,13 +934,13 @@ ALTER TABLE chouette_gui.contact_structures_id_seq OWNER TO chouette;
 ALTER SEQUENCE contact_structures_id_seq OWNED BY contact_structures.id;
 
 CREATE TABLE booking_arrangements (
-    id bigint NOT NULL,
-    booking_contact_id bigint,
-    booking_note character varying,
-    booking_access character varying(255),
-    book_when character varying(255),
-    latest_booking_time  time without time zone,
-    minimum_booking_period  time without time zone
+                                      id bigint NOT NULL,
+                                      booking_contact_id bigint,
+                                      booking_note character varying,
+                                      booking_access character varying(255),
+                                      book_when character varying(255),
+                                      latest_booking_time  time without time zone,
+                                      minimum_booking_period  time without time zone
 );
 
 
@@ -958,29 +970,39 @@ ALTER SEQUENCE booking_arrangements_id_seq OWNED BY booking_arrangements.id;
 --
 
 CREATE TABLE lines (
-    id bigint NOT NULL,
-    network_id bigint,
-    company_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    number character varying(255),
-    published_name character varying(255),
-    transport_mode_name character varying(255),
-    transport_submode_name character varying(255),
-    registration_number character varying(255),
-    comment character varying(255),
-    mobility_restricted_suitability boolean,
-    int_user_needs integer,
-    flexible_service boolean,
-    url character varying(255),
-    color character varying(6),
-    text_color character varying(6),
-    stable_id character varying(255),
-    flexible_line_type character varying,
-    booking_arrangement_id bigint
+                       id bigserial NOT NULL,
+                       color varchar(6) NULL,
+                       "comment" varchar(255) NULL,
+                       creation_time date NULL,
+                       creator_id varchar(255) NULL,
+                       flexible_service bool NULL,
+                       int_user_needs int4 NULL,
+                       mobility_restricted_suitability bool NULL,
+                       "name" varchar(255) NULL,
+                       "number" varchar(255) NULL,
+                       objectid varchar(255) NULL,
+                       object_version int4 NULL,
+                       published_name varchar(255) NULL,
+                       registration_number varchar(255) NULL,
+                       stable_id varchar(255) NULL,
+                       supprime bool NULL DEFAULT false,
+                       text_color varchar(6) NULL,
+                       transport_mode_name varchar(255) NULL,
+                       url varchar(255) NULL,
+                       company_id int8 NULL,
+                       network_id int8 NULL,
+                       dtype varchar(31) NULL,
+                       external_ref varchar(255) NULL,
+                       categories_for_line_id int8 NULL DEFAULT 0,
+                       codifligne varchar(255) NULL,
+                       codifligne_commercial varchar(255) NULL,
+                       transport_submode_name varchar(255) NULL,
+                       flexible_line_type varchar(255) NULL,
+                       booking_arrangement_id int8 NULL,
+                       tad varchar(14) NULL,
+                       pmr varchar(14) NULL,
+                       bike varchar(14) NULL,
+                       pos int4 NULL
 );
 
 
@@ -991,12 +1013,12 @@ ALTER TABLE chouette_gui.lines OWNER TO chouette;
 -- Name: lines_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
 --
 
-CREATE SEQUENCE lines_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+CREATE SEQUENCE if not exists lines_id_seq
+        START WITH 1
+        INCREMENT BY 1
+        NO MINVALUE
+        NO MAXVALUE
+        CACHE 1;
 
 
 ALTER TABLE chouette_gui.lines_id_seq OWNER TO chouette;
@@ -1016,20 +1038,20 @@ ALTER SEQUENCE lines_id_seq OWNED BY lines.id;
 --
 
 CREATE TABLE networks (
-    id bigint NOT NULL,
-    company_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    version_date date,
-    description character varying(255),
-    name character varying(255),
-    registration_number character varying(255),
-    source_name character varying(255),
-    source_type character varying(255),
-    source_identifier character varying(255),
-    comment character varying(255)
+                          id bigint NOT NULL,
+                          company_id bigint,
+                          objectid character varying(255) NOT NULL,
+                          object_version integer,
+                          creation_time timestamp without time zone,
+                          creator_id character varying(255),
+                          version_date date,
+                          description character varying(255),
+                          name character varying(255),
+                          registration_number character varying(255),
+                          source_name character varying(255),
+                          source_type character varying(255),
+                          source_identifier character varying(255),
+                          comment character varying(255)
 );
 
 
@@ -1066,17 +1088,17 @@ ALTER SEQUENCE networks_id_seq OWNED BY networks.id;
 --
 
 CREATE TABLE pt_links (
-    id bigint NOT NULL,
-    start_of_link_id bigint,
-    end_of_link_id bigint,
-    route_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    link_distance numeric(19,2)
+                          id bigint NOT NULL,
+                          start_of_link_id bigint,
+                          end_of_link_id bigint,
+                          route_id bigint,
+                          objectid character varying(255) NOT NULL,
+                          object_version integer,
+                          creation_time timestamp without time zone,
+                          creator_id character varying(255),
+                          name character varying(255),
+                          comment character varying(255),
+                          link_distance numeric(19,2)
 );
 
 
@@ -1112,20 +1134,20 @@ ALTER SEQUENCE pt_links_id_seq OWNED BY pt_links.id;
 --
 
 CREATE TABLE public.referentials (
-    id bigint NOT NULL,
-    name character varying(255),
-    slug character varying(255),
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    prefix character varying(255),
-    projection_type character varying(255),
-    time_zone character varying(255),
-    bounds character varying(255),
-    organisation_id bigint,
-    geographical_bounds text,
-    user_id bigint,
-    user_name character varying(255),
-    data_format character varying(255)
+                                     id bigint NOT NULL,
+                                     name character varying(255),
+                                     slug character varying(255),
+                                     created_at timestamp without time zone,
+                                     updated_at timestamp without time zone,
+                                     prefix character varying(255),
+                                     projection_type character varying(255),
+                                     time_zone character varying(255),
+                                     bounds character varying(255),
+                                     organisation_id bigint,
+                                     geographical_bounds text,
+                                     user_id bigint,
+                                     user_name character varying(255),
+                                     data_format character varying(255)
 );
 
 insert into public.referentials (id,name,slug) values (1,'Test referential','chouette_gui');
@@ -1136,17 +1158,17 @@ insert into public.referentials (id,name,slug) values (1,'Test referential','cho
 --
 
 CREATE TABLE route_sections (
-    id bigint NOT NULL,
-    from_scheduled_stop_point_id integer,
-    to_scheduled_stop_point_id integer,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    input_geometry shared_extensions.geometry(LineString,4326),
-    processed_geometry shared_extensions.geometry(LineString,4326),
-    distance double precision,
-    no_processing boolean
+                                id bigint NOT NULL,
+                                from_scheduled_stop_point_id integer,
+                                to_scheduled_stop_point_id integer,
+                                objectid character varying(255) NOT NULL,
+                                object_version integer,
+                                creation_time timestamp without time zone,
+                                creator_id character varying(255),
+                                input_geometry shared_extensions.geometry(LineString,4326),
+                                processed_geometry shared_extensions.geometry(LineString,4326),
+                                distance double precision,
+                                no_processing boolean
 );
 
 
@@ -1182,19 +1204,19 @@ ALTER SEQUENCE route_sections_id_seq OWNED BY route_sections.id;
 --
 
 CREATE TABLE routes (
-    id bigint NOT NULL,
-    line_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    opposite_route_id bigint,
-    published_name character varying(255),
-    number character varying(255),
-    direction character varying(255),
-    wayback character varying(255)
+                        id bigint NOT NULL,
+                        line_id bigint,
+                        objectid character varying(255) NOT NULL,
+                        object_version integer,
+                        creation_time timestamp without time zone,
+                        creator_id character varying(255),
+                        name character varying(255),
+                        comment character varying(255),
+                        opposite_route_id bigint,
+                        published_name character varying(255),
+                        number character varying(255),
+                        direction character varying(255),
+                        wayback character varying(255)
 );
 
 
@@ -1230,8 +1252,8 @@ ALTER SEQUENCE routes_id_seq OWNED BY routes.id;
 --
 
 CREATE TABLE routing_constraints_lines (
-    stop_area_id bigint,
-    line_id bigint
+                                           stop_area_id bigint,
+                                           line_id bigint
 );
 
 
@@ -1244,39 +1266,108 @@ ALTER TABLE chouette_gui.routing_constraints_lines OWNER TO chouette;
 --
 
 CREATE TABLE public.stop_areas (
-    id bigint NOT NULL,
-    parent_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    comment character varying(255),
-    area_type character varying(255),
-    stop_place_type character varying(255),
-    transport_mode character varying(255),
-    transport_sub_mode character varying(255),
-    registration_number character varying(255),
-    nearest_topic_name character varying(255),
-    fare_code integer,
-    longitude numeric(19,16),
-    latitude numeric(19,16),
-    long_lat_type character varying(255),
-    country_code character varying(255),
-    street_name character varying(255),
-    mobility_restricted_suitability boolean,
-    stairs_availability boolean,
-    lift_availability boolean,
-    int_user_needs integer,
-    zip_code character varying(255),
-    city_name character varying(255),
-    url character varying(255),
-    time_zone character varying(255),
-    compass_bearing integer
+                                   id bigint NOT NULL,
+                                   parent_id bigint,
+                                   objectid character varying(255) NOT NULL,
+                                   object_version integer,
+                                   creation_time timestamp without time zone,
+                                   creator_id character varying(255),
+                                   name character varying(255),
+                                   comment character varying(255),
+                                   area_type character varying(255),
+                                   stop_place_type character varying(255),
+                                   transport_mode character varying(255),
+                                   transport_sub_mode character varying(255),
+                                   registration_number character varying(255),
+                                   nearest_topic_name character varying(255),
+                                   fare_code integer,
+                                   longitude numeric(19,16),
+                                   latitude numeric(19,16),
+                                   long_lat_type character varying(255),
+                                   country_code character varying(255),
+                                   street_name character varying(255),
+                                   mobility_restricted_suitability boolean,
+                                   stairs_availability boolean,
+                                   lift_availability boolean,
+                                   int_user_needs integer,
+                                   zip_code character varying(255),
+                                   city_name character varying(255),
+                                   url character varying(255),
+                                   time_zone character varying(255),
+                                   compass_bearing integer
+);
+ALTER TABLE public.stop_areas OWNER TO chouette;
+
+CREATE TABLE chouette_gui.stop_areas (
+                                         id bigserial NOT NULL,
+                                         area_type varchar(255) NULL,
+                                         bearing float8 NULL DEFAULT 0,
+                                         city_name varchar(255) NULL,
+                                         "comment" varchar(255) NULL,
+                                         country_code varchar(255) NULL,
+                                         creation_time date NULL,
+                                         creator_id varchar(255) NULL,
+                                         fare_code int4 NULL,
+                                         int_user_needs int4 NULL,
+                                         latitude float8 NULL,
+                                         lift_availability bool NULL,
+                                         long_lat_type varchar(255) NULL,
+                                         longitude float8 NULL,
+                                         mobility_restricted_suitability bool NULL,
+                                         name varchar(255) NULL,
+                                         nearest_topic_name varchar(255) NULL,
+                                         objectid varchar(255) NULL,
+                                         object_version int4 NULL,
+                                         registration_number varchar(255) NULL,
+                                         stairs_availability bool NULL,
+                                         street_name varchar(255) NULL,
+                                         time_zone varchar(255) NULL,
+                                         url varchar(255) NULL,
+                                         way varchar(255) NULL,
+                                         zip_code varchar(255) NULL,
+                                         company_id int8 NULL,
+                                         parent_id int8 NULL,
+                                         dtype varchar(31) NULL,
+                                         city_code varchar NULL,
+                                         is_unique bool NULL,
+                                         is_validated bool NULL,
+                                         is_duplicated bool NULL,
+                                         external_ref varchar(255) NULL,
+                                         mapping_hastus_zdep_id int8 NULL,
+                                         compass_bearing int4 NULL,
+                                         stop_place_type varchar(255) NULL,
+                                         transport_mode varchar(255) NULL,
+                                         transport_sub_mode varchar(255) NULL,
+                                         original_stop_id varchar(255) NULL,
+                                         is_external bool NULL DEFAULT false,
+                                         platform_code varchar(255) NULL);
+
+ALTER TABLE chouette_gui.stop_areas OWNER TO chouette;
+
+
+CREATE TABLE IF NOT EXISTS chouette_gui.mapping_hastus_zdep(
+                                                         id              BIGINT PRIMARY KEY,
+                                                         referential     CHARACTER VARYING(50),
+    zdep            CHARACTER VARYING(255),
+    hastus_chouette CHARACTER VARYING(255),
+    hastus_original CHARACTER VARYING(255),
+    zder character varying(255),
+    zdlr character varying(255)
+    );
+ALTER TABLE chouette_gui.mapping_hastus_zdep OWNER TO chouette;
+
+CREATE SEQUENCE chouette_gui.categories_for_lines_id_seq;
+CREATE TABLE chouette_gui.categories_for_lines
+(
+    id BIGINT NOT NULL DEFAULT nextval('categories_for_lines_id_seq'),
+    name character varying(1024) NOT NULL,
+    CONSTRAINT categories_for_lines_pkey PRIMARY KEY (id)
 );
 
+INSERT INTO chouette_gui.categories_for_lines VALUES(0, 'Sans catégorie');
+INSERT INTO chouette_gui.categories_for_lines VALUES(1, 'Défaut');
+INSERT INTO chouette_gui.categories_for_lines VALUES(2, 'IDFM');
 
-ALTER TABLE public.stop_areas OWNER TO chouette;
 
 --
 -- TOC entry 217 (class 1259 OID 939023)
@@ -1308,8 +1399,8 @@ ALTER SEQUENCE public.stop_areas_id_seq OWNED BY public.stop_areas.id;
 --
 
 CREATE TABLE public.stop_areas_stop_areas (
-    child_id bigint,
-    parent_id bigint
+                                              child_id bigint,
+                                              parent_id bigint
 );
 
 
@@ -1318,13 +1409,13 @@ ALTER TABLE public.stop_areas_stop_areas OWNER TO chouette;
 
 
 CREATE TABLE scheduled_stop_points (
-    id bigint NOT NULL,
-    name character varying(255),
-    stop_area_objectid_key CHARACTER VARYING(256),
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255)
+                                       id bigint NOT NULL,
+                                       name character varying(255),
+                                       stop_area_objectid_key CHARACTER VARYING(256),
+                                       objectid character varying(255) NOT NULL,
+                                       object_version integer,
+                                       creation_time timestamp without time zone,
+                                       creator_id character varying(255)
 );
 
 
@@ -1346,18 +1437,18 @@ ALTER TABLE chouette_gui.scheduled_stop_points_id_seq OWNER TO chouette;
 --
 
 CREATE TABLE stop_points (
-    id bigint NOT NULL,
-    route_id bigint,
-    destination_display_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    "position" integer,
-    for_boarding character varying(255),
-    for_alighting character varying(255),
-    scheduled_stop_point_id bigint,
-    booking_arrangement_id bigint
+                             id bigint NOT NULL,
+                             route_id bigint,
+                             destination_display_id bigint,
+                             objectid character varying(255) NOT NULL,
+                             object_version integer,
+                             creation_time timestamp without time zone,
+                             creator_id character varying(255),
+                             "position" integer,
+                             for_boarding character varying(255),
+                             for_alighting character varying(255),
+                             scheduled_stop_point_id bigint,
+                             booking_arrangement_id bigint
 );
 
 
@@ -1389,14 +1480,14 @@ ALTER SEQUENCE stop_points_id_seq OWNED BY stop_points.id;
 -- Route points
 
 CREATE TABLE route_points (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    scheduled_stop_point_id bigint,
-    "name" character varying(255),
-    "boarder_crossing" boolean
+                              id bigint NOT NULL,
+                              objectid character varying(255) NOT NULL,
+                              object_version integer,
+                              creation_time timestamp without time zone,
+                              creator_id character varying(255),
+                              scheduled_stop_point_id bigint,
+                              "name" character varying(255),
+                              "boarder_crossing" boolean
 );
 
 
@@ -1415,9 +1506,9 @@ ALTER TABLE chouette_gui.route_points_id_seq OWNER TO chouette;
 ALTER SEQUENCE route_points_id_seq OWNED BY route_points.id;
 
 CREATE TABLE routes_route_points (
-    route_id bigint,
-    route_point_id bigint,
-    POSITION integer NOT NULL
+                                     route_id bigint,
+                                     route_point_id bigint,
+                                     POSITION integer NOT NULL
 );
 
 
@@ -1430,11 +1521,11 @@ ALTER TABLE chouette_gui.routes_route_points OWNER TO chouette;
 --
 
 CREATE TABLE time_table_dates (
-    time_table_id bigint NOT NULL,
-    date date,
-    "position" integer NOT NULL,
-    id bigint NOT NULL,
-    in_out boolean
+                                  time_table_id bigint NOT NULL,
+                                  date date,
+                                  "position" integer NOT NULL,
+                                  id bigint NOT NULL,
+                                  in_out boolean
 );
 
 
@@ -1470,11 +1561,11 @@ ALTER SEQUENCE time_table_dates_id_seq OWNED BY time_table_dates.id;
 --
 
 CREATE TABLE time_table_periods (
-    time_table_id bigint NOT NULL,
-    period_start date,
-    period_end date,
-    "position" integer NOT NULL,
-    id bigint NOT NULL
+                                    time_table_id bigint NOT NULL,
+                                    period_start date,
+                                    period_end date,
+                                    "position" integer NOT NULL,
+                                    id bigint NOT NULL
 );
 
 
@@ -1510,16 +1601,16 @@ ALTER SEQUENCE time_table_periods_id_seq OWNED BY time_table_periods.id;
 --
 
 CREATE TABLE time_tables (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer DEFAULT 1,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    version character varying(255),
-    comment character varying(255),
-    int_day_types integer DEFAULT 0,
-    start_date date,
-    end_date date
+                             id bigint NOT NULL,
+                             objectid character varying(255) NOT NULL,
+                             object_version integer DEFAULT 1,
+                             creation_time timestamp without time zone,
+                             creator_id character varying(255),
+                             version character varying(255),
+                             comment character varying(255),
+                             int_day_types integer DEFAULT 0,
+                             start_date date,
+                             end_date date
 );
 
 
@@ -1555,8 +1646,8 @@ ALTER SEQUENCE time_tables_id_seq OWNED BY time_tables.id;
 --
 
 CREATE TABLE time_tables_vehicle_journeys (
-    time_table_id bigint,
-    vehicle_journey_id bigint
+                                              time_table_id bigint,
+                                              vehicle_journey_id bigint
 );
 
 
@@ -1568,16 +1659,16 @@ ALTER TABLE chouette_gui.time_tables_vehicle_journeys OWNER TO chouette;
 --
 
 CREATE TABLE timebands (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    name character varying(255),
-    start_time time without time zone NOT NULL,
-    end_time time without time zone NOT NULL,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
+                           id bigint NOT NULL,
+                           objectid character varying(255) NOT NULL,
+                           object_version integer,
+                           creation_time timestamp without time zone,
+                           creator_id character varying(255),
+                           name character varying(255),
+                           start_time time without time zone NOT NULL,
+                           end_time time without time zone NOT NULL,
+                           created_at timestamp without time zone,
+                           updated_at timestamp without time zone
 );
 
 
@@ -1613,21 +1704,24 @@ ALTER SEQUENCE timebands_id_seq OWNED BY timebands.id;
 --
 
 CREATE TABLE vehicle_journey_at_stops (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    vehicle_journey_id bigint,
-    stop_point_id bigint,
-    connecting_service_id character varying(255),
-    boarding_alighting_possibility character varying(255),
-    arrival_time time without time zone,
-    departure_time time without time zone,
-    for_boarding character varying(255),
-    for_alighting character varying(255),
-    departure_day_offset int not null default 0,
-    arrival_day_offset int not null default 0
+                                          id bigserial NOT NULL,
+                                          arrival_time time NULL,
+                                          boardingalightingpossibility varchar(255) NULL,
+                                          creation_time date NULL,
+                                          creator_id varchar(255) NULL,
+                                          departure_time time NULL,
+                                          elapse_duration time NULL,
+                                          headway_frequency time NULL,
+                                          is_arrival bool NULL,
+                                          is_departure bool NULL,
+                                          objectid varchar(255) NULL,
+                                          object_version int4 NULL,
+                                          stop_point_id int8 NULL,
+                                          vehicle_journey_id int8 NULL,
+                                          "position" int4 NULL,
+                                          dtype varchar(31) NULL,
+                                          departure_day_offset int4 NOT NULL DEFAULT 0,
+                                          arrival_day_offset int4 NOT NULL DEFAULT 0
 );
 
 
@@ -1638,7 +1732,7 @@ ALTER TABLE chouette_gui.vehicle_journey_at_stops OWNER TO chouette;
 -- Name: vehicle_journey_at_stops_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
 --
 
-CREATE SEQUENCE vehicle_journey_at_stops_id_seq
+CREATE SEQUENCE IF NOT EXISTS vehicle_journey_at_stops_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1657,16 +1751,16 @@ ALTER TABLE chouette_gui.vehicle_journey_at_stops_id_seq OWNER TO chouette;
 ALTER SEQUENCE vehicle_journey_at_stops_id_seq OWNED BY vehicle_journey_at_stops.id;
 
 CREATE TABLE flexible_service_properties (
-    id bigint NOT NULL,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    flexible_service_type character varying(255),
-    booking_arrangement_id bigint,
-    cancellation_possible boolean,
-    change_of_time_possible boolean
-    );
+                                             id bigint NOT NULL,
+                                             objectid character varying(255) NOT NULL,
+                                             object_version integer,
+                                             creation_time timestamp without time zone,
+                                             creator_id character varying(255),
+                                             flexible_service_type character varying(255),
+                                             booking_arrangement_id bigint,
+                                             cancellation_possible boolean,
+                                             change_of_time_possible boolean
+);
 
 ALTER TABLE chouette_gui.flexible_service_properties OWNER TO chouette;
 
@@ -1689,29 +1783,32 @@ ALTER SEQUENCE flexible_service_properties_id_seq OWNED BY flexible_service_prop
 --
 
 CREATE TABLE vehicle_journeys (
-    id bigint NOT NULL,
-    route_id bigint,
-    journey_pattern_id bigint,
-    company_id bigint,
-    objectid character varying(255) NOT NULL,
-    object_version integer,
-    creation_time timestamp without time zone,
-    creator_id character varying(255),
-    comment character varying(255),
-    status_value character varying(255),
-    transport_mode character varying(255),
-    transport_submode_name character varying(255),
-    published_journey_name character varying(255),
-    published_journey_identifier character varying(255),
-    facility character varying(255),
-    vehicle_type_identifier character varying(255),
-    number bigint,
-    mobility_restricted_suitability boolean,
-    flexible_service boolean,
-    journey_category integer DEFAULT 0 NOT NULL,
-    private_code character varying(255),
-    service_alteration character varying(255),
-    flexible_service_properties_id bigint
+                                  id bigserial NOT NULL,
+                                  "comment" varchar(255) NULL,
+                                  creation_time date NULL,
+                                  creator_id varchar(255) NULL,
+                                  etat int4 NULL,
+                                  facility varchar(255) NULL,
+                                  flexible_service bool NULL,
+                                  mobility_restricted_suitability bool NULL,
+                                  "number" int8 NULL,
+                                  objectid varchar(255) NULL,
+                                  object_version int4 NULL,
+                                  published_journey_identifier varchar(255) NULL,
+                                  published_journey_name varchar(255) NULL,
+                                  supprime bool NULL DEFAULT false,
+                                  transport_mode varchar(255) NULL,
+                                  vehicle_type_identifier varchar(255) NULL,
+                                  company_id int8 NULL,
+                                  journey_pattern_id int8 NULL,
+                                  route_id int8 NULL,
+                                  dtype varchar(31) NULL,
+                                  journey_category int4 NOT NULL DEFAULT 0,
+                                  transport_submode_name varchar(255) NULL,
+                                  private_code varchar(255) NULL,
+                                  service_alteration varchar(255) NULL,
+                                  flexible_service_properties_id int8 NULL,
+                                  bikes_allowed bool NULL
 );
 
 
@@ -1722,7 +1819,7 @@ ALTER TABLE chouette_gui.vehicle_journeys OWNER TO chouette;
 -- Name: vehicle_journeys_id_seq; Type: SEQUENCE; Schema: chouette_gui; Owner: chouette
 --
 
-CREATE SEQUENCE vehicle_journeys_id_seq
+CREATE SEQUENCE IF NOT EXISTS vehicle_journeys_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1950,13 +2047,7 @@ ALTER TABLE ONLY public.access_points
 
 
 
---
--- TOC entry 4003 (class 2606 OID 939699)
--- Name: companies_pkey; Type: CONSTRAINT; Schema: chouette_gui; Owner: chouette; Tablespace:
---
 
-ALTER TABLE ONLY companies
-    ADD CONSTRAINT companies_pkey PRIMARY KEY (id);
 
 
 --
@@ -2170,392 +2261,392 @@ ALTER TABLE ONLY brandings
 CREATE UNIQUE INDEX access_links_objectid_key ON public.access_links USING btree (objectid);
 
 
---
--- TOC entry 3996 (class 1259 OID 939863)
--- Name: access_points_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 3996 (class 1259 OID 939863)
+    -- Name: access_points_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX access_points_objectid_key ON public.access_points USING btree (objectid);
+    CREATE UNIQUE INDEX access_points_objectid_key ON public.access_points USING btree (objectid);
 
 
---
--- TOC entry 4001 (class 1259 OID 939864)
--- Name: companies_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4001 (class 1259 OID 939864)
+    -- Name: companies_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX companies_objectid_key ON companies USING btree (objectid);
+    CREATE UNIQUE INDEX companies_objectid_key ON companies USING btree (objectid);
 
 
---
--- TOC entry 4004 (class 1259 OID 939865)
--- Name: companies_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4004 (class 1259 OID 939865)
+    -- Name: companies_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX companies_registration_number_key ON companies USING btree (registration_number);
+    CREATE INDEX companies_registration_number_key ON companies USING btree (registration_number);
 
 
---
--- TOC entry 4005 (class 1259 OID 939866)
--- Name: connection_links_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4005 (class 1259 OID 939866)
+    -- Name: connection_links_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX connection_links_objectid_key ON public.connection_links USING btree (objectid);
+    CREATE UNIQUE INDEX connection_links_objectid_key ON public.connection_links USING btree (objectid);
 
 
 
---
--- TOC entry 4014 (class 1259 OID 939868)
--- Name: facilities_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4014 (class 1259 OID 939868)
+    -- Name: facilities_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX facilities_objectid_key ON facilities USING btree (objectid);
+    CREATE UNIQUE INDEX facilities_objectid_key ON facilities USING btree (objectid);
 
 
---
--- TOC entry 4019 (class 1259 OID 939869)
--- Name: group_of_lines_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4019 (class 1259 OID 939869)
+    -- Name: group_of_lines_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX group_of_lines_objectid_key ON group_of_lines USING btree (objectid);
+    CREATE UNIQUE INDEX group_of_lines_objectid_key ON group_of_lines USING btree (objectid);
 
 
 
---
--- TOC entry 4087 (class 1259 OID 942375)
--- Name: index_journey_frequencies_on_timeband_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4087 (class 1259 OID 942375)
+    -- Name: index_journey_frequencies_on_timeband_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_journey_frequencies_on_timeband_id ON journey_frequencies USING btree (timeband_id);
+    CREATE INDEX index_journey_frequencies_on_timeband_id ON journey_frequencies USING btree (timeband_id);
 
 
---
--- TOC entry 4088 (class 1259 OID 942353)
--- Name: index_journey_frequencies_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4088 (class 1259 OID 942353)
+    -- Name: index_journey_frequencies_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_journey_frequencies_on_vehicle_journey_id ON journey_frequencies USING btree (vehicle_journey_id);
+    CREATE INDEX index_journey_frequencies_on_vehicle_journey_id ON journey_frequencies USING btree (vehicle_journey_id);
 
 
---
--- TOC entry 4025 (class 1259 OID 939871)
--- Name: index_journey_pattern_id_on_journey_patterns_stop_points; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4025 (class 1259 OID 939871)
+    -- Name: index_journey_pattern_id_on_journey_patterns_stop_points; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_journey_pattern_id_on_journey_patterns_stop_points ON journey_patterns_stop_points USING btree (journey_pattern_id);
+    CREATE INDEX index_journey_pattern_id_on_journey_patterns_stop_points ON journey_patterns_stop_points USING btree (journey_pattern_id);
 
-CREATE INDEX index_route_id_on_routes_route_points ON routes_route_points USING btree (route_id);
+    CREATE INDEX index_route_id_on_routes_route_points ON routes_route_points USING btree (route_id);
 
---
--- TOC entry 4093 (class 1259 OID 942384)
--- Name: index_journey_pattern_sections_on_journey_pattern_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4093 (class 1259 OID 942384)
+    -- Name: index_journey_pattern_sections_on_journey_pattern_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_journey_pattern_sections_on_journey_pattern_id ON journey_pattern_sections USING btree (journey_pattern_id);
+    CREATE INDEX index_journey_pattern_sections_on_journey_pattern_id ON journey_pattern_sections USING btree (journey_pattern_id);
 
 
---
--- TOC entry 4094 (class 1259 OID 942385)
--- Name: index_journey_pattern_sections_on_route_section_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4094 (class 1259 OID 942385)
+    -- Name: index_journey_pattern_sections_on_route_section_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_journey_pattern_sections_on_route_section_id ON journey_pattern_sections USING btree (route_section_id);
+    CREATE INDEX index_journey_pattern_sections_on_route_section_id ON journey_pattern_sections USING btree (route_section_id);
 
 
---
--- TOC entry 4095 (class 1259 OID 942396)
--- Name: index_jps_on_journey_pattern_id_and_route_section_id_and_rank; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4095 (class 1259 OID 942396)
+    -- Name: index_jps_on_journey_pattern_id_and_route_section_id_and_rank; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX index_jps_on_journey_pattern_id_and_route_section_id_and_rank ON journey_pattern_sections USING btree (journey_pattern_id, route_section_id, rank);
+    CREATE UNIQUE INDEX index_jps_on_journey_pattern_id_and_route_section_id_and_rank ON journey_pattern_sections USING btree (journey_pattern_id, route_section_id, rank);
 
 
---
--- TOC entry 4047 (class 1259 OID 939872)
--- Name: index_stop_areas_on_parent_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4047 (class 1259 OID 939872)
+    -- Name: index_stop_areas_on_parent_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_stop_areas_on_parent_id ON public.stop_areas USING btree (parent_id);
+    CREATE INDEX index_stop_areas_on_parent_id ON public.stop_areas USING btree (parent_id);
 
 
 
---
--- TOC entry 4061 (class 1259 OID 939875)
--- Name: index_time_table_dates_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4061 (class 1259 OID 939875)
+    -- Name: index_time_table_dates_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_time_table_dates_on_time_table_id ON time_table_dates USING btree (time_table_id);
+    CREATE INDEX index_time_table_dates_on_time_table_id ON time_table_dates USING btree (time_table_id);
 
 
---
--- TOC entry 4064 (class 1259 OID 939876)
--- Name: index_time_table_periods_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4064 (class 1259 OID 939876)
+    -- Name: index_time_table_periods_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_time_table_periods_on_time_table_id ON time_table_periods USING btree (time_table_id);
+    CREATE INDEX index_time_table_periods_on_time_table_id ON time_table_periods USING btree (time_table_id);
 
 
---
--- TOC entry 4070 (class 1259 OID 939877)
--- Name: index_time_tables_vehicle_journeys_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4070 (class 1259 OID 939877)
+    -- Name: index_time_tables_vehicle_journeys_on_time_table_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_time_tables_vehicle_journeys_on_time_table_id ON time_tables_vehicle_journeys USING btree (time_table_id);
+    CREATE INDEX index_time_tables_vehicle_journeys_on_time_table_id ON time_tables_vehicle_journeys USING btree (time_table_id);
 
 
---
--- TOC entry 4071 (class 1259 OID 939878)
--- Name: index_time_tables_vehicle_journeys_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4071 (class 1259 OID 939878)
+    -- Name: index_time_tables_vehicle_journeys_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_time_tables_vehicle_journeys_on_vehicle_journey_id ON time_tables_vehicle_journeys USING btree (vehicle_journey_id);
+    CREATE INDEX index_time_tables_vehicle_journeys_on_vehicle_journey_id ON time_tables_vehicle_journeys USING btree (vehicle_journey_id);
 
 
---
--- TOC entry 4077 (class 1259 OID 939882)
--- Name: index_vehicle_journey_at_stops_on_stop_pointid; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4077 (class 1259 OID 939882)
+    -- Name: index_vehicle_journey_at_stops_on_stop_pointid; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_vehicle_journey_at_stops_on_stop_pointid ON vehicle_journey_at_stops USING btree (stop_point_id);
+    CREATE INDEX index_vehicle_journey_at_stops_on_stop_pointid ON vehicle_journey_at_stops USING btree (stop_point_id);
 
 
---
--- TOC entry 4078 (class 1259 OID 939883)
--- Name: index_vehicle_journey_at_stops_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4078 (class 1259 OID 939883)
+    -- Name: index_vehicle_journey_at_stops_on_vehicle_journey_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_vehicle_journey_at_stops_on_vehicle_journey_id ON vehicle_journey_at_stops USING btree (vehicle_journey_id);
+    CREATE INDEX index_vehicle_journey_at_stops_on_vehicle_journey_id ON vehicle_journey_at_stops USING btree (vehicle_journey_id);
 
 
---
--- TOC entry 4081 (class 1259 OID 939884)
--- Name: index_vehicle_journeys_on_route_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4081 (class 1259 OID 939884)
+    -- Name: index_vehicle_journeys_on_route_id; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX index_vehicle_journeys_on_route_id ON vehicle_journeys USING btree (route_id);
+    CREATE INDEX index_vehicle_journeys_on_route_id ON vehicle_journeys USING btree (route_id);
 
 
---
--- TOC entry 4022 (class 1259 OID 939885)
--- Name: journey_patterns_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4022 (class 1259 OID 939885)
+    -- Name: journey_patterns_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX journey_patterns_objectid_key ON journey_patterns USING btree (objectid);
+    CREATE UNIQUE INDEX journey_patterns_objectid_key ON journey_patterns USING btree (objectid);
 
 
---
--- TOC entry 4026 (class 1259 OID 939886)
--- Name: lines_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4026 (class 1259 OID 939886)
+    -- Name: lines_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX lines_objectid_key ON lines USING btree (objectid);
+    CREATE UNIQUE INDEX lines_objectid_key ON lines USING btree (objectid);
 
 
---
--- TOC entry 4029 (class 1259 OID 939887)
--- Name: lines_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4029 (class 1259 OID 939887)
+    -- Name: lines_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX lines_registration_number_key ON lines USING btree (registration_number);
+    CREATE INDEX lines_registration_number_key ON lines USING btree (registration_number);
 
 
---
--- TOC entry 4030 (class 1259 OID 939888)
--- Name: networks_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4030 (class 1259 OID 939888)
+    -- Name: networks_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX networks_objectid_key ON networks USING btree (objectid);
+    CREATE UNIQUE INDEX networks_objectid_key ON networks USING btree (objectid);
 
 
---
--- TOC entry 4033 (class 1259 OID 939889)
--- Name: networks_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4033 (class 1259 OID 939889)
+    -- Name: networks_registration_number_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE INDEX networks_registration_number_key ON networks USING btree (registration_number);
+    CREATE INDEX networks_registration_number_key ON networks USING btree (registration_number);
 
 
---
--- TOC entry 4036 (class 1259 OID 939890)
--- Name: pt_links_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4036 (class 1259 OID 939890)
+    -- Name: pt_links_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX pt_links_objectid_key ON pt_links USING btree (objectid);
+    CREATE UNIQUE INDEX pt_links_objectid_key ON pt_links USING btree (objectid);
 
 
---
--- TOC entry 4041 (class 1259 OID 939891)
--- Name: routes_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4041 (class 1259 OID 939891)
+    -- Name: routes_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX routes_objectid_key ON routes USING btree (objectid);
+    CREATE UNIQUE INDEX routes_objectid_key ON routes USING btree (objectid);
 
 
---
--- TOC entry 4048 (class 1259 OID 939892)
--- Name: stop_areas_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4048 (class 1259 OID 939892)
+    -- Name: stop_areas_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX stop_areas_objectid_key ON public.stop_areas USING btree (objectid);
+    CREATE UNIQUE INDEX stop_areas_objectid_key ON public.stop_areas USING btree (objectid);
 
 
---
--- TOC entry 4051 (class 1259 OID 939893)
--- Name: stop_points_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4051 (class 1259 OID 939893)
+    -- Name: stop_points_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX stop_points_objectid_key ON stop_points USING btree (objectid);
+    CREATE UNIQUE INDEX stop_points_objectid_key ON stop_points USING btree (objectid);
 
-CREATE UNIQUE INDEX route_points_objectid_key ON route_points USING btree (objectid);
+    CREATE UNIQUE INDEX route_points_objectid_key ON route_points USING btree (objectid);
 
-CREATE UNIQUE INDEX scheduled_stop_points_objectid_key ON scheduled_stop_points USING btree (objectid);
+    CREATE UNIQUE INDEX scheduled_stop_points_objectid_key ON scheduled_stop_points USING btree (objectid);
 
---
--- TOC entry 4067 (class 1259 OID 939896)
--- Name: time_tables_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    --
+    -- TOC entry 4067 (class 1259 OID 939896)
+    -- Name: time_tables_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX time_tables_objectid_key ON time_tables USING btree (objectid);
+    CREATE UNIQUE INDEX time_tables_objectid_key ON time_tables USING btree (objectid);
 
 
-CREATE UNIQUE INDEX brandings_objectid_key ON brandings USING btree (objectid);
---
--- TOC entry 4082 (class 1259 OID 939898)
--- Name: vehicle_journeys_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
---
+    CREATE UNIQUE INDEX brandings_objectid_key ON brandings USING btree (objectid);
+    --
+    -- TOC entry 4082 (class 1259 OID 939898)
+    -- Name: vehicle_journeys_objectid_key; Type: INDEX; Schema: chouette_gui; Owner: chouette; Tablespace:
+    --
 
-CREATE UNIQUE INDEX vehicle_journeys_objectid_key ON vehicle_journeys USING btree (objectid);
+    CREATE UNIQUE INDEX vehicle_journeys_objectid_key ON vehicle_journeys USING btree (objectid);
 
 
---
--- TOC entry 4100 (class 2606 OID 939971)
--- Name: access_area_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4100 (class 2606 OID 939971)
+    -- Name: access_area_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.access_points
     ADD CONSTRAINT access_area_fkey FOREIGN KEY (stop_area_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4099 (class 2606 OID 939976)
--- Name: aclk_acpt_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4099 (class 2606 OID 939976)
+    -- Name: aclk_acpt_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.access_links
     ADD CONSTRAINT aclk_acpt_fkey FOREIGN KEY (access_point_id) REFERENCES public.access_points(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4098 (class 2606 OID 939981)
--- Name: aclk_area_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4098 (class 2606 OID 939981)
+    -- Name: aclk_area_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.access_links
     ADD CONSTRAINT aclk_area_fkey FOREIGN KEY (stop_area_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4116 (class 2606 OID 939986)
--- Name: area_parent_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4116 (class 2606 OID 939986)
+    -- Name: area_parent_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.stop_areas
     ADD CONSTRAINT area_parent_fkey FOREIGN KEY (parent_id) REFERENCES public.stop_areas(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4107 (class 2606 OID 939991)
--- Name: arrival_point_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4107 (class 2606 OID 939991)
+    -- Name: arrival_point_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_patterns
     ADD CONSTRAINT arrival_point_fkey FOREIGN KEY (arrival_stop_point_id) REFERENCES stop_points(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4102 (class 2606 OID 939996)
--- Name: colk_endarea_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4102 (class 2606 OID 939996)
+    -- Name: colk_endarea_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.connection_links
     ADD CONSTRAINT colk_endarea_fkey FOREIGN KEY (arrival_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4101 (class 2606 OID 940001)
--- Name: colk_startarea_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4101 (class 2606 OID 940001)
+    -- Name: colk_startarea_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.connection_links
     ADD CONSTRAINT colk_startarea_fkey FOREIGN KEY (departure_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4106 (class 2606 OID 940006)
--- Name: departure_point_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4106 (class 2606 OID 940006)
+    -- Name: departure_point_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_patterns
     ADD CONSTRAINT departure_point_fkey FOREIGN KEY (departure_stop_point_id) REFERENCES stop_points(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4104 (class 2606 OID 940011)
--- Name: groupofline_group_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4104 (class 2606 OID 940011)
+    -- Name: groupofline_group_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY group_of_lines_lines
     ADD CONSTRAINT groupofline_group_fkey FOREIGN KEY (group_of_line_id) REFERENCES group_of_lines(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4103 (class 2606 OID 940016)
--- Name: groupofline_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4103 (class 2606 OID 940016)
+    -- Name: groupofline_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY group_of_lines_lines
     ADD CONSTRAINT groupofline_line_fkey FOREIGN KEY (line_id) REFERENCES lines(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4131 (class 2606 OID 942386)
--- Name: journey_pattern_sections_journey_pattern_id_fk; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4131 (class 2606 OID 942386)
+    -- Name: journey_pattern_sections_journey_pattern_id_fk; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_pattern_sections
     ADD CONSTRAINT journey_pattern_sections_journey_pattern_id_fk FOREIGN KEY (journey_pattern_id) REFERENCES journey_patterns(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4130 (class 2606 OID 942391)
--- Name: journey_pattern_sections_route_section_id_fk; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4130 (class 2606 OID 942391)
+    -- Name: journey_pattern_sections_route_section_id_fk; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_pattern_sections
     ADD CONSTRAINT journey_pattern_sections_route_section_id_fk FOREIGN KEY (route_section_id) REFERENCES route_sections(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4105 (class 2606 OID 940021)
--- Name: jp_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4105 (class 2606 OID 940021)
+    -- Name: jp_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_patterns
     ADD CONSTRAINT jp_route_fkey FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4109 (class 2606 OID 940026)
--- Name: jpsp_jp_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4109 (class 2606 OID 940026)
+    -- Name: jpsp_jp_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_patterns_stop_points
     ADD CONSTRAINT jpsp_jp_fkey FOREIGN KEY (journey_pattern_id) REFERENCES journey_patterns(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4108 (class 2606 OID 940031)
--- Name: jpsp_stoppoint_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4108 (class 2606 OID 940031)
+    -- Name: jpsp_stoppoint_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY journey_patterns_stop_points
     ADD CONSTRAINT jpsp_stoppoint_fkey FOREIGN KEY (stop_point_id) REFERENCES stop_points(id) ON DELETE CASCADE;
@@ -2568,10 +2659,10 @@ ALTER TABLE ONLY routes_route_points
 ALTER TABLE ONLY routes_route_points
     ADD CONSTRAINT rrp_route_fkey FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
 
---
--- TOC entry 4111 (class 2606 OID 940036)
--- Name: line_company_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4111 (class 2606 OID 940036)
+    -- Name: line_company_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY booking_arrangements
     ADD CONSTRAINT booking_arrangement_booking_contact_fkey FOREIGN KEY (booking_contact_id) REFERENCES contact_structures(id) ON DELETE SET NULL;
@@ -2582,65 +2673,65 @@ ALTER TABLE ONLY lines
 ALTER TABLE ONLY lines
     ADD CONSTRAINT line_booking_arrangement_fkey FOREIGN KEY (booking_arrangement_id) REFERENCES booking_arrangements(id) ON DELETE SET NULL;
 
---
--- TOC entry 4110 (class 2606 OID 940041)
--- Name: line_ptnetwork_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4110 (class 2606 OID 940041)
+    -- Name: line_ptnetwork_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY lines
     ADD CONSTRAINT line_ptnetwork_fkey FOREIGN KEY (network_id) REFERENCES networks(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4113 (class 2606 OID 940046)
--- Name: route_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4113 (class 2606 OID 940046)
+    -- Name: route_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY routes
     ADD CONSTRAINT route_line_fkey FOREIGN KEY (line_id) REFERENCES lines(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4112 (class 2606 OID 940051)
--- Name: route_opposite_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4112 (class 2606 OID 940051)
+    -- Name: route_opposite_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY routes
     ADD CONSTRAINT route_opposite_route_fkey FOREIGN KEY (opposite_route_id) REFERENCES routes(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4115 (class 2606 OID 940056)
--- Name: routingconstraint_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4115 (class 2606 OID 940056)
+    -- Name: routingconstraint_line_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY routing_constraints_lines
     ADD CONSTRAINT routingconstraint_line_fkey FOREIGN KEY (line_id) REFERENCES lines(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4118 (class 2606 OID 940066)
--- Name: stoparea_child_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4118 (class 2606 OID 940066)
+    -- Name: stoparea_child_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.stop_areas_stop_areas
     ADD CONSTRAINT stoparea_child_fkey FOREIGN KEY (child_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4117 (class 2606 OID 940071)
--- Name: stoparea_parent_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4117 (class 2606 OID 940071)
+    -- Name: stoparea_parent_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY public.stop_areas_stop_areas
     ADD CONSTRAINT stoparea_parent_fkey FOREIGN KEY (parent_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
 
 
 
---
--- TOC entry 4119 (class 2606 OID 940081)
--- Name: stoppoint_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4119 (class 2606 OID 940081)
+    -- Name: stoppoint_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY stop_points
     ADD CONSTRAINT stoppoint_route_fkey FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
@@ -2664,37 +2755,37 @@ ALTER TABLE ONLY time_table_dates
     ADD CONSTRAINT tm_date_fkey FOREIGN KEY (time_table_id) REFERENCES time_tables(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4122 (class 2606 OID 940091)
--- Name: tm_period_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4122 (class 2606 OID 940091)
+    -- Name: tm_period_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY time_table_periods
     ADD CONSTRAINT tm_period_fkey FOREIGN KEY (time_table_id) REFERENCES time_tables(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4129 (class 2606 OID 940096)
--- Name: vj_company_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4129 (class 2606 OID 940096)
+    -- Name: vj_company_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY vehicle_journeys
     ADD CONSTRAINT vj_company_fkey FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL;
 
 
---
--- TOC entry 4128 (class 2606 OID 940101)
--- Name: vj_jp_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4128 (class 2606 OID 940101)
+    -- Name: vj_jp_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY vehicle_journeys
     ADD CONSTRAINT vj_jp_fkey FOREIGN KEY (journey_pattern_id) REFERENCES journey_patterns(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4127 (class 2606 OID 940106)
--- Name: vj_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4127 (class 2606 OID 940106)
+    -- Name: vj_route_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY flexible_service_properties
     ADD CONSTRAINT fsp_booking_arrangement_fkey FOREIGN KEY (booking_arrangement_id) REFERENCES booking_arrangements(id);
@@ -2716,28 +2807,28 @@ ALTER TABLE ONLY vehicle_journey_at_stops
     ADD CONSTRAINT vjas_sp_fkey FOREIGN KEY (stop_point_id) REFERENCES stop_points(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4125 (class 2606 OID 940116)
--- Name: vjas_vj_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4125 (class 2606 OID 940116)
+    -- Name: vjas_vj_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY vehicle_journey_at_stops
     ADD CONSTRAINT vjas_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4124 (class 2606 OID 940121)
--- Name: vjtm_tm_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4124 (class 2606 OID 940121)
+    -- Name: vjtm_tm_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY time_tables_vehicle_journeys
     ADD CONSTRAINT vjtm_tm_fkey FOREIGN KEY (time_table_id) REFERENCES time_tables(id) ON DELETE CASCADE;
 
 
---
--- TOC entry 4123 (class 2606 OID 940126)
--- Name: vjtm_vj_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
---
+    --
+    -- TOC entry 4123 (class 2606 OID 940126)
+    -- Name: vjtm_vj_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+    --
 
 ALTER TABLE ONLY time_tables_vehicle_journeys
     ADD CONSTRAINT vjtm_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
@@ -2762,7 +2853,7 @@ ALTER TABLE ONLY chouette_gui.companies
     ADD CONSTRAINT companies_brandings_fkey FOREIGN KEY (branding_id) REFERENCES chouette_gui.brandings(id) ON DELETE CASCADE;
 
 
--- sch variations
+    -- sch variations
 
 CREATE SEQUENCE chouette_gui.variations_id_seq
     START WITH 1
@@ -2774,10 +2865,10 @@ ALTER SEQUENCE chouette_gui.variations_id_seq OWNER TO chouette;
 
 
 CREATE TABLE chouette_gui.variations (
-    id bigint NOT NULL DEFAULT nextval('variations_id_seq'::regclass),
-    type character varying(255) NOT NULL,
-    description character varying(255) NOT NULL,
-    job bigint
+                                         id bigint NOT NULL DEFAULT nextval('variations_id_seq'::regclass),
+                                         type character varying(255) NOT NULL,
+                                         description character varying(255) NOT NULL,
+                                         job bigint
 );
 
 ALTER TABLE chouette_gui.variations OWNER TO chouette;
@@ -2790,11 +2881,11 @@ ALTER TABLE chouette_gui.variations OWNER TO chouette;
 --
 
 GRANT ALL ON SCHEMA chouette_gui TO chouette;
-GRANT ALL ON SCHEMA chouette_gui TO PUBLIC;
+    GRANT ALL ON SCHEMA chouette_gui TO PUBLIC;
 
 
--- Completed on 2016-01-04 11:09:57 CET
+    -- Completed on 2016-01-04 11:09:57 CET
 
---
--- PostgreSQL database dump complete
---
+    --
+    -- PostgreSQL database dump complete
+    --

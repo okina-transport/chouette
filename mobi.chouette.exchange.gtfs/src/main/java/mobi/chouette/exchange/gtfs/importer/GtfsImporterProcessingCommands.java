@@ -20,6 +20,7 @@ import mobi.chouette.exchange.importer.GenerateRouteSectionsCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.MergeDuplicatedJourneyPatternsCommand;
 import mobi.chouette.exchange.importer.MergeTripIdCommand;
+import mobi.chouette.exchange.importer.RouteMergerCommand;
 import mobi.chouette.exchange.importer.StopAreaRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
@@ -182,7 +183,8 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
+        List<Command> commands = new ArrayList<>();
+        return commands;
     }
 
     @Override
@@ -231,6 +233,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");

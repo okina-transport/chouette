@@ -16,4 +16,6 @@ public interface LineDAO extends GenericDAO<Line> {
     List<String> findObjectIdLinesInFirstDataspace(List<Long> ids, String dataspace);
 
     boolean hasLines(String schema);
+
+    Line findByObjectIdAndInitialize(String objectId);
 }

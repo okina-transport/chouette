@@ -77,7 +77,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log4j
@@ -90,10 +89,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     private String gtfsRouteId;
 
 
-    //key = "stopAreaId"_"occurence"
-    private Map<String, StopPoint> alredyProcessedStopPoints = new HashMap<>();
-
-    private String previousProcessedStopPoint;
 
     @Override
     public void validate(Context context) throws Exception {
@@ -649,146 +644,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
 
         }
-
-        completeRoutesInformations(referential);
-        checkJourneyPatternStopPointsConsistency(referential);
         // dispose collections
         journeyPatternByStopSequence.clear();
     }
-
-    /**
-     * Check stop points order in journey patterns and fix them if needed
-     * @param referential
-     */
-    private void checkJourneyPatternStopPointsConsistency(Referential referential) {
-        for (Route route : referential.getRoutes().values()) {
-            checkJourneyPatternStopPointsConsistency(route);
-        }
-    }
-
-    private void checkJourneyPatternStopPointsConsistency(Route route) {
-        route.getJourneyPatterns().forEach(this :: checkJourneyPatternStopPointsConsistency);
-    }
-
-    /**
-     * Read stop points in journey patterns and check their order
-     * @param journeyPattern
-     */
-    private void checkJourneyPatternStopPointsConsistency(JourneyPattern journeyPattern) {
-
-
-        Integer previousPosition = null;
-        List<StopPoint> resultStopPointList = new ArrayList<>();
-        journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-
-        for (int i = 0; i < journeyPattern.getStopPoints().size(); i++) {
-
-            StopPoint stopPoint = journeyPattern.getStopPoints().get(i);
-            int currentPosition = stopPoint.getPosition();
-
-            if (previousPosition == null || currentPosition > previousPosition){
-                //Normal case. first point read or current point is after previous. We can move on
-                previousPosition = currentPosition;
-                resultStopPointList.add(stopPoint);
-                continue;
-            }
-
-            //Error detected. We need to search for another point with same stopArea but AFTER the previous point
-            StopPoint newStopPoint = searchStopPointInRoute(journeyPattern.getRoute(), previousPosition, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId());
-            replaceStopPointInVehicleJourneyAtStops(journeyPattern, stopPoint ,newStopPoint);
-            resultStopPointList.add(newStopPoint);
-        }
-
-        journeyPattern.getStopPoints().clear();
-        journeyPattern.getStopPoints().addAll(resultStopPointList);
-    }
-
-
-    /***
-     * Replace old stop point by new stop point, in vehicleJourneyAt stop
-     * @param journeyPattern
-     * @param oldStopPoint
-     * @param newStopPoint
-     */
-    private void replaceStopPointInVehicleJourneyAtStops(JourneyPattern journeyPattern, StopPoint oldStopPoint, StopPoint newStopPoint){
-
-        for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
-            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
-                if (vehicleJourneyAtStop.getStopPoint().equals(oldStopPoint)){
-                    vehicleJourneyAtStop.setStopPoint(newStopPoint);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Search for a stop point, after a position given as parameter
-     *
-     * @param route
-     * @param startPositionSearch
-     * @param stopAreaId
-     * @return
-     */
-    private StopPoint searchStopPointInRoute(Route route, int startPositionSearch, String stopAreaId){
-
-        int currentPosition = 0;
-
-        for (StopPoint stopPoint : route.getStopPoints()) {
-
-            if (currentPosition <= startPositionSearch || !stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(stopAreaId)){
-                currentPosition++;
-                continue;
-            }
-
-            //we have found a stopPoint matching stopAreaId and located AFTER startPositionSearch
-            return stopPoint;
-        }
-
-        throw new IllegalArgumentException("Unable to find a stopPoint for stopArea :" + stopAreaId + ", after position:" + startPositionSearch + ", in route : " + route.getObjectId());
-
-    }
-
-    private void completeRoutesInformations(Referential referential){
-
-        for (Route route : referential.getRoutes().values()) {
-            completeRouteInformations(referential, route);
-        }
-    }
-
-    private void completeRouteInformations(Referential referential, Route route){
-
-        route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-
-        if (route.getName() == null) {
-
-            if (!route.getStopPoints().isEmpty()) {
-                StopPoint firstStopPoint = route.getStopPoints().get(0);
-                StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
-
-                if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
-                    String first = firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
-                    String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
-                    route.setName(first + " -> " + last);
-                }
-            }
-        }
-
-        // Create route point from first an last stop point on route
-        if (route.getRoutePoints().isEmpty()) {
-            if (!route.getStopPoints().isEmpty()) {
-                StopPoint firstStopPoint = route.getStopPoints().get(0);
-                route.getRoutePoints().add(createRoutePointFromStopPoint(referential, firstStopPoint));
-
-                StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
-                route.getRoutePoints().add(createRoutePointFromStopPoint(referential, lastStopPoint));
-            }
-        }
-
-        route.setFilled(true);
-
-    }
-
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
         DropOffType drop = (vehicleJourneyAtStop.dropOff == null ? DropOffType.Scheduled : vehicleJourneyAtStop.dropOff);
@@ -979,11 +837,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         JourneyPattern journeyPattern;
 
         // Route
-        Route route = getOrCreateRoute(referential, configuration, gtfsTrip);
-
+        Route route = createRoute(referential, configuration, gtfsTrip, vehicleJourney.getVehicleJourneyAtStops(), journeyKey);
 
         // JourneyPattern
-        String journeyPatternId = generateJourneyPatternId(configuration,gtfsTrip,journeyKey,vehicleJourney.getVehicleJourneyAtStops());
+        String journeyPatternId = route.getObjectId().replace(Route.ROUTE_KEY, JourneyPattern.JOURNEYPATTERN_KEY);
         journeyPattern = ObjectFactory.getJourneyPattern(referential, journeyPatternId);
         journeyPattern.setName(gtfsTrip.getTripHeadSign());
         journeyPattern.setRoute(route);
@@ -997,9 +854,33 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         journeyPattern.setArrivalStopPoint(stopPoints.get(stopPoints.size() - 1));
 
         journeyPattern.setFilled(true);
+        route.setFilled(true);
 
+        if (route.getName() == null) {
 
+            if (!route.getStopPoints().isEmpty()) {
+                StopPoint firstStopPoint = route.getStopPoints().get(0);
+                StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
 
+                if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+                    String first = firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
+                    String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject()
+                            .getName();
+                    route.setName(first + " -> " + last);
+                }
+            }
+        }
+
+        // Create route point from first an last stop point on route
+        if (route.getRoutePoints().isEmpty()) {
+            if (!route.getStopPoints().isEmpty()) {
+                StopPoint firstStopPoint = route.getStopPoints().get(0);
+                route.getRoutePoints().add(createRoutePointFromStopPoint(referential, firstStopPoint));
+
+                StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
+                route.getRoutePoints().add(createRoutePointFromStopPoint(referential, lastStopPoint));
+            }
+        }
 
 
         // Shape -> routeSections
@@ -1015,28 +896,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         addSyntheticDestinationDisplayIfMissingOnFirstStopPoint(configuration, referential, journeyPattern);
 
         return journeyPattern;
-    }
-
-    private String generateJourneyPatternId( GtfsImportParameters configuration, GtfsTrip gtfsTrip , String journeyKey, List<VehicleJourneyAtStop> list) throws NoSuchAlgorithmException {
-
-        String journeyPatternKey = gtfsTrip.getRouteId() + "_" + gtfsTrip.getDirectionId().ordinal();
-        if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty())
-            journeyPatternKey += "_" + gtfsTrip.getShapeId();
-
-        journeyPatternKey += "_" + AbstractConverter.computeEndId(journeyKey);
-
-
-        for (VehicleJourneyAtStop vehicleJourneyAtStop : list) {
-            VehicleJourneyAtStopWrapper wrapper = (VehicleJourneyAtStopWrapper) vehicleJourneyAtStop;
-            if(wrapper.stopSequence == 1 || wrapper.stopSequence == list.size()){
-                String stopIdWithDropOffPickup = createJourneyKeyFragment(wrapper);
-                journeyPatternKey += "_" + stopIdWithDropOffPickup;
-            }
-        }
-
-        journeyPatternKey += "_" + list.size();
-        return AbstractConverter.composeObjectId(configuration, JourneyPattern.JOURNEYPATTERN_KEY, journeyPatternKey, log);
-
     }
 
     private RoutePoint createRoutePointFromStopPoint(Referential referential, StopPoint firstStopPoint) {
@@ -1213,26 +1072,39 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         return sections;
     }
 
-
-
-
     /**
      * create route for trip
      *
      * @param referential
      * @param configuration
      * @param gtfsTrip
+     * @param journeyKey
      * @return
      */
-    private Route getOrCreateRoute(Referential referential, GtfsImportParameters configuration, GtfsTrip gtfsTrip) throws NoSuchAlgorithmException {
-        String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, gtfsTrip.getRouteId(), log);
+    private Route createRoute(Referential referential, GtfsImportParameters configuration, GtfsTrip gtfsTrip, List<VehicleJourneyAtStop> list, String journeyKey) throws NoSuchAlgorithmException {
+        String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
+                gtfsTrip.getRouteId(), log);
         Line line = ObjectFactory.getLine(referential, lineId);
 
 
         String routeKey = gtfsTrip.getRouteId() + "_" + gtfsTrip.getDirectionId().ordinal();
+        if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty())
+            routeKey += "_" + gtfsTrip.getShapeId();
 
+        routeKey += "_" + AbstractConverter.computeEndId(journeyKey);
 
-        String routeId = AbstractConverter.composeObjectId(configuration, Route.ROUTE_KEY,      routeKey, log);
+        for (VehicleJourneyAtStop vehicleJourneyAtStop : list) {
+            VehicleJourneyAtStopWrapper wrapper = (VehicleJourneyAtStopWrapper) vehicleJourneyAtStop;
+            if(wrapper.stopSequence == 1 || wrapper.stopSequence == list.size()){
+                String stopIdWithDropOffPickup = createJourneyKeyFragment(wrapper);
+                routeKey += "_" + stopIdWithDropOffPickup;
+            }
+        }
+
+        routeKey += "_" + list.size();
+//        routeKey += "_" + line.getRoutes().size();
+        String routeId = AbstractConverter.composeObjectId(configuration, Route.ROUTE_KEY,
+                routeKey, log);
 
 
         Route route = ObjectFactory.getRoute(referential, routeId);
@@ -1364,19 +1236,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         Set<String> stopPointKeys = new HashSet<String>();
 
         int position = 0;
-        Map<String, Integer> occurenceMap = new HashMap<>();
-
-
-
-        int currentOccurence = 0;
-        alredyProcessedStopPoints.clear();
-        previousProcessedStopPoint = null;
-
         for (VehicleJourneyAtStop vehicleJourneyAtStop : list) {
-
             VehicleJourneyAtStopWrapper wrapper = (VehicleJourneyAtStopWrapper) vehicleJourneyAtStop;
             String stopIdKeyFragment = createJourneyKeyFragment(wrapper);
-            String baseKey = journeyPattern.getObjectId().replace( JourneyPattern.JOURNEYPATTERN_KEY, StopPoint.STOPPOINT_KEY) + "a"
+            String baseKey = route.getObjectId().replace(Route.ROUTE_KEY, StopPoint.STOPPOINT_KEY) + "a"
                     + stopIdKeyFragment.trim();//.replaceAll("[^a-zA-Z_0-9\\-]", "_");
             String stopKey = baseKey;
             int dup = 1;
@@ -1385,28 +1248,20 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
             stopPointKeys.add(stopKey);
 
+            StopPoint stopPoint = ObjectFactory.getStopPoint(referential, stopKey);
 
-            String stopAreaId = AbstractConverter.toStopAreaId(configuration,"Quay", wrapper.stopId);
+            String stopAreaId = AbstractConverter.toStopAreaId(configuration,
+                    "Quay", wrapper.stopId);
             StopArea stopArea = ObjectFactory.getStopArea(referential, stopAreaId);
 
-            if (!occurenceMap.containsKey(stopAreaId)){
-                currentOccurence = 1;
-                occurenceMap.put(stopAreaId, currentOccurence);
-            }else{
-                currentOccurence = occurenceMap.get(stopAreaId) + 1;
-                occurenceMap.put(stopAreaId, currentOccurence);
-            }
-
-            StopPoint stopPoint = getStopPointFromRoute(referential, route , stopAreaId, currentOccurence, stopKey);
-
-
-            String scheduledStopPointKey = stopPoint.getObjectId().replace(StopPoint.STOPPOINT_KEY, ObjectIdTypes.SCHEDULED_STOP_POINT_KEY);
+            String scheduledStopPointKey = stopKey.replace(StopPoint.STOPPOINT_KEY, ObjectIdTypes.SCHEDULED_STOP_POINT_KEY);
             ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointKey);
             stopPoint.setScheduledStopPoint(scheduledStopPoint);
 
 
             scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
-
+            stopPoint.setRoute(route);
+            stopPoint.setPosition(position++);
 //            stopPoint.setForBoarding(toBoardingPossibility(wrapper.pickup));
 //            stopPoint.setForAlighting(toAlightingPossibility(wrapper.dropOff));
 
@@ -1425,112 +1280,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             stopPoint.setFilled(true);
         }
         NeptuneUtil.refreshDepartureArrivals(journeyPattern);
-    }
-
-    private StopPoint getStopPointFromRoute(Referential referential, Route route,  String stopAreaId, int  occurenceNb, String stopKey){
-        int currentOccurence = 1;
-
-        //re-order route stop points before processing
-        route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-
-
-        for (StopPoint stopPoint : route.getStopPoints()) {
-            if (stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(stopAreaId)){
-                // a stop point with the correct StopAreaId has been found in route
-
-                if (currentOccurence == occurenceNb){
-
-                    checkRoutePointConsistency(route,stopPoint);
-                    String previousStopPoint = stopAreaId + "_" + occurenceNb;
-                    alredyProcessedStopPoints.put(previousStopPoint, stopPoint);
-                    previousProcessedStopPoint = previousStopPoint;
-
-                    //This is the correct occurence, we can get this stopPoint
-                    return stopPoint;
-                }else{
-                    //There is a loop in the journey pattern and this is not the correct occurence.
-                    //we need to found the next stopPoint having the correct stopAreaId
-                    currentOccurence++;
-                }
-            }
-        }
-
-        //StopPoint has not be found in the route. we need to create a new one
-        StopPoint stopPoint = ObjectFactory.getStopPoint(referential, stopKey);
-
-        int targetedPosition = calculateTargetPosition();
-        shiftSuccessors(route, targetedPosition);
-        stopPoint.setPosition(targetedPosition);
-        stopPoint.setRoute(route);
-
-        String previousStopPoint = stopAreaId + "_" + occurenceNb;
-        previousProcessedStopPoint = previousStopPoint;
-        alredyProcessedStopPoints.put(previousStopPoint, stopPoint);
-        return stopPoint;
-
-    }
-
-    /**
-     * When a point is found in route as "already existing point", we need to check if it is correctly spotted
-     * e.g:
-     *  journey pattern1 :A,B,C
-     *  journey pattern2 :A,B,D
-     *  journey pattern3 :A,B,C,D
-     *
-     *  When recovering D from the route points (while processing jp3), we need to check if it is spotted after C
-     */
-    private void checkRoutePointConsistency(Route route, StopPoint currentlyProcessedStopPoint){
-
-        if (previousProcessedStopPoint == null)
-            //no previous point were processed before. So, no consistency to check
-            return;
-
-        StopPoint previousStopPoint = alredyProcessedStopPoints.get(previousProcessedStopPoint);
-
-        if (previousStopPoint.getPosition() < currentlyProcessedStopPoint.getPosition()){
-            //no issue detected. Previous point of the journey pattern is before current point of the journey pattern
-            return;
-        }
-
-        //issue found: we need to move points
-        int targetPosition = calculateTargetPosition();
-        shiftSuccessors(route, targetPosition);
-        currentlyProcessedStopPoint.setPosition(targetPosition);
-        reInitStopPointPositions(route);
-    }
-
-
-    /**
-     * To avoid gaps in stop point positions, re-initialization of all the positions
-     * @param route
-     *      route on which position must be re-initialized
-     */
-    private void reInitStopPointPositions(Route route){
-        route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
-
-        for (int i = 0; i < route.getStopPoints().size(); i++){
-            route.getStopPoints().get(i).setPosition(i);
-        }
-    }
-
-    private void shiftSuccessors(Route route, int newPointPosition){
-        route.getStopPoints().stream()
-                .filter(stopPoint -> stopPoint.getPosition() >= newPointPosition)
-                .forEach(stopPoint -> stopPoint.setPosition(stopPoint.getPosition() + 1));
-
-    }
-
-    private int calculateTargetPosition() {
-
-        if (StringUtils.isEmpty(previousProcessedStopPoint)){
-            //there is no previous point. Current point is the first of the pattern. We place it at the beginning
-            return 0;
-        }else{
-            //there is a predecessor. Current point is placed after
-            return alredyProcessedStopPoints.get(previousProcessedStopPoint).getPosition() + 1;
-        }
-
-
     }
 
     @AllArgsConstructor
@@ -1555,17 +1304,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             return rightIndex - leftIndex;
         }
     };
-
-
-    public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
-        @Override
-        public int compare(StopPoint sp1, StopPoint sp2) {
-            return Integer.compare(sp1.getPosition(), sp2.getPosition());
-        }
-    };
-
-
-
 
     class OrderedCoordinate extends Coordinate {
         private static final long serialVersionUID = 1L;
