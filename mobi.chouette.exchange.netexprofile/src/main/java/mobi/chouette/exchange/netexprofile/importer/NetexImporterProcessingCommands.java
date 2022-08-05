@@ -19,6 +19,7 @@ import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.GenerateRouteSectionsCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
+import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
@@ -320,7 +321,18 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-		return new ArrayList<>();
+		List<Command> commands = new ArrayList<>();
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+
+		try {
+			commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+
+
+		return commands;
 	}
 
 }

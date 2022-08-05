@@ -17,6 +17,7 @@ import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
 import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
+import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
@@ -189,7 +190,19 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-		return new ArrayList<>();
+
+		List<Command> commands = new ArrayList<>();
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+
+		try {
+			commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+
+
+		return commands;
 	}
 
 }
