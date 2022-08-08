@@ -123,7 +123,7 @@ resource "google_sql_database_instance" "db_instance" {
     }
     insights_config {
       query_insights_enabled = true
-      query_string_length = 2048
+      query_string_length = 4500
     }
   }
 }
