@@ -91,7 +91,7 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 			values.add(STRING_CONVERTER.to(context, FIELDS.parent_station,                      input.getParentStation(), false));
 			values.add(TIMEZONE_CONVERTER.to(context, FIELDS.stop_timezone,                     input.getStopTimezone(), false));
 			values.add(WHEELCHAIRBOARDINGTYPE_CONVERTER.to(context, FIELDS.wheelchair_boarding, input.getWheelchairBoarding(),false));
-			values.add(ROUTETYPE_CONVERTER.to(context, FIELDS.level_id,                         input.getVehicleType(), false));
+			values.add("");
 			values.add(STRING_CONVERTER.to(context, FIELDS.platform_code,                       input.getPlatformCode(), false));
 
 			result = Tokenizer.untokenize(values);
