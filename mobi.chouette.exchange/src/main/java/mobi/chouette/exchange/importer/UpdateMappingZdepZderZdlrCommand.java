@@ -59,9 +59,7 @@ public class UpdateMappingZdepZderZdlrCommand implements Command {
 			});
 			log.info("Les plages ZDEP de " + context.get("ref") + " ont été mappées à leurs ZDER et ZDLR");
 		} catch (Exception e) {
-            if (swallow == null || !swallow.booleanValue()) {
-                throw e;
-            }
+            //swallow
         } finally {
             context.put("swallow", Boolean.FALSE);
         }
