@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
+import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.StopArea;
@@ -40,7 +41,8 @@ public class GtfsStopUtils {
      * @return
      */
     private static String createStandardId(StopArea stop, String idPrefix){
-        return StringUtils.isEmpty(idPrefix) ? stop.getOriginalStopId() : idPrefix + stop.getOriginalStopId();
+        String originalId = stop.getOriginalStopId().replace(Constant.COLON_REPLACEMENT_CODE, ":");
+        return StringUtils.isEmpty(idPrefix) ? originalId : idPrefix + originalId;
     }
 
     /**
@@ -53,18 +55,20 @@ public class GtfsStopUtils {
      * @return
      */
     private static String createTridentId(StopArea stop, String idPrefix) {
+        String originalId = stop.getOriginalStopId().replace(Constant.COLON_REPLACEMENT_CODE, ":");
         if (stop.getObjectId().contains("Quay")) {
-            return idPrefix + TRIDENT_QUAY_TYPE + stop.getOriginalStopId();
+            return idPrefix + TRIDENT_QUAY_TYPE + originalId;
         }
-        return idPrefix + TRIDENT_STOP_PLACE_TYPE + stop.getOriginalStopId();
+        return idPrefix + TRIDENT_STOP_PLACE_TYPE + originalId;
     }
 
 
     private static String createTridentIdStandard(StopArea stop, String prefix) {
+        String originalId = stop.getOriginalStopId().replace(Constant.COLON_REPLACEMENT_CODE, ":");
         if (stop.getObjectId().contains("Quay")) {
-            return prefix + TRIDENT_QUAY_TYPE + stop.getOriginalStopId();
+            return prefix + TRIDENT_QUAY_TYPE + originalId;
         }
-        return prefix + TRIDENT_STOP_PLACE_TYPE + stop.getOriginalStopId();
+        return prefix + TRIDENT_STOP_PLACE_TYPE + originalId;
     }
 
 }
