@@ -227,21 +227,28 @@ public class StopTimeByTrip extends IndexImpl<GtfsStopTime> implements GtfsConve
 		boolean result = true;
 		
 		String tripId = bean.getTripId();
-		
-		boolean result2 = true;
+
 		String stopId = bean.getStopId();
 		if (isEmpty(stopId)) {
-			result2 = false;
+			result = false;
 		} else {
 			if (!dao.getStopById().containsKey(stopId)) {
 				// this bean has no stop
 				bean.getErrors().add(new GtfsException(_path, bean.getId(), getIndex(FIELDS.stop_id.name()), FIELDS.stop_id.name(), GtfsException.ERROR.UNREFERENCED_ID, tripId, stopId));
-				result2 = false;
+				result = false;
 			}
-			if (result2)
-				bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);
+
 		}
-		result = result && result2;
+
+		if (!dao.getTripById().containsKey(tripId)){
+			bean.getErrors().add(new GtfsException(_path, bean.getId(), getIndex(FIELDS.trip_id.name()), FIELDS.trip_id.name(), GtfsException.ERROR.UNREFERENCED_ID, tripId, tripId));
+			result = false;
+		}
+
+		if (result){
+			bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);
+		}
+
 		
 		return result;
 	}
