@@ -66,6 +66,10 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "wrongGeolocStopAreas")
     private List<Pair<StopArea, StopArea>> wrongGeolocStopAreas = new ArrayList<>();
 
+
+    @XmlElement(name = "changedNameStopAreas")
+    private List<Pair<StopArea, StopArea>> changedNameStopAreas = new ArrayList<>();
+
     @XmlElement(name = "multipleUsedTimetables")
     private Map<String, Set<String>> multipleUsedTimetables = new HashMap<>();
 
@@ -232,6 +236,10 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!wrongGeolocStopAreas.isEmpty()) {
             canLaunchImport = false;
             printWrongGeolocList(out);
+        }
+
+        if (!changedNameStopAreas.isEmpty()) {
+            printChangedNameList(out);
         }
 
         if (!multipleUsedTimetables.isEmpty()) {
@@ -515,6 +523,25 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             out.print(" \"incoming_name\": \"" + incomingStop.getName() + "\",\n");
             out.print(" \"incoming_latitude\": \"" + incomingStop.getLatitude() + "\",\n");
             out.print(" \"incoming_longitude\": \"" + incomingStop.getLongitude() + endOfline);
+        }
+        out.println("]");
+    }
+
+    private void printChangedNameList(PrintStream out) {
+        out.print(",\n");
+        out.print("\"changedNameStopAreas\": [\n");
+        String endOfline;
+
+        for (int i = 0; i < changedNameStopAreas.size(); i++) {
+            endOfline = i == changedNameStopAreas.size() - 1 ? "\" }\n" : "\" },\n";
+
+            StopArea existingStop = changedNameStopAreas.get(i).getLeft();
+            StopArea incomingStop = changedNameStopAreas.get(i).getRight();
+
+            out.print("{ \"original_stop_id\": \"" + incomingStop.getOriginalStopId() + "\",\n");
+            out.print(" \"existing_name\": \"" + existingStop.getName() + "\",\n");
+
+            out.print(" \"incoming_name\": \"" + incomingStop.getName()  + endOfline);
         }
         out.println("]");
     }

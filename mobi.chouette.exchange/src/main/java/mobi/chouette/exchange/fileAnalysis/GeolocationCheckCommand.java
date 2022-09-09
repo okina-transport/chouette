@@ -79,6 +79,13 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
                         //StopArea is added to wrongGeolocList
                         analyzeReport.getWrongGeolocStopAreas().add(Pair.of(existingStop, incomingStopArea));
                     }
+
+
+                    if (!existingStop.getName().equals(incomingStopArea.getName())) {
+                        //if the stop area name has changed, user will be notified
+                        analyzeReport.getChangedNameStopAreas().add(Pair.of(existingStop, incomingStopArea));
+                    }
+
                 }
 
             }
