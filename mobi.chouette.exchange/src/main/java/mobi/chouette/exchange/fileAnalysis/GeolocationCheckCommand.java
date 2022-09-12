@@ -8,6 +8,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.exchange.validation.checkpoint.AbstractValidation;
 import mobi.chouette.model.StopArea;
@@ -43,6 +44,8 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
     public boolean execute(Context context) throws Exception {
         log.info("Starting geolocation check :");
         AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
+        AbstractImportParameter configuration = (AbstractImportParameter) context.get(CONFIGURATION);
+
         List<StopArea> stopList = analyzeReport.getStops();
         List<String> originalStopIds = analyzeReport.getStops().stream()
                 .map(StopArea::getOriginalStopId)
@@ -81,7 +84,7 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
                     }
 
 
-                    if (!existingStop.getName().equals(incomingStopArea.getName())) {
+                    if (configuration != null && !configuration.isKeepStopNames() && !existingStop.getName().equals(incomingStopArea.getName())) {
                         //if the stop area name has changed, user will be notified
                         analyzeReport.getChangedNameStopAreas().add(Pair.of(existingStop, incomingStopArea));
                     }

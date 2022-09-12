@@ -51,6 +51,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) configuration;
 		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
+		context.put(KEEP_STOP_NAMES, Boolean.valueOf(parameters.isKeepStopNames()));
 
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NetexImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);

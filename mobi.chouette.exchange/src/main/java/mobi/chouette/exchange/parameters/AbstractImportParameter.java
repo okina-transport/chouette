@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "noSave", "cleanMode", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines",
-		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation" }, name = "actionImportParameter")
+		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation", "keepStopNames" }, name = "actionImportParameter")
 public class AbstractImportParameter extends AbstractParameter {
 
 	@XmlElement(name = "no_save", defaultValue = "false")
@@ -72,6 +72,11 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Getter
 	@Setter
 	private boolean keepStopGeolocalisation = false;
+
+	@XmlElement(name = "keep_stop_names", defaultValue = "true")
+	@Getter
+	@Setter
+	private boolean keepStopNames = true;
 
 	public boolean isValid(Logger log) {
 		return super.isValid(log);
