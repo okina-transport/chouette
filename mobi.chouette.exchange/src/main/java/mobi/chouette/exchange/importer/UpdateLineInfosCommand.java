@@ -16,9 +16,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.BikeAccessEnum;
-import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.TadEnum;
+import mobi.chouette.model.type.*;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
@@ -26,6 +24,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -147,10 +146,18 @@ public class UpdateLineInfosCommand implements Command, Constant {
     }
 
     private boolean isVJASTAD(VehicleJourneyAtStop vehicleJourneyAtStop) {
-        return vehicleJourneyAtStop.getBoardingAlightingPossibility() != null
-                && (vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(BoardingAlightingPossibilityEnum.BoardAndAlightOnRequest)
-                || vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(BoardingAlightingPossibilityEnum.AlightOnRequest)
-                || vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(BoardingAlightingPossibilityEnum.BoardOnRequest));
+
+        if (vehicleJourneyAtStop.getBoardingAlightingPossibility() == null){
+            return false;
+        }
+
+        List<DropOffTypeEnum> tadDropOffTypes = Arrays.asList(DropOffTypeEnum.AgencyCall, DropOffTypeEnum.DriverCall);
+        List<PickUpTypeEnum> tadPickUpTypes = Arrays.asList(PickUpTypeEnum.AgencyCall, PickUpTypeEnum.DriverCall);
+
+
+        return tadDropOffTypes.contains(vehicleJourneyAtStop.getBoardingAlightingPossibility().getDropOffType()) ||
+                tadPickUpTypes.contains(vehicleJourneyAtStop.getBoardingAlightingPossibility().getPickUpType());
+
     }
 
     public static class DefaultCommandFactory extends CommandFactory {
