@@ -424,7 +424,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 	}
 
 	public boolean isActiveOnPeriod(final LocalDate start, final LocalDate end) {
-		if(start == null || end == null) {
+		if(start == null || end == null || this.getEndOfPeriod().isBefore(start)) {
 			return false;
 		} else {
 			LocalDate day = start;
