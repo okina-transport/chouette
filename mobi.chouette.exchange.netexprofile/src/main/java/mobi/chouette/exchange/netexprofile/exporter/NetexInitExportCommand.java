@@ -87,7 +87,9 @@ public class NetexInitExportCommand implements Command, Constant {
 				jobData.setOutputFilename(exportedFileName);
 			}else{
 				if (isSimulationExport) {
-					jobData.setOutputFilename(referential + "_" + sdf.format(currentDate) + "Z.zip");
+					String prefix = referential.replace("simulation", "SIMULATION");
+					jobData.setOutputFilename(prefix + "_" + sdf.format(currentDate) + "Z.zip");
+
 				} else {
 					jobData.setOutputFilename("OFFRE_" + idSite + "_" + sdf.format(currentDate) + "Z.zip");
 				}
