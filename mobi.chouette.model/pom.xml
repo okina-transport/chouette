@@ -70,6 +70,13 @@
 	</build>
 	<dependencies>
 
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
+
 		<!-- Default Dependencies -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
