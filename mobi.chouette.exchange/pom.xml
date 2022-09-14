@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-7.0</artifactId>
+            <artifactId>jboss-jakartaee-8.0</artifactId>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
@@ -69,10 +69,11 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
 
-        <!-- Others Dependencies -->
+
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
@@ -121,9 +122,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wildfly</groupId>
+            <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-embedded</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>sun.jdk</groupId>
+                    <artifactId>jconsole</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wildfly</groupId>
