@@ -291,15 +291,15 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-maven-plugin</artifactId>
                 <version>${lombok-maven-plugin-version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>sun.jdk</groupId>
-                        <artifactId>tools</artifactId>
-                        <version>1.8</version>
-                        <scope>system</scope>
-                        <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                    </dependency>
-                </dependencies>
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>sun.jdk</groupId>-->
+<!--                        <artifactId>tools</artifactId>-->
+<!--                        <version>1.8</version>-->
+<!--                        <scope>system</scope>-->
+<!--                        <systemPath>${java.home}/../lib/tools.jar</systemPath>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
                 <executions>
                     <execution>
                         <id>delombok</id>
