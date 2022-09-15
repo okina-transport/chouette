@@ -723,12 +723,6 @@
 				<version>${entur.helpers.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-cache-core</artifactId>
-				<version>3.0.9.Final</version>
-			</dependency>
-
 			<!-- Test Dependencies -->
 			<dependency>
 				<groupId>org.testng</groupId>
