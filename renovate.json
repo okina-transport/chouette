@@ -3,9 +3,10 @@
     "github>entur/ror-renovate-config"
   ],
   "baseBranch": "rutebanken_develop",
-  "timezone": "Europe/Oslo",
-  "automergeSchedule": "after 5am and before 7am every weekday",
   "minor": {
+    "automerge": false
+  },
+  "patch": {
     "automerge": false
   },
   "separateMinorPatch": true
