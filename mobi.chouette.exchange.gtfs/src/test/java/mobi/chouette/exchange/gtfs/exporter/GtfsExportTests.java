@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
+import mobi.chouette.dao.ConnectionLinkDAO;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -74,6 +75,9 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 
 	@EJB
 	private StopAreaDAO stopAreaDAO;
+
+	@EJB
+	private ConnectionLinkDAO connectionLinkDao;
 
 	@Deployment
 	public static EnterpriseArchive createDeployment() {
@@ -433,7 +437,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
  		}
  		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
  		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");
-
+		Assert.assertTrue(connectionLinkDao.findAll().size() > 0);
     }
 
 

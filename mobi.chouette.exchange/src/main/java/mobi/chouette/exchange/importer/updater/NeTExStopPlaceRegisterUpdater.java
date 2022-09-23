@@ -494,8 +494,10 @@ public class NeTExStopPlaceRegisterUpdater {
     private void feedFileToReferentialMap(Map<String,String> fileToReferentialMap, StopPlace stopPlace){
 
         for (Object o : stopPlace.getQuays().getQuayRefOrQuay()) {
-            if (o instanceof Quay){
-                Quay quay = (Quay) o;
+
+            JAXBElement jaxbElt = (JAXBElement) o;
+            if (jaxbElt.getValue() instanceof Quay){
+                Quay quay = (Quay) jaxbElt.getValue();
                 Optional<String> importedIdOp = NeTExStopPlaceUtil.getImportedId(quay);
                 importedIdOp.ifPresent(importedId-> fileToReferentialMap.put(importedId,quay.getId()));
             }
