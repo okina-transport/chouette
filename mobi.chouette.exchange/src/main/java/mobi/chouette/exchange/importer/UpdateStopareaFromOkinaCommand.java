@@ -76,8 +76,13 @@ public class UpdateStopareaFromOkinaCommand implements Command {
 
 		neTExIdfmStopPlaceRegisterUpdater.update(context, areas);
 
-		Command command = CommandFactory.create(new InitialContext(), UpdateMappingZdepZderZdlrAsynchronousCommand.class.getName());
-		command.execute(context);
+
+		Optional<Provider> provider = providerDAO.findBySchema(ContextHolder.getContext());
+
+		if (provider.isPresent() && provider.get().isIdfm()){
+			Command command = CommandFactory.create(new InitialContext(), UpdateMappingZdepZderZdlrAsynchronousCommand.class.getName());
+			command.execute(context);
+		}
 
 		return SUCCESS;
 	}
