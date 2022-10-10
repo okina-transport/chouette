@@ -64,6 +64,7 @@ public class NetexprofileAnalyzeFileCommand extends AbstractImporterCommand impl
         }catch(Exception e){
             log.error("Error in netex analysis", e);
             report.setResult("NOK");
+            reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_DATA,"unable to export data : "+e);
         }
         return result;
     }
