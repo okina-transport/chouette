@@ -1,18 +1,17 @@
 package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.neptune.JsonExtension;
 import mobi.chouette.model.Footnote;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
+import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
+import mobi.chouette.model.type.DropOffTypeEnum;
+import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -26,14 +25,7 @@ import org.trident.schema.trident.VehicleJourneyType;
 public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJourneyType, VehicleJourney> implements
 		JsonExtension {
 
-	private static Comparator<VehicleJourneyAtStop> VEHICLE_JOURNEY_AT_STOP_SORTER = new Comparator<VehicleJourneyAtStop>() {
-
-		@Override
-		public int compare(VehicleJourneyAtStop o1, VehicleJourneyAtStop o2) {
-			return o1.getStopPoint().getPosition() - o2.getStopPoint().getPosition();
-		}
-
-	};
+	private static Comparator<VehicleJourneyAtStop> VEHICLE_JOURNEY_AT_STOP_SORTER = Comparator.comparingInt(o -> o.getStopPoint().getPosition());
 	
 	// @Override
 	public VehicleJourneyType produce(VehicleJourney vehicleJourney, boolean addExtension, String timetableObjectId) {
@@ -59,15 +51,13 @@ public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJ
 		jaxbVehicleJourney.setFacility(getNotEmptyString(vehicleJourney.getFacility()));
 		jaxbVehicleJourney.setJourneyPatternId(getNonEmptyObjectId(vehicleJourney.getJourneyPattern()));
 		if (vehicleJourney.getNumber() != null)
-			jaxbVehicleJourney.setNumber(BigInteger.valueOf(vehicleJourney.getNumber().longValue()));
+			jaxbVehicleJourney.setNumber(BigInteger.valueOf(vehicleJourney.getNumber()));
 		jaxbVehicleJourney.setOperatorId(getNonEmptyObjectId(vehicleJourney.getCompany()));
 		jaxbVehicleJourney.setPublishedJourneyIdentifier(getNotEmptyString(vehicleJourney
 				.getPublishedJourneyIdentifier()));
 		jaxbVehicleJourney.setPublishedJourneyName(getNotEmptyString(vehicleJourney.getPublishedJourneyName()));
 		jaxbVehicleJourney.setRouteId(getNonEmptyObjectId(vehicleJourney.getRoute()));
 
-		// jaxbVehicleJourney.setTimeSlotId(getNonEmptyObjectId(vehicleJourney
-		// .getTimeSlot()));
 		if (vehicleJourney.getTransportMode() != null) {
 			TransportModeNameEnum transportMode = vehicleJourney.getTransportMode();
 			try {
@@ -80,13 +70,13 @@ public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJ
 
 		if (vehicleJourney.getVehicleJourneyAtStops() != null) {
 			List<VehicleJourneyAtStop> lvjas = vehicleJourney.getVehicleJourneyAtStops();
-			Collections.sort(lvjas, VEHICLE_JOURNEY_AT_STOP_SORTER);
+			lvjas.sort(VEHICLE_JOURNEY_AT_STOP_SORTER);
 			int order = 1;
 			LocalTime firstDeparture = null;
 			for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
 				if (vehicleJourneyAtStop != null) {
 					VehicleJourneyAtStopType jaxbVehicleJourneyAtStop = tridentFactory.createVehicleJourneyAtStopType();
-					jaxbVehicleJourneyAtStop.setBoardingAlightingPossibility(buildBoardingAndAlightingPossibility(vehicleJourneyAtStop.getStopPoint()));
+					jaxbVehicleJourneyAtStop.setBoardingAlightingPossibility(buildBoardingAndAlightingPossibility(vehicleJourneyAtStop));
 					jaxbVehicleJourneyAtStop.setOrder(BigInteger.valueOf(order++));
 					jaxbVehicleJourneyAtStop.setStopPointId(getNonEmptyObjectId(vehicleJourneyAtStop.getStopPoint()));
 					jaxbVehicleJourneyAtStop.setVehicleJourneyId(jaxbVehicleJourney.getObjectId());
@@ -145,60 +135,45 @@ public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJ
 		}
 	}
 
-	protected BoardingAlightingPossibilityType buildBoardingAndAlightingPossibility(StopPoint point) {
-		if (point.getForAlighting() == null && point.getForBoarding() == null)
+	protected BoardingAlightingPossibilityType buildBoardingAndAlightingPossibility(VehicleJourneyAtStop vehicleJourneyAtStop) {
+		if (vehicleJourneyAtStop.getBoardingAlightingPossibility() == null)
 			return null;
-		AlightingPossibilityEnum forAlighting = point.getForAlighting() == null ? AlightingPossibilityEnum.normal
-				: point.getForAlighting();
-		BoardingPossibilityEnum forBoarding = point.getForBoarding() == null ? BoardingPossibilityEnum.normal : point
-				.getForBoarding();
 
-		switch (forAlighting) {
-		case normal:
-			switch (forBoarding) {
-			case normal:
-				return null;
-			case forbidden:
-				return BoardingAlightingPossibilityType.ALIGHT_ONLY;
-			case request_stop:
-				return BoardingAlightingPossibilityType.BOARD_ON_REQUEST;
-			case is_flexible:
-				return null;
-			}
-		case forbidden:
-			switch (forBoarding) {
-			case normal:
-				return BoardingAlightingPossibilityType.BOARD_ONLY;
-			case forbidden:
-				return BoardingAlightingPossibilityType.NEITHER_BOARD_OR_ALIGHT;
-			case request_stop:
-				return BoardingAlightingPossibilityType.BOARD_ONLY;
-			case is_flexible:
-				return BoardingAlightingPossibilityType.BOARD_ONLY;
-			}
-		case request_stop:
-			switch (forBoarding) {
-			case normal:
-				return BoardingAlightingPossibilityType.ALIGHT_ON_REQUEST;
-			case forbidden:
-				return BoardingAlightingPossibilityType.ALIGHT_ONLY;
-			case request_stop:
-				return BoardingAlightingPossibilityType.BOARD_AND_ALIGHT_ON_REQUEST;
-			case is_flexible:
-				return BoardingAlightingPossibilityType.ALIGHT_ON_REQUEST;
-			}
-		case is_flexible:
-			switch (forBoarding) {
-			case normal:
-				return null;
-			case forbidden:
-				return BoardingAlightingPossibilityType.ALIGHT_ONLY;
-			case request_stop:
-				return BoardingAlightingPossibilityType.BOARD_ON_REQUEST;
-			case is_flexible:
-				return null;
-			}
+		BoardingAlightingPossibilityEnum boardingAlightingPossibility = vehicleJourneyAtStop.getBoardingAlightingPossibility();
+
+		DropOffTypeEnum dropOffType = boardingAlightingPossibility.getDropOffType();
+		PickUpTypeEnum pickUpType = boardingAlightingPossibility.getPickUpType();
+
+		if(dropOffType.equals(DropOffTypeEnum.Scheduled) && pickUpType.equals(PickUpTypeEnum.Scheduled)){
+			return BoardingAlightingPossibilityType.BOARD_AND_ALIGHT;
 		}
+
+		if(dropOffType.equals(DropOffTypeEnum.Scheduled) && pickUpType.equals(PickUpTypeEnum.NoAvailable)){
+			return BoardingAlightingPossibilityType.ALIGHT_ONLY;
+		}
+
+		if(dropOffType.equals(DropOffTypeEnum.NoAvailable) && pickUpType.equals(PickUpTypeEnum.Scheduled)){
+			return BoardingAlightingPossibilityType.BOARD_ONLY;
+		}
+
+		if(dropOffType.equals(DropOffTypeEnum.NoAvailable) && pickUpType.equals(PickUpTypeEnum.NoAvailable)){
+			return BoardingAlightingPossibilityType.NEITHER_BOARD_OR_ALIGHT;
+		}
+
+		boolean pickUpOnRequest = pickUpType.equals(PickUpTypeEnum.AgencyCall) || pickUpType.equals(PickUpTypeEnum.DriverCall);
+		boolean dropOffOnRequest = dropOffType.equals(DropOffTypeEnum.AgencyCall) || dropOffType.equals(DropOffTypeEnum.DriverCall);
+		if(dropOffOnRequest && pickUpOnRequest){
+			return BoardingAlightingPossibilityType.BOARD_AND_ALIGHT_ON_REQUEST;
+		}
+
+		if(dropOffOnRequest){
+			return BoardingAlightingPossibilityType.ALIGHT_ON_REQUEST;
+		}
+
+		if(pickUpOnRequest){
+			return BoardingAlightingPossibilityType.BOARD_ON_REQUEST;
+		}
+
 		return null;
 
 	}

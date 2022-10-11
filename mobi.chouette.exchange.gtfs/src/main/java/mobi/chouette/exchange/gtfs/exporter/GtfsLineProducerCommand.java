@@ -135,7 +135,6 @@ public class GtfsLineProducerCommand implements Command, Constant {
 
 		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
 		String prefix = configuration.getObjectIdPrefix();
-		String sharedPrefix = prefix;
 		ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 		Map<String, List<Timetable>> timetables = collection.getTimetableMap();
 		Set<JourneyPattern> jps = new HashSet<JourneyPattern>();
@@ -145,15 +144,15 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		// utiliser la collection
 		if (!collection.getVehicleJourneys().isEmpty()) {
 			for (VehicleJourney vj : collection.getVehicleJourneys()) {
-				String tmKey = calendarProducer.key(vj.getTimetables(), sharedPrefix, configuration.isKeepOriginalId());
+				String tmKey = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
 				if (tmKey != null) {
 					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
 
-					if (tripProducer.save(vj, tmKey, prefix, sharedPrefix, configuration.isKeepOriginalId(),idParams)) {
+					if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(),idParams)) {
 						hasVj = true;
 						jps.add(vj.getJourneyPattern());
 						if (!timetables.containsKey(tmKey)) {
-							timetables.put(tmKey, new ArrayList<Timetable>(vj.getTimetables()));
+							timetables.put(tmKey, new ArrayList<>(vj.getTimetables()));
 						}
 					}
 				}

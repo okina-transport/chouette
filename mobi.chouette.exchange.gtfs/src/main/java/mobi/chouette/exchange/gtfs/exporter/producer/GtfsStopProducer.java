@@ -58,8 +58,6 @@ public class GtfsStopProducer extends AbstractProducer {
 			}
 			stop.setLocationType(GtfsStop.LocationType.Station);
 		}
-		// else if(chouetteAreaType.compareTo(ChouetteAreaEnum.STOPPLACE) == 0)
-		// stop.setLocationType(GtfsStop.STATION);
 		else
 			return false; // StopPlaces and ITL type not available
 
@@ -73,43 +71,22 @@ public class GtfsStopProducer extends AbstractProducer {
 		}
 	
 		if(name == null) {
-			//         GtfsReportItem item = new GtfsReportItem(
-			//               GtfsReportItem.KEY.MISSING_DATA, STATE.ERROR, "StopArea",
-			//               neptuneObject.getObjectId(), "Name");
-			//         report.addItem(item);
 			return false;
 		}
 		stop.setStopName(neptuneObject.getName());
 
 		if (neptuneObject.getLatitude() == null)
 		{
-			//         GtfsReportItem item = new GtfsReportItem(
-			//               GtfsReportItem.KEY.MISSING_DATA, STATE.ERROR, "StopArea",
-			//               neptuneObject.getName(), "Latitude");
-			//         report.addItem(item);
 			return false;
 		}
 		stop.setStopLat(neptuneObject.getLatitude());
 		if (neptuneObject.getLongitude() == null)
 		{
-			//         GtfsReportItem item = new GtfsReportItem(
-			//               GtfsReportItem.KEY.MISSING_DATA, STATE.ERROR, "StopArea",
-			//               neptuneObject.getName(), "Longitude");
-			//         report.addItem(item);
 			return false;
 		}
 		stop.setStopLon(neptuneObject.getLongitude());
 		stop.setStopCode(neptuneObject.getRegistrationNumber());
-		
-		// name and description must be different
-//		if (neptuneObject.getName().equals(neptuneObject.getComment()))
-//		{
-//			stop.setStopDesc(null);
-//		}
-//		else
-//		{
 		stop.setStopDesc(neptuneObject.getComment());
-//		}
 		stop.setStopUrl(getUrl(neptuneObject.getUrl()));
 		// manage stop_timezone
 		stop.setStopTimezone(null);
@@ -152,7 +129,7 @@ public class GtfsStopProducer extends AbstractProducer {
 		
 	      if (neptuneObject.getTransportModeName() != null)
 	      {
-	         if(useTPEGRouteTypes) {
+	         if (useTPEGRouteTypes) {
 	        	 stop.setVehicleType(RouteTypeEnum.from(neptuneObject.getTransportModeName(), null));
 	         } else {
 	    	  

@@ -105,7 +105,6 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		Set<StopArea> commercialStops = collection.getCommercialStops();
 		Set<StopArea> physicalStops = collection.getPhysicalStops();
 		Set<ConnectionLink> connectionLinks = collection.getConnectionLinks();
-		Set<ScheduledStopPoint> scheduledStopPoints = collection.getScheduledStopPoints();
 		// Only export companies (agencies) actually referred to by routes.
 //		Set<Company> companies = collection.getAgencyCompanies();
 		Set<Company> companies = collection.getOperatorCompanies();

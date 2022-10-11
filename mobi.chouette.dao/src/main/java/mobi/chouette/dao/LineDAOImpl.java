@@ -3,6 +3,7 @@ package mobi.chouette.dao;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.core.CoreExceptionCode;
 import mobi.chouette.model.Line;
+import org.hibernate.Hibernate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -92,5 +93,17 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 		} catch (Exception e) {
 			throw new CoreException(CoreExceptionCode.DELETE_IMPOSSIBLE,"Error while trying to remove deleted lines");
 		}
+	}
+
+	@Override
+	public Line findByObjectIdAndInitialize(String objectId) {
+
+		Line  result = findByObjectId(objectId);
+
+		if (result != null){
+			Hibernate.initialize(result.getRoutes());
+		}
+
+		return result;
 	}
 }

@@ -16,4 +16,7 @@ public interface LineDAO extends GenericDAO<Line> {
     List<String> findObjectIdLinesInFirstDataspace(List<Long> ids, String dataspace);
 
     String removeDeletedLines() throws CoreException;
+
+    Line findByObjectIdAndInitialize(String objectId);
+
 }

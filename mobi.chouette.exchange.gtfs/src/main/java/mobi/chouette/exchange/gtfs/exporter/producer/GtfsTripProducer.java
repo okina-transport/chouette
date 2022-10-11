@@ -36,7 +36,6 @@ import mobi.chouette.model.type.SectionStatusEnum;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -64,14 +63,13 @@ public class GtfsTripProducer extends AbstractProducer {
 	 *
 	 * @param vj
 	 * @param prefix
-	 * @param sharedPrefix
 	 * @param keepOriginalId
 	 * @param changesDestinationDisplay
 	 * @param lvjas
 	 * @pram idParams
 	 * @return list of stoptimes
 	 */
-	private boolean saveTimes(VehicleJourney vj, String prefix, String sharedPrefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams) {
+	private boolean saveTimes(VehicleJourney vj, String prefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams) {
 		if (vj.getVehicleJourneyAtStops().isEmpty())
 			return false;
 		Line l = vj.getRoute().getLine();
@@ -110,7 +108,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			}
 			time.setDepartureTime(new GtfsTime(departure, departureOffset)); /** GJT */
 
-			time.setStopSequence((int) vjas.getStopPoint().getPosition());
+			time.setStopSequence(vjas.getStopPoint().getPosition());
 
 			if(changesDestinationDisplay && vjas.getStopPoint().getDestinationDisplay() != null) {
 				String stopHeadSign = vjas.getStopPoint().getDestinationDisplay().getFrontTextWithComputedVias();
@@ -174,7 +172,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		time.setPickupType(null);
 		time.setDropOffType(null);
 		boolean routeOnDemand = isTrue(l.getFlexibleService());
-		boolean tripOnDemand = false;
+		boolean tripOnDemand;
 		if (routeOnDemand) {
 			// line is on demand, check if trip is not explicitly regular
 			tripOnDemand = vj.getFlexibleService() == null || vj.getFlexibleService();
@@ -190,15 +188,6 @@ public class GtfsTripProducer extends AbstractProducer {
 			time.setPickupType(PickUpTypeEnum.Scheduled);
 			time.setDropOffType(DropOffTypeEnum.Scheduled);
 		}
-		// check stoppoint specifications
-//		StopPoint point = vjas.getStopPoint();
-//		if (point.getForBoarding() != null) {
-//			time.setPickupType(toPickUpType(point.getForBoarding(), time.getPickupType()));
-//		}
-//		if (point.getForAlighting() != null) {
-//			time.setDropOffType(toDropOffType(point.getForAlighting(), time.getDropOffType()));
-//		}
-
 
 		if(vjas.getBoardingAlightingPossibility() != null){
 			time.setPickupType(vjas.getBoardingAlightingPossibility().getPickUpType());
@@ -258,7 +247,6 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * @param serviceId
 	 * @param schemaPrefix
 	 * 			Prefix of the database schema
-	 * @param sharedPrefix
 	 * @param keepOriginalId
 	 * @param idParams
 	 * 			Parameters about IDs:
@@ -267,7 +255,7 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * 		    - suffix
 	 * @return gtfs trip
 	 */
-	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, String sharedPrefix, boolean keepOriginalId, IdParameters idParams) {
+	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, boolean keepOriginalId, IdParameters idParams) {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
@@ -295,30 +283,14 @@ public class GtfsTripProducer extends AbstractProducer {
 
 		trip.setServiceId(serviceId);
 
-		// WARN workaround due to missing unique trip.id on NSB data 
-//		String name = null;
-		if (vj.getNumber() != null && !vj.getNumber().equals(Long.valueOf(0))) {
+		if (vj.getNumber() != null && !vj.getNumber().equals(0L)) {
 			trip.setTripShortName(vj.getNumber().toString());
 		}
-//		} else {
-//			name = vj.getPublishedJourneyName();
-//		}
-//	
-//		if (!isEmpty(name))
-//			trip.setTripShortName(name);
-//		else if (vj.getPublishedJourneyIdentifier() != null)
-//			trip.setTripShortName(vj.getPublishedJourneyIdentifier());
 		else {
 			trip.setTripShortName(null);
 		}
 		List<VehicleJourneyAtStop> lvjas = new ArrayList<>(vj.getVehicleJourneyAtStops());
-		Collections.sort(lvjas, new Comparator<VehicleJourneyAtStop>() {
-			@Override
-			public int compare(VehicleJourneyAtStop o1, VehicleJourneyAtStop o2) {
-				return o1.getStopPoint().getPosition().compareTo(o2.getStopPoint().getPosition());
-			}
-		});
-
+		lvjas.sort(Comparator.comparing(o -> o.getStopPoint().getPosition()));
 
 		List<DestinationDisplay> allDestinationDisplays = new ArrayList<>();
 		for(VehicleJourneyAtStop vjas : lvjas) {
@@ -350,10 +322,8 @@ public class GtfsTripProducer extends AbstractProducer {
 		else
 			trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
 
-		// trip.setBlockId(...);
-
 		// add StopTimes
-		if (saveTimes(vj,  schemaPrefix, sharedPrefix, keepOriginalId,changesDestinationDisplay,lvjas,idParams)) {
+		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams)) {
 			try {
 				getExporter().getTripExporter().export(trip);
 			} catch (Exception e) {

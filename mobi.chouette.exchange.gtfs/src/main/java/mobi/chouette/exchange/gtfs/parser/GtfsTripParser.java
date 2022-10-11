@@ -550,7 +550,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             String objectId = AbstractConverter.composeObjectId(configuration,
                     VehicleJourney.VEHICLEJOURNEY_KEY, gtfsTrip.getTripId(), log);
             VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, objectId);
-            convert(context, gtfsTrip, vehicleJourney);
+            convert(gtfsTrip, vehicleJourney);
 
             // VehicleJourneyAtStop
             boolean afterMidnight = true;
@@ -567,7 +567,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
                 vehicleJourneyAtStop.setBoardingAlightingPossibility(BoardingAlightingPossibilityEnum.fromDropOffAndPickUp(gtfsStopTime.getDropOffType(),gtfsStopTime.getPickupType()));
 
-                convert(context, gtfsStopTime, gtfsTrip, vehicleJourneyAtStop);
+                convert(context, gtfsStopTime, vehicleJourneyAtStop);
 
                 if (afterMidnight) {
                     if (!gtfsStopTime.getArrivalTime().moreOneDay())
@@ -593,7 +593,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             vehicleJourney.getTimetables().add(timetable);
 
             // JourneyPattern
-            String journeyKey = gtfsTrip.getRouteId();
+            StringBuilder journeyKey = new StringBuilder(gtfsTrip.getRouteId());
             Iterable<GtfsShape> gtfsShapes = null;
             if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty()
                     && importer.getShapeById().containsKey(gtfsTrip.getShapeId())) {
@@ -601,13 +601,13 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
             for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
                 String stopIdWithDropOffPickup = createJourneyKeyFragment((VehicleJourneyAtStopWrapper) vehicleJourneyAtStop);
-                journeyKey += "," + stopIdWithDropOffPickup;
+                journeyKey.append(",").append(stopIdWithDropOffPickup);
             }
-            journeyKey += "_" + vehicleJourney.getVehicleJourneyAtStops().size();
-            JourneyPattern journeyPattern = journeyPatternByStopSequence.get(journeyKey);
+            journeyKey.append("_").append(vehicleJourney.getVehicleJourneyAtStops().size());
+            JourneyPattern journeyPattern = journeyPatternByStopSequence.get(journeyKey.toString());
             if (journeyPattern == null) {
                 journeyPattern = createJourneyPattern(context, referential, configuration, gtfsTrip, gtfsShapes,
-                        vehicleJourney, journeyKey, journeyPatternByStopSequence);
+                        vehicleJourney, journeyKey.toString(), journeyPatternByStopSequence);
             }
 
             if(StringUtils.isBlank(vehicleJourney.getPublishedJourneyName())){
@@ -625,12 +625,12 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             // apply frequencies if any
             if (importer.hasFrequencyImporter()) {
-                createJourneyFrequencies(context, referential, importer, configuration, gtfsTrip, vehicleJourney);
+                createJourneyFrequencies(referential, importer, configuration, gtfsTrip, vehicleJourney);
             }
 
 
             if (configuration.isParseInterchanges() && importer.hasTransferImporter()) {
-                createInterchanges(context, referential, importer, configuration, gtfsTrip, vehicleJourney);
+                createInterchanges(referential, importer, configuration, gtfsTrip, vehicleJourney);
             }
 
         }
@@ -639,25 +639,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
-        DropOffTypeEnum drop = (vehicleJourneyAtStop.dropOff == null ? DropOffTypeEnum.Scheduled : vehicleJourneyAtStop.dropOff);
-        PickUpTypeEnum pickup = (vehicleJourneyAtStop.pickup == null ? PickUpTypeEnum.Scheduled : vehicleJourneyAtStop.pickup);
-
-        String result = null;
-
-//        if (drop == DropOffType.Scheduled && pickup == PickupType.Scheduled) {
-            result = vehicleJourneyAtStop.stopId.replace(":",COLON_REPLACEMENT_CODE);;
-//        } else {
-//            result = vehicleJourneyAtStop.stopId + "." + drop.ordinal() + "" + pickup.ordinal();
-//        }
-//
-//        if (vehicleJourneyAtStop.stopHeadsign != null) {
-//            result += vehicleJourneyAtStop.stopHeadsign;
-//        }
-
-        return result;
+        return vehicleJourneyAtStop.stopId.replace(":", COLON_REPLACEMENT_CODE);
     }
 
-    private void createInterchanges(Context context, Referential referential, GtfsImporter importer, GtfsImportParameters configuration, GtfsTrip gtfsTrip,
+    private void createInterchanges(Referential referential, GtfsImporter importer, GtfsImportParameters configuration, GtfsTrip gtfsTrip,
                                     VehicleJourney vehicleJourney) {
 
 
@@ -779,7 +764,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         interchange.setName(nameBuilder.toString());
     }
 
-    private void createJourneyFrequencies(Context context, Referential referential, GtfsImporter importer,
+    private void createJourneyFrequencies(Referential referential, GtfsImporter importer,
                                           GtfsImportParameters configuration, GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) {
         int count = 0;
         for (GtfsFrequency frequency : importer.getFrequencyByTrip().values(gtfsTrip.getTripId())) {
@@ -882,8 +867,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
         // Shape -> routeSections
         if (gtfsShapes != null) {
-            List<RouteSection> sections = createRouteSections(context, referential, configuration, journeyPattern,
-                    vehicleJourney, gtfsShapes);
+            List<RouteSection> sections = createRouteSections(referential, journeyPattern, gtfsShapes);
             if (!sections.isEmpty()) {
                 journeyPattern.setRouteSections(sections);
                 journeyPattern.setSectionStatus(SectionStatusEnum.Completed);
@@ -941,9 +925,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
     private static final double narrow = 0.0000001;
 
-    private List<RouteSection> createRouteSections(Context context, Referential referential,
-                                                   GtfsImportParameters configuration, JourneyPattern journeyPattern, VehicleJourney vehicleJourney,
-                                                   Iterable<GtfsShape> gtfsShapes) {
+    private List<RouteSection> createRouteSections(Referential referential, JourneyPattern journeyPattern, Iterable<GtfsShape> gtfsShapes) {
         List<RouteSection> sections = new ArrayList<>();
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(10), 4326);
         List<OrderedCoordinate> coordinates = new ArrayList<>();
@@ -978,7 +960,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
 
         previous = null;
-        Collections.sort(coordinates, COORDINATE_SORTER);
+        coordinates.sort(COORDINATE_SORTER);
         for (OrderedCoordinate current : coordinates) {
             if (previous != null) {
                 LineSegment segment = new LineSegment(previous, current);
@@ -1104,7 +1086,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
 
         routeKey += "_" + list.size();
-//        routeKey += "_" + line.getRoutes().size();
         String routeId = AbstractConverter.composeObjectId(configuration, Route.ROUTE_KEY,
                 routeKey, log);
 
@@ -1117,7 +1098,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         return route;
     }
 
-    protected void convert(Context context, GtfsStopTime gtfsStopTime, GtfsTrip gtfsTrip, VehicleJourneyAtStop vehicleJourneyAtStop) {
+    protected void convert(Context context, GtfsStopTime gtfsStopTime, VehicleJourneyAtStop vehicleJourneyAtStop) {
 
         Referential referential = (Referential) context.get(REFERENTIAL);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
@@ -1183,7 +1164,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         return null;
     }
 
-    protected void convert(Context context, GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) {
+    protected void convert(GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) {
 
         if (gtfsTrip.getTripShortName() != null) {
             vehicleJourney.setPrivateCode(gtfsTrip.getTripShortName());
@@ -1226,7 +1207,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     /**
-     * create stopPoints for Route
+     * Create stopPoints for Route
      * @param route
      * @param journeyPattern
      * @param list
@@ -1242,7 +1223,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             VehicleJourneyAtStopWrapper wrapper = (VehicleJourneyAtStopWrapper) vehicleJourneyAtStop;
             String stopIdKeyFragment = createJourneyKeyFragment(wrapper);
             String baseKey = route.getObjectId().replace(Route.ROUTE_KEY, StopPoint.STOPPOINT_KEY) + "a"
-                    + stopIdKeyFragment.trim();//.replaceAll("[^a-zA-Z_0-9\\-]", "_");
+                    + stopIdKeyFragment.trim();
             String stopKey = baseKey;
             int dup = 1;
             while (stopPointKeys.contains(stopKey)) {
@@ -1264,8 +1245,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
             stopPoint.setRoute(route);
             stopPoint.setPosition(position++);
-//            stopPoint.setForBoarding(toBoardingPossibility(wrapper.pickup));
-//            stopPoint.setForAlighting(toAlightingPossibility(wrapper.dropOff));
+            stopPoint.setForBoarding(toBoardingPossibility(wrapper.pickup));
+            stopPoint.setForAlighting(toAlightingPossibility(wrapper.dropOff));
 
             if (wrapper.stopHeadsign != null) {
                 DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential,

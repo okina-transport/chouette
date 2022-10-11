@@ -112,7 +112,7 @@ public enum BoardingAlightingPossibilityEnum
       PickUpTypeEnum finalPickUp = pickUp;
       return Arrays.stream(BoardingAlightingPossibilityEnum.values())
                .filter(boardingAlightingEnum -> boardingAlightingEnum.getDropOffType().equals(finalDropOff) && boardingAlightingEnum.getPickUpType().equals(finalPickUp))
-              .findFirst().orElseThrow(() -> new IllegalArgumentException("Boarding alighting not found for parameters:" + finalDropOff + ", " + finalPickUp));
+               .findFirst().orElseThrow(() -> new IllegalArgumentException("Boarding alighting not found for parameters:" + finalDropOff + ", " + finalPickUp));
 
    }
 

@@ -129,22 +129,28 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
 
         boolean requestStop = requestDropOffTypes.contains(dropOffType);
+        boolean requestPickup = requestPickUpTypes.contains(pickUpType);
+
         stopPointInJourneyPattern.setRequestStop(requestStop);
 
 
-        if (requestStop){
-            RequestMethodTypeEnumeration method = dropOffType.equals(DropOffTypeEnum.DriverCall) ? RequestMethodTypeEnumeration.STOP_BUTTON : RequestMethodTypeEnumeration.PHONE_CALL;
-            stopPointInJourneyPattern.setRequestMethod(method);
-        }
-
-        boolean requestPickup = requestPickUpTypes.contains(pickUpType);
-
-        if (requestPickup){
-
+        if (requestPickup || requestStop){
+            stopPointInJourneyPattern.setRequestMethod(RequestMethodTypeEnumeration.PHONE_CALL);
             BookingArrangementsStructure bookingArrangements = new BookingArrangementsStructure();
-            BookingMethodEnumeration bookingMethod = pickUpType.equals(PickUpTypeEnum.DriverCall) ? BookingMethodEnumeration.CALL_DRIVER : BookingMethodEnumeration.CALL_OFFICE;
+
+            BookingMethodEnumeration bookingMethod;
+
+            if (dropOffType.equals(DropOffTypeEnum.DriverCall) && !pickUpType.equals(PickUpTypeEnum.AgencyCall)
+                    || !dropOffType.equals(DropOffTypeEnum.AgencyCall) && pickUpType.equals(PickUpTypeEnum.DriverCall)){
+                bookingMethod = BookingMethodEnumeration.CALL_DRIVER;
+            }
+            else{
+                bookingMethod = BookingMethodEnumeration.CALL_OFFICE;
+            }
+
             bookingArrangements.withBookingMethods(bookingMethod);
             stopPointInJourneyPattern.setBookingArrangements(bookingArrangements);
+
         }
     }
 
