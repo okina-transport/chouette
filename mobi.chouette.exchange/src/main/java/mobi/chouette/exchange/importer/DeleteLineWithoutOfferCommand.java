@@ -16,6 +16,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = DeleteLineWithoutOfferCommand.COMMAND)
 @Log4j
@@ -42,10 +43,15 @@ public class DeleteLineWithoutOfferCommand implements Command, Constant {
 
         // du coup on supprime les réseaux sans ligne car inutiles
         for(Network network: networkDAO.findAll()) {
-            List<Line> lines = lineDAO.findByNetworkId(network.getId());
+            List<Line> lines = lineDAO.findByNetworkId(network.getId()).stream()
+                                                        .filter(line -> !line.getSupprime())
+                                                        .collect(Collectors.toList());
+
             boolean hasLines = lines != null && lines.size() > 0;
             if(!hasLines){
                 networkDAO.delete(network);
+            }else{
+                network.setSupprime(false);
             }
         }
         networkDAO.flush(); // to prevent SQL error outside method

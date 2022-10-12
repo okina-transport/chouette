@@ -21,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.*;
+import javax.ws.rs.DefaultValue;
 // import javax.persistence.GenerationType;
 // import javax.persistence.SequenceGenerator;
 
@@ -246,5 +247,10 @@ public class Network extends NeptuneIdentifiedObject {
 	@Setter
 	@Column(name = "pos")
 	private Integer position;
+
+	@Getter
+	@Setter
+	@DefaultValue("false")
+	private Boolean supprime = false;
 
 }
