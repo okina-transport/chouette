@@ -50,7 +50,7 @@ spec:
             - -verbose=false
           resources:
             requests:
-              cpu: 50m
+              cpu: 100m
               memory: 40Mi
           volumeMounts:
             - mountPath: /etc/chouette-service-account
