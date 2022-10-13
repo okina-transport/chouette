@@ -110,7 +110,7 @@ public class CopyCommand implements Command {
 			vehicleJourneyDAO.copy(buffer);
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			ContextHolder.setContext(null);
-			log.info("VehicleJourney copy  ended successfully");
+			log.info("VehicleJourney copy ended successfully");
 			return null;
 		}
 

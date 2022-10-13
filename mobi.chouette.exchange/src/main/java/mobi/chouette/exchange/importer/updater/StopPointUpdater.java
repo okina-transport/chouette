@@ -13,6 +13,7 @@ import mobi.chouette.common.Pair;
 import mobi.chouette.dao.DestinationDisplayDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.FootnoteDAO;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.DestinationDisplay;
@@ -45,9 +46,13 @@ public class StopPointUpdater implements Updater<StopPoint> {
 
 	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
 	private Updater<Footnote> footnoteUpdater;
-	
+
+
 	@Override
 	public void update(Context context, StopPoint oldValue, StopPoint newValue) throws Exception {
+
+		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
+
 
 		if (newValue.isSaved()) {
 			return;
@@ -91,11 +96,11 @@ public class StopPointUpdater implements Updater<StopPoint> {
 			}
 
 			// Boarding and alighting
-			if (newValue.getForAlighting() != null && !newValue.getForAlighting().equals(oldValue.getForAlighting())) {
+			if (newValue.getForAlighting() != null && !newValue.getForAlighting().equals(oldValue.getForAlighting()) && !importParameter.isKeepBoardingAlighting()) {
 				oldValue.setForAlighting(newValue.getForAlighting());
 			}
 
-			if (newValue.getForBoarding() != null && !newValue.getForBoarding().equals(oldValue.getForBoarding())) {
+			if (newValue.getForBoarding() != null && !newValue.getForBoarding().equals(oldValue.getForBoarding()) && !importParameter.isKeepBoardingAlighting()) {
 				oldValue.setForBoarding(newValue.getForBoarding());
 			}
 

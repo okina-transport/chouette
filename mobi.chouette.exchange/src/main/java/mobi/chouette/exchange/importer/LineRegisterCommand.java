@@ -9,11 +9,9 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.AccessLinkDAO;
 import mobi.chouette.dao.AccessPointDAO;
 import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.VariationsDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.importer.updater.LineOptimiser;
 import mobi.chouette.exchange.importer.updater.LineUpdater;
@@ -28,7 +26,6 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.JourneyFrequency;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -57,7 +54,6 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -75,9 +71,6 @@ public class LineRegisterCommand implements Command {
 
 	@EJB
 	private AccessPointDAO accessPointDAO;
-
-	@EJB
-	private VariationsDAO variationsDAO;
 
 	@EJB
 	private ContenerChecker checker;
@@ -121,16 +114,6 @@ public class LineRegisterCommand implements Command {
 		Line newValue  = referential.getLines().values().iterator().next();
 		context.put(CURRENT_LINE_ID,newValue.getObjectId());
 
-
-//		Line oldValue1 = lineDAO.findByObjectId(newValue.getObjectId());
-//
-//		Long jobid = (Long) context.get(JOB_ID);
-//		if(oldValue1 == null) {
-//			variationsDAO.makeVariationsInsert("Nouvelle ligne " + newValue.getName(), "", jobid);
-//		} else if(!oldValue1.equals(newValue)) {
-//			variationsDAO.makeVariationsUpdate("Mise à jour ligne " + newValue.getName(), oldValue1.getVariations(newValue), jobid);
-//		}
-
 		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
 		int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
 		context.put(CURRENT_LINE_NB,currentLineNb);
@@ -163,27 +146,10 @@ public class LineRegisterCommand implements Command {
 	
 				optimiser.initialize(cache, referential);
 
-				// Point d'arrêt existant
-
-//				// TODO okina : à revoir, pas stable a priori
-//				for(StopArea oldValueStopArea : cache.getStopAreas().values()){
-//					for(StopArea newValueStopArea : referential.getStopAreas().values()){
-//						if(oldValueStopArea.getObjectId().equals(newValueStopArea.getObjectId())){
-//							if(oldValueStopArea.getLatitude().compareTo(newValueStopArea.getLatitude()) != 0
-//									|| oldValueStopArea.getLongitude().compareTo(newValueStopArea.getLongitude()) != 0
-//									|| !StringUtils.equals(oldValueStopArea.getName(), newValueStopArea.getName())
-//									|| !StringUtils.equals(oldValueStopArea.getComment(), newValueStopArea.getComment())
-//									|| !StringUtils.equals(oldValueStopArea.getRegistrationNumber(), newValueStopArea.getRegistrationNumber()))
-//								variationsDAO.makeVariationsUpdate("Mise à jour du point d'arrêt " + newValueStopArea.getName(), oldValueStopArea.getVariations(newValueStopArea), jobid);
-//						}
-//					}
-//				}
-
-	
 				Line oldValue = cache.getLines().get(newValue.getObjectId());
 				lineUpdater.update(context, oldValue, newValue);
 				if(oldValue.getCategoriesForLine() == null){
-					oldValue.setCategoriesForLine(categoriesForLinesDAO.find(Long.valueOf(0)));
+					oldValue.setCategoriesForLine(categoriesForLinesDAO.find(0L));
 				}
 				if(oldValue.getPosition() == null) {
 					oldValue.setPosition(newValue.getPosition());
@@ -240,46 +206,9 @@ public class LineRegisterCommand implements Command {
 				throw ex;
 			} finally {
 				log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-				
-	//			monitor = MonitorFactory.getTimeMonitor("LineOptimiser");
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(LineUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(GroupOfLineUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(CompanyUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(RouteUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(JourneyPatternUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(VehicleJourneyUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(StopPointUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(StopAreaUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(ConnectionLinkUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(TimetableUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor("prepareCopy");
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
 			}
 		} else {
-			log.info("skipping obsolete line : " + newValue.getObjectId());
+			log.info("Skipping obsolete line : " + newValue.getObjectId());
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 		return result;
@@ -360,11 +289,10 @@ public class LineRegisterCommand implements Command {
 
 		LocalDate today = LocalDate.now();
 		
-		for(Route r : (line.getRoutes() == null? new ArrayList<Route>() : line.getRoutes())) {
+		for(Route r : (line.getRoutes() == null ? new ArrayList<Route>() : line.getRoutes())) {
 			for(JourneyPattern jp : (r.getJourneyPatterns() == null? new ArrayList<JourneyPattern>() : r.getJourneyPatterns())) {
 				for(VehicleJourney vj : (jp.getVehicleJourneys() == null? new ArrayList<VehicleJourney>() : jp.getVehicleJourneys())) {
 					for(Timetable t : (vj.getTimetables() == null ? new ArrayList<Timetable>() : vj.getTimetables())) {
-						//t.computeLimitOfPeriods();
 						if(t.getEndOfPeriod() != null && !t.getEndOfPeriod().isBefore(today)) {
 							return true;
 						}
@@ -380,17 +308,11 @@ public class LineRegisterCommand implements Command {
 	
 	protected void write(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint,
 			VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) throws IOException {
-		// The list of fields to synchronize with
-		// VehicleJourneyAtStopUpdater.update(Context context,
-		// VehicleJourneyAtStop oldValue,
-		// VehicleJourneyAtStop newValue)
-		
-
 		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
 		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 		if (keepBoardingAlighting){
-			Optional<BoardingAlightingPossibilityEnum> currentBoardingAlightingPossibilityOpt = getActualBordingAlightingPossibility(vehicleJourney, vehicleJourneyAtStop);
+			Optional<BoardingAlightingPossibilityEnum> currentBoardingAlightingPossibilityOpt = getActualBoardingAlightingPossibility(vehicleJourney, vehicleJourneyAtStop);
 			currentBoardingAlightingPossibilityOpt.ifPresent(vehicleJourneyAtStop::setBoardingAlightingPossibility);
 		}
 		
@@ -443,12 +365,12 @@ public class LineRegisterCommand implements Command {
 	 * (Needed if user wants to keep boardingAlighting between 2 imports)
 	 *
 	 * @param vehicleJourney
-	 * 		VehicleJourney that constains old data from DB
+	 * 		VehicleJourney that contains old data from DB
 	 * @param newVehicleJourneyAtStop
 	 * 		newVehicleJourney
 	 * @return
 	 */
-	private Optional<BoardingAlightingPossibilityEnum> getActualBordingAlightingPossibility(VehicleJourney vehicleJourney, VehicleJourneyAtStop newVehicleJourneyAtStop){
+	private Optional<BoardingAlightingPossibilityEnum> getActualBoardingAlightingPossibility(VehicleJourney vehicleJourney, VehicleJourneyAtStop newVehicleJourneyAtStop){
 		return vehicleJourney.getVehicleJourneyAtStops().stream()
 												.filter(currentVehicleJourneyAtStop -> currentVehicleJourneyAtStop.getStopPoint().equals(newVehicleJourneyAtStop.getStopPoint()) &&
 																						currentVehicleJourneyAtStop.getVehicleJourney().equals(newVehicleJourneyAtStop.getVehicleJourney()))

@@ -35,9 +35,6 @@ public class ConnectionLinkPersisterCommand implements Command, Constant {
 
     @Override
     public boolean execute(Context context) throws Exception {
-        //List<ConnectionLink> connectionLinkList = (List<ConnectionLink>) context.get(CONNECTION_LINK_LIST);
-        //connectionLinkList.forEach(connectionLinkDAO::create);
-
         Referential referential = (Referential) context.get(REFERENTIAL);
         Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
 

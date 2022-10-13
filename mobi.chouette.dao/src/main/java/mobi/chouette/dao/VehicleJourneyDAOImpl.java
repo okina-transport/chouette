@@ -42,35 +42,30 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
 		Session session = em.unwrap(Session.class);
 
-		session.doWork(new Work() {
+		session.doWork(connection -> {
 
-			@Override
-			public void execute(Connection connection) throws SQLException {
+			final String SQL = "DELETE FROM vehicle_journey_at_stops WHERE vehicle_journey_id IN ("
+					+ "SELECT id FROM vehicle_journeys WHERE objectid IN ( %s )"
+					+ ")";
 
-				final String SQL = "DELETE FROM vehicle_journey_at_stops WHERE vehicle_journey_id IN ("
-						+ "SELECT id FROM vehicle_journeys WHERE objectid IN ( %s )"
-						+ ")";
+			// delete
+			int size = vehicleJourneyObjectIds.size();
+			if (size > 0) {
+				StringBuffer buffer = new StringBuffer();
+				for (int i = 0; i < size; i++) {
 
-				// delete
-				int size = vehicleJourneyObjectIds.size();
-				if (size > 0) {
-					StringBuffer buffer = new StringBuffer();
-					for (int i = 0; i < size; i++) {
-
-						buffer.append('\'');
-						buffer.append(vehicleJourneyObjectIds.get(i));
-						buffer.append('\'');
-						if (i != size - 1) {
-							buffer.append(',');
-						}
+					buffer.append('\'');
+					buffer.append(vehicleJourneyObjectIds.get(i));
+					buffer.append('\'');
+					if (i != size - 1) {
+						buffer.append(',');
 					}
-
-					Statement statement = connection.createStatement();
-					String sql = String.format(SQL, buffer.toString());
-					// System.out.println("execute SQL : " + sql);
-					int count = statement.executeUpdate(sql);
-					log.info("[DSU] delete " + count + " objects.");
 				}
+
+				Statement statement = connection.createStatement();
+				String sql = String.format(SQL, buffer.toString());
+				int count = statement.executeUpdate(sql);
+				log.info("[DSU] delete " + count + " objects.");
 			}
 		});
 	}
