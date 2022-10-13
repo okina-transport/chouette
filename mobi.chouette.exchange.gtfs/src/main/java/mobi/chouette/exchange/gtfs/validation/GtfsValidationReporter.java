@@ -86,7 +86,7 @@ public class GtfsValidationReporter implements Constant{
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
-						gtfsRouteId, log);
+						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}
 		}
@@ -106,7 +106,7 @@ public class GtfsValidationReporter implements Constant{
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
-						gtfsRouteId, log);
+						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}
 
@@ -122,7 +122,7 @@ public class GtfsValidationReporter implements Constant{
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
-						gtfsRouteId, log);
+						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}
 

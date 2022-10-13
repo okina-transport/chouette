@@ -92,7 +92,8 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 			parser.setWithValidation(false);
 			if (fatalException != null)
 				throw fatalException;
-		} else { // the file "agency.txt" doesn't exist
+		} else {
+			// the file "agency.txt" doesn't exist
 			gtfsValidationReporter.reportError(context, new GtfsException(GTFS_AGENCY_FILE, 1, null, GtfsException.ERROR.MISSING_FILE, null, null), GTFS_AGENCY_FILE);
 		}
 	}
@@ -116,14 +117,14 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 
 			// Create both as operator and as authority
 			String objectIdOperator = AbstractConverter.composeObjectId(configuration, Company.OPERATOR_KEY,
-					gtfsAgency.getAgencyId()+"o", log);
+					gtfsAgency.getAgencyId()+"o");
 			Company operator = ObjectFactory.getCompany(referential, objectIdOperator);
-			convert(context, gtfsAgency, operator, OrganisationTypeEnum.Operator );
+			convert(context, gtfsAgency, operator, OrganisationTypeEnum.Operator);
 
 			String objectIdAuthority = AbstractConverter.composeObjectId(configuration, Company.AUTHORITY_KEY,
-					gtfsAgency.getAgencyId(), log);
+					gtfsAgency.getAgencyId());
 			Company authority = ObjectFactory.getCompany(referential, objectIdAuthority);
-			convert(context, gtfsAgency, authority, OrganisationTypeEnum.Authority );
+			convert(context, gtfsAgency, authority, OrganisationTypeEnum.Authority);
 		}
 	}
 	
@@ -145,7 +146,6 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 		company.setTimeZone(AbstractConverter.toString(gtfsAgency.getAgencyTimezone()));
 		company.setOrganisationType(organisationType);
 		company.setFilled(true);
-// 		AbstractConverter.addLocation(context, "agency.txt", company.getObjectId(), gtfsAgency.getId());
 	}
 
 	static {
