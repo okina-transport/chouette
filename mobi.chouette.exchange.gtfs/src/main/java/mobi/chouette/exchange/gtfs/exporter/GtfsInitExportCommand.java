@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
@@ -24,7 +24,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import java.time.LocalDateTime;
 
-@Log4j
+@Slf4j
 public class GtfsInitExportCommand implements Command, Constant {
 
 	public static final String COMMAND = "GtfsInitExportCommand";
@@ -64,7 +64,7 @@ public class GtfsInitExportCommand implements Command, Constant {
 			result = SUCCESS;
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw e;
 		} finally {
 			JamonUtils.logMagenta(log, monitor);

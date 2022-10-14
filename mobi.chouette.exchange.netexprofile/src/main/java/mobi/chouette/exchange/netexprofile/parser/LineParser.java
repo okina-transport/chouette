@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -31,7 +31,7 @@ import org.rutebanken.netex.model.LinesInFrame_RelStructure;
 import org.rutebanken.netex.model.PresentationStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 
-@Log4j
+@Slf4j
 public class LineParser implements Parser, Constant {
 
 	private KeyValueParser keyValueParser = new KeyValueParser();

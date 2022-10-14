@@ -11,7 +11,7 @@ import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -43,7 +43,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class NeptuneExportTests  extends Arquillian implements Constant, ReportConstant {
 
 	@EJB 

@@ -2,7 +2,7 @@ package mobi.chouette.exchange.importer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.GeometryUtil;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
 import mobi.chouette.exchange.importer.geometry.osrm.OsrmRouteSectionId;
@@ -23,7 +23,7 @@ import java.util.Map;
  * RouteSection objects that have identical (start point, stop point, lineString) are reused.
  */
 
-@Log4j
+@Slf4j
 public class RouteSectionRepository {
 
     private static final int DEFAULT_MAX_METERS_FROM_QUAY = 100;

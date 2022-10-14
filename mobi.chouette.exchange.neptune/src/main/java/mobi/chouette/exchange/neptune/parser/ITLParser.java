@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
@@ -16,7 +16,7 @@ import mobi.chouette.model.util.Referential;
 
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class ITLParser implements Parser, Constant {
 	private static final String CHILD_TAG = "ITL";
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Embeddable;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.ConnectionLink;
@@ -28,7 +28,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
-@Log4j
+@Slf4j
 public class HibernateDeproxynator<T> {
 	public List deepDeproxy(final List maybeProxy) throws ClassCastException {
 		if (maybeProxy == null)

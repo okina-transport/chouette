@@ -34,7 +34,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.type.UserNeedEnum;
@@ -59,7 +59,7 @@ import static mobi.chouette.common.TimeUtil.toLocalDate;
 @Table(name = "lines")
 @NoArgsConstructor
 @ToString(callSuper = true, exclude = { "routingConstraints" })
-@Log4j
+@Slf4j
 public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	private static final long serialVersionUID = -8086291270595894778L;
 

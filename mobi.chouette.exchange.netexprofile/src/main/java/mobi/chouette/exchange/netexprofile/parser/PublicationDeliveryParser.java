@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -52,7 +52,7 @@ import org.rutebanken.netex.model.VehicleScheduleFrame;
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 
-@Log4j
+@Slf4j
 public class PublicationDeliveryParser extends NetexParser implements Parser, Constant {
 
 	static final String LOCAL_CONTEXT = "PublicationDelivery";

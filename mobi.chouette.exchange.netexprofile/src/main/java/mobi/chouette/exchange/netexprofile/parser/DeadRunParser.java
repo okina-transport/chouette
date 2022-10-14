@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-@Log4j
+@Slf4j
 public class DeadRunParser extends NetexParser implements Parser, Constant {
 
 	@Override

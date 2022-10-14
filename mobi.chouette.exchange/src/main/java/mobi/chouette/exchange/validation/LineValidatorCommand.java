@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -32,7 +32,7 @@ import com.jamonapi.MonitorFactory;
 /**
  *
  */
-@Log4j
+@Slf4j
 public class LineValidatorCommand implements Command, Constant 
 {
 	public static final String COMMAND = "LineValidatorCommand";

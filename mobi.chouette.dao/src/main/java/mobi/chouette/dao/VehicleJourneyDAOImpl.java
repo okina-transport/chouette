@@ -11,7 +11,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.VehicleJourney;
 
 import org.hibernate.Session;
@@ -20,7 +20,7 @@ import org.jboss.jca.adapters.jdbc.WrappedConnection;
 import org.postgresql.PGConnection;
 
 @Stateless
-@Log4j
+@Slf4j
 public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implements VehicleJourneyDAO{
 
 	public VehicleJourneyDAOImpl() {
@@ -100,7 +100,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 							copyStatement, from);
 
 				} catch (IOException e) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 				// JamonUtils.logMagenta(log, monitor);
 			}

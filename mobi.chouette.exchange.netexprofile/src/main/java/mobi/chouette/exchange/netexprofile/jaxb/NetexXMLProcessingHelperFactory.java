@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.model.NetexProfileVersion;
 import mobi.chouette.exchange.netexprofile.parser.xml.PublicactionDeliveryVersionAttributeReader;
@@ -48,7 +48,7 @@ import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XdmNode;
 
-@Log4j
+@Slf4j
 public class NetexXMLProcessingHelperFactory {
 	private static Map<NetexVersion, Schema> netexSchema = new HashMap<>();
 

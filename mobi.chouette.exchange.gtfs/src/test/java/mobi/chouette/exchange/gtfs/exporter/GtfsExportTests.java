@@ -30,7 +30,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -59,7 +59,7 @@ import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
 import mobi.chouette.model.Line;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
-@Log4j
+@Slf4j
 public class GtfsExportTests extends Arquillian implements Constant, ReportConstant
 {
 

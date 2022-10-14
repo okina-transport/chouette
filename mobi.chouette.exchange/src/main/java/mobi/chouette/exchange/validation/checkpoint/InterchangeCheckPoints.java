@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import java.time.LocalDate;
 
-@Log4j
+@Slf4j
 public class InterchangeCheckPoints extends AbstractValidation<Interchange> implements Validator<Interchange> {
 
 	@Override

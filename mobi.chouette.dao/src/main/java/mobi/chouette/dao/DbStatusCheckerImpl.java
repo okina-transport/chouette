@@ -4,10 +4,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 @Stateless(name = "DbStatusChecker")
-@Log4j
+@Slf4j
 public class DbStatusCheckerImpl implements DbStatusChecker {
 
 	@PersistenceContext(unitName = "public")

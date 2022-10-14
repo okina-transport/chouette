@@ -6,11 +6,11 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.CDI;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.PropertyNames;
 
-@Log4j
+@Slf4j
 public class FileStoreFactory {
 
 	private static FileStore FILE_STORE;

@@ -3,7 +3,7 @@ package mobi.chouette.exchange.validation.checkpoint;
 import java.math.BigDecimal;
 import java.util.Collection;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.Validator;
@@ -14,7 +14,7 @@ import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.StopArea;
 
-@Log4j
+@Slf4j
 public class AccessLinkCheckPoints extends AbstractValidation<AccessLink> implements Validator<AccessLink> {
 
 	@Override

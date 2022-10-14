@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.XPPUtil;
@@ -40,7 +40,7 @@ import org.threeten.extra.Seconds;
 import org.xmlpull.v1.XmlPullParser;
 //import mobi.chouette.common.Constant;
 
-@Log4j
+@Slf4j
 public class VehicleJourneyParser implements Parser, Constant, JsonExtension {
 	private static final String CHILD_TAG = "VehicleJourney";
 

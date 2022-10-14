@@ -12,14 +12,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.StopPlace;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.util.StopPlaceRegistryIdFetcher;
 import mobi.chouette.exchange.netexprofile.importer.validation.ExternalReferenceValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.ExternalReferenceValidatorFactory;
 
-@Log4j
+@Slf4j
 public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator {
 
 	public static final String NAME = "StopPlaceRegistryIdValidator";

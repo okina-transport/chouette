@@ -3,7 +3,7 @@ package mobi.chouette.common.monitor;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import mobi.chouette.common.Color;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 public final class JamonUtils {
 

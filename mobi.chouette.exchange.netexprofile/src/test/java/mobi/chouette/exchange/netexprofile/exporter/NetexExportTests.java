@@ -34,7 +34,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -59,7 +59,7 @@ import mobi.chouette.model.Codespace;
 import mobi.chouette.model.type.StopAreaImportModeEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
-@Log4j
+@Slf4j
 public class NetexExportTests extends Arquillian implements Constant, ReportConstant {
 
     protected static InitialContext initialContext;
@@ -272,7 +272,7 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
         } catch (RuntimeException ex) {
             Throwable cause = ex.getCause();
             while (cause != null) {
-                log.error(cause);
+                log.error(cause.getMessage(),cause);
                 if (cause instanceof SQLException)
                     traceSqlException((SQLException) cause);
                 cause = cause.getCause();
@@ -829,7 +829,7 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
     private void traceSqlException(SQLException ex) {
         while (ex.getNextException() != null) {
             ex = ex.getNextException();
-            log.error(ex);
+            log.error(ex.getMessage(),ex);
         }
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.enterprise.inject.spi.CDI;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopPointDAO;
 import mobi.chouette.model.ScheduledStopPoint;
@@ -22,7 +22,7 @@ import org.hibernate.type.Type;
 /**
  * StopPoint and StopArea reside in separate schemas. This Interceptor enriches these entities with relations between them upon load.
  */
-@Log4j
+@Slf4j
 public class StopAreaRelationInterceptor extends EmptyInterceptor {
 
 

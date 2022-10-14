@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.gtfs.validation;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
@@ -9,7 +9,7 @@ import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class NominalTests extends AbstractPhase1Tests {
 	
 	

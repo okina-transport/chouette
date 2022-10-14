@@ -36,6 +36,8 @@ import mobi.chouette.model.type.DayTypeEnum;
 import com.tobedevoured.modelcitizen.CreateModelException;
 import com.tobedevoured.modelcitizen.ModelFactory;
 import com.tobedevoured.modelcitizen.RegisterBlueprintException;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -282,8 +284,7 @@ public class ComplexModelFactory
          }
       } catch (CreateModelException ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
       }
       return stopPoints;
    }
@@ -319,8 +320,7 @@ public class ComplexModelFactory
 
       } catch (Exception ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
       }
       for (int i = 0; i < journeyPatternCount; i++)
       {
@@ -345,8 +345,7 @@ public class ComplexModelFactory
          return itl;
       } catch (CreateModelException ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
          return null;
       }
    }
@@ -360,8 +359,7 @@ public class ComplexModelFactory
          lines.add(modelFactory.createModel(Line.class));
       } catch (CreateModelException ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
       }
       List<StopArea> stop_areas = new ArrayList<StopArea>();
       int index = (new Random()).nextInt(line.getRoutes().size());
@@ -373,8 +371,7 @@ public class ComplexModelFactory
          stop_areas.add(modelFactory.createModel(StopArea.class));
       } catch (CreateModelException ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
       }
       return createITL(lines, stop_areas);
    }
@@ -499,8 +496,7 @@ public class ComplexModelFactory
          }
       } catch (CreateModelException ex)
       {
-         Logger.getLogger(ComplexModelFactory.class.getName()).log(
-               Level.SEVERE, null, ex);
+         LoggerFactory.getLogger(ComplexModelFactory.class.getName()).error(ex.getMessage(), ex);
       }
       assert vehicle.getJourneyPattern() != null;
       return vehicle;

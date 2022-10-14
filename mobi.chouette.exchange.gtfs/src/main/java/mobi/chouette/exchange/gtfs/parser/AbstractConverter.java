@@ -7,7 +7,7 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTime;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import java.time.LocalTime;
 
 public abstract class AbstractConverter implements Constant{

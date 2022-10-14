@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Stateless(name = "ReferentialLastUpdateDAO")
-@Log4j
+@Slf4j
 public class ReferentialLastUpdateDAOImpl implements ReferentialLastUpdateDAO {
 
     private static final String SQL_SELECT_LAST_UPDATE_TIMESTAMP = "SELECT last_update_timestamp FROM referential_last_update";

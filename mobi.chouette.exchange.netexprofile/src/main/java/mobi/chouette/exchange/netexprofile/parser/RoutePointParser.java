@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 
 import javax.xml.bind.JAXBElement;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -16,7 +16,7 @@ import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.RoutePoint;
 import org.rutebanken.netex.model.RoutePointsInFrame_RelStructure;
 
-@Log4j
+@Slf4j
 public class RoutePointParser extends NetexParser implements Parser, Constant {
 
 	@Override

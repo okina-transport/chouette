@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.Company;
@@ -30,7 +30,7 @@ import static mobi.chouette.common.PropertyNames.GTFS_AGENCY_URL_DEFAULTS;
  * <p>
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
-@Log4j
+@Slf4j
 public class GtfsAgencyProducer extends AbstractProducer
 {
    public GtfsAgencyProducer(GtfsExporterInterface exporter)

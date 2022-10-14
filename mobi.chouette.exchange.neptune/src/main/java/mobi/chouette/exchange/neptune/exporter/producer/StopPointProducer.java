@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.neptune.JsonExtension;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
@@ -13,7 +13,7 @@ import org.trident.schema.trident.ChouettePTNetworkType;
 import org.trident.schema.trident.LongLatTypeType;
 import org.trident.schema.trident.ProjectedPointType;
 
-@Log4j
+@Slf4j
 public class StopPointProducer extends
 		AbstractJaxbNeptuneProducer<ChouettePTNetworkType.ChouetteLineDescription.StopPoint, StopPoint> implements
 		JsonExtension {

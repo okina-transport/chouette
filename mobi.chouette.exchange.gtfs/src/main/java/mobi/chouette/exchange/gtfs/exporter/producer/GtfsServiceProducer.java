@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -35,7 +35,7 @@ import java.time.LocalTime;
  * <p>
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
-@Log4j
+@Slf4j
 public class GtfsServiceProducer extends
 AbstractProducer
 {

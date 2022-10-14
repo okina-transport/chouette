@@ -16,7 +16,7 @@ import lombok.ToString;
 import mobi.chouette.model.type.StopAreaImportModeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 @NoArgsConstructor
 @ToString

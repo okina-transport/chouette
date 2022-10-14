@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
@@ -39,7 +39,7 @@ import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.Codespace;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexInitExportCommand.COMMAND)
 public class NetexInitExportCommand implements Command, Constant {
 
@@ -108,7 +108,7 @@ public class NetexInitExportCommand implements Command, Constant {
 
 			result = SUCCESS;
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw e;
 		} finally {
 			JamonUtils.logMagenta(log, monitor);
@@ -130,7 +130,7 @@ public class NetexInitExportCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

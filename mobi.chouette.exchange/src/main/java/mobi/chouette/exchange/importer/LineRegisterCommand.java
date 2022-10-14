@@ -14,7 +14,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
@@ -50,7 +50,7 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Log4j
+@Slf4j
 @Stateless(name = LineRegisterCommand.COMMAND)
 public class LineRegisterCommand implements Command {
 
@@ -298,7 +298,7 @@ public class LineRegisterCommand implements Command {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

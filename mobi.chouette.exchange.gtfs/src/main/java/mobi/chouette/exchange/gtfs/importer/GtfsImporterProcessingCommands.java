@@ -7,7 +7,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -32,7 +32,7 @@ import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 import org.apache.commons.collections.CollectionUtils;
 
 @Data
-@Log4j
+@Slf4j
 public class GtfsImporterProcessingCommands implements ProcessingCommands, Constant {
 
 	public static class DefaultFactory extends ProcessingCommandsFactory {
@@ -62,7 +62,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 			commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -112,7 +112,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 				commands.add(chain);
 			}
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -140,7 +140,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 			commands.add(chain);
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -162,7 +162,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 				commands.add(CommandFactory.create(initialContext, GenerateRouteSectionsCommand.class.getName()));
 			}
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -176,7 +176,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 			commands.add(CommandFactory.create(initialContext, GtfsDisposeImportCommand.class.getName()));
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;

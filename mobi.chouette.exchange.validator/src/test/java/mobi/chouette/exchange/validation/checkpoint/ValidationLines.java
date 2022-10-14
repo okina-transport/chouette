@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.core.ChouetteException;
@@ -42,7 +42,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class ValidationLines extends AbstractTestValidation
 {
 	private LineCheckPoints checkPoint = new LineCheckPoints();
@@ -278,7 +278,7 @@ public class ValidationLines extends AbstractTestValidation
 
 		List<CheckPointErrorReport> details = checkReportForTest(report,"3-Line-1",-1);
 		for (CheckPointErrorReport detail : details) {
-			log.warn(detail);
+			log.warn(String.valueOf(detail));
 		}
 		String detailKey = "3-Line-1".replaceAll("-", "_").toLowerCase();
 		for (CheckPointErrorReport detail : details) {
@@ -345,7 +345,7 @@ public class ValidationLines extends AbstractTestValidation
 					"details key should start with test key : expected " + detailKey + ", found : " + detail.getKey());
 		}
 		for (CheckPointErrorReport detail : details) {
-			log.warn(detail);
+			log.warn(String.valueOf(detail));
 			Assert.assertEquals(detail.getSource().getObjectId(),line1.getObjectId(), "line must be source of error");
 		}
 
@@ -429,7 +429,7 @@ public class ValidationLines extends AbstractTestValidation
 
 			List<CheckPointErrorReport> details = checkReportForTest(report,"4-Line-2",-1);
 			for (CheckPointErrorReport detail : details) {
-				log.warn(detail);
+				log.warn(String.valueOf(detail));
 				Assert.assertEquals(detail.getSource().getObjectId(),line1.getObjectId(), "line must be source of error");
 			}
 		}
@@ -516,7 +516,7 @@ public class ValidationLines extends AbstractTestValidation
 
 			List<CheckPointErrorReport> details = checkReportForTest(report,"4-Line-3",-1);
 			for (CheckPointErrorReport detail : details) {
-				log.warn(detail);
+				log.warn(String.valueOf(detail));
 				Assert.assertEquals(detail.getSource().getObjectId(),line1.getObjectId(), "line must be source of error");
 			}
 		}
@@ -615,7 +615,7 @@ public class ValidationLines extends AbstractTestValidation
 					" checkPointReport must have 1 item");
 			List<CheckPointErrorReport> details = checkReportForTest(report,"4-Line-4",-1);
 			for (CheckPointErrorReport detail : details) {
-				log.warn(detail);
+				log.warn(String.valueOf(detail));
 				Assert.assertEquals(detail.getSource().getObjectId(),line1.getObjectId(), "line must be source of error");
 			}
 		}

@@ -18,14 +18,14 @@ import org.trident.schema.trident.LineExtensionType;
 import org.trident.schema.trident.LineExtensionType.AccessibilitySuitabilityDetails;
 import org.trident.schema.trident.TransportModeNameType;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import uk.org.ifopt.acsb.EncumbranceEnumeration;
 import uk.org.ifopt.acsb.MedicalNeedEnumeration;
 import uk.org.ifopt.acsb.MobilityEnumeration;
 import uk.org.ifopt.acsb.PyschosensoryNeedEnumeration;
 import uk.org.ifopt.acsb.UserNeedStructure;
 
-@Log4j
+@Slf4j
 public class LineProducer extends AbstractJaxbNeptuneProducer<ChouettePTNetworkType.ChouetteLineDescription.Line, Line>
 		implements JsonExtension {
 

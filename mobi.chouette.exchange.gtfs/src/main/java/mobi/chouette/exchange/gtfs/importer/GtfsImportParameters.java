@@ -14,7 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 @XmlRootElement(name = "gtfs-import")
 @NoArgsConstructor

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.StopArea;
@@ -19,7 +19,7 @@ import mobi.chouette.model.util.Referential;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-@Log4j
+@Slf4j
 public class ConnectionLinkGenerator extends AbstractGenerator {
 
 	public void createConnectionLinks(Context context) {

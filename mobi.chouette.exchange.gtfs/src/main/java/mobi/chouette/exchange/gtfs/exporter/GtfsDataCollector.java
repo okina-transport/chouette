@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;
@@ -10,7 +10,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import java.time.LocalDate;
 
-@Log4j
+@Slf4j
 public class GtfsDataCollector extends DataCollector {
 	public GtfsDataCollector(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
 		super(collection, line, startDate, endDate, false, false, true);

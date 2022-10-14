@@ -15,11 +15,11 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import static mobi.chouette.exchange.netexprofile.parser.xml.XMLParserUtil.getSecureXmlInputFactory;
 
-@Log4j
+@Slf4j
 public class PublicactionDeliveryVersionAttributeReader {
 	public static String findPublicationDeliveryVersion(File f) {
 

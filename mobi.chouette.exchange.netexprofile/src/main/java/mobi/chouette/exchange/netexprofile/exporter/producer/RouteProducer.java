@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import java.math.BigInteger;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
@@ -21,7 +21,7 @@ import org.rutebanken.netex.model.RouteRefStructure;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.POINT_ON_ROUTE;
 
-@Log4j
+@Slf4j
 public class RouteProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Route, mobi.chouette.model.Route> {
 
 	@Override

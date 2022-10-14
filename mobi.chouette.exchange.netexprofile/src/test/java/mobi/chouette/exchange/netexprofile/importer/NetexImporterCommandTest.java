@@ -19,7 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.CodespaceDAO;
@@ -80,7 +80,7 @@ import org.testng.annotations.Test;
 import static mobi.chouette.exchange.netexprofile.NetexTestUtils.createCodespace;
 import static org.testng.Assert.*;
 
-@Log4j
+@Slf4j
 public class NetexImporterCommandTest extends Arquillian implements Constant, ReportConstant {
 
 	protected static InitialContext initialContext;

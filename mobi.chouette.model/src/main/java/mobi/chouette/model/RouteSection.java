@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.GeometryUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -39,7 +39,7 @@ import org.hibernate.annotations.Type;
 @Table(name = "route_sections")
 @NoArgsConstructor
 @ToString
-@Log4j
+@Slf4j
 public class RouteSection extends NeptuneIdentifiedObject {
 	private static final long serialVersionUID = 8490105295077539089L;
 

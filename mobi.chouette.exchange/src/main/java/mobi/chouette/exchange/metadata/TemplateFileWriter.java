@@ -13,17 +13,18 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import lombok.Getter;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.EscapeTool;
+import org.slf4j.LoggerFactory;
 
 public abstract class TemplateFileWriter {
 
 	public static String LOGGER_NAME = "velocityiev";
 
-	private static final Logger logger = Logger.getLogger(TemplateFileWriter.class);
+	private static final Logger logger = LoggerFactory.getLogger(TemplateFileWriter.class);
 	@Getter
 	private VelocityEngine velocityEngine;
 	// Prepare the model for velocity
@@ -31,7 +32,7 @@ public abstract class TemplateFileWriter {
 	protected Map<String, Object> model = new HashMap<String, Object>();
 
 	public TemplateFileWriter() {
-		Logger.getLogger( LOGGER_NAME );
+		LoggerFactory.getLogger( LOGGER_NAME );
 		velocityEngine = new VelocityEngine();
 		velocityEngine.addProperty("resource.loader", "classpath");
 		velocityEngine.addProperty("classpath.resource.loader.class",

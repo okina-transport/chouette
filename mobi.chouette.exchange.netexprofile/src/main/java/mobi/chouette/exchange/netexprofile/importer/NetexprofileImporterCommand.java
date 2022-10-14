@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.importer;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -26,7 +26,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexprofileImporterCommand.COMMAND)
 public class NetexprofileImporterCommand extends AbstractImporterCommand implements Command, Constant {
 

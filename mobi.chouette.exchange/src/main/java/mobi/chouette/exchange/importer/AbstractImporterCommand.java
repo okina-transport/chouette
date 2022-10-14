@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.ChainCommand;
@@ -18,7 +18,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 public class AbstractImporterCommand implements Constant {
 
 	protected enum Mode {

@@ -7,7 +7,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JSONUtil;
@@ -20,7 +20,7 @@ import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-@Log4j
+@Slf4j
 public abstract class AbstractInputValidator implements InputValidator, Constant {
 	public boolean initReport(JobData data) {
 		Context context = new Context();

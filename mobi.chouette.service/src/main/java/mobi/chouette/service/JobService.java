@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Delegate;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.file.FileStore;
@@ -32,9 +32,10 @@ import mobi.chouette.model.iev.Link;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 @Data
-@Log4j
+@Slf4j
 @ToString(exclude = {"inputValidator"})
 public class JobService implements JobData, ServiceConstants {
 
@@ -132,7 +133,7 @@ public class JobService implements JobData, ServiceConstants {
 		} catch (ServiceException ex) {
 			throw ex;
 		} catch (Exception ex) {
-			Logger.getLogger(JobService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+			LoggerFactory.getLogger(JobService.class.getName()).error(ex.getMessage(), ex);
 			throw new RequestServiceException(RequestExceptionCode.INVALID_PARAMETERS, ex);
 		}
 

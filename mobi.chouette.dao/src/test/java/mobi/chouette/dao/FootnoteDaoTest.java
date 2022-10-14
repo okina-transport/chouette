@@ -16,11 +16,11 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
-@Log4j
+@Slf4j
 public class FootnoteDaoTest extends Arquillian {
 	@EJB 
 	FootnoteDAO footnoteDao;
@@ -70,7 +70,7 @@ public class FootnoteDaoTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -111,7 +111,7 @@ public class FootnoteDaoTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -123,7 +123,7 @@ public class FootnoteDaoTest extends Arquillian {
 	private void traceSqlException(SQLException ex) {
 		while (ex.getNextException() != null) {
 			ex = ex.getNextException();
-			log.error(ex);
+			log.error(ex.getMessage(),ex);
 		}
 	}
 

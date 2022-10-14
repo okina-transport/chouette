@@ -9,7 +9,7 @@ import javax.naming.NamingException;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -17,7 +17,7 @@ import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImporterCommand;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexprofileValidatorCommand.COMMAND)
 public class NetexprofileValidatorCommand extends NetexprofileImporterCommand {
 
@@ -53,7 +53,7 @@ public class NetexprofileValidatorCommand extends NetexprofileImporterCommand {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

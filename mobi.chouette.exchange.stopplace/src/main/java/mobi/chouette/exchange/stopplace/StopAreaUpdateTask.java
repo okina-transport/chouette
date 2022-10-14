@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.importer.updater.Updater;
@@ -16,7 +16,7 @@ import mobi.chouette.model.StopArea;
 
 import org.apache.commons.collections.CollectionUtils;
 
-@Log4j
+@Slf4j
 public class StopAreaUpdateTask {
 
 	private StopAreaDAO stopAreaDAO;

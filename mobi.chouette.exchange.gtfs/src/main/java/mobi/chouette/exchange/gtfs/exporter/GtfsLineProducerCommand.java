@@ -17,7 +17,7 @@ import java.util.Set;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
@@ -49,7 +49,7 @@ import java.time.LocalDate;
 /**
  *
  */
-@Log4j
+@Slf4j
 public class GtfsLineProducerCommand implements Command, Constant {
 	public static final String COMMAND = "GtfsLineProducerCommand";
 

@@ -38,7 +38,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import java.time.Duration;
 import java.time.LocalTime;

@@ -8,7 +8,7 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.ConnectionLink;
@@ -19,7 +19,7 @@ import mobi.chouette.model.Interchange;
  * <p>
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
-@Log4j
+@Slf4j
 public class GtfsTransferProducer extends AbstractProducer {
 	public GtfsTransferProducer(GtfsExporterInterface exporter) {
 		super(exporter);

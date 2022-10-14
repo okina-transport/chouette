@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.map.IMap;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import com.hazelcast.config.MapConfig;
 import org.rutebanken.hazelcasthelper.service.HazelCastService;
 import org.rutebanken.hazelcasthelper.service.KubernetesService;
 
-@Log4j
+@Slf4j
 public class ChouetteHazelcastService extends HazelCastService {
 
 	private static final String MAP_CONFIG_NAME_REFERENTIAL_LOCKS = "ReferentialLocks";

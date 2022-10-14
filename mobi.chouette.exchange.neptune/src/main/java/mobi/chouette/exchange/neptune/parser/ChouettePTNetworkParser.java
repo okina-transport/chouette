@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -9,7 +9,7 @@ import mobi.chouette.exchange.importer.ParserFactory;
 
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class ChouettePTNetworkParser implements Parser, Constant {
 	private static final String CHILD_TAG = "ChouettePTNetwork";
 

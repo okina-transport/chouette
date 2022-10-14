@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 //import mobi.chouette.common.Color;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsObject;
@@ -25,7 +25,7 @@ import mobi.chouette.exchange.gtfs.model.GtfsObject;
 //import com.jamonapi.Monitor;
 //import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 public abstract class IndexImpl<T> extends AbstractIndex<T> {
 
 	public static final byte[] UTF_8 = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };

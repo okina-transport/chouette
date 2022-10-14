@@ -11,7 +11,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 import static mobi.chouette.common.TimeUtil.toLocalDateTime;
 
-@Log4j
+@Slf4j
 public class ParserUtils {
 
 	private static DatatypeFactory factory = null;

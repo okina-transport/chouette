@@ -12,7 +12,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopPoint;
@@ -30,7 +30,7 @@ import java.time.Duration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class InterchangeDAOTest extends Arquillian {
 	@EJB
 	InterchangeDAO interchangeDao;
@@ -112,7 +112,7 @@ public class InterchangeDAOTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -204,7 +204,7 @@ public class InterchangeDAOTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -218,7 +218,7 @@ public class InterchangeDAOTest extends Arquillian {
 	private void traceSqlException(SQLException ex) {
 		while (ex.getNextException() != null) {
 			ex = ex.getNextException();
-			log.error(ex);
+			log.error(ex.getMessage(),ex);
 		}
 	}
 

@@ -10,7 +10,7 @@ import javax.naming.InitialContext;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -31,7 +31,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 public class NeptuneParserCommand implements Command, Constant {
 
 	public static final String COMMAND = "NeptuneParserCommand";

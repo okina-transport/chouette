@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.enterprise.inject.spi.CDI;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.model.ObjectReference;
 import mobi.chouette.model.ScheduledStopPoint;
@@ -16,7 +16,7 @@ import org.hibernate.type.Type;
 /**
  * StopPoint and RouteSections reside in separate schemas from StopArea. This Interceptor enriches these entities with relations between them upon load.
  */
-@Log4j
+@Slf4j
 public class RelationsToStopAreaInterceptor extends EmptyInterceptor {
 
 	private StopAreaDAO stopAreaDAO;

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JSONUtil;
@@ -27,7 +27,7 @@ import org.testng.Reporter;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class ValidationTimetables extends AbstractTestValidation {
 	private TimetableCheckPoints checkPoint = new TimetableCheckPoints();
 	private ValidationParameters fullparameters;

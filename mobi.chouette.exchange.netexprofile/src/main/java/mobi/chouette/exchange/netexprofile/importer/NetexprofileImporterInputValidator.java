@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.exchange.AbstractInputValidator;
 import mobi.chouette.exchange.InputValidator;
@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
-@Log4j
+@Slf4j
 public class NetexprofileImporterInputValidator extends AbstractInputValidator {
 
 	@Override

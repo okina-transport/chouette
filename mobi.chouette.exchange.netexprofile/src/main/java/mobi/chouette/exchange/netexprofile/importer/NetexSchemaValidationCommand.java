@@ -32,7 +32,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -43,7 +43,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexSchemaValidationCommand.COMMAND)
 public class NetexSchemaValidationCommand implements Command, Constant {
 
@@ -207,10 +207,10 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 				log.info("Schema validation finished "+fileName);
 				JamonUtils.logYellow(log, monitor);
 			} catch (SAXException e) {
-				log.warn(e);
+				log.warn(e.getMessage(), e);
 				fileValidationResult = ERROR;
 			} catch (IOException e) {
-				log.error(e);
+				log.error(e.getMessage(), e);
 				fileValidationResult = ERROR;
 			}
 

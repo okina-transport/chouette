@@ -3,7 +3,7 @@ package mobi.chouette.exchange.validation.checkpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.ValidationException;
@@ -17,7 +17,7 @@ import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 
-@Log4j
+@Slf4j
 public class RouteSectionCheckPoints extends AbstractValidation<RouteSection> implements Validator<RouteSection>{
 	@Override
 	public void validate(Context context, RouteSection target)

@@ -13,13 +13,13 @@ import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.StopTypeEnumeration;
 
 // TODO replace local cache in StopPlaceRegistryIdValidator with this
-@Log4j
+@Slf4j
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton(name = StopAreaIdCache.BEAN_NAME)
 public class StopAreaIdCache {

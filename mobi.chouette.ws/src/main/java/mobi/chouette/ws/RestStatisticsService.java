@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.model.statistics.LineStatistics;
@@ -27,7 +27,7 @@ import mobi.chouette.service.RequestExceptionCode;
 import mobi.chouette.service.RequestServiceException;
 import mobi.chouette.service.TransitDataStatisticsService;
 
-@Log4j
+@Slf4j
 @RequestScoped
 @Path("/statistics")
 public class RestStatisticsService implements Constant {

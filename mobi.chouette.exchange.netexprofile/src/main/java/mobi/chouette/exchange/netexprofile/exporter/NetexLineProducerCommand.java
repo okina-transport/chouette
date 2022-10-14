@@ -14,7 +14,7 @@ import org.xml.sax.SAXParseException;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -25,7 +25,7 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 
-@Log4j
+@Slf4j
 public class NetexLineProducerCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexLineProducerCommand";

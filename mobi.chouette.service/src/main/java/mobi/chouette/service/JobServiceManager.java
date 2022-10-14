@@ -31,7 +31,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.core.MediaType;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.PropertyNames;
@@ -59,7 +59,7 @@ import java.time.LocalDateTime;
 @Singleton(name = JobServiceManager.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Startup
-@Log4j
+@Slf4j
 public class JobServiceManager {
 
 	public static final String BEAN_NAME = "JobServiceManager";

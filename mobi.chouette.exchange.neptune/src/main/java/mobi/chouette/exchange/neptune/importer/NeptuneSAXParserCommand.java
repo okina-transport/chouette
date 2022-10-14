@@ -19,7 +19,7 @@ import javax.xml.validation.Validator;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 public class NeptuneSAXParserCommand implements Command, Constant {
 
 	public static final String COMMAND = "NeptuneSAXParserCommand";
@@ -90,7 +90,7 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 
 			if (!context.containsKey("REPLAY_VALIDATOR")
 					&& e.getMessage().contains("ChouettePTNetwork")) {
-				log.warn(e);
+				log.warn(e.getMessage(), e);
 				if (reader != null ) reader.close();
 				addNameSpace(url);
 				context.put("REPLAY_VALIDATOR", Boolean.TRUE);
@@ -98,12 +98,12 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 				context.remove("REPLAY_VALIDATOR");
 				return res;
 			}
-			log.error(e);
+			log.error(e.getMessage(), e);
 			errorHandler.handleError(e);
 			reporter.addFileErrorInReport(context, fileName, FILE_ERROR_CODE.INVALID_FORMAT,e.getMessage());
 		} catch (Exception e) {
 
-			log.error(e);
+			log.error(e.getMessage(), e);
 			reporter.addFileErrorInReport(context, fileName, FILE_ERROR_CODE.INTERNAL_ERROR,e.getMessage());
 
 		} finally {

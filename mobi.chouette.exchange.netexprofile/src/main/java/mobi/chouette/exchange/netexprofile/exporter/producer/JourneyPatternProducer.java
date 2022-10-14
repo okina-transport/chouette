@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
@@ -44,7 +44,7 @@ import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProduce
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.LINK_SEQUENCE_PROJECTION;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.SERVICE_LINK_IN_JOURNEY_PATTERN;
 
-@Log4j
+@Slf4j
 public class JourneyPatternProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.JourneyPattern, mobi.chouette.model.JourneyPattern> {
 
 	private static ContactStructureProducer contactStructureProducer = new ContactStructureProducer();

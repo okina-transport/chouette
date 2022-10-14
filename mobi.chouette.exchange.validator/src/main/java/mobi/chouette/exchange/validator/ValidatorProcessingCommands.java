@@ -7,7 +7,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -16,7 +16,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 
-@Log4j
+@Slf4j
 @Data
 public class ValidatorProcessingCommands implements ProcessingCommands, Constant {
 
@@ -50,7 +50,7 @@ public class ValidatorProcessingCommands implements ProcessingCommands, Constant
 			else
 				throw new IllegalArgumentException("withDao must be false");
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -65,7 +65,7 @@ public class ValidatorProcessingCommands implements ProcessingCommands, Constant
 		try {
 			commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;

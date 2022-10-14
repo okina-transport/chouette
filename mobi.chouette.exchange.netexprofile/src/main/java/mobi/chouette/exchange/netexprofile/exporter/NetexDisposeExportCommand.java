@@ -7,7 +7,7 @@ import javax.naming.InitialContext;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -16,7 +16,7 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 public class NetexDisposeExportCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexDisposeExportCommand";
@@ -43,7 +43,7 @@ public class NetexDisposeExportCommand implements Command, Constant {
 
             result = SUCCESS;
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw e;
         } finally {
             JamonUtils.logMagenta(log, monitor);

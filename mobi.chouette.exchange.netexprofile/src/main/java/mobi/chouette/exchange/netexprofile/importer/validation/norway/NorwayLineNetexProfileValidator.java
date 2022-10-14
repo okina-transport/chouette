@@ -14,7 +14,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathSelector;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.importer.util.DataLocationHelper;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
@@ -38,7 +38,7 @@ import org.rutebanken.netex.model.FlexibleServiceEnumeration;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 
-@Log4j
+@Slf4j
 public class NorwayLineNetexProfileValidator extends AbstractNorwayNetexProfileValidator implements NetexProfileValidator {
 
 	public static final String NAME = "NorwayLineNetexProfileValidator";

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.importer.Parser;
@@ -22,7 +22,7 @@ import org.rutebanken.netex.model.ServiceJourneyRefStructure;
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 
-@Log4j
+@Slf4j
 public class DatedServiceJourneyParser extends NetexParser implements Parser, Constant {
 
     @Override

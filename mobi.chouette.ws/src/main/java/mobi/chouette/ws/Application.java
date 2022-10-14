@@ -11,7 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Application extends javax.ws.rs.core.Application implements
 		ServletContextListener {
@@ -40,18 +41,6 @@ public class Application extends javax.ws.rs.core.Application implements
 	public Map<String, Object> getProperties() {
 		Map<String, Object> result = new HashMap<String, Object>();
 		return result;
-	}
-
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		Logger log = Logger.getLogger("org.jboss.resteasy.core.ExceptionHandler");
-		log.setLevel(Level.ERROR);
-
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-
 	}
 
 }

@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
@@ -21,7 +21,7 @@ import com.jamonapi.MonitorFactory;
 import mobi.chouette.common.monitor.JamonUtils;
 import org.apache.commons.io.FileUtils;
 
-@Log4j
+@Slf4j
 public class CompressCommand implements Command, Constant {
 
 	public static final String COMMAND = "CompressCommand";

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.Validator;
@@ -11,7 +11,7 @@ import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 
-@Log4j
+@Slf4j
 public class LineCheckPoints extends AbstractValidation<Line> implements Validator<Line> {
 
 	@Override

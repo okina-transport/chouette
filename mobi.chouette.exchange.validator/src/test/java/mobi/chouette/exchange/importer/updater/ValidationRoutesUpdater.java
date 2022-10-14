@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;
@@ -37,7 +37,7 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
 
-@Log4j
+@Slf4j
 public class ValidationRoutesUpdater extends AbstractTestValidation {
 	@EJB 
 	LineDAO lineDao;

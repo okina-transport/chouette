@@ -16,7 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job_;
 import mobi.chouette.model.iev.Link;
@@ -24,7 +24,7 @@ import mobi.chouette.model.iev.Link;
 import java.time.LocalDateTime;
 
 @Stateless
-@Log4j
+@Slf4j
 public class JobDAO extends GenericDAOImpl<Job> {
 
 	public JobDAO() {

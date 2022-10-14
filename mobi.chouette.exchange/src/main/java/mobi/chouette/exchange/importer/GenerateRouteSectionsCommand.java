@@ -11,7 +11,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -32,7 +32,7 @@ import com.jamonapi.MonitorFactory;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = GenerateRouteSectionsCommand.COMMAND)
-@Log4j
+@Slf4j
 public class GenerateRouteSectionsCommand implements Command, Constant {
 
 	public static final String COMMAND = "GenerateRouteSectionsCommand";
@@ -108,7 +108,7 @@ public class GenerateRouteSectionsCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

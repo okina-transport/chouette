@@ -1,6 +1,6 @@
 package mobi.chouette.ws;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.service.StopAreaService;
 import mobi.chouette.common.Color;
 import mobi.chouette.service.JobServiceManager;
@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
 
-@Log4j
+@Slf4j
 @RequestScoped
 @Path("/stop_place")
 public class RestNetexStopPlaceService {

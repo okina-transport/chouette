@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.neptune.Constant;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -21,7 +21,7 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 public class LineValidator extends AbstractValidator implements Validator<Line>, Constant {
 
 	public static final String ROUTE_ID = "routeId";

@@ -3,7 +3,7 @@ package mobi.chouette.exchange.gtfs.model.importer;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
@@ -15,12 +15,13 @@ import mobi.chouette.exchange.gtfs.model.GtfsTrip;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.slf4j.LoggerFactory;
 
-@Log4j
+@Slf4j
 public class Main {
 
 	private int _count;
@@ -28,7 +29,6 @@ public class Main {
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
-		Logger.getLogger("org.infinispan").setLevel(Level.WARN);
 		Main main = new Main();
 
 		Monitor monitor = MonitorFactory.start();

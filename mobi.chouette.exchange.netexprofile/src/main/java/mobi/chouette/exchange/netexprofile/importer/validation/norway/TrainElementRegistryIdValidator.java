@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.importer.validation.norway;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.validation.ExternalReferenceValidator;
@@ -8,7 +8,7 @@ import mobi.chouette.exchange.netexprofile.importer.validation.ExternalReference
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Log4j
+@Slf4j
 public class TrainElementRegistryIdValidator implements ExternalReferenceValidator {
 
     public static final String NAME = "TrainElementRegistryIdValidator";

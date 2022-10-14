@@ -11,7 +11,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -23,7 +23,7 @@ import mobi.chouette.model.Line;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 @Stateless(name = DaoNeptuneLineProducerCommand.COMMAND)
 public class DaoNeptuneLineProducerCommand implements Command, Constant {
 
@@ -79,7 +79,7 @@ public class DaoNeptuneLineProducerCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

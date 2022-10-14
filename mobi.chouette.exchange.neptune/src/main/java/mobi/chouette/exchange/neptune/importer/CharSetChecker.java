@@ -6,10 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
 import java.nio.charset.Charset;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 
-@Log4j
+@Slf4j
 public class CharSetChecker {
 	
 	   private static final int BOM_SIZE = 4;

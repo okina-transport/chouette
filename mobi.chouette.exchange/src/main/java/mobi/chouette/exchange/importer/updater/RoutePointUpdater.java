@@ -3,7 +3,7 @@ package mobi.chouette.exchange.importer.updater;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.model.RoutePoint;
@@ -11,7 +11,7 @@ import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 @Stateless(name = RoutePointUpdater.BEAN_NAME)
 public class RoutePointUpdater implements Updater<RoutePoint> {
 	public static final String BEAN_NAME = "RoutePointUpdater";

@@ -1,6 +1,6 @@
 package mobi.chouette.service;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.dao.ReferentialDAO;
 import mobi.chouette.dao.ReferentialLastUpdateDAO;
 import mobi.chouette.model.dto.ReferentialInfo;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Singleton(name = ReferentialService.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
-@Log4j
+@Slf4j
 public class ReferentialService {
 
     private static final String MIGRATED_SCHEMA_PREFIX = "rb_";

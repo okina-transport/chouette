@@ -23,7 +23,7 @@ import javax.naming.NamingException;
 import mobi.chouette.common.monitor.JamonUtils;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -40,7 +40,7 @@ import com.jamonapi.MonitorFactory;
 /**
  *
  */
-@Log4j
+@Slf4j
 @Stateless(name = DaoLineValidatorCommand.COMMAND)
 public class DaoLineValidatorCommand implements Command, Constant {
 	public static final String COMMAND = "DaoLineValidatorCommand";
@@ -99,7 +99,7 @@ public class DaoLineValidatorCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

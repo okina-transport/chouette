@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.transfer.exporter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Log4j
+@Slf4j
 @Stateless(name = TransferExportDataWriter.COMMAND)
 public class TransferExportDataWriter implements Command, Constant {
 
@@ -298,7 +298,7 @@ public class TransferExportDataWriter implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

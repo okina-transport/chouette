@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.util.Collection;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.type.PTDirectionEnum;
 
@@ -10,7 +10,7 @@ import org.trident.schema.trident.ChouettePTNetworkType.ChouetteLineDescription.
 import org.trident.schema.trident.PTDirectionType;
 import org.trident.schema.trident.RouteExtension;
 
-@Log4j
+@Slf4j
 public class RouteProducer extends
 AbstractJaxbNeptuneProducer<ChouetteRoute, Route>
 {

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.ValidationException;
@@ -14,7 +14,7 @@ import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 
-@Log4j
+@Slf4j
 public class StopPointCheckPoints extends AbstractValidation<StopPoint> implements Validator<StopPoint> {
 
     @Override

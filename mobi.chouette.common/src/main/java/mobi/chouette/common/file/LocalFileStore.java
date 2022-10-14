@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import javax.ejb.Stateless;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import org.apache.commons.io.FileUtils;
 
@@ -19,7 +19,7 @@ import static mobi.chouette.common.file.LocalFileStore.BEAN_NAME;
  * Store permanent files in local file system.
  */
 @Stateless(name = BEAN_NAME)
-@Log4j
+@Slf4j
 public class LocalFileStore implements FileStore {
 
 	public static final String BEAN_NAME = "LocalFileStore";

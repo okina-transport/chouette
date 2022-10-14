@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.NeptuneLocalizedObject;
@@ -20,7 +20,7 @@ import mobi.chouette.model.RoutePoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 
-@Log4j
+@Slf4j
 public abstract class NeptuneUtil {
 
 	/**

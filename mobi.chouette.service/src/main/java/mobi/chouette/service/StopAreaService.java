@@ -18,7 +18,7 @@ import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.ReferentialDAO;
@@ -32,7 +32,7 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 
 @Singleton(name = StopAreaService.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
-@Log4j
+@Slf4j
 public class StopAreaService {
 
 	public static final String BEAN_NAME = "StopAreaService";

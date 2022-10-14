@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
@@ -19,7 +19,7 @@ import org.rutebanken.netex.model.LinkSequenceProjection_VersionStructure;
 import org.rutebanken.netex.model.ServiceLink;
 import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
 
-@Log4j
+@Slf4j
 public class ServiceLinkParser extends NetexParser implements Parser, Constant {
 
 	@Override

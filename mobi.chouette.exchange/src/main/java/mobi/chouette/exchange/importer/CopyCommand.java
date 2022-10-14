@@ -16,7 +16,7 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
@@ -29,7 +29,7 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 @Stateless(name = CopyCommand.COMMAND)
 public class CopyCommand implements Command {
 
@@ -91,7 +91,7 @@ public class CopyCommand implements Command {
 
 			result = SUCCESS;
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -130,7 +130,7 @@ public class CopyCommand implements Command {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

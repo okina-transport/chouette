@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -31,7 +31,7 @@ import java.util.List;
 @Table(name = "dead_runs")
 @NoArgsConstructor
 @ToString(callSuper = true, exclude = { "journeyPattern", "timetables" })
-@Log4j
+@Slf4j
 public class DeadRun extends NeptuneIdentifiedObject {
 
 	private static final long serialVersionUID = 304336286208135064L;

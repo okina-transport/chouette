@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.type.AccessPointTypeEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -12,7 +12,7 @@ import org.trident.schema.trident.LongLatTypeType;
 import org.trident.schema.trident.PTAccessPointType;
 import org.trident.schema.trident.ProjectedPointType;
 
-@Log4j
+@Slf4j
 public class AccessPointProducer extends
       AbstractJaxbNeptuneProducer<PTAccessPointType, AccessPoint>
 {

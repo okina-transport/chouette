@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
@@ -14,7 +14,7 @@ import mobi.chouette.model.util.Referential;
 
 import org.apache.commons.io.FileUtils;
 
-@Log4j
+@Slf4j
 public abstract class AbstractDisposeImportCommand implements Command, Constant {
 
 	@Override
@@ -45,7 +45,7 @@ public abstract class AbstractDisposeImportCommand implements Command, Constant 
 			}
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw e;
 		}
 

@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.dto.ReferentialInfo;
 
 import javax.ejb.Stateless;
@@ -12,7 +12,7 @@ import javax.persistence.StoredProcedureQuery;
 import java.util.List;
 
 @Stateless(name = "ReferentialDAO")
-@Log4j
+@Slf4j
 public class ReferentialDAOImpl implements ReferentialDAO {
 
     private static final String SQL_SELECT_REFERENTIAL = "SELECT * FROM PUBLIC.REFERENTIALS WHERE slug=:dest_schema";

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import javax.ejb.EJB;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
@@ -22,7 +22,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-@Log4j
+@Slf4j
 public class RouteSectionDaoTest extends Arquillian
 {
 	@EJB
@@ -71,7 +71,7 @@ public class RouteSectionDaoTest extends Arquillian
 			 Throwable cause = ex.getCause();
 			while (cause != null)
 			{
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException) traceSqlException((SQLException)cause);
 				cause = cause.getCause();
 			}
@@ -84,7 +84,7 @@ public class RouteSectionDaoTest extends Arquillian
 		while (ex.getNextException() != null)
 		{
 			ex = ex.getNextException();
-			log.error(ex);
+			log.error(ex.getMessage(),ex);
 		}
 	}
 	

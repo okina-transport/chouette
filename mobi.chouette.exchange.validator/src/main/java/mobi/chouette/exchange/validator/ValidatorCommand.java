@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -42,7 +42,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 
-@Log4j
+@Slf4j
 @Stateless(name = ValidatorCommand.COMMAND)
 public class ValidatorCommand implements Command, Constant {
 
@@ -262,7 +262,7 @@ public class ValidatorCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

@@ -11,7 +11,7 @@ import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.StopAreaTypeEnum;
@@ -23,7 +23,7 @@ import org.rutebanken.netex.model.StopTypeEnumeration;
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil.findTransportModeForStopArea;
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil.mapTransportMode;
 
-@Log4j
+@Slf4j
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton(name = StopAreaIdMapper.BEAN_NAME)
 public class StopAreaIdMapper {

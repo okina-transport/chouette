@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.chain.Command;
@@ -53,11 +53,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.slf4j.LoggerFactory;
 
 import static mobi.chouette.exchange.netexprofile.Constant.DATE_TIME_FORMATTER;
 
 @Path("/referentials")
-@Log4j
+@Slf4j
 @RequestScoped
 public class RestService implements Constant {
 
@@ -125,7 +126,7 @@ public class RestService implements Constant {
 					try {
 						is.close();
 					} catch (Exception e) {
-						Logger.getLogger(RestService.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+						LoggerFactory.getLogger(RestService.class.getName()).error(e.getMessage(), e);
 					}
 				}
 			}

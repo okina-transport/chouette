@@ -23,7 +23,7 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedTaskListener;
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.ContenerChecker;
@@ -41,7 +41,7 @@ import org.apache.commons.collections.CollectionUtils;
  */
 @Singleton(name = Scheduler.BEAN_NAME)
 @Startup
-@Log4j
+@Slf4j
 public class Scheduler {
 
 	public static final String BEAN_NAME = "Scheduler";

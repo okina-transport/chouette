@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.dao.exception.ChouetteStatisticsTimeoutException;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Timetable;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 @Stateless
-@Log4j
+@Slf4j
 public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements TimetableDAO {
 
 	/**

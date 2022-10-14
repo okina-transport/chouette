@@ -10,7 +10,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.RouteSection;
@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-@Log4j
+@Slf4j
 public class JourneyPatternDaoTest extends Arquillian {
 	@EJB 
 	JourneyPatternDAO journeyPatternDao;
@@ -74,7 +74,7 @@ public class JourneyPatternDaoTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -114,7 +114,7 @@ public class JourneyPatternDaoTest extends Arquillian {
 		} catch (RuntimeException ex) {
 			Throwable cause = ex.getCause();
 			while (cause != null) {
-				log.error(cause);
+				log.error(cause.getMessage(),cause);
 				if (cause instanceof SQLException)
 					traceSqlException((SQLException) cause);
 				cause = cause.getCause();
@@ -128,7 +128,7 @@ public class JourneyPatternDaoTest extends Arquillian {
 	private void traceSqlException(SQLException ex) {
 		while (ex.getNextException() != null) {
 			ex = ex.getNextException();
-			log.error(ex);
+			log.error(ex.getMessage(),ex);
 		}
 	}
 

@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
@@ -23,7 +23,7 @@ import com.jamonapi.MonitorFactory;
 
 import static mobi.chouette.common.TimeUtil.toLocalDate;
 
-@Log4j
+@Slf4j
 public class SaveMetadataCommand implements Command, Constant {
 
 	public static final String COMMAND = "SaveMetadataCommand";

@@ -7,13 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.Singleton;
 import javax.inject.Named;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import static mobi.chouette.scheduler.LocalReferentialLockManager.BEAN_NAME;
 
 @Singleton(name = BEAN_NAME)
 @Named
-@Log4j
+@Slf4j
 public class LocalReferentialLockManager implements ReferentialLockManager {
 
 	public static final String BEAN_NAME = "localReferentialLockManager";

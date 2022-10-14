@@ -7,7 +7,7 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -31,7 +31,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @Stateless(name = StopAreaUpdater.BEAN_NAME)
-@Log4j
+@Slf4j
 public class StopAreaUpdater implements Updater<StopArea> {
 
 	public static final String BEAN_NAME = "StopAreaUpdater";

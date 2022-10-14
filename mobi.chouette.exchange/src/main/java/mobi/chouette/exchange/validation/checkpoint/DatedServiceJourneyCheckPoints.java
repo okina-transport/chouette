@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.ValidationException;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Log4j
+@Slf4j
 public class DatedServiceJourneyCheckPoints extends AbstractValidation<DatedServiceJourney> implements Validator<DatedServiceJourney> {
 
     @Override

@@ -9,13 +9,13 @@ import javax.xml.stream.XMLStreamException;
 
 import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.writer.PublicationDeliveryWriter;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 
-@Log4j
+@Slf4j
 class NetexFileWriter implements Constant {
 
 	void writeXmlFile(Context context, Path filePath, ExportableData exportableData, ExportableNetexData exportableNetexData, NetexFragmentMode fragmentMode,

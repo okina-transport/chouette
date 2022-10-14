@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.StopAreaDAO;
@@ -40,7 +40,7 @@ import org.testng.annotations.Test;
 
 import com.vividsolutions.jts.geom.Polygon;
 
-@Log4j
+@Slf4j
 public class ValidationStopAreas extends AbstractTestValidation {
 	private StopAreaCheckPoints checkPoint = new StopAreaCheckPoints();
 	private ValidationParameters fullparameters;
@@ -248,7 +248,7 @@ public class ValidationStopAreas extends AbstractTestValidation {
 					"details key should start with test key : expected " + detailKey + ", found : " + detail.getKey());
 		}
 		for (CheckPointErrorReport detail : details) {
-			log.warn(detail);
+			log.warn(String.valueOf(detail));
 			Assert.assertEquals(detail.getSource().getObjectId(), area1.getObjectId(), "area1 must be source of error");
 		}
 

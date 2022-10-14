@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class TimetableParser implements Parser, Constant {
 	private static final String CHILD_TAG = "Timetable";
 

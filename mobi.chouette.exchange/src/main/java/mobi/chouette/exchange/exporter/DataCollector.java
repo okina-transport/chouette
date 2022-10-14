@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.exporter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.Block;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Log4j
+@Slf4j
 public class DataCollector {
 
 	protected LocalDate startDate;

@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;
@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class ProgressionCommandTest implements Constant {
 	private ProgressionCommand progression = null;
 	private Context context = new Context();
@@ -46,7 +46,7 @@ public class ProgressionCommandTest implements Constant {
 			}
 		d.mkdirs();
 		progression = (ProgressionCommand) CommandFactory.create(initialContext, ProgressionCommand.class.getName());
-		log.info(report);
+		log.info(String.valueOf(report));
 		progression.initialize(context, 2);
 		File reportFile = new File(d, REPORT_FILE);
 		File validationFile = new File(d, VALIDATION_FILE);

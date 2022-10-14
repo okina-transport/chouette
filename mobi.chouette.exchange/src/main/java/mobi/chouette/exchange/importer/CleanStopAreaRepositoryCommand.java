@@ -2,7 +2,7 @@ package mobi.chouette.exchange.importer;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -20,7 +20,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 @Stateless(name = CleanStopAreaRepositoryCommand.COMMAND)
 public class CleanStopAreaRepositoryCommand implements Command {
 
@@ -53,7 +53,7 @@ public class CleanStopAreaRepositoryCommand implements Command {
             stopAreaDAO.truncate();
             result = SUCCESS;
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
             throw e;
         }
         JamonUtils.logMagenta(log, monitor);
@@ -74,7 +74,7 @@ public class CleanStopAreaRepositoryCommand implements Command {
                 try {
                     result = (Command) context.lookup(name);
                 } catch (NamingException e1) {
-                    log.error(e);
+                    log.error(e.getMessage(), e);
                 }
             }
             return result;

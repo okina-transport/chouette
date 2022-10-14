@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
@@ -28,7 +28,7 @@ import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProduce
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GROUP_OF_LINES;
 
-@Log4j
+@Slf4j
 public class LineProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Line_VersionStructure, mobi.chouette.model.Line> {
 
 	private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();

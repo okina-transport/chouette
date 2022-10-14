@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.exporter;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -26,7 +26,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexprofileExporterCommand.COMMAND)
 public class NetexprofileExporterCommand extends AbstractExporterCommand implements Command, Constant, ReportConstant {
 
@@ -99,7 +99,7 @@ public class NetexprofileExporterCommand extends AbstractExporterCommand impleme
                 try {
                     result = (Command) context.lookup(name);
                 } catch (NamingException e1) {
-                    log.error(e);
+                    log.error(e.getMessage(), e);
                 }
             }
             return result;

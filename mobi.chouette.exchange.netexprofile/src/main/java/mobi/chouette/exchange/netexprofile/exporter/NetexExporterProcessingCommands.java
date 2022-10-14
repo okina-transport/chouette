@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Log4j
+@Slf4j
 public class NetexExporterProcessingCommands implements ProcessingCommands, Constant {
 
     public static class DefaultFactory extends ProcessingCommandsFactory {
@@ -41,7 +41,7 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
         try {
             commands.add(CommandFactory.create(initCtx, NetexInitExportCommand.class.getName()));
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw new RuntimeException("unable to call factories");
         }
 
@@ -60,7 +60,7 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
                 commands.add(CommandFactory.create(initialContext, NetexLineProducerCommand.class.getName()));
             }
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw new RuntimeException("unable to call factories");
         }
 
@@ -89,7 +89,7 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
             }
             commands.add(CommandFactory.create(initialContext, CompressCommand.class.getName()));
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw new RuntimeException("unable to call factories");
         }
 
@@ -104,7 +104,7 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
         try {
             commands.add(CommandFactory.create(initialContext, NetexDisposeExportCommand.class.getName()));
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw new RuntimeException("unable to call factories");
         }
 

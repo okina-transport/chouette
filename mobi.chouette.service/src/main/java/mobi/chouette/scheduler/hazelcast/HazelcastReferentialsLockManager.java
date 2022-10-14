@@ -17,7 +17,7 @@ import javax.inject.Named;
 import com.hazelcast.cluster.MembershipEvent;
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.map.IMap;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.scheduler.ReferentialLockManager;
@@ -29,7 +29,7 @@ import static mobi.chouette.scheduler.hazelcast.HazelcastReferentialsLockManager
 @Singleton(name = BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Named
-@Log4j
+@Slf4j
 public class HazelcastReferentialsLockManager implements ReferentialLockManager {
 
 	public static final String BEAN_NAME = "hazelcastReferentialsLockManager";

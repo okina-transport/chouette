@@ -10,7 +10,7 @@ import java.util.Locale;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -63,7 +63,7 @@ import java.time.LocalTime;
 import org.threeten.extra.Seconds;
 import org.testng.Assert;
 
-@Log4j
+@Slf4j
 public abstract class AbstractTestValidation  extends Arquillian implements Constant, ReportConstant {
 
 

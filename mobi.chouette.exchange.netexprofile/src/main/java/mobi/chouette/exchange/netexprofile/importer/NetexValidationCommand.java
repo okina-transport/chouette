@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.importer;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -16,7 +16,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import javax.naming.InitialContext;
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 public class NetexValidationCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexValidationCommand";

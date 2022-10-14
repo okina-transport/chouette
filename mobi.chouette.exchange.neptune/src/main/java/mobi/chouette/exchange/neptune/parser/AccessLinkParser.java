@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class AccessLinkParser implements Parser, Constant {
 	private static final String CHILD_TAG = "AccessLink";
 

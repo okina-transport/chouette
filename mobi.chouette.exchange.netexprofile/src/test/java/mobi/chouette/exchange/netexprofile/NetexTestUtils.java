@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.report.FileReport;
@@ -21,7 +21,7 @@ import java.util.Set;
 import static mobi.chouette.common.Constant.VALIDATION_REPORT;
 import static mobi.chouette.common.Constant.REPORT;
 
-@Log4j
+@Slf4j
 public class NetexTestUtils  {
 
 	protected static final String path = "src/test/data";

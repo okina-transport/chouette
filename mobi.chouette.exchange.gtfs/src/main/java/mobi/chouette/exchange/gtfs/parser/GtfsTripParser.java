@@ -14,7 +14,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
@@ -75,7 +75,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Duration;
 import java.time.LocalTime;
 
-@Log4j
+@Slf4j
 public class GtfsTripParser implements Parser, Validator, Constant {
 
 	private static final Comparator<OrderedCoordinate> COORDINATE_SORTER = new OrderedCoordinateComparator();

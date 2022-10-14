@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.gtfs.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
@@ -17,7 +17,7 @@ import mobi.chouette.model.type.OrganisationTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 public class GtfsAgencyParser implements Parser, Validator, Constant {
 
 	@Override

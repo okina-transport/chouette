@@ -12,7 +12,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Named;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.file.FileStore;
 
@@ -28,7 +28,7 @@ import static mobi.chouette.service.GoogleCloudFileStore.BEAN_NAME;
 @Named
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @DependsOn(JobServiceManager.BEAN_NAME)
-@Log4j
+@Slf4j
 public class GoogleCloudFileStore implements FileStore {
 
 	public static final String BEAN_NAME = "googleCloudFileStore";

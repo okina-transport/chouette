@@ -13,7 +13,7 @@ import java.util.Objects;
 import javax.ejb.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectReader;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.importer.geometry.PolylineDecoder;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
 import mobi.chouette.exchange.importer.geometry.osrm.model.OsrmLeg;
@@ -39,7 +39,7 @@ import static mobi.chouette.common.PropertyNames.OSRM_ROUTE_SECTIONS_BASE;
  * Generate route sections between two points by external osrm service.
  */
 @Singleton(name = OsrmRouteSectionGenerator.BEAN_NAME)
-@Log4j
+@Slf4j
 public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 
 	public static final String BEAN_NAME = "OsrmRouteSectionGenerator";

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  *  Update the last update timestamp for the current referential.
  *  This occurs when a new dataset is successfully imported, or when a dataset is transfered.
  */
-@Log4j
+@Slf4j
 @Stateless(name = UpdateReferentialLastUpdateTimestampCommand.COMMAND)
 public class UpdateReferentialLastUpdateTimestampCommand implements Command, ReportConstant {
 
@@ -61,7 +61,7 @@ public class UpdateReferentialLastUpdateTimestampCommand implements Command, Rep
                 try {
                     result = (Command) context.lookup(name);
                 } catch (NamingException e1) {
-                    log.error(e);
+                    log.error(e.getMessage(), e);
                 }
             }
             return result;

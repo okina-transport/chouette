@@ -7,7 +7,7 @@ import javax.naming.InitialContext;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -20,7 +20,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 public class NetexCommonFilesParserCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexCommonFilesParserCommand";

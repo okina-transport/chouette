@@ -21,7 +21,7 @@ import mobi.chouette.dao.ReferentialLastUpdateDAO;
 import mobi.chouette.model.Block;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -29,7 +29,7 @@ import mobi.chouette.dao.LineDAO;
 import mobi.chouette.exchange.transfer.Constant;
 import mobi.chouette.model.Line;
 
-@Log4j
+@Slf4j
 @Stateless(name = TransferExportDataLoader.COMMAND)
 public class TransferExportDataLoader implements Command, Constant {
 
@@ -130,7 +130,7 @@ public class TransferExportDataLoader implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

@@ -4,7 +4,7 @@ package mobi.chouette.exchange.gtfs.validation;
 import java.util.Set;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.importer.AgencyById;
@@ -32,7 +32,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 //import mobi.chouette.exchange.validation.report.ValidationReport2;
 
-@Log4j
+@Slf4j
 public class GtfsValidationReporter implements Constant{
 
 	@Getter
@@ -73,7 +73,7 @@ public class GtfsValidationReporter implements Constant{
 					+ ex.getMessage());
 			validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo), ex.getMessage());
 			String message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getName();
-			log.error(ex, ex);
+			log.error(ex.getMessage(), ex);
 			throw new Exception("A problem occured while reading the file \"" + filenameInfo + "\" : " + message);
 		}
 	}
@@ -159,7 +159,7 @@ public class GtfsValidationReporter implements Constant{
 		String fieldName2 = "";
 		String value = "";
 
-		// log.error(ex);
+		// log.error(ex.getMessage(),ex);
 
 		switch (ex.getError()) {
 		case INVALID_HEADER_FILE_FORMAT:

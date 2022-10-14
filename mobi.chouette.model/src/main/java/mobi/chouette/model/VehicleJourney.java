@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.PublicationEnum;
 import mobi.chouette.model.type.ServiceAlterationEnum;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @Table(name = "vehicle_journeys")
 @NoArgsConstructor
 @ToString(callSuper = true, exclude = { "journeyPattern", "route", "timetables", "consumerInterchanges", "feederInterchanges" })
-@Log4j
+@Slf4j
 public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	private static final long serialVersionUID = 304336286208135064L;

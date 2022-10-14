@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
 import org.rutebanken.helper.calendar.CalendarPattern;
 import org.rutebanken.helper.calendar.CalendarPatternAnalyzer;
@@ -39,7 +39,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-@Log4j
+@Slf4j
 public class ServiceCalendarFrameParser extends NetexParser implements Parser, Constant {
 
 	static final String LOCAL_CONTEXT = "ServiceCalendar";

@@ -3,7 +3,7 @@ package mobi.chouette.exchange.importer.updater;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.DestinationDisplayDAO;
 import mobi.chouette.model.DestinationDisplay;
@@ -11,7 +11,7 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
 @Stateless(name = DestinationDisplayUpdater.BEAN_NAME)
-@Log4j
+@Slf4j
 public class DestinationDisplayUpdater implements Updater<DestinationDisplay> {
 
 	public static final String BEAN_NAME = "DestinationDisplayUpdater";

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.gtfs.parser;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-@Log4j
+@Slf4j
 public class GtfsTransferParser implements Parser, Validator, Constant {
 
 	@Override

@@ -8,7 +8,7 @@ import javax.naming.InitialContext;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.ChainCommand;
@@ -22,7 +22,7 @@ import mobi.chouette.exchange.netexprofile.importer.NetexImporterProcessingComma
 import mobi.chouette.exchange.netexprofile.importer.NetexInitImportCommand;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 
-@Log4j
+@Slf4j
 public class NetexValidateExportCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexValidateExportCommand";
@@ -81,7 +81,7 @@ public class NetexValidateExportCommand implements Command, Constant {
             }
             context.put(VALIDATION_REPORT, validateExportContext.get(VALIDATION_REPORT));
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             throw e;
         } finally {
             JamonUtils.logMagenta(log, monitor);

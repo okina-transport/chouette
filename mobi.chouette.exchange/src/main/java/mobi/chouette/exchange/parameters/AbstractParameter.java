@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 
 @NoArgsConstructor

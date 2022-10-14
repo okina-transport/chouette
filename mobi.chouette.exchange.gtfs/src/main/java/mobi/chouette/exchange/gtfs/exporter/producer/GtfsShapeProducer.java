@@ -9,7 +9,7 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsShape;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.JourneyPattern;
@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 /**
  * convert JourneyPattern's RouteSections to Shapes
  */
-@Log4j
+@Slf4j
 public class GtfsShapeProducer extends AbstractProducer {
 	private GeometryFactory factory = new GeometryFactory(new PrecisionModel(10), 4326);
 

@@ -3,9 +3,9 @@ package mobi.chouette.common;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 
-@Log4j
+@Slf4j
 public class ResourceUtil {
 
 	public static long usedMemory()

@@ -7,7 +7,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -17,7 +17,7 @@ import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.exporter.CompressCommand;
 import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 
-@Log4j
+@Slf4j
 @Data
 public class GtfsExporterProcessingCommands implements ProcessingCommands, Constant {
 
@@ -41,7 +41,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		try {
 			commands.add(CommandFactory.create(initialContext, GtfsInitExportCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -57,7 +57,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 			else
 				commands.add(CommandFactory.create(initialContext, GtfsLineProducerCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -83,7 +83,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 			}
 			commands.add(CommandFactory.create(initialContext, CompressCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -96,7 +96,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		try {
 			commands.add(CommandFactory.create(initialContext, GtfsStopAreaProducerCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 

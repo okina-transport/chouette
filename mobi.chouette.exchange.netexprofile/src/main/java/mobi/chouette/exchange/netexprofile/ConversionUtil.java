@@ -9,7 +9,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.type.BookingAccessEnum;
 import mobi.chouette.model.type.BookingMethodEnum;
 import mobi.chouette.model.type.DayTypeEnum;
@@ -47,7 +47,7 @@ import org.rutebanken.netex.model.TransportSubmodeStructure;
 import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 
 
-@Log4j
+@Slf4j
 public class ConversionUtil {
 
 	public static MultilingualString getMultiLingualString(String v) {

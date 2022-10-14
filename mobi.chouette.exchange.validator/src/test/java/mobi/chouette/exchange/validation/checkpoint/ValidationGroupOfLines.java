@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.report.ActionReport;
@@ -24,7 +24,7 @@ import org.testng.Reporter;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class ValidationGroupOfLines extends AbstractTestValidation {
 	private GroupOfLineCheckPoints checkPoint = new GroupOfLineCheckPoints();
 	private ValidationParameters fullparameters;

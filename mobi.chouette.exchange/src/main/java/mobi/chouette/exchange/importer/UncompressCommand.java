@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
@@ -34,7 +34,7 @@ import org.apache.commons.io.FilenameUtils;
  *
  * @author michel
  */
-@Log4j
+@Slf4j
 public class UncompressCommand implements Command, ReportConstant {
 
 	public static final String COMMAND = "UncompressCommand";

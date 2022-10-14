@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.exchange.InputValidator;
 import mobi.chouette.exchange.InputValidatorFactory;
@@ -15,7 +15,7 @@ import mobi.chouette.exchange.parameters.AbstractParameter;
 import mobi.chouette.exchange.validation.checkpoint.AbstractValidation;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 
-@Log4j
+@Slf4j
 public class NetexprofileValidatorInputValidator extends NetexprofileImporterInputValidator {
 
 	@Override

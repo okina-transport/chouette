@@ -16,7 +16,7 @@ import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.netex.model.VersionOfObjectRefStructure;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
@@ -37,7 +37,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 
-@Log4j
+@Slf4j
 public class NetexProducerUtils {
 
 	private static final String OBJECT_ID_SPLIT_CHAR = ":";

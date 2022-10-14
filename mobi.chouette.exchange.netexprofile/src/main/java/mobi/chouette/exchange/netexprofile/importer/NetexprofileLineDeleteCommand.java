@@ -15,7 +15,7 @@ import javax.naming.NamingException;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -34,7 +34,7 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
 
-@Log4j
+@Slf4j
 @Stateless(name = NetexprofileLineDeleteCommand.COMMAND)
 public class NetexprofileLineDeleteCommand implements Command {
 
@@ -135,7 +135,7 @@ public class NetexprofileLineDeleteCommand implements Command {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

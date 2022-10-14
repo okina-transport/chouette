@@ -19,7 +19,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -39,7 +39,7 @@ import org.rutebanken.netex.model.StopPlace;
 import static javax.xml.bind.JAXBContext.newInstance;
 import static mobi.chouette.exchange.netexprofile.Constant.NETEX_LINE_DATA_CONTEXT;
 
-@Log4j
+@Slf4j
 public class PublicationDeliveryStopPlaceParser {
     private static final String IMPORT_ID_KEY = "imported-id";
     private static final String MERGED_ID_KEY = "merged-id";

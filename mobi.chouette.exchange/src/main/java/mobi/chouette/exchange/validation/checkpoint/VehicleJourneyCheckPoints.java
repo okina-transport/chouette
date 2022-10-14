@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.Validator;
@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @author michel
  *
  */
-@Log4j
+@Slf4j
 public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney> implements Validator<VehicleJourney> {
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");

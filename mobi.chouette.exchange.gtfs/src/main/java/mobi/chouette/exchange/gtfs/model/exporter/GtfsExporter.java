@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
@@ -21,7 +21,7 @@ import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
 
-@Log4j
+@Slf4j
 public class GtfsExporter implements GtfsExporterInterface {
 	public static enum EXPORTER {
 		AGENCY, CALENDAR, CALENDAR_DATE, FREQUENCY, ROUTE, STOP, STOP_TIME, TRANSFER, TRIP, SHAPE;
@@ -40,7 +40,7 @@ public class GtfsExporter implements GtfsExporterInterface {
 			try {
 				exporter.dispose(context);
 			} catch (IOException e) {
-				log.error(e);
+				log.error(e.getMessage(), e);
 			}
 		}
 		_map.clear();

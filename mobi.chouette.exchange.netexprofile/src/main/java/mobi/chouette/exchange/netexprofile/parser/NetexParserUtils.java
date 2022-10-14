@@ -7,7 +7,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
@@ -47,7 +47,7 @@ import org.rutebanken.netex.model.TramSubmodeEnumeration;
 import org.rutebanken.netex.model.TransportSubmodeStructure;
 import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 
-@Log4j
+@Slf4j
 public class NetexParserUtils extends ParserUtils {
 
 	public static TransportModeNameEnum toTransportModeNameEnum(String value) {

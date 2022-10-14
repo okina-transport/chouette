@@ -9,7 +9,7 @@ import javax.naming.InitialContext;
 
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -19,7 +19,7 @@ import mobi.chouette.model.iev.Job.STATUS;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.JobService;
 
-@Log4j
+@Slf4j
 @ToString(of = { "job" })
 public class Task implements Callable<Job.STATUS>, ManagedTask, Constant {
 

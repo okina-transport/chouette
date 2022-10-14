@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -17,7 +17,7 @@ import mobi.chouette.exchange.importer.AbstractDisposeImportCommand;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 public class GtfsDisposeImportCommand extends AbstractDisposeImportCommand  implements Constant {
 
 	public static final String COMMAND = "GtfsDisposeImportCommand";
@@ -42,7 +42,7 @@ public class GtfsDisposeImportCommand extends AbstractDisposeImportCommand  impl
 			result = SUCCESS;
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw e;
 		} finally {
 			JamonUtils.logMagenta(log, monitor);

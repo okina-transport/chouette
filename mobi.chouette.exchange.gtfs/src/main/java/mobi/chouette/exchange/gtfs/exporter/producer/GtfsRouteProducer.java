@@ -8,7 +8,7 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.RouteTypeEnum;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -22,7 +22,7 @@ import mobi.chouette.model.type.OrganisationTypeEnum;
  * <p>
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
-@Log4j
+@Slf4j
 public class GtfsRouteProducer extends AbstractProducer
 {
    public GtfsRouteProducer(GtfsExporterInterface exporter)

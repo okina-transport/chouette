@@ -7,7 +7,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -18,7 +18,7 @@ import mobi.chouette.exchange.exporter.CompressCommand;
 import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 
 @Data
-@Log4j
+@Slf4j
 public class NeptuneExporterProcessingCommands implements ProcessingCommands, Constant {
 
 	public static class DefaultFactory extends ProcessingCommandsFactory {
@@ -42,7 +42,7 @@ public class NeptuneExporterProcessingCommands implements ProcessingCommands, Co
 		try {
 			commands.add(CommandFactory.create(initCtx, NeptuneInitExportCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -59,7 +59,7 @@ public class NeptuneExporterProcessingCommands implements ProcessingCommands, Co
 			else
 				commands.add(CommandFactory.create(initialContext, NeptuneLineProducerCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -79,7 +79,7 @@ public class NeptuneExporterProcessingCommands implements ProcessingCommands, Co
 				commands.add(CommandFactory.create(initialContext, SaveMetadataCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, CompressCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;

@@ -7,7 +7,7 @@ import java.util.Locale;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;
@@ -34,7 +34,7 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
-@Log4j
+@Slf4j
 public class ValidatorTest extends Arquillian implements Constant,ReportConstant{
 
 	@Deployment

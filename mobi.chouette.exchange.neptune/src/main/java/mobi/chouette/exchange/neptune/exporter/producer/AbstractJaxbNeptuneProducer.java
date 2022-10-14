@@ -14,7 +14,7 @@ import mobi.chouette.common.TimeUtil;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.Route;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

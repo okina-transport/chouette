@@ -3,7 +3,7 @@ package mobi.chouette.exchange.neptune.parser;
 
 import java.util.List;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
@@ -23,7 +23,7 @@ import mobi.chouette.model.util.Referential;
 import java.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class ChouetteRouteParser implements Parser, Constant {
 	private static final String CHILD_TAG = "ChouetteRoute";
 

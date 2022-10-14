@@ -10,7 +10,7 @@ import java.util.Date;
 
 import javax.naming.InitialContext;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -28,7 +28,7 @@ import mobi.chouette.exchange.report.StepProgression.STEP;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Log4j
+@Slf4j
 public class ProgressionCommand implements Command, Constant, ReportConstant {
 
 	public static final String COMMAND = "ProgressionCommand";

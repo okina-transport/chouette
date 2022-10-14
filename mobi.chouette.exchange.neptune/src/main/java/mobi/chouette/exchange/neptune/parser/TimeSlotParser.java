@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
@@ -22,7 +22,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import org.xmlpull.v1.XmlPullParser;
 
-@Log4j
+@Slf4j
 public class TimeSlotParser implements Parser, Constant {
 
 	public static final DateTimeFormatter DATE_TIME_FORMATTER_HH_MM = DateTimeFormatter.ofPattern("HH:mm");

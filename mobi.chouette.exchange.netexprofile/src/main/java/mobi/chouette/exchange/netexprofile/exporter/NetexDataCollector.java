@@ -1,11 +1,11 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Line;
 import java.time.LocalDate;
 
-@Log4j
+@Slf4j
 public class NetexDataCollector extends DataCollector {
 
 	public NetexDataCollector(mobi.chouette.exchange.exporter.ExportableData collection, Line line, LocalDate startDate, LocalDate endDate, boolean onlyPublicData) {

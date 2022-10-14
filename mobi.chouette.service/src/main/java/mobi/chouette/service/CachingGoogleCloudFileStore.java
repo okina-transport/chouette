@@ -21,7 +21,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Named;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.Pair;
 import mobi.chouette.common.TimeUtil;
@@ -47,7 +47,7 @@ import static mobi.chouette.service.CachingGoogleCloudFileStore.BEAN_NAME;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Startup
 @DependsOn(JobServiceManager.BEAN_NAME)
-@Log4j
+@Slf4j
 public class CachingGoogleCloudFileStore implements FileStore {
 
 	public static final String BEAN_NAME = "cachingGoogleCloudFileStore";

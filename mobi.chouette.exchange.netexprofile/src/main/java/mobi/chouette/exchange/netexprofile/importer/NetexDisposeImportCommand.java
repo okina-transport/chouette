@@ -3,7 +3,7 @@ package mobi.chouette.exchange.netexprofile.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -18,7 +18,7 @@ import javax.naming.InitialContext;
 
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 public class NetexDisposeImportCommand extends AbstractDisposeImportCommand implements Constant {
 
 	public static final String COMMAND = "NetexDisposeImportCommand";
@@ -42,7 +42,7 @@ public class NetexDisposeImportCommand extends AbstractDisposeImportCommand impl
 
 			result = SUCCESS;
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw e;
 		} finally {
 			JamonUtils.logMagenta(log, monitor);

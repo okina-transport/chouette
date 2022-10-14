@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import javax.naming.InitialContext;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import static mobi.chouette.exchange.netexprofile.Constant.NETEX_FILE_PATHS;
 
 @Data
-@Log4j
+@Slf4j
 public class NetexImporterProcessingCommands implements ProcessingCommands, Constant {
 
 	private static final String VALIDATION_ERROR_NO_LINE = "3-No-Line";
@@ -88,7 +88,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
 			commands.add(initChain);
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 
@@ -299,7 +299,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			commands.add(CommandFactory.create(initialContext, UpdateReferentialLastUpdateTimestampCommand.class.getName()));
 
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;
@@ -317,7 +317,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 		try {
 			commands.add(CommandFactory.create(initialContext, NetexDisposeImportCommand.class.getName()));
 		} catch (Exception e) {
-			log.error(e, e);
+			log.error(e.getMessage(), e);
 			throw new RuntimeException("unable to call factories");
 		}
 		return commands;

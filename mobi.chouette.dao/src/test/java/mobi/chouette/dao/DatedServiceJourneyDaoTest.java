@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -25,7 +25,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.UUID;
 
-@Log4j
+@Slf4j
 public class DatedServiceJourneyDaoTest extends Arquillian {
 
     @EJB
@@ -76,7 +76,7 @@ public class DatedServiceJourneyDaoTest extends Arquillian {
         } catch (RuntimeException ex) {
             Throwable cause = ex.getCause();
             while (cause != null) {
-                log.error(cause);
+                log.error(cause.getMessage(),cause);
                 if (cause instanceof SQLException)
                     traceSqlException((SQLException) cause);
                 cause = cause.getCause();
@@ -89,7 +89,7 @@ public class DatedServiceJourneyDaoTest extends Arquillian {
     private void traceSqlException(SQLException ex) {
         while (ex.getNextException() != null) {
             ex = ex.getNextException();
-            log.error(ex);
+            log.error(ex.getMessage(),ex);
         }
     }
 

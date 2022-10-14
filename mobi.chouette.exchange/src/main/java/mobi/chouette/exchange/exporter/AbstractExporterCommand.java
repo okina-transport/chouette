@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.ejb.EJB;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
@@ -19,7 +19,7 @@ import mobi.chouette.exchange.ProgressionCommand;
 import mobi.chouette.exchange.parameters.AbstractExportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 
-@Log4j
+@Slf4j
 public class AbstractExporterCommand implements Constant {
 
 	@EJB DaoReader reader;

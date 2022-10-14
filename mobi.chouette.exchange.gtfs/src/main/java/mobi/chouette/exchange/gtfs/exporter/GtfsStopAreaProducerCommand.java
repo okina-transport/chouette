@@ -23,7 +23,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -47,7 +47,7 @@ import com.jamonapi.MonitorFactory;
 /**
  *
  */
-@Log4j
+@Slf4j
 @Stateless(name = GtfsStopAreaProducerCommand.COMMAND)
 public class GtfsStopAreaProducerCommand implements Command, Constant {
 	public static final String COMMAND = "GtfsStopAreaProducerCommand";
@@ -174,7 +174,7 @@ public class GtfsStopAreaProducerCommand implements Command, Constant {
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;

@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.exporter;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -15,7 +15,7 @@ import mobi.chouette.model.util.Referential;
 import javax.naming.InitialContext;
 import java.io.IOException;
 
-@Log4j
+@Slf4j
 public class NetexSharedDataProducerCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexSharedDataProducerCommand";

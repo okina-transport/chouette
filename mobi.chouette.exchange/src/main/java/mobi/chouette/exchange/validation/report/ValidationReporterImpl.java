@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.validation.report;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.report.ActionReporter;
@@ -9,7 +9,7 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
 import mobi.chouette.exchange.validation.report.DataLocation.Path;
 
-@Log4j
+@Slf4j
 public class ValidationReporterImpl implements ValidationReporter, Constant {
 
 	@Override

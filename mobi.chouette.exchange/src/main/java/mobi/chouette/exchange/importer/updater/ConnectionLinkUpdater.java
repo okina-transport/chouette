@@ -3,7 +3,7 @@ package mobi.chouette.exchange.importer.updater;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -18,7 +18,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @Stateless(name = ConnectionLinkUpdater.BEAN_NAME)
-@Log4j
+@Slf4j
 public class ConnectionLinkUpdater implements Updater<ConnectionLink> {
 
 	public static final String BEAN_NAME = "ConnectionLinkUpdater";
