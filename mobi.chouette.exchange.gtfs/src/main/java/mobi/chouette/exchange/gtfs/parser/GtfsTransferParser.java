@@ -115,8 +115,8 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 					&& StringUtils.trimToNull(gtfsTransfer.getFromTripId()) == null && StringUtils.trimToNull(gtfsTransfer.getToTripId()) == null) {
 				// Treat as conneciton link
 				String objectId = AbstractConverter.composeObjectId(configuration,
-						ConnectionLink.CONNECTIONLINK_KEY, gtfsTransfer.getFromStopId() + "_" + gtfsTransfer.getToStopId(),
-						log);
+						ConnectionLink.CONNECTIONLINK_KEY, gtfsTransfer.getFromStopId() + "_" + gtfsTransfer.getToStopId()
+				);
 				ConnectionLink connectionLink = ObjectFactory.getConnectionLink(referential, objectId);
 				convert(context, gtfsTransfer, connectionLink);
 
@@ -135,14 +135,14 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : fromStopId;
 		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : toStopId;
 
-		StopArea startOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialFromId, log));
+		StopArea startOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialFromId));
 		if(startOfLink == null) {
 			// Create between quays by default
 			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : fromStopId;
 			startOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quayFromId));
 		}
 		
-		StopArea endOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialToStopId, log));
+		StopArea endOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialToStopId));
 		if(endOfLink == null) {
 			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : toStopId;
 			endOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quaytoId));

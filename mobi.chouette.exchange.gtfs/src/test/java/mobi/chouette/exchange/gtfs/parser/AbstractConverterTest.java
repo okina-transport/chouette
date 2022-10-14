@@ -10,7 +10,7 @@ public class AbstractConverterTest {
 	public void testCreateIdWithParsingDots() {
 		GtfsImportParameters configuration = new GtfsImportParameters();
 		configuration.setObjectIdPrefix("PRE");
-		String id = AbstractConverter.composeObjectId(configuration, "VehicleJourney", "ABC.123", null);
+		String id = AbstractConverter.composeObjectId(configuration, "VehicleJourney", "ABC.123");
 	
 		Assert.assertEquals(id, "ABC:VehicleJourney:123");
 	}
@@ -20,8 +20,8 @@ public class AbstractConverterTest {
 		GtfsImportParameters configuration = new GtfsImportParameters();
 		configuration.setSplitIdOnDot(false);
 		configuration.setObjectIdPrefix("PRE");
-		String id = AbstractConverter.composeObjectId(configuration, "VehicleJourney", "ABC.TestType.123", null);
+		String id = AbstractConverter.composeObjectId(configuration, "VehicleJourney", "ABC.TestType.123");
 	
-		Assert.assertEquals(id, "PRE:VehicleJourney:ABC_TestType_123");
+		Assert.assertEquals(id, "PRE:VehicleJourney:ABC.TestType.123");
 	}
 }
