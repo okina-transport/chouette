@@ -27,7 +27,7 @@ public final class JamonUtils {
 
     private static void logColor(Logger log, Monitor monitor, String color) {
         if (MonitorFactory.isEnabled()) {
-            log.info(color + monitor.stop() + Color.NORMAL);
+            log.info("{}{}{}", color, monitor.stop(), Color.NORMAL);
         }
     }
 }

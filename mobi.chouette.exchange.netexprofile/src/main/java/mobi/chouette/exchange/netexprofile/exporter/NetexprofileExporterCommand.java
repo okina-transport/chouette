@@ -53,7 +53,7 @@ public class NetexprofileExporterCommand extends AbstractExporterCommand impleme
             Object configuration = context.get(CONFIGURATION);
             if (!(configuration instanceof NetexprofileExportParameters)) {
                 // fatal wrong parameters
-                log.error("invalid parameters for netex export " + configuration.getClass().getName());
+                log.error("invalid parameters for netex export {}", configuration.getClass().getName());
                 reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for netex export " + configuration.getClass().getName());
                 return ERROR;
             }

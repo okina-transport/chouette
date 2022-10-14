@@ -84,7 +84,7 @@ public class CachingGoogleCloudFileStore implements FileStore {
 				try {
 					cacheHistoryDays = Integer.valueOf(System.getProperty(cacheHistoryDaysKey));
 				} catch (NumberFormatException nfe) {
-					log.warn("Illegal value for property named " + cacheHistoryDaysKey + " in iev.properties. Should be no of days to fetch history for (int)");
+                    log.warn("Illegal value for property named {} in iev.properties. Should be no of days to fetch history for (int)", cacheHistoryDaysKey);
 				}
 			}
 
@@ -99,14 +99,14 @@ public class CachingGoogleCloudFileStore implements FileStore {
 				try {
 					updateFrequencySeconds = Long.valueOf(System.getProperty(updateFrequencyKey));
 				} catch (NumberFormatException nfe) {
-					log.warn("Illegal value for property named " + updateFrequencyKey + " in iev.properties. Should be no of seconds between cache updates (long)");
+                    log.warn("Illegal value for property named {} in iev.properties. Should be no of seconds between cache updates (long)", updateFrequencyKey);
 				}
 			}
 
 			scheduler.scheduleAtFixedRate(new PrefetchToLocalCacheTask(), 0, updateFrequencySeconds, SECONDS);
 
 		} else {
-			log.info("Not initializing CachingGoogleCloudFileStore as other FileStore impl is configured. " + implPropKey + ":" + implProp);
+            log.info("Not initializing CachingGoogleCloudFileStore as other FileStore impl is configured. {}:{}", implPropKey, implProp);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class CachingGoogleCloudFileStore implements FileStore {
 	public InputStream getFileContent(Path filePath) {
 
 		if (localFileStore.exists(filePath)) {
-			log.debug("Returning file content from local cache: " + filePath);
+            log.debug("Returning file content from local cache: {}", filePath);
 			return localFileStore.getFileContent(filePath);
 		}
 
@@ -172,7 +172,7 @@ public class CachingGoogleCloudFileStore implements FileStore {
 
 		@Override
 		public void run() {
-			log.info("Start pre-fetching job files from cloud storage. Caching all completed jobs since: " + syncedUntil);
+            log.info("Start pre-fetching job files from cloud storage. Caching all completed jobs since: {}", syncedUntil);
 
 			List<Job> completedJobsSinceLastSync = jobServiceManager.completedJobsSince(syncedUntil).stream()
 					.sorted(Comparator.comparing(Job::getUpdated).reversed()).collect(Collectors.toList());
@@ -191,7 +191,7 @@ public class CachingGoogleCloudFileStore implements FileStore {
 						.forEach(file -> localFileStore.writeFile(file.getLeft(), file.getRight()));
 
 			} catch (Exception exception) {
-				log.warn("Unable to pre fetch files for job: " + job + " :" + exception.getMessage());
+                log.warn("Unable to pre fetch files for job: {} :{}", job, exception.getMessage());
 			}
 		}
 

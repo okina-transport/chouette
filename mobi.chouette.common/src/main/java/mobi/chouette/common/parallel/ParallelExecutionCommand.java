@@ -85,7 +85,7 @@ public class ParallelExecutionCommand implements Command {
 					}
 				}
 			} else {
-				log.warn(COMMAND + " failed to complete within " + timeoutSeconds + " seconds");
+                log.warn(COMMAND + " failed to complete within {} seconds", timeoutSeconds);
 				executor.shutdownNow();
 				result = ERROR;
 			}
@@ -117,7 +117,7 @@ public class ParallelExecutionCommand implements Command {
 			try {
 				return command.execute(context);
 			} catch (Exception e) {
-				log.warn("Command executed as a part of ParallelExecutionCommand failed: " + e.getMessage(), e);
+                log.warn("Command executed as a part of ParallelExecutionCommand failed: {}", e.getMessage(), e);
 				return false;
 			}
 		}

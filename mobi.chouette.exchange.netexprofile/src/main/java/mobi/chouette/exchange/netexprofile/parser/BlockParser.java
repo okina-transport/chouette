@@ -36,7 +36,7 @@ public class BlockParser extends NetexParser implements Parser {
                 parseBlock(referential, (Block) genericNetexBlock);
             } else {
                 if(log.isDebugEnabled()) {
-                    log.debug("Ignoring non-Block element with id: " + genericNetexBlock.getId());
+                    log.debug("Ignoring non-Block element with id: {}", genericNetexBlock.getId());
                 }
             }
         }
@@ -45,7 +45,7 @@ public class BlockParser extends NetexParser implements Parser {
     private void parseBlock(Referential referential, Block netexBlock) {
         String blockId = netexBlock.getId();
         if(log.isDebugEnabled()) {
-            log.debug("Parsing Block with id: " + blockId);
+            log.debug("Parsing Block with id: {}", blockId);
 
         }
         mobi.chouette.model.Block chouetteBlock = ObjectFactory.getBlock(referential, netexBlock.getId());
@@ -115,7 +115,7 @@ public class BlockParser extends NetexParser implements Parser {
                 chouetteBlock.addVehicleJourney(vehicleJourney);
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug("Ignoring non-VehicleJourneyRef and non DeadRunRef element with id: " + reference);
+                    log.debug("Ignoring non-VehicleJourneyRef and non DeadRunRef element with id: {}", reference);
                 }
             }
         }

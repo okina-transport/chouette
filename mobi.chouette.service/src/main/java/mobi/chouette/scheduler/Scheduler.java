@@ -84,7 +84,7 @@ public class Scheduler {
 		interruptStartedJobsWithoutOwner();
 		int numActiveJobs = getActiveJobsCount();
 		if (numActiveJobs >= getMaxJobs()) {
-			log.info("Too many active jobs (" + numActiveJobs + "). Ignoring scheduling request");
+			log.info("Too many active jobs ({}). Ignoring scheduling request", numActiveJobs);
 			return;
 		}
 
@@ -105,13 +105,13 @@ public class Scheduler {
 		synchronized (lock) {
 			int numActiveJobs = getActiveJobsCount();
 			int activeTransfersCount = activeTransferJobIds.size();
-			log.info("Inside lock, numActiveJobs=" + numActiveJobs + ", numActiveTransfers: " + activeTransfersCount);
+			log.info("Inside lock, numActiveJobs={}, numActiveTransfers: {}", numActiveJobs, activeTransfersCount);
 			if (numActiveJobs >= getMaxJobs()) {
-				log.info("Too many active jobs, delay start up of job: " + jobService.getId());
+				log.info("Too many active jobs, delay start up of job: {}", jobService.getId());
 				return false;
 			}
 			if (isTransferJob(jobService) && activeTransfersCount >= getMaxTransferJobs()) {
-				log.info("Too many active transfer jobs, delay start up of job: " + jobService.getId());
+				log.info("Too many active transfer jobs, delay start up of job: {}", jobService.getId());
 				return true;
 			}
 			ReferentialLockManager referentialLockManager = ReferentialLockManagerFactory.getLockManager();
@@ -119,11 +119,11 @@ public class Scheduler {
 				if (referentialLockManager.attemptAcquireJobLock(jobService.getId())) {
 					startJob(jobService);
 				} else {
-					log.warn("Failed to acquire job lock after acquiring referential lock. JobId: " + jobService.getId());
+					log.warn("Failed to acquire job lock after acquiring referential lock. JobId: {}", jobService.getId());
 					referentialLockManager.releaseLocks(jobService.getRequiredReferentialsLocks());
 				}
 			} else {
-				log.info("Could not acquire necessary locks (" + jobService.getRequiredReferentialsLocks() + "), delay start up of job: " + jobService.getJob());
+				log.info("Could not acquire necessary locks ({}), delay start up of job: {}", jobService.getRequiredReferentialsLocks(), jobService.getJob());
 			}
 
 		}
@@ -136,7 +136,7 @@ public class Scheduler {
 
 
 	private void startJob(JobService jobService) {
-		log.info("start a new job " + jobService.getId() + " for referential: " + jobService.getReferential());
+		log.info("start a new job {} for referential: {}", jobService.getId(), jobService.getReferential());
 		jobManager.start(jobService);
 
 		Map<String, String> properties = new HashMap<String, String>();
@@ -174,7 +174,7 @@ public class Scheduler {
 				if (locked) {
 					interruptJobIfStarted(jobService.getId());
 				} else {
-					log.info("Failed to acquire lock for started job, assuming job is executing on other node. JobId: " + jobService.getId());
+					log.info("Failed to acquire lock for started job, assuming job is executing on other node. JobId: {}", jobService.getId());
 				}
 			} finally {
 				if (locked) {
@@ -190,13 +190,13 @@ public class Scheduler {
 			// Update job to be sure we have the latest status
 			JobService job = jobManager.getJobService(id);
 			if (STATUS.STARTED.equals(job.getStatus())) {
-				log.info("Processing interrupted job " + job.getId());
+				log.info("Processing interrupted job {}", job.getId());
 				jobManager.processInterrupted(job);
 			} else {
-				log.info("Unable to interrupt started job (" + job.getId() + ") as status has changed from STARTED to: " + job.getStatus());
+				log.info("Unable to interrupt started job ({}) as status has changed from STARTED to: {}", job.getId(), job.getStatus());
 			}
 		} catch (ServiceException serviceException) {
-			log.warn("Exception while updating job information before interrupting job: " + serviceException.getMessage(), serviceException);
+			log.warn("Exception while updating job information before interrupting job: {}", serviceException.getMessage(), serviceException);
 		}
 
 	}
@@ -208,7 +208,7 @@ public class Scheduler {
 		if (System.getProperty(key) != null) {
 			scheduleFrequencyMs = Long.parseLong(System.getProperty(key));
 		} else {
-			log.info("No value set for property: " + key + ", using default value: " + scheduleFrequencyMs);
+			log.info("No value set for property: {}, using default value: {}", key, scheduleFrequencyMs);
 		}
 
 		return scheduleFrequencyMs;
@@ -220,7 +220,7 @@ public class Scheduler {
 			if (System.getProperty(maxJobsKey) != null) {
 				maxJobs = Integer.parseInt(System.getProperty(maxJobsKey));
 			} else {
-				log.info("No value set for property: " + maxJobsKey + ", using default value: " + MAX_JOBS_DEFAULT);
+				log.info("No value set for property: {}, using default value: " + MAX_JOBS_DEFAULT, maxJobsKey);
 				return MAX_JOBS_DEFAULT;
 			}
 		}
@@ -233,7 +233,7 @@ public class Scheduler {
 			if (System.getProperty(maxTransfersKey) != null) {
 				maxTransfers = Integer.parseInt(System.getProperty(maxTransfersKey));
 			} else {
-				log.info("No value set for property: " + maxTransfersKey + ", using default value: " + MAX_JOBS_DEFAULT);
+				log.info("No value set for property: {}, using default value: " + MAX_JOBS_DEFAULT, maxTransfersKey);
 				return MAX_JOBS_DEFAULT;
 			}
 		}
@@ -249,7 +249,7 @@ public class Scheduler {
 	public boolean cancel(JobService jobService) {
 
 		// remove prevents for multiple calls
-		log.info("try to cancel " + jobService.getId());
+		log.info("try to cancel {}", jobService.getId());
 		Future<STATUS> future = startedFutures.remove(jobService.getId());
 		if (future != null) {
 			log.info("cancel future");
@@ -268,8 +268,7 @@ public class Scheduler {
 
 		@Override
 		public void taskAborted(Future<?> future, ManagedExecutorService executor, Object task, Throwable exception) {
-			log.info(Color.FAILURE + "task aborted : " + ContextHolder.getContext() + " -> " + task
-					+ Color.NORMAL);
+			log.info("{}task aborted : {} -> {}{}", Color.FAILURE, ContextHolder.getContext(), task, Color.NORMAL);
 			if (task != null && task instanceof Task) {
 				log.info("cancel task");
 				((Task) task).cancel();
@@ -279,19 +278,19 @@ public class Scheduler {
 
 		@Override
 		public void taskDone(Future<?> future, ManagedExecutorService executor, Object task, Throwable exception) {
-			log.info(Color.SUCCESS + "task done : " + ContextHolder.getContext() + " -> " + task + Color.NORMAL);
+			log.info("{}task done : {} -> {}{}", Color.SUCCESS, ContextHolder.getContext(), task, Color.NORMAL);
 			schedule((Task) task);
 		}
 
 		@Override
 		public void taskStarting(Future<?> future, ManagedExecutorService executor, Object task) {
-			log.info(Color.SUCCESS + "task starting : " + task + Color.NORMAL);
+			log.info("{}task starting : {}{}", Color.SUCCESS, task, Color.NORMAL);
 
 		}
 
 		@Override
 		public void taskSubmitted(Future<?> future, ManagedExecutorService executor, Object task) {
-			log.info(Color.SUCCESS + "task submitted : " + task + Color.NORMAL);
+			log.info("{}task submitted : {}{}", Color.SUCCESS, task, Color.NORMAL);
 		}
 
 		/**

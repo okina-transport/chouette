@@ -46,14 +46,14 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 		String quayMappingEndpointPropertyKey = "iev.stop.place.register.mapping.quay";
 		quayMappingEndpoint = System.getProperty(quayMappingEndpointPropertyKey);
 		if (quayMappingEndpoint == null) {
-			log.warn("Could not find property named " + quayMappingEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", quayMappingEndpointPropertyKey);
 			quayMappingEndpoint = "https://api.rutebanken.org/stop_places/1.0/mapping/quay?recordsPerRoundTrip=220000&includeFuture=true";
 		}
 
 		String stopPlaceMappingEndpointPropertyKey = "iev.stop.place.register.mapping.stopplace";
 		stopPlaceMappingEndpoint = System.getProperty(stopPlaceMappingEndpointPropertyKey);
 		if (stopPlaceMappingEndpoint == null) {
-			log.warn("Could not find property named " + stopPlaceMappingEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", stopPlaceMappingEndpointPropertyKey);
 			stopPlaceMappingEndpoint = "https://api.rutebanken.org/stop_places/1.0/mapping/stop_place?recordsPerRoundTrip=220000&includeFuture=true";
 		}
 
@@ -66,7 +66,7 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 		ensureCacheIsValid();
 
 		if (log.isDebugEnabled()) {
-			log.debug("About to validate external " + externalIds.size() + " ids");
+            log.debug("About to validate external {} ids", externalIds.size());
 		}
 		Set<IdVersion> validIds = new HashSet<>();
 
@@ -81,7 +81,7 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 		}
 
 		if (log.isDebugEnabled()) {
-			log.debug("Found " + validIds.size() + " valid ids out of " + idsToCheck.size() + " external ids to check");
+            log.debug("Found {} valid ids out of {} external ids to check", validIds.size(), idsToCheck.size());
 		}
 		return validIds;
 	}
@@ -108,7 +108,7 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 				lastUpdated = System.currentTimeMillis();
 				result = true;
 			} else {
-				log.error("Error updating caches, retries left = " + remainingUpdateRetries);
+                log.error("Error updating caches, retries left = {}", remainingUpdateRetries);
 				result = false;
 
 				// TODO dodgy
@@ -198,13 +198,13 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 					cache.add(split[0]);
 					cache.add(split[2]);
 				} else {
-					log.error("NSR contains illegal mappings: " + mappingEndpoint + " " + line);
+                    log.error("NSR contains illegal mappings: {} {}", mappingEndpoint, line);
 				}
 			}
 			rd.close();
 			return true;
 		} catch (Exception e) {
-			log.error("Error getting NSR cache for url " + mappingEndpoint, e);
+            log.error("Error getting NSR cache for url {}", mappingEndpoint, e);
 		} finally {
 			connection.disconnect();
 		}

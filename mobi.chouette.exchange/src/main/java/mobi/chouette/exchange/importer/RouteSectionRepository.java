@@ -42,10 +42,10 @@ public class RouteSectionRepository {
         String maxAsString = System.getProperty("iev.route.section.generate.quay.distance.max.meters");
         if (maxAsString != null) {
             this.maxMetersFromQuay = Integer.valueOf(maxAsString);
-            log.info("Using configured value for iev.route.section.generate.quay.distance.max.meters: " + maxMetersFromQuay);
+            log.info("Using configured value for iev.route.section.generate.quay.distance.max.meters: {}", maxMetersFromQuay);
         } else {
             this.maxMetersFromQuay = DEFAULT_MAX_METERS_FROM_QUAY;
-            log.info("No value configured iev.route.section.generate.quay.distance.max.meters, using default: " + maxMetersFromQuay);
+            log.info("No value configured iev.route.section.generate.quay.distance.max.meters, using default: {}", maxMetersFromQuay);
         }
 
     }
@@ -71,9 +71,7 @@ public class RouteSectionRepository {
             if (from != null && to != null) {
                 lineString = lineStringCache.computeIfAbsent(new OsrmRouteSectionId(from, to, transportMode), routeSectionGenerator::getRouteSection);
                 if (!isLineStringGoodMatchForQuays(lineString, from, to)) {
-                    log.info("Ignoring generated LineString because it is to far from stop at start and/or end of section." +
-                            "JP: " + jp.getObjectId() + ", From: " + fromStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() +
-                            ", to: " + toStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() + ", transportMode: " + transportMode);
+                    log.info("Ignoring generated LineString because it is to far from stop at start and/or end of section.JP: {}, From: {}, to: {}, transportMode: {}", jp.getObjectId(), fromStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), toStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), transportMode);
                     lineString = null;
                 }
             }

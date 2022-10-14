@@ -51,7 +51,7 @@ public class RoutePointParser extends NetexParser implements Parser, Constant {
 				} else if (pointProjection.getProjectToPointRef() != null) {
 					scheduledStopPointId = pointProjection.getProjectToPointRef().getRef();
 				} else {
-					log.error("Could not find point reference for projection with id : " + pointProjection.getId());
+                    log.error("Could not find point reference for projection with id : {}", pointProjection.getId());
 					throw new RuntimeException("missing point reference");
 				}
 			}

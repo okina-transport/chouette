@@ -39,7 +39,7 @@ public class NetexLineProducerCommand implements Command, Constant {
         try {
 
             Line line = (Line) context.get(LINE);
-            log.info("Processing NeTEx export for line " + line.getObjectId() + " (" + NamingUtil.getName(line) + ')');
+            log.info("Processing NeTEx export for line {} ({})", line.getObjectId(), NamingUtil.getName(line));
             NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
             
             

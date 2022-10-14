@@ -50,7 +50,7 @@ public class GtfsExporterCommand extends AbstractExporterCommand implements Comm
 			Object configuration = context.get(CONFIGURATION);
 			if (!(configuration instanceof GtfsExportParameters)) {
 				// fatal wrong parameters
-				log.error("invalid parameters for gtfs export " + configuration.getClass().getName());
+				log.error("invalid parameters for gtfs export {}", configuration.getClass().getName());
 				reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for gtfs export " + configuration.getClass().getName());
 				return ERROR;
 			}

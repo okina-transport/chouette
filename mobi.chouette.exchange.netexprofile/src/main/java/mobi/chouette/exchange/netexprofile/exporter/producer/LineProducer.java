@@ -118,7 +118,7 @@ public class LineProducer extends NetexProducer implements NetexEntityProducer<o
 		try {
 			return hexBinaryAdapter.unmarshal(colour);
 		} catch(IllegalArgumentException e) {
-			log.warn("Ignoring invalid colour encoding: " + colour, e);
+            log.warn("Ignoring invalid colour encoding: {}", colour, e);
 			return null;
 		}
 	}

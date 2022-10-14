@@ -58,7 +58,7 @@ public class RouteSectionCheckPoints extends AbstractValidation<RouteSection> im
 			String modeKey = jp2.getRoute().getLine().getTransportModeName().toString();
 			TransportModeParameters mode = getModeParameters(parameters, modeKey, log);
 			if (mode == null) {
-				log.error("no parameters for mode " + modeKey);
+                log.error("no parameters for mode {}", modeKey);
 				mode = getModeParameters(parameters, MODE_OTHER, log);
 				if (mode == null) {
 					log.error("no parameters for mode " + MODE_OTHER);

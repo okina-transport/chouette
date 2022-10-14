@@ -36,7 +36,7 @@ public class RelationsToStopAreaInterceptor extends EmptyInterceptor {
 	private void loadStopAreasForScheduledStopPoint(ScheduledStopPoint entity, Object[] state, String[] propertyNames) {
 		ScheduledStopPoint scheduledStopPoint = entity;
 		if(log.isTraceEnabled()) {
-			log.trace("On load StopPoint id: " + scheduledStopPoint.getId());
+            log.trace("On load StopPoint id: {}", scheduledStopPoint.getId());
 		}
 		String containedInStopAreaId = getProperty(STOP_POINT_CONTAINED_IN_STOP_AREA_ID_PROPERTY, propertyNames, state);
 
@@ -66,7 +66,7 @@ public class RelationsToStopAreaInterceptor extends EmptyInterceptor {
 				StopArea stopArea = scheduledStopPoint.getContainedInStopAreaRef().getObject();
 				if (stopArea != null && stopArea.getId() == null && !stopArea.isDetached() && stopArea.getImportMode().shouldCreateMissingStopAreas()) {
 					if(log.isDebugEnabled()) {
-						log.debug("Cascading persist of new stop area " + stopArea.getObjectId() + " for created/updated stop point: " + scheduledStopPoint.getObjectId());
+                        log.debug("Cascading persist of new stop area {} for created/updated stop point: {}", stopArea.getObjectId(), scheduledStopPoint.getObjectId());
 					}
 					stopAreaDAO.create(stopArea);
 				}

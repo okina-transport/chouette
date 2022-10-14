@@ -41,7 +41,7 @@ public class StopAssignmentParser extends NetexParser implements Parser, Constan
 					ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointRef.getRef());
 					scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(quay));
 				} else {
-					log.warn("Missing quay ref for stopAssignment " + stopAssignment);
+                    log.warn("Missing quay ref for stopAssignment {}", stopAssignment);
 				}
 			}
 		}

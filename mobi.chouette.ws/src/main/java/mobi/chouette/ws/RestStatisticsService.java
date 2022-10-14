@@ -49,15 +49,15 @@ public class RestStatisticsService implements Constant {
 	public Response lineStats(@PathParam("ref") String referential, @QueryParam("startDate") Date startDate, @QueryParam("days") int days,
 							  @QueryParam("minDaysValidityCategory") String minDaysValidityCategories[]) {
 		try {
-			log.info(Color.CYAN + "Calculating line statistics for referential " + referential + Color.NORMAL);
+            log.info("{}Calculating line statistics for referential {}{}", Color.CYAN, referential, Color.NORMAL);
 			Map<Integer, String> minDaysValidityCategoryMap = parseCategoryMap(minDaysValidityCategories);
 			try {
 				LineStatistics lineStatistics = statisticsService.getLineStatisticsByLineNumber(referential, startDate, days, minDaysValidityCategoryMap);
-				log.info(Color.CYAN + "Calculated lineStats for referential " + referential + Color.NORMAL);
+                log.info("{}Calculated lineStats for referential {}{}", Color.CYAN, referential, Color.NORMAL);
 				return Response.ok(lineStatistics).header(api_version_key, api_version).build();
 			} catch (RequestServiceException e) {
 				if (e.getRequestExceptionCode() == RequestExceptionCode.REFERENTIAL_BUSY) {
-					log.warn(Color.CYAN + "Statistic Query timeout for referential: " + referential + ". An import process is probably in progress.", e);
+                    log.warn("{}Statistic Query timeout for referential: {}. An import process is probably in progress.", Color.CYAN, referential, e);
 					return Response.status(423).header(api_version_key, api_version).entity("The referential is busy, cannot update statistics.").build();
 				} else {
 					throw e;
@@ -75,7 +75,7 @@ public class RestStatisticsService implements Constant {
 	public Response lineStats(@QueryParam("startDate") Date startDate, @QueryParam("days") int days,
 							  @QueryParam("minDaysValidityCategory") String minDaysValidityCategories[], @QueryParam("referentials") String referentials) {
 		try {
-			log.info(Color.CYAN + "Calculating line statistics for referentials " + referentials + Color.NORMAL);
+            log.info("{}Calculating line statistics for referentials {}{}", Color.CYAN, referentials, Color.NORMAL);
 
 			Map<Integer, String> minDaysValidityCategoryMap = parseCategoryMap(minDaysValidityCategories);
 
@@ -91,18 +91,18 @@ public class RestStatisticsService implements Constant {
 						lineStatsPerReferential.put(referential, lineStatisticsByLineNumber);
 					} catch (RequestServiceException e) {
 						if (e.getRequestExceptionCode() == RequestExceptionCode.REFERENTIAL_BUSY) {
-							log.warn(Color.CYAN + "Statistic Query timeout for referential: " + referential + ". A data import is probably in progress. Ignoring request for line statistics for this referential", e);
+                            log.warn("{}Statistic Query timeout for referential: {}. A data import is probably in progress. Ignoring request for line statistics for this referential", Color.CYAN, referential, e);
 						} else {
 							throw e;
 						}
 					}
 				} else {
-					log.warn(Color.CYAN + "Ignoring request for lineStats for unknown referential: " + referential);
+                    log.warn("{}Ignoring request for lineStats for unknown referential: {}", Color.CYAN, referential);
 				}
 			}
 			ResponseBuilder builder = Response.ok(lineStatsPerReferential);
 			builder.header(api_version_key, api_version);
-			log.info(Color.CYAN + "Calculated line statistics for referentials " + referentials + Color.NORMAL);
+            log.info("{}Calculated line statistics for referentials {}{}", Color.CYAN, referentials, Color.NORMAL);
 			return builder.build();
 
 		} catch (Exception ex) {

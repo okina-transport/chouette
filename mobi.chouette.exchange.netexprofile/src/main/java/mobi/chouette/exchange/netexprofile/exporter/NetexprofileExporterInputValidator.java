@@ -49,7 +49,7 @@ public class NetexprofileExporterInputValidator extends AbstractInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof NetexprofileExportParameters)) {
-			log.error("invalid parameters for Netexprofile export " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for Netexprofile export {}", abstractParameter.getClass().getName());
 			return false;
 		}
 
@@ -64,7 +64,7 @@ public class NetexprofileExporterInputValidator extends AbstractInputValidator {
 		String type = parameters.getReferencesType();
 		if (type != null && !type.isEmpty()) {
 			if (!Arrays.asList(allowedTypes).contains(type.toLowerCase())) {
-				log.error("invalid type " + type);
+                log.error("invalid type {}", type);
 				return false;
 			}
 		}

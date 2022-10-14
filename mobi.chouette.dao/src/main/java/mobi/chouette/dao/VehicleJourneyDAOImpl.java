@@ -64,7 +64,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 					String sql = String.format(SQL, buffer.toString());
 					// System.out.println("execute SQL : " + sql);
 					int count = statement.executeUpdate(sql);
-					log.info("[DSU] delete " + count + " objects.");
+					log.info("[DSU] delete {} objects.", count);
 				}
 			}
 		});

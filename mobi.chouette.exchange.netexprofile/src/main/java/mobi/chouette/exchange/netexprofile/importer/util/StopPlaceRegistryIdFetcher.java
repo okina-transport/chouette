@@ -26,14 +26,14 @@ public class StopPlaceRegistryIdFetcher {
 		String quayIdEndpointPropertyKey = "iev.stop.place.register.id.quay";
 		quayIdsEndpoint = System.getProperty(quayIdEndpointPropertyKey);
 		if (quayIdsEndpoint == null) {
-			log.warn("Could not find property named " + quayIdEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", quayIdEndpointPropertyKey);
 			quayIdsEndpoint = "https://api.rutebanken.org/stop_places/1.0/id/quay?includeFuture=true";
 		}
 
 		String stopPlaceIdEndpointPropertyKey = "iev.stop.place.register.id.stopplace";
 		stopPlaceIdEndpoint = System.getProperty(stopPlaceIdEndpointPropertyKey);
 		if (stopPlaceIdEndpoint == null) {
-			log.warn("Could not find property named " + stopPlaceIdEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", stopPlaceIdEndpointPropertyKey);
 			stopPlaceIdEndpoint = "https://api.rutebanken.org/stop_places/1.0/id/stop_place?includeFuture=true";
 		}
 

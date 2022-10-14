@@ -108,7 +108,7 @@ public class TransferExportDataWriter implements Command, Constant {
 
 		Referential referential = new Referential();
 		try {
-			log.info("Starting to persist lines, count=" + lineToTransfer.size());
+			log.info("Starting to persist lines, count={}", lineToTransfer.size());
 
 			for (Line l : lineToTransfer) {
 				for (Route r : l.getRoutes()) {
@@ -133,14 +133,14 @@ public class TransferExportDataWriter implements Command, Constant {
 			}
 			
 			List<Interchange> validInterchanges = interchanges.stream().filter(interchange -> isInterchangeValid(interchange, vehicleJourneyIds)).collect(Collectors.toList());
-			log.info("Inserting " + validInterchanges.size() + " interchanges. Discarded " + (interchanges.size() - validInterchanges.size()) + " interchanges where consumer is invalid");
+			log.info("Inserting {} interchanges. Discarded {} interchanges where consumer is invalid", validInterchanges.size(), interchanges.size() - validInterchanges.size());
 			validInterchanges.forEach(interchange -> interchangeDAO.create(interchange));
 
-			log.info("Inserting " + referential.getRouteSections().size() + " route sections");
+			log.info("Inserting {} route sections", referential.getRouteSections().size());
 			for (RouteSection sa : referential.getRouteSections().values()) {
 				routeSectionDAO.create(sa);
 			}
-			log.info("Flushing " + referential.getRouteSections().size() + " route sections");
+			log.info("Flushing {} route sections", referential.getRouteSections().size());
 			routeSectionDAO.flush();
 			progression.execute(context);
 
@@ -148,7 +148,7 @@ public class TransferExportDataWriter implements Command, Constant {
 			
 			for (int i = 0; i < lineToTransfer.size(); i++) {
 				Line line = lineToTransfer.get(i);
-				log.info("Persisting transfered line " + line.getObjectId() + " / " + line.getName());
+				log.info("Persisting transfered line {} / {}", line.getObjectId(), line.getName());
 
 				lineDAO.create(line);
 				progression.execute(context);
@@ -166,7 +166,7 @@ public class TransferExportDataWriter implements Command, Constant {
 			log.info("Starting to persist blocks");
 			for (Block block : blocksToTransfer) {
 				if (log.isDebugEnabled()) {
-					log.debug("Preparing block " + block.getObjectId());
+					log.debug("Preparing block {}", block.getObjectId());
 				}
 
 				// persist only the vehicle journeys that were effectively transferred, ignoring the others.
@@ -281,7 +281,7 @@ public class TransferExportDataWriter implements Command, Constant {
 				l.getRoutes().clear();
 			}
 		}
-		log.info("Freed "+freedObjectCount+" objects for lines "+start+" to "+i);
+		log.info("Freed {} objects for lines {} to {}", freedObjectCount, start, i);
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {

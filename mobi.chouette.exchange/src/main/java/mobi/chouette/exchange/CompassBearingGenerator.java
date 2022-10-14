@@ -38,9 +38,7 @@ public class CompassBearingGenerator {
 					if (Math.abs(angle) < MAX_DIFF_BEARING_DEGREES) {
 						compassBearings.clear();
 						compassBearings.add((max + (angle / 2)) % 360);
-						log.info("Average compass bearing is " + compassBearings.iterator().next()
-								+ " for BoardingPosition " + boardingPosition.getObjectId() + " and name "
-								+ boardingPosition.getName());
+						log.info("Average compass bearing is {} for BoardingPosition {} and name {}", compassBearings.iterator().next(), boardingPosition.getObjectId(), boardingPosition.getName());
 
 					}
 				}
@@ -48,12 +46,8 @@ public class CompassBearingGenerator {
 				if (compassBearings.size() == 1) {
 					boardingPosition.setCompassBearing(compassBearings.iterator().next());
 				} else if (compassBearings.size() > 1) {
-					log.warn(
-							"Found at least 2 conflicting compass bearings "
-									+ ToStringBuilder.reflectionToString(compassBearings.toArray(),
-											ToStringStyle.SIMPLE_STYLE)
-									+ " for BoardingPosition " + boardingPosition.getObjectId() + " and name "
-									+ boardingPosition.getName());
+					log.warn("Found at least 2 conflicting compass bearings {} for BoardingPosition {} and name {}", ToStringBuilder.reflectionToString(compassBearings.toArray(),
+							ToStringStyle.SIMPLE_STYLE), boardingPosition.getObjectId(), boardingPosition.getName());
 				} else {
 				}
 
@@ -139,10 +133,10 @@ public class CompassBearingGenerator {
 			return (int) bearing + 1;
 		} else {
 			if(fromArea == null) {
-				log.warn("StopPoint "+from.getObjectId()+" in route "+from.getRoute().getObjectId()+" and line "+from.getRoute().getLine().getObjectId()+"/" +from.getRoute().getLine().getName()+" has no StopArea");
+				log.warn("StopPoint {} in route {} and line {}/{} has no StopArea", from.getObjectId(), from.getRoute().getObjectId(), from.getRoute().getLine().getObjectId(), from.getRoute().getLine().getName());
 			}
 			if(toArea == null) {
-				log.warn("StopPoint "+to.getObjectId()+" in route "+to.getRoute().getObjectId()+" and line "+to.getRoute().getLine().getObjectId()+"/" +to.getRoute().getLine().getName()+" has no StopArea");
+				log.warn("StopPoint {} in route {} and line {}/{} has no StopArea", to.getObjectId(), to.getRoute().getObjectId(), to.getRoute().getLine().getObjectId(), to.getRoute().getLine().getName());
 			}
 			
 			return null;

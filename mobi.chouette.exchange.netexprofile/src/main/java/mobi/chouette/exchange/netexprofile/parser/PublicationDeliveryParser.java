@@ -425,7 +425,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			VehicleJourneyAtStop vjas = ObjectFactory.getVehicleJourneyAtStop(referential, noticedObject);
 			vjas.getFootnotes().add(footnote);
 		} else {
-			log.warn("Unsupported NoticedObjectRef type: " + noticedObject);
+            log.warn("Unsupported NoticedObjectRef type: {}", noticedObject);
 		}
 	}
 

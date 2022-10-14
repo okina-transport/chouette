@@ -55,7 +55,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 		Object configuration = context.get(CONFIGURATION);
 		if (!(configuration instanceof NetexprofileImportParameters)) {
 			// fatal wrong parameters
-			log.error("invalid parameters for netex import " + configuration.getClass().getName());
+            log.error("invalid parameters for netex import {}", configuration.getClass().getName());
 			actionReporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for netex import " + configuration.getClass().getName());
 			return false;
 		}
@@ -70,7 +70,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 			log.error(e.getMessage());
 		} catch (Exception e) {
 			String fileName = (String) context.get(FILE_NAME);
-			log.error("Error parsing Netex file "+fileName+": "+e.getMessage(), e);
+            log.error("Error parsing Netex file {}: {}", fileName, e.getMessage(), e);
 			actionReporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, "Internal error while parsing Netex files: "+e.toString());
 		} finally {
 			progression.dispose(context);

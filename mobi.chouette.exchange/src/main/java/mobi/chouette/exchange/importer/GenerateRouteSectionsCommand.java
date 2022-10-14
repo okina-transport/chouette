@@ -53,13 +53,13 @@ public class GenerateRouteSectionsCommand implements Command, Constant {
 		Monitor monitor = MonitorFactory.start(COMMAND);
 		AbstractImportParameter configuration = (AbstractImportParameter) context.get(CONFIGURATION);
 
-		log.info("Generating route sections for all journeyPatterns without route sections for " + configuration.getReferentialName() + " with transport modes: " + configuration.getGenerateMissingRouteSectionsForModes());
+		log.info("Generating route sections for all journeyPatterns without route sections for {} with transport modes: {}", configuration.getReferentialName(), configuration.getGenerateMissingRouteSectionsForModes());
 		RouteSectionRepository routeSectionRepository = new RouteSectionRepository(routeSectionGenerator);
 		try {
 			journeyPatternDAO.findAll().stream().filter(jp -> CollectionUtils.isEmpty(jp.getRouteSections()))
 					.filter(jp -> configuration.getGenerateMissingRouteSectionsForModes().contains(jp.getRoute().getLine().getTransportModeName())).forEach(jp -> generateRouteSectionsForJourneyPattern(jp, routeSectionRepository));
 		} catch (Exception e) {
-			log.warn("Route section generation failed with exception for " + configuration.getReferentialName() + " : " + e.getMessage(), e);
+			log.warn("Route section generation failed with exception for {} : {}", configuration.getReferentialName(), e.getMessage(), e);
 		} finally {
 			JamonUtils.logYellow(log, monitor);
 		}
@@ -68,7 +68,7 @@ public class GenerateRouteSectionsCommand implements Command, Constant {
 	}
 
 	private void generateRouteSectionsForJourneyPattern(JourneyPattern jp, RouteSectionRepository routeSectionRepository) {
-		log.debug("Generating route sections for JourneyPattern: " + jp.getObjectId());
+		log.debug("Generating route sections for JourneyPattern: {}", jp.getObjectId());
 		TransportModeNameEnum transportMode = jp.getRoute().getLine().getTransportModeName();
 		List<RouteSection> routeSections = new ArrayList<>();
 

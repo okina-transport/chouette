@@ -85,8 +85,7 @@ public class RestService implements Constant {
 						   @PathParam("type") String type, MultipartFormDataInput input) {
 		Map<String, InputStream> inputStreamByName = null;
 		try {
-			log.info(Color.CYAN + "Call upload referential = " + referential + ", action = " + action
-					+ (type == null ? "" : ", type = " + type) + Color.NORMAL);
+			log.info("{}Call upload referential = {}, action = {}{}{}", Color.CYAN, referential, action, type == null ? "" : ", type = " + type, Color.NORMAL);
 
 
 
@@ -109,10 +108,10 @@ public class RestService implements Constant {
 			}
 			return builder.build();
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (WebApplicationException e) {
 			log.error(e.getMessage(), e);
@@ -130,7 +129,7 @@ public class RestService implements Constant {
 					}
 				}
 			}
-			log.info(Color.CYAN + "upload returns" + Color.NORMAL);
+			log.info("{}upload returns{}", Color.CYAN, Color.NORMAL);
 		}
 	}
 
@@ -217,7 +216,7 @@ public class RestService implements Constant {
 	@POST
 	@Path("/{ref}/clean")
 	public Response clean(@PathParam("ref") String referential) {
-		log.info(Color.CYAN + "Call clean referential = " + referential + Color.NORMAL);
+		log.info("{}Call clean referential = {}{}", Color.CYAN, referential, Color.NORMAL);
 		try {
 			ContextHolder.setContext(referential);
 			Command command = CommandFactory.create(new InitialContext(), CleanRepositoryCommand.class.getName());
@@ -228,14 +227,14 @@ public class RestService implements Constant {
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		} finally {
 			ContextHolder.setContext(null);
-			log.info(Color.CYAN + "clean returns" + Color.NORMAL);
+			log.info("{}clean returns{}", Color.CYAN, Color.NORMAL);
 		}
 	}
 
     @POST
     @Path("/clean/stop_areas")
     public Response cleanStopAreas() {
-        log.info(Color.CYAN + "Call clean stop areas" + Color.NORMAL);
+		log.info("{}Call clean stop areas{}", Color.CYAN, Color.NORMAL);
         try {
             Command command = CommandFactory.create(new InitialContext(), CleanStopAreaRepositoryCommand.class.getName());
             command.execute(null);
@@ -245,7 +244,7 @@ public class RestService implements Constant {
             throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
         } finally {
             ContextHolder.setContext(null);
-            log.info(Color.CYAN + "clean returns" + Color.NORMAL);
+			log.info("{}clean returns{}", Color.CYAN, Color.NORMAL);
         }
     }
 
@@ -258,8 +257,7 @@ public class RestService implements Constant {
 	public Response download(@PathParam("ref") String referential, @PathParam("id") Long id,
 			@PathParam("filepath") String filename) {
 		try {
-			log.info(Color.CYAN + "Call download referential = " + referential + ", id = " + id + ", filename = "
-					+ filename + Color.NORMAL);
+			log.info("{}Call download referential = {}, id = {}, filename = {}{}", Color.CYAN, referential, id, filename, Color.NORMAL);
 
 			// Retrieve JobService
 			ResponseBuilder builder = null;
@@ -295,10 +293,10 @@ public class RestService implements Constant {
 			return result;
 
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -316,8 +314,7 @@ public class RestService implements Constant {
 
 		try {
 			String refDescription = referential == null ? "all referentials" : "referential = " + referential;
-			log.info(Color.CYAN + "Call jobs = " + refDescription + ", action = " + StringUtils.join(action, ',') + ", status = " + StringUtils.join(status, ',') + ", version = "
-					         + version + Color.NORMAL);
+			log.info("{}Call jobs = {}, action = {}, status = {}, version = {}{}", Color.CYAN, refDescription, StringUtils.join(action, ','), StringUtils.join(status, ','), version, Color.NORMAL);
 
 			// create jobs listing
 			List<JobInfo> result = new ArrayList<>();
@@ -340,10 +337,10 @@ public class RestService implements Constant {
 
 			return builder.build();
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -358,14 +355,14 @@ public class RestService implements Constant {
 	public Response lastUpdateDate(@PathParam("ref") String referential) {
 
 		try {
-			log.info(Color.CYAN + "Call last update date for " + referential + Color.NORMAL);
+			log.info("{}Call last update date for {}{}", Color.CYAN, referential, Color.NORMAL);
 			String lastUpdateDate = DATE_TIME_FORMATTER.format(referentialService.getLastUpdateTimestamp(referential));
-			log.info(Color.CYAN + "Last update date for " + referential + " is "  + lastUpdateDate + Color.NORMAL);
+			log.info("{}Last update date for {} is {}{}", Color.CYAN, referential, lastUpdateDate, Color.NORMAL);
 			ResponseBuilder builder = Response.ok(lastUpdateDate);
 			builder.header(api_version_key, api_version);
 			return builder.build();
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -388,7 +385,7 @@ public class RestService implements Constant {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response scheduledJob(@PathParam("ref") String referential, @PathParam("id") Long id) {
 		try {
-			log.info(Color.CYAN + "Call scheduledJob referential = " + referential + ", id = " + id + Color.NORMAL);
+			log.info("{}Call scheduledJob referential = {}, id = {}{}", Color.CYAN, referential, id, Color.NORMAL);
 
 			Response result = null;
 			ResponseBuilder builder = null;
@@ -418,10 +415,10 @@ public class RestService implements Constant {
 			return result;
 
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -436,7 +433,7 @@ public class RestService implements Constant {
 		try {
 			// dummy uses when sender call url with content (prevent a
 			// NullPointerException)
-			log.info(Color.CYAN + "Call cancel referential = " + referential + ", id = " + id + Color.NORMAL);
+			log.info("{}Call cancel referential = {}, id = {}{}", Color.CYAN, referential, id, Color.NORMAL);
 
 			Response result = null;
 
@@ -455,10 +452,10 @@ public class RestService implements Constant {
 
 			return result;
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -472,7 +469,7 @@ public class RestService implements Constant {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response terminatedJob(@PathParam("ref") String referential, @PathParam("id") Long id) {
 		try {
-			log.info(Color.CYAN + "Call terminatedJob referential = " + referential + ", id = " + id + Color.NORMAL);
+			log.info("{}Call terminatedJob referential = {}, id = {}{}", Color.CYAN, referential, id, Color.NORMAL);
 
 			ResponseBuilder builder = null;
 			{
@@ -497,10 +494,10 @@ public class RestService implements Constant {
 			return builder.build();
 
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -513,8 +510,7 @@ public class RestService implements Constant {
 	@Path("/{ref}/terminated_jobs/{id}")
 	public Response remove(@PathParam("ref") String referential, @PathParam("id") Long id, String dummy) {
 		try {
-			log.info(Color.CYAN + "Call remove referential = " + referential + ", id = " + id + ", dummy = " + dummy
-					+ Color.NORMAL);
+			log.info("{}Call remove referential = {}, id = {}, dummy = {}{}", Color.CYAN, referential, id, dummy, Color.NORMAL);
 
 			// dummy uses when sender call url with content (prevent a
 			// NullPointerException)
@@ -532,10 +528,10 @@ public class RestService implements Constant {
 			return result;
 
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -548,7 +544,7 @@ public class RestService implements Constant {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/create")
 	public Response create(ReferentialInfo referentialInfo) {
-		log.info("Creating referential " + referentialInfo.getDataspaceName());
+		log.info("Creating referential {}", referentialInfo.getDataspaceName());
 		try {
 			boolean created = referentialService.createReferential(referentialInfo);
 			if (created) {
@@ -568,12 +564,12 @@ public class RestService implements Constant {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/update")
 	public Response update(ReferentialInfo referentialInfo) {
-		log.info("Updating referential " + referentialInfo.getDataspaceName());
+		log.info("Updating referential {}", referentialInfo.getDataspaceName());
 		try {
 			referentialService.updateReferential(referentialInfo);
 			return Response.ok().header(api_version_key, api_version).build();
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -586,13 +582,13 @@ public class RestService implements Constant {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/delete")
 	public Response delete(ReferentialInfo referentialInfo) {
-		log.info("Deleting referential " + referentialInfo.getDataspaceName());
+		log.info("Deleting referential {}", referentialInfo.getDataspaceName());
 		try {
 			referentialService.deleteReferential(referentialInfo);
 			jobServiceManager.drop(referentialInfo.getSchemaName());
 			return Response.ok().header(api_version_key, api_version).build();
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -605,7 +601,7 @@ public class RestService implements Constant {
 	@Path("/{ref}/jobs")
 	public Response drop(@PathParam("ref") String referential, String dummy) {
 		try {
-			log.info(Color.CYAN + "Call drop referential = " + referential + ", dummy = " + dummy + Color.NORMAL);
+			log.info("{}Call drop referential = {}, dummy = {}{}", Color.CYAN, referential, dummy, Color.NORMAL);
 
 			// dummy uses when sender call url with content (prevent a
 			// NullPointerException)
@@ -620,10 +616,10 @@ public class RestService implements Constant {
 
 			return result;
 		} catch (RequestServiceException e) {
-			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			log.warn("Request Service failed with code = {}", e.getRequestCode(), e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Service failed with code = " + e.getCode() , e);
+			log.error("Service failed with code = {}", e.getCode(), e);
 			throw toWebApplicationException(e);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

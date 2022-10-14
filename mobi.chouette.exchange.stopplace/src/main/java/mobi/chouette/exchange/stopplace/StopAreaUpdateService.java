@@ -64,7 +64,7 @@ public class StopAreaUpdateService {
 		if (stopArea != null) {
 			cascadeDeleteStopArea(stopArea);
 		} else {
-			log.info("Ignored delete for unknown stop area: " + objectId);
+            log.info("Ignored delete for unknown stop area: {}", objectId);
 		}
 	}
 
@@ -73,24 +73,23 @@ public class StopAreaUpdateService {
 		List<String> referentials = referentialDAO.getReferentials();
 		Set<String> boardingPositionObjectIds = new HashSet<>(stopAreaDAO.getBoardingPositionObjectIds());
 
-		log.debug("Total no of boarding positions: " + boardingPositionObjectIds.size());
+        log.debug("Total no of boarding positions: {}", boardingPositionObjectIds.size());
 
 		boardingPositionObjectIds.removeAll(stopPlaceRegistryIdFetcher.getQuayIds());
 
-		log.debug("No of boarding positions not in Stop Place Registry: " + boardingPositionObjectIds.size());
+        log.debug("No of boarding positions not in Stop Place Registry: {}", boardingPositionObjectIds.size());
 
 		for (String referential : referentials) {
 			ContextHolder.setContext(referential);
 			List<String> inUseBoardingPositionsForReferential = scheduledStopPointDAO.getAllStopAreaObjectIds();
 			boardingPositionObjectIds.removeAll(inUseBoardingPositionsForReferential);
-			log.debug("Removed: " + inUseBoardingPositionsForReferential.size() + " in use boarding positions for referential: " +
-					referential + ". Potentially not used boarding positions left: " + boardingPositionObjectIds.size());
+            log.debug("Removed: {} in use boarding positions for referential: {}. Potentially not used boarding positions left: {}", inUseBoardingPositionsForReferential.size(), referential, boardingPositionObjectIds.size());
 		}
 
 		final AtomicInteger deletedStopAreasCnt = new AtomicInteger();
 
 		if (boardingPositionObjectIds.size() > 0) {
-			log.info("Found " + boardingPositionObjectIds.size() + " unused boarding positions. Deleting boarding positions and commercial stops where all boarding positions are unused");
+            log.info("Found {} unused boarding positions. Deleting boarding positions and commercial stops where all boarding positions are unused", boardingPositionObjectIds.size());
 			if (boardingPositionObjectIds.size() > DELETE_UNUSED_BATCH_SIZE) {
 				Lists.partition(new ArrayList<>(boardingPositionObjectIds), DELETE_UNUSED_BATCH_SIZE).forEach(batch -> deletedStopAreasCnt.addAndGet(deleteBatchOfUnusedStopAreas(batch, boardingPositionObjectIds)));
 			} else {
@@ -98,7 +97,7 @@ public class StopAreaUpdateService {
 			}
 
 		}
-		log.info("Finished deleting unused stop areas. Cnt: " + deletedStopAreasCnt.get());
+        log.info("Finished deleting unused stop areas. Cnt: {}", deletedStopAreasCnt.get());
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class StopAreaUpdateService {
 				.distinct()
 				.filter(stop -> stop != null)
 				.filter(stop -> stop.getContainedStopAreas().stream().allMatch(boardingPosition -> allUnusedBoardingPositionObjectIds.contains(boardingPosition.getObjectId())))
-				.peek(stop -> log.debug("Deleting unused stop area: " + stop)).collect(Collectors.toList());
+				.peek(stop -> log.debug("Deleting unused stop area: {}", stop)).collect(Collectors.toList());
 
 		unusedBoardingPositions.stream().peek(boardingPosition -> boardingPosition.setParent(null)).forEach(boardingPosition -> stopAreaDAO.delete(boardingPosition));
 		unusedStopAreas.forEach(stop -> stopAreaDAO.delete(stop));
@@ -132,7 +131,7 @@ public class StopAreaUpdateService {
 	private void cascadeDeleteStopArea(StopArea stopArea) {
 		stopArea.getContainedStopAreas().forEach(child -> cascadeDeleteStopArea(child));
 		stopAreaDAO.delete(stopArea);
-		log.info("Deleted stop area: " + stopArea.getObjectId());
+        log.info("Deleted stop area: {}", stopArea.getObjectId());
 	}
 
 

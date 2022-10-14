@@ -46,7 +46,7 @@ public class NeptuneExporterInputValidator extends AbstractInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof NeptuneExportParameters)) {
-			log.error("invalid parameters for neptune export " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for neptune export {}", abstractParameter.getClass().getName());
 			return false;
 		}
 
@@ -61,7 +61,7 @@ public class NeptuneExporterInputValidator extends AbstractInputValidator {
 		String type = parameters.getReferencesType();
 		if (type != null && !type.isEmpty()) {
 			if (!Arrays.asList(allowedTypes).contains(type.toLowerCase())) {
-				log.error("invalid type " + type);
+                log.error("invalid type {}", type);
 				return false;
 			}
 		}

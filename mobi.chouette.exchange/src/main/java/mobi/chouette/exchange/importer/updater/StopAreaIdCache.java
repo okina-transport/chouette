@@ -48,14 +48,14 @@ public class StopAreaIdCache {
         String quayEndpointPropertyKey = "iev.stop.place.register.mapping.quay";
         quayEndpoint = System.getProperty(quayEndpointPropertyKey);
         if (quayEndpoint == null) {
-            log.warn("Could not find property named " + quayEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", quayEndpointPropertyKey);
             quayEndpoint = "https://api.entur.org/stop_places/1.0/mapping/quay?recordsPerRoundTrip=220000&includeStopType=true&includeFuture=true";
         }
 
         String stopPlaceEndpointPropertyKey = "iev.stop.place.register.mapping.stopplace";
         stopPlaceEndpoint = System.getProperty(stopPlaceEndpointPropertyKey);
         if (stopPlaceEndpoint == null) {
-            log.warn("Could not find property named " + stopPlaceEndpointPropertyKey + " in iev.properties");
+            log.warn("Could not find property named {} in iev.properties", stopPlaceEndpointPropertyKey);
             stopPlaceEndpoint = "https://api.entur.org/stop_places/1.0/mapping/stop_place?recordsPerRoundTrip=220000&includeStopType=true&includeFuture=true";
         }
 
@@ -64,12 +64,12 @@ public class StopAreaIdCache {
             try {
                 timeToLiveMs = Long.valueOf(System.getProperty(stopPlaceTtlPropertyKey));
             } catch (NumberFormatException nfe) {
-                log.warn("Illegal value for property named " + stopPlaceTtlPropertyKey + " in iev.properties. Should be no of milliseconds ttl (long)");
+                log.warn("Illegal value for property named {} in iev.properties. Should be no of milliseconds ttl (long)", stopPlaceTtlPropertyKey);
             }
         }
         if (timeToLiveMs < 1) {
             timeToLiveMs = 1000 * 60 * 10; // 10 minutes
-            log.warn("Could not find valid property named " + stopPlaceTtlPropertyKey + " in iev.properties, using default value of ms: "+ timeToLiveMs);
+            log.warn("Could not find valid property named {} in iev.properties, using default value of ms: {}", stopPlaceTtlPropertyKey, timeToLiveMs);
 
         }
     }
@@ -110,9 +110,9 @@ public class StopAreaIdCache {
             if (quayOK && stopPlaceOk) {
                 lastUpdated = System.currentTimeMillis();
                 result = true;
-                log.info("Updated id caches. Current size: stop places: " + stopPlaceIdMap.size() + ", quays=" + quayIdMap.size());
+                log.info("Updated id caches. Current size: stop places: {}, quays={}", stopPlaceIdMap.size(), quayIdMap.size());
             } else {
-                log.error("Error updating caches, retries left = " + remainingUpdateRetries);
+                log.error("Error updating caches, retries left = {}", remainingUpdateRetries);
                 result = false;
 
                 // TODO dodgy
@@ -173,7 +173,7 @@ public class StopAreaIdCache {
                     if (includeFuture) {
                         validFrom = split[2];
                     } else {
-                        log.error("NSR contains illegal mappings: " + u + " " + line);
+                        log.error("NSR contains illegal mappings: {} {}", u, line);
                     }
                 }
                 if (localId != null) {
@@ -187,7 +187,7 @@ public class StopAreaIdCache {
                         cache.putIfAbsent(localId, new HashMap<>());
                         String prevVal = cache.get(localId).put(stopPlaceType, nsrId);
                         if (prevVal != null && !prevVal.equals(nsrId)) {
-                            log.debug("NSR contained Multiple mappings for localId:" + localId + " and stopPlaceType: " + stopPlaceType + ", discarding: " + prevVal + "(from: " + prevValidFrom + ") in favor of: " + nsrId + "(from: " + validFrom + ")");
+                            log.debug("NSR contained Multiple mappings for localId:{} and stopPlaceType: {}, discarding: {}(from: {}) in favor of: {}(from: {})", localId, stopPlaceType, prevVal, prevValidFrom, nsrId, validFrom);
                         }
                     }
 
@@ -197,7 +197,7 @@ public class StopAreaIdCache {
             rd.close();
             return true;
         } catch (Exception e) {
-            log.error("Error getting NSR cache for url " + u, e);
+            log.error("Error getting NSR cache for url {}", u, e);
         } finally {
             connection.disconnect();
         }

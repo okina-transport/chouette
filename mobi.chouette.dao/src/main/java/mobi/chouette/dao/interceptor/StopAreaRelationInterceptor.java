@@ -39,7 +39,7 @@ public class StopAreaRelationInterceptor extends EmptyInterceptor {
 
             StopArea stopArea = (StopArea) entity;
             if(log.isTraceEnabled()) {
-                log.trace("On load StopArea id: " + stopArea.getId());
+                log.trace("On load StopArea id: {}", stopArea.getId());
             }
 
             String stopAreaObjectId = getProperty(STOP_AREA_OBJECT_ID_PROPERTY, propertyNames, state);
@@ -99,12 +99,12 @@ public class StopAreaRelationInterceptor extends EmptyInterceptor {
             if (target == null) {
                 if (ContextHolder.getContext() != null) {
                     if (log.isTraceEnabled()) {
-                        log.trace("Lazy loading scheduled stop points for stop area: " + stopAreaObjectId);
+                        log.trace("Lazy loading scheduled stop points for stop area: {}", stopAreaObjectId);
                     }
                     target = scheduledStopPointDAO.getScheduledStopPointsContainedInStopArea(stopAreaObjectId);
                 } else {
                     if (log.isTraceEnabled()) {
-                        log.trace("Initialize empty scheduled stop point list for stop area outside context: " + stopAreaObjectId);
+                        log.trace("Initialize empty scheduled stop point list for stop area outside context: {}", stopAreaObjectId);
                     }
                     target = new ArrayList<>();
                 }

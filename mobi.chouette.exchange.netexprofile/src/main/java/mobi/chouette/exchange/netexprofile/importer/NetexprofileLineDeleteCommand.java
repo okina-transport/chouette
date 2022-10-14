@@ -57,7 +57,7 @@ public class NetexprofileLineDeleteCommand implements Command {
 
 			Line existingLine = lineDAO.findByObjectId(newLine.getObjectId());
 			if (existingLine != null) {
-				log.info("Delete existing line before import: " + existingLine.getObjectId() + " "+existingLine.getName());
+				log.info("Delete existing line before import: {} {}", existingLine.getObjectId(), existingLine.getName());
 				clearRouteSectionReferences(existingLine);
 				clearBlockReferences(existingLine);
 				lineDAO.delete(existingLine);

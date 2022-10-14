@@ -57,7 +57,7 @@ public class NeptuneParserCommand implements Command, Constant {
 		try {
 
 			URL url = new URL(fileURL);
-			log.info("parsing file : " + url);
+            log.info("parsing file : {}", url);
 
 			Referential referential = (Referential) context.get(REFERENTIAL);
 			if (referential != null) {

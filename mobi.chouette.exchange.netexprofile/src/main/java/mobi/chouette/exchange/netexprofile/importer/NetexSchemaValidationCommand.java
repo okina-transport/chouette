@@ -161,7 +161,7 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 				NetexVersion schemaVersion = importer.detectNetexSchemaVersion(file);
 				if(schemaVersion == null) {
 					schemaVersion = NeTExValidator.LATEST;
-					log.warn("Could not detect schema version for file "+file.getName()+", defaulting to latest ("+schemaVersion+")");
+					log.warn("Could not detect schema version for file {}, defaulting to latest ({})", file.getName(), schemaVersion);
 				}
 				Validator validator = importer.getNetexSchema(schemaVersion).newValidator();
 				validator.setErrorHandler(new ErrorHandler() {
@@ -192,7 +192,7 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 						actionReporter.addFileErrorInReport(context, fileName, ActionReporter.FILE_ERROR_CODE.INVALID_FORMAT, message);
 						fileValidationResult = ERROR;
 						if (errorCount >= MAX_ERROR_COUNT) {
-							log.warn(fileName + " has too many schema validation errors (max is " + MAX_ERROR_COUNT + "). Additional errors will not be reported");
+							log.warn("{} has too many schema validation errors (max is " + MAX_ERROR_COUNT + "). Additional errors will not be reported", fileName);
 							throw exception;
 						}
 					}
@@ -202,9 +202,9 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 				fileValidationResult = SUCCESS;
 				
 				Monitor monitor = MonitorFactory.start("SchemaValidation");
-				log.info("Schema validating "+fileName);
+				log.info("Schema validating {}", fileName);
 				validator.validate(xmlSource);
-				log.info("Schema validation finished "+fileName);
+				log.info("Schema validation finished {}", fileName);
 				JamonUtils.logYellow(log, monitor);
 			} catch (SAXException e) {
 				log.warn(e.getMessage(), e);

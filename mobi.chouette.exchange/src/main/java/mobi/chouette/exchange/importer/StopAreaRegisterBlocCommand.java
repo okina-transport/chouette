@@ -119,7 +119,7 @@ public class StopAreaRegisterBlocCommand implements Command {
 		if (object == null) {
 			object = ObjectFactory.getStopArea(cache, item.getObjectId());
 			if (item.getParent() != null && item.getParent().getAreaType() == null) {
-				log.error("areatype missing for " + item.getParent());
+				log.error("areatype missing for {}", item.getParent());
 				return;
 			}
 			if (item.getParent() != null) {

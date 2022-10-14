@@ -50,7 +50,7 @@ public class GoogleCloudFileStore implements FileStore {
 		String credentialPath = System.getProperty(checker.getContext() + ".blobstore.gcs.credential.path");
 		String projectId = System.getProperty(checker.getContext() + ".blobstore.gcs.project.id");
 
-		log.info("Initializing blob store service. ContainerName: " + containerName + ", credentialPath: " + credentialPath + ", projectId: " + projectId);
+        log.info("Initializing blob store service. ContainerName: {}, credentialPath: {}, projectId: {}", containerName, credentialPath, projectId);
 
 		storage = BlobStoreHelper.getStorage(credentialPath, projectId);
 	}

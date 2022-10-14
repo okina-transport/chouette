@@ -68,7 +68,7 @@ public class GtfsValidateExportCommand implements Command, Constant {
 				c = CommandFactory.create(initialContext, GtfsValidationCommand.class.getName());
 				c.execute(validateContext);
 			} catch (Exception ex) {
-				log.error("problem in validation" + ex);
+				log.error("problem in validation{}", ex);
 				throw ex;
 			} finally {
 				// rename folder to output before dispose

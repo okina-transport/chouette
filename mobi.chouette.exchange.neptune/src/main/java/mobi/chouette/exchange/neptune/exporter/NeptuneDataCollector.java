@@ -15,11 +15,11 @@ public class NeptuneDataCollector extends DataCollector {
 	public boolean collect() {
 		boolean res =  super.collect();
 		if (line.getNetwork() == null) {
-			log.error("line " + line.getObjectId() + " : missing network");
+            log.error("line {} : missing network", line.getObjectId());
 			return false;
 		}
 		if (line.getCompany() == null) {
-			log.error("line " + line.getObjectId() + " : missing company");
+            log.error("line {} : missing company", line.getObjectId());
 			return false;
 		}
 		return res;

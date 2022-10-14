@@ -96,7 +96,7 @@ public class LineRegisterCommand implements Command {
 
 		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
 		context.put(StopArea.IMPORT_MODE, importParameter.getStopAreaImportMode());
-		log.info("Importing line: " + newValue.getObjectId() + " with stop area import mode: " + importParameter.getStopAreaImportMode());
+		log.info("Importing line: {} with stop area import mode: {}", newValue.getObjectId(), importParameter.getStopAreaImportMode());
 
 		if (importParameter.isKeepObsoleteLines() || isLineValidInFuture(newValue)) {
 
@@ -109,8 +109,7 @@ public class LineRegisterCommand implements Command {
 			}
 
 
-			log.info("register line : " + newValue.getObjectId() + " " + newValue.getName() + " vehicleJourney count = "
-					+ referential.getVehicleJourneys().size());
+			log.info("register line : {} {} vehicleJourney count = {}", newValue.getObjectId(), newValue.getName(), referential.getVehicleJourneys().size());
 			try {
 	
 				optimiser.initialize(cache, referential);
@@ -207,7 +206,7 @@ public class LineRegisterCommand implements Command {
 	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
 			}
 		} else {
-			log.info("skipping obsolete line : " + newValue.getObjectId());
+			log.info("skipping obsolete line : {}", newValue.getObjectId());
 			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;

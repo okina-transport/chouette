@@ -48,7 +48,7 @@ public class GtfsAgencyProducer extends AbstractProducer
       String name = neptuneObject.getName();
       if (name.trim().isEmpty())
       {
-         log.error("no name for " + neptuneObject.getObjectId());
+          log.error("no name for {}", neptuneObject.getObjectId());
 //         GtfsReportItem item = new GtfsReportItem(
 //               GtfsReportItem.KEY.MISSING_DATA, STATE.ERROR, "Company",
 //               neptuneObject.getObjectId(), "Name");
@@ -82,12 +82,12 @@ public class GtfsAgencyProducer extends AbstractProducer
          agency.setAgencyUrl(new URL(url));
       } catch (MalformedURLException e)
       {
-         log.error("malformed URL " + url + " creating url from organisation unit as replacement");
+          log.error("malformed URL {} creating url from organisation unit as replacement", url);
 		  String replacementUrl = createURLFromProviderDefaults(neptuneObject);
 		  try {
             agency.setAgencyUrl(new URL(replacementUrl));
          } catch (MalformedURLException e2) {
-            log.error("malformed replacementUrl " + replacementUrl + " ignoring agency");
+              log.error("malformed replacementUrl {} ignoring agency", replacementUrl);
             return false;
          }
 
@@ -113,7 +113,7 @@ public class GtfsAgencyProducer extends AbstractProducer
       }
       catch (Exception e)
       {
-         log.error("fail to produce agency "+e.getClass().getName()+" "+e.getMessage());
+          log.error("fail to produce agency {} {}", e.getClass().getName(), e.getMessage());
          return false;
       }
       return true;

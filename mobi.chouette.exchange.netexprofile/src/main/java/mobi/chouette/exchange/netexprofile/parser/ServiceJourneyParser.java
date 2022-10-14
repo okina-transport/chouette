@@ -55,7 +55,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
 			if (! (journeyStruct instanceof ServiceJourney)) {
 				if(log.isTraceEnabled()) {
-					log.trace("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+                    log.trace("Ignoring non-ServiceJourney journey or deadrun with id: {}", journeyStruct.getId());
 				}
 				continue;
 			}
@@ -66,8 +66,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			if (vehicleJourney.isFilled()) {
 				VehicleJourney vehicleJourneyWithVersion = ObjectFactory.getVehicleJourney(referential,
 						serviceJourney.getId() + "_" + serviceJourney.getVersion());
-				log.warn("Already parsed " + vehicleJourney.getObjectId() + ", will use version field as part of id to separate them: "
-						+ vehicleJourneyWithVersion.getObjectId());
+                log.warn("Already parsed {}, will use version field as part of id to separate them: {}", vehicleJourney.getObjectId(), vehicleJourneyWithVersion.getObjectId());
 				vehicleJourney = vehicleJourneyWithVersion;
 			}
 

@@ -343,7 +343,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 			Method method = parameters.getClass().getMethod(modeKey);
 			return (TransportModeParameters) method.invoke(parameters);
 		} catch (Exception e) {
-			log.error("unknown mode " + mode, e);
+			log.error("unknown mode {}", mode, e);
 		}
 		return null; //modeDefault;
 	}
@@ -432,7 +432,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 		List<String> columnNames = ValidationParametersUtil.getFields(object);
 		String objectKey = toUnderscore(object.getClass().getSimpleName());
 		if (columnNames == null || columnNames.isEmpty()) {
-			log.debug("no columns parameters for " + object.getClass().getSimpleName());
+			log.debug("no columns parameters for {}", object.getClass().getSimpleName());
 			return;
 		}
 
@@ -441,7 +441,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 			Method getter = findGetter(object.getClass(), javaAttribute);
 
 			if (getter == null) {
-				log.error("unknown column " + column + " for " + object.getClass().getSimpleName());
+				log.error("unknown column {} for {}", column, object.getClass().getSimpleName());
 				continue;
 			}
 
@@ -488,7 +488,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 				}
 
 			} catch (Exception e) {
-				log.error("fail to check column " + column + " for " + objectKey, e);
+				log.error("fail to check column {} for {}", column, objectKey, e);
 			}
 		}
 

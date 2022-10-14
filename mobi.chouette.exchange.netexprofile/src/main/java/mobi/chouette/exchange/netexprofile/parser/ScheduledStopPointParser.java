@@ -42,7 +42,7 @@ public class ScheduledStopPointParser implements Parser, Constant {
 							scheduledStopPoint.setTimingPointStatus(TimingPointStatusEnum.secondaryTimingPoint);
 							break;
 						default:
-							log.warn("Ignoring unknown timing point status: " + timingPointStatus);
+                            log.warn("Ignoring unknown timing point status: {}", timingPointStatus);
 					}
 				}
 			}

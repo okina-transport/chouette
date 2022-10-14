@@ -74,7 +74,7 @@ public abstract class TemplateFileWriter {
 		File file = new File(directory, filename);
 		FileUtils.write(file, output.toString(), "UTF-8");
 
-		logger.debug("File : " + filename + "created");
+		logger.debug("File : {}created", filename);
 
 		return file;
 	}

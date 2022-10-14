@@ -39,7 +39,7 @@ public class DeadRunParser extends NetexParser implements Parser, Constant {
 		for (Journey_VersionStructure journeyStruct : journeys) {
 			if (! (journeyStruct instanceof DeadRun)) {
 				if(log.isTraceEnabled()) {
-					log.trace("Ignoring non-DeadRun with id: " + journeyStruct.getId());
+                    log.trace("Ignoring non-DeadRun with id: {}", journeyStruct.getId());
 				}
 				continue;
 			}
@@ -50,8 +50,7 @@ public class DeadRunParser extends NetexParser implements Parser, Constant {
 			if (chouetteDeadRun.isFilled()) {
 				mobi.chouette.model.DeadRun chouetteDeadRunWithVersion = ObjectFactory.getDeadRun(referential,
 						deadRun.getId() + "_" + deadRun.getVersion());
-				log.warn("Already parsed " + chouetteDeadRun.getObjectId() + ", will use version field as part of id to separate them: "
-						+ chouetteDeadRunWithVersion.getObjectId());
+                log.warn("Already parsed {}, will use version field as part of id to separate them: {}", chouetteDeadRun.getObjectId(), chouetteDeadRunWithVersion.getObjectId());
 				chouetteDeadRun = chouetteDeadRunWithVersion;
 			}
 

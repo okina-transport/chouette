@@ -57,7 +57,7 @@ public class ChouetteHazelcastService extends HazelCastService {
 						.setAsyncBackupCount(2)
 						.setTimeToLiveSeconds(ttlSeconds));
 
-		log.info("Configured map for referential locks:  " + mapConfigs.get(0) + " with time to live = " + ttlSeconds);
+        log.info("Configured map for referential locks:  {} with time to live = {}", mapConfigs.get(0), ttlSeconds);
 		return mapConfigs;
 	}
 

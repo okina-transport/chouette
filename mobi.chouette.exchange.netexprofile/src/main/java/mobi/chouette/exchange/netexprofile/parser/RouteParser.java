@@ -110,7 +110,7 @@ public class RouteParser implements Parser, Constant {
 				return PTDirectionEnum.CounterClockWise;
 		}
 
-		log.debug("Unable to map NeTEx direction to neptune: " + netexDirection);
+        log.debug("Unable to map NeTEx direction to neptune: {}", netexDirection);
 		return null;
 	}
 

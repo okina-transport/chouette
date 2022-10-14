@@ -50,7 +50,7 @@ public class NeptuneExporterCommand extends AbstractExporterCommand implements C
 			Object configuration = context.get(CONFIGURATION);
 			if (!(configuration instanceof NeptuneExportParameters)) {
 				// fatal wrong parameters
-				log.error("invalid parameters for neptune export " + configuration.getClass().getName());
+                log.error("invalid parameters for neptune export {}", configuration.getClass().getName());
 				reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for neptune export " + configuration.getClass().getName());
 				return ERROR;
 			}

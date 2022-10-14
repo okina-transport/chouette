@@ -88,7 +88,7 @@ public class NeptuneValidateExportCommand implements Command, Constant {
 					validation.execute(validateContext);
 				}
 			} catch (Exception ex) {
-				log.error("problem in validation" + ex);
+                log.error("problem in validation{}", ex);
 			} finally {
 				// rename folder to output before dispose
 				input.renameTo(output);

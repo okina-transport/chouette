@@ -315,11 +315,11 @@ public class JobService implements JobData, ServiceConstants {
 	public Set<String> getRequiredReferentialsLocks() {
 		Set<String> requiredLocks = new HashSet<>();
 		requiredLocks.add(getReferential());
-		log.debug("Adding required locks for job: "+job);
+		log.debug("Adding required locks for job: {}", job);
 
 		try {
 			if (EXPORTER.equals(getAction()) && "transfer".equals(getType()) && getActionParameter() instanceof AbstractExportParameter) {
-				log.debug("Adding required locks for export job: "+job);
+				log.debug("Adding required locks for export job: {}", job);
 				requiredLocks.addAll(((AbstractExportParameter) getActionParameter()).getAdditionalRequiredReferentialLocks());
 			}
 		} catch (ServiceException serviceException) {

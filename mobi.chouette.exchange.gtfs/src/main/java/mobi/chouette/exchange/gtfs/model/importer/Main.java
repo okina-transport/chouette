@@ -33,7 +33,7 @@ public class Main {
 
 		Monitor monitor = MonitorFactory.start();
 		main.test();
-		log.debug("[DSU] total : " + monitor.stop());
+        log.debug("[DSU] total : {}", monitor.stop());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -50,7 +50,7 @@ public class Main {
 				_count++;
 			}
 
-			log.debug("[DSU] get " + _count + " object " + monitor.stop());
+            log.debug("[DSU] get {} object {}", _count, monitor.stop());
 
 		} catch (Exception e) {
 			e.printStackTrace();

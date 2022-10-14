@@ -166,7 +166,7 @@ public class JobDAO extends GenericDAOImpl<Job> {
 		for (Job job : jobs) {
 			if (job.getDataFilename() != null)
 			{
-				log.info("migrating job "+job.getId()+" "+job.getAction());
+				log.info("migrating job {} {}", job.getId(), job.getAction());
 				if (job.getAction().equals("exporter"))
 				{
 					job.setOutputFilename(job.getDataFilename());

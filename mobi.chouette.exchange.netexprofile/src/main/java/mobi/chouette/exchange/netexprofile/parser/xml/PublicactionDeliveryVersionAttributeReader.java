@@ -56,7 +56,7 @@ public class PublicactionDeliveryVersionAttributeReader {
 			eventReader.close();
 			in.close();
 		} catch (FileNotFoundException e) {
-			log.error("Could not find file "+f.getAbsolutePath());
+            log.error("Could not find file {}", f.getAbsolutePath());
 		} catch (XMLStreamException e) {
 			log.error("Malformed xml",e);
 		} catch (IOException e) {

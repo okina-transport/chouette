@@ -66,11 +66,11 @@ public class StopAreaService {
 		int changedStopCnt = updateContext.getChangedStopCount();
 
 		if (changedStopCnt > 0) {
-			log.info("Updating " + changedStopCnt + " stop areas");
+            log.info("Updating {} stop areas", changedStopCnt);
 			Context context = createContext();
 			ContextHolder.clear();
 			stopAreaUpdateService.createOrUpdateStopAreas(context, updateContext);
-			log.info("Updated " + changedStopCnt + " stop areas");
+            log.info("Updated {} stop areas", changedStopCnt);
 			updateStopAreaReferencesPerReferential(updateContext.getMergedQuays());
 		} else {
 			log.debug("Received update without any stop areas. Doing nothing");
@@ -99,7 +99,7 @@ public class StopAreaService {
 		}
 
 
-		log.info("Updated stop area references for " + updatedStopPointCnt + " stop points");
+        log.info("Updated stop area references for {} stop points", updatedStopPointCnt);
 	}
 
 	public void deleteStopArea(String objectId) {
@@ -138,11 +138,11 @@ public class StopAreaService {
 		public Integer call() throws Exception {
 			ContextHolder.setContext(referential);
 			if(log.isDebugEnabled()) {
-				log.debug("Updating stop area references for stop points for referential " + referential);
+                log.debug("Updating stop area references for stop points for referential {}", referential);
 			}
 			int updatedCnt = stopAreaUpdateService.updateStopAreaReferences(replacementMap);
 			if(log.isDebugEnabled()) {
-				log.debug("Updated stop area references for " + updatedCnt + " stop points for referential " + referential);
+                log.debug("Updated stop area references for {} stop points for referential {}", updatedCnt, referential);
 			}
 			return updatedCnt;
 		}

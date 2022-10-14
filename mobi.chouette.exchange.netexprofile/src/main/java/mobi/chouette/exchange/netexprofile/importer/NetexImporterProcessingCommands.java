@@ -63,7 +63,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			String lineValidationTimeoutString = System.getProperty(lineValidationTimeoutPropertyKey);
 			if (StringUtils.isNotEmpty(lineValidationTimeoutString)) {
 				result.lineValidationTimeoutSeconds = Integer.parseInt(lineValidationTimeoutString);
-				log.info("Parallel execution line validation command configured with time out seconds: " + result.lineValidationTimeoutSeconds);
+                log.info("Parallel execution line validation command configured with time out seconds: {}", result.lineValidationTimeoutSeconds);
 			}
 
 			return result;

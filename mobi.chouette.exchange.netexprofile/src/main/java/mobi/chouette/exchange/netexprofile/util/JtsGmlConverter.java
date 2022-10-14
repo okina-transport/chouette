@@ -44,21 +44,21 @@ public class JtsGmlConverter {
 						DirectPositionType directPositionType = (DirectPositionType) o;
 						coordinateList.addAll(directPositionType.getValue());
 					} else {
-						log.warn("Unrecognized class (" + o.getClass() + ") for PosOrPointProperty for gmlString: " + gml.getId());
+						log.warn("Unrecognized class ({}) for PosOrPointProperty for gmlString: {}", o.getClass(), gml.getId());
 						return null;
 					}
 				}
 			} else {
-				log.warn("LineString without posList or PosOrPointProperty: " + gml.getId());
+				log.warn("LineString without posList or PosOrPointProperty: {}", gml.getId());
 				return null;
 			}
 		}
 		if(coordinateList.isEmpty()) {
-			log.warn("LineString without coordinates: " + gml.getId());
+			log.warn("LineString without coordinates: {}", gml.getId());
 			return null;
 		}
 		if(coordinateList.size() < 4) {
-			log.warn("LineString with less than 2 pairs of coordinates (found " + coordinateList.size() + " individual coordinate values): " + gml.getId());
+			log.warn("LineString with less than 2 pairs of coordinates (found {} individual coordinate values): {}", coordinateList.size(), gml.getId());
 			return null;
 		}
 		CoordinateSequence coordinateSequence = convert(coordinateList);
@@ -79,11 +79,11 @@ public class JtsGmlConverter {
 	private static void assignSRID(LineStringType gml, LineString jts) {
 		String srsName = gml.getSrsName();
 		if (!StringUtils.isEmpty(srsName) && !DEFAULT_SRID_NAME.equals(srsName) && !DEFAULT_SRID_AS_STRING.equals(srsName)) {
-			log.warn("The LineString " + gml.getId() + " is not based on the WGS84 Spatial Reference System. SRID in use: " + srsName);
+			log.warn("The LineString {} is not based on the WGS84 Spatial Reference System. SRID in use: {}", gml.getId(), srsName);
 			try {
 				jts.setSRID(Integer.parseInt(srsName));
 			} catch (NumberFormatException nfe) {
-				log.warn("Ignoring SRID on linestring" + gml.getId() + " for illegal value: " + srsName);
+				log.warn("Ignoring SRID on linestring{} for illegal value: {}", gml.getId(), srsName);
 			}
 		}
 	}

@@ -45,7 +45,7 @@ public class NetexprofileImporterInputValidator extends AbstractInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof NetexprofileImportParameters)) {
-			log.error("invalid parameters for Netex import " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for Netex import {}", abstractParameter.getClass().getName());
 			return false;
 		}
 		return true;

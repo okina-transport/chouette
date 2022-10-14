@@ -51,7 +51,7 @@ public class GtfsImporterInputValidator extends AbstractInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof GtfsImportParameters)) {
-			log.error("invalid parameters for gtfs import " + abstractParameter.getClass().getName());
+			log.error("invalid parameters for gtfs import {}", abstractParameter.getClass().getName());
 			return false;
 		}
 

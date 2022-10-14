@@ -86,8 +86,8 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			} else if (stop.getParent() != null) {
 				if (!area.equals(stop.getParent())) {
 					log.error("conflict between generated and setted parent");
-					log.error("stop   = " + stop.getObjectId() + " " + stop.getName());
-					log.error("parent = " + area.getObjectId() + " " + area.getName());
+					log.error("stop   = {} {}", stop.getObjectId(), stop.getName());
+					log.error("parent = {} {}", area.getObjectId(), area.getName());
 					continue;
 				}
 			}
@@ -120,7 +120,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 				stopArea.setName(basename.trim());
 		}
 
-		log.debug("" + areas.size() + " commercial stops created");
+		log.debug("{} commercial stops created", areas.size());
 
 	}
 
@@ -165,7 +165,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			String baseId, double distanceMax) {
 		if (!checkDistance(area, distanceMax)) {
 			if (rank == 1) {
-				log.warn(area.getName() + " has long distance boarding positions , divided");
+				log.warn("{} has long distance boarding positions , divided", area.getName());
 			}
 			List<StopArea> excludedList = excludeLongDistanceStops(area, distanceMax);
 

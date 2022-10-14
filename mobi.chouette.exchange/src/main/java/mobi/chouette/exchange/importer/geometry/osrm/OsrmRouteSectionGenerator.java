@@ -66,13 +66,13 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 				if(osrmResponseString != null) {
 					return mapToLineString(osrmResponseString);
 				} else {
-					log.info("Skipping route section generation since no route was found for request : " + url);
+					log.info("Skipping route section generation since no route was found for request : {}", url);
 				}
 			} else {
-				log.debug("Skipping route section generation as no osrm endpoint defined for transport mode: " + transportMode);
+				log.debug("Skipping route section generation as no osrm endpoint defined for transport mode: {}", transportMode);
 			}
 		} catch (RuntimeException re) {
-			log.warn("Osrm route section generation failed: " + re.getMessage(), re);
+			log.warn("Osrm route section generation failed: {}", re.getMessage(), re);
 		}
 		return null;
 	}
@@ -101,7 +101,7 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 				return geometryFactory.createLineString(coordinates);
 			}
 		} catch (Exception e) {
-			log.warn("Failed parse osrm response: " + osrmResponseString);
+			log.warn("Failed parse osrm response: {}", osrmResponseString);
 		}
 		return null;
 	}
@@ -113,7 +113,7 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 	 * @throws OsrmRouteSectionException if the service invocation fails.
 	 */
 	private String invokeService(String urlString) {
-		log.debug("Invoking osrm route generation: " + urlString);
+		log.debug("Invoking osrm route generation: {}", urlString);
 		try {
 			URL url = new URL(urlString);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();

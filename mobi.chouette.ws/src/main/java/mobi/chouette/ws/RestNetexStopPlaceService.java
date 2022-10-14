@@ -33,7 +33,7 @@ public class RestNetexStopPlaceService {
             if (existsActiveJobs()) {
                 return Response.status(423).entity("Cannot update stops for referential with active jobs").build();
             }
-            log.info(Color.CYAN + "Create or update stop places");
+            log.info("{}Create or update stop places", Color.CYAN);
             stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(inputStream);
             Response.ResponseBuilder builder = Response.ok();
             builder.header(api_version_key, api_version);
@@ -52,7 +52,7 @@ public class RestNetexStopPlaceService {
             if (existsActiveJobs()) {
                 return Response.status(423).entity("Cannot delete unused stop areas with active jobs").build();
             }
-            log.info(Color.CYAN + "Deleting unused stop areas not in stop place registry");
+            log.info("{}Deleting unused stop areas not in stop place registry", Color.CYAN);
             stopAreaService.deleteUnusedStopAreas();
             Response.ResponseBuilder builder = Response.ok();
             builder.header(api_version_key, api_version);
@@ -70,7 +70,7 @@ public class RestNetexStopPlaceService {
             if (existsActiveJobs()) {
                 return Response.status(423).entity("Cannot delete stop area with active jobs").build();
             }
-            log.info(Color.CYAN + "Deleting stop area " + objectId);
+            log.info("{}Deleting stop area {}", Color.CYAN, objectId);
             stopAreaService.deleteStopArea(objectId);
             Response.ResponseBuilder builder = Response.ok();
             builder.header(api_version_key, api_version);

@@ -49,7 +49,7 @@ public class ValidatorInputValidator extends AbstractInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof ValidateParameters)) {
-			log.error("invalid parameters for validator " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for validator {}", abstractParameter.getClass().getName());
 			return false;
 		}
 
@@ -58,7 +58,7 @@ public class ValidatorInputValidator extends AbstractInputValidator {
 		String type = parameters.getReferencesType();
 		if (type != null && !type.isEmpty()) {
 			if (!Arrays.asList(allowedTypes).contains(type.toLowerCase())) {
-				log.error("invalid type " + type);
+                log.error("invalid type {}", type);
 				return false;
 			}
 		}

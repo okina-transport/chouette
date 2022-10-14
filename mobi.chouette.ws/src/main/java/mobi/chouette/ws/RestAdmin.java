@@ -66,7 +66,7 @@ public class RestAdmin implements Constant {
 	@Produces({ MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON })
 	public Response activeJobs(@PathParam("format") String format, @QueryParam("key") final String authorisationKey) {
 
-		log.info(Color.BLUE + "Call Admin active_jobs" + Color.NORMAL);
+        log.info("{}Call Admin active_jobs{}", Color.BLUE, Color.NORMAL);
 		Response r = checkKey(authorisationKey);
 		if (r != null)
 			return r; // invalid key
@@ -75,7 +75,7 @@ public class RestAdmin implements Constant {
 			format = ".json";
 		format = format.toLowerCase();
 		if (!format.equals(".txt") && !format.equals(".json")) {
-			log.warn("admin call with invalid output format = " + format);
+            log.warn("admin call with invalid output format = {}", format);
 			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
 			builder.header(api_version_key, api_version);
 			return builder.build();
@@ -140,12 +140,12 @@ public class RestAdmin implements Constant {
 	@DELETE
 	@Path("/completed_jobs")
 	public void removeOldJobs(@QueryParam("keepDays") @DefaultValue("100")  final int keepDays, @QueryParam("keepJobs") @DefaultValue("100") final int keepJobs) {
-		log.info(Color.BLUE + "Call Admin removeOldJobs, keepDays=" + keepDays + ", keepJobs=" + keepJobs + Color.NORMAL);
+        log.info("{}Call Admin removeOldJobs, keepDays={}, keepJobs={}{}", Color.BLUE, keepDays, keepJobs, Color.NORMAL);
 		try {
 			jobServiceManager.removeOldJobs(keepDays, keepJobs);
-			log.info(Color.BLUE + "Finished removeOldJobs, keepDays=" + keepDays + ", keepJobs=" + keepJobs + Color.NORMAL);
+            log.info("{}Finished removeOldJobs, keepDays={}, keepJobs={}{}", Color.BLUE, keepDays, keepJobs, Color.NORMAL);
 		} catch (Exception ex) {
-			log.error("removeOldJobs failed with exception:" + ex.getMessage(), ex);
+            log.error("removeOldJobs failed with exception:{}", ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -156,8 +156,7 @@ public class RestAdmin implements Constant {
 	public Response getTestList(@PathParam("action") String action,
 			@PathParam("type") String type) {
 
-			log.info(Color.BLUE + "Call getTestList action = " + action
-					+ (type == null ? "" : ", type = " + type) + Color.NORMAL);
+        log.info("{}Call getTestList action = {}{}{}", Color.BLUE, action, type == null ? "" : ", type = " + type, Color.NORMAL);
 
 			// Convertir les parametres fournis
 			type = parseType(type);
@@ -187,7 +186,7 @@ public class RestAdmin implements Constant {
 				throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 			} finally {
 
-				log.info(Color.BLUE + "getTestList returns" + Color.NORMAL);
+                log.info("{}getTestList returns{}", Color.BLUE, Color.NORMAL);
 			}
 	}
 
@@ -196,7 +195,7 @@ public class RestAdmin implements Constant {
 	@Path("/get_monthly_stats")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response monthlyStats(@QueryParam("key") final String authorisationKey) {
-		log.info(Color.BLUE + "Call Admin get_monthly_stats" + Color.NORMAL);
+        log.info("{}Call Admin get_monthly_stats{}", Color.BLUE, Color.NORMAL);
 		Response r = checkKey(authorisationKey);
 		if (r != null)
 			return r; // invalid key
@@ -238,13 +237,13 @@ public class RestAdmin implements Constant {
 		}
 		String securityToken = System.getProperty(checker.getContext() + PropertyNames.ADMIN_KEY);
 		if (securityToken == null || securityToken.isEmpty()) {
-			log.warn("admin call without property " + checker.getContext() + PropertyNames.ADMIN_KEY + " set");
+            log.warn("admin call without property {}" + PropertyNames.ADMIN_KEY + " set", checker.getContext());
 			ResponseBuilder builder = Response.status(Status.FORBIDDEN);
 			builder.header(api_version_key, api_version);
 			return builder.build();
 		}
 		if (!securityToken.equals(authorisationKey)) {
-			log.warn("admin call with invalid key = " + authorisationKey);
+            log.warn("admin call with invalid key = {}", authorisationKey);
 			ResponseBuilder builder = Response.status(Status.UNAUTHORIZED);
 			builder.header(api_version_key, api_version);
 			return builder.build();

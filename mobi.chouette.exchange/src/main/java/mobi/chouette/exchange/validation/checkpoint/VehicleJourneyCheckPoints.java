@@ -202,7 +202,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 	private void check3VehicleJourney1(Context context, VehicleJourney vj, ValidationParameters parameters) {
 		// 3-VehicleJourney-1 : check if time progress correctly on each stop
 		if (isEmpty(vj.getVehicleJourneyAtStops())) {
-			log.error("vehicleJourney " + vj.getObjectId() + " has no vehicleJourneyAtStop");
+			log.error("vehicleJourney {} has no vehicleJourneyAtStop", vj.getObjectId());
 			return;
 		}
 //		Monitor monitor = MonitorFactory.start("check3VehicleJourney1");
@@ -512,7 +512,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 		// 3-VehicleJourney-5 : check if time progress correctly on each stop
 		// including offset
 		if (isEmpty(vj.getVehicleJourneyAtStops())) {
-			log.error("vehicleJourney " + vj.getObjectId() + " has no vehicleJourneyAtStop");
+			log.error("vehicleJourney {} has no vehicleJourneyAtStop", vj.getObjectId());
 			return;
 		}
 
@@ -690,7 +690,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 					// heure debut vjas non inclus dans jfs
 					if (vjas.getDepartureTime().isBefore(jf.getFirstDepartureTime()) || vjas.getDepartureTime().isAfter(jf.getLastDepartureTime())) {
 						ok = false;
-						log.info("current vj : " + currentVj.getObjectId() + " vj : " + vj.getObjectId());
+						log.info("current vj : {} vj : {}", currentVj.getObjectId(), vj.getObjectId());
 					}
 					if(!ok) {
 						DataLocation location = buildLocation(context, currentVj);

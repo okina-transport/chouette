@@ -34,15 +34,15 @@ public class NetexValidationCommand implements Command, Constant {
 
             result = !reporter.hasFileValidationErrors(context, fileName);
         } catch (Exception e) {
-            log.error("Error while validating NeTEx file " + fileName, e);
+            log.error("Error while validating NeTEx file {}", fileName, e);
             throw e;
         } finally {
             AbstractNetexProfileValidator.resetContext(context);
-            log.info(Color.MAGENTA + "Profile validation finished " + fileName + Color.NORMAL);
+            log.info("{}Profile validation finished {}{}", Color.MAGENTA, fileName, Color.NORMAL);
             JamonUtils.logMagenta(log, monitor);
         }
         if (result == ERROR) {
-            log.info("NeTEx validation failed for file: " + fileName);
+            log.info("NeTEx validation failed for file: {}", fileName);
             reporter.addFileErrorInReport(context, fileName,
                     ActionReporter.FILE_ERROR_CODE.INVALID_FORMAT, "Netex compliance failed");
             if (!reporter.hasActionError(context))

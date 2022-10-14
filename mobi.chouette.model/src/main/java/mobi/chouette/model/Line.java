@@ -504,7 +504,7 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	 */
 	public boolean filter(LocalDate startDate, LocalDate endDate, boolean onlyPublicData) {
 		if(log.isDebugEnabled()) {
-			log.debug("Filtering line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
+			log.debug("Filtering line {} for validity interval {} to {}", getObjectId(), startDate, endDate);
 		}
 		for (Iterator<Route> routeI = getRoutes().iterator(); routeI.hasNext(); ) {
 			Route route = routeI.next();
@@ -537,34 +537,34 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 					// filter out Vehicle Journey without timetables nor dated service journey
 					if(!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
 						if (log.isTraceEnabled()) {
-							log.trace("Removing VJ with no valid timetables nor valid dated service journeys: " + vehicleJourney.getObjectId());
+							log.trace("Removing VJ with no valid timetables nor valid dated service journeys: {}", vehicleJourney.getObjectId());
 						}
 						vjI.remove();
 						continue;
 					}
 					if(onlyPublicData && !vehicleJourney.isPublic()) {
 						if (log.isTraceEnabled()) {
-							log.trace("Removing vj with restricted publication since only public data are retained: " + vehicleJourney.getObjectId());
+							log.trace("Removing vj with restricted publication since only public data are retained: {}", vehicleJourney.getObjectId());
 						}
 						vjI.remove();
 					}
 				}
 				if(jp.getVehicleJourneys().isEmpty() && jp.getDeadRuns().isEmpty()) {
 					if(log.isDebugEnabled()) {
-						log.debug("Removing JP with no valid service journey nor DeadRun: " + jp.getObjectId());
+						log.debug("Removing JP with no valid service journey nor DeadRun: {}", jp.getObjectId());
 					}
 					jpI.remove();
 				}
 			}
 			if(route.getJourneyPatterns().isEmpty()) {
 				if(log.isDebugEnabled()) {
-					log.debug("Removing route with no valid journey pattern: " + route.getObjectId());
+					log.debug("Removing route with no valid journey pattern: {}", route.getObjectId());
 				}
 				routeI.remove();
 			}
 		}
 		if(log.isDebugEnabled()) {
-			log.debug("Filtered line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
+			log.debug("Filtered line {} for validity interval {} to {}", getObjectId(), startDate, endDate);
 		}
 		return !getRoutes().isEmpty();
 	}

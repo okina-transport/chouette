@@ -125,10 +125,10 @@ public class RouteSection extends NeptuneIdentifiedObject {
 			String maxAsString = System.getProperty("iev.route.section.stop.area.distance.max.meters");
 			if (maxAsString != null) {
 				maxMetersFromQuay = Integer.valueOf(maxAsString);
-				log.info("Using configured value for iev.route.section.stop.area.distance.max.meters: " + maxMetersFromQuay);
+                log.info("Using configured value for iev.route.section.stop.area.distance.max.meters: {}", maxMetersFromQuay);
 			} else {
 				maxMetersFromQuay = DEFAULT_MAX_METERS_FROM_QUAY;
-				log.info("No value configured iev.route.section.stop.area.distance.max.meters, using default: " + maxMetersFromQuay);
+                log.info("No value configured iev.route.section.stop.area.distance.max.meters, using default: {}", maxMetersFromQuay);
 			}
 		}
 		return maxMetersFromQuay;

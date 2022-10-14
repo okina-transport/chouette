@@ -104,7 +104,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 
 			if (stopArea == null) {
 				stopArea = ObjectFactory.getStopArea(cache, objectId);
-				log.warn("Created new stop area for objectId: " + objectId);
+				log.warn("Created new stop area for objectId: {}", objectId);
 			}
 
 			oldValue.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
@@ -139,7 +139,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 			} else if (data.getDataLocations() == null) {
 				log.error("ValidationData.getDataLocations() is null");
 			} else if (oldSA != null && newSA != null && data.getDataLocations().get(newSA.getObjectId()) == null){
-				log.error("No data location for new stop area: " + newSA.getObjectId() + " unlike old stop area: " + oldSA.getObjectId());
+				log.error("No data location for new stop area: {} unlike old stop area: {}", newSA.getObjectId(), oldSA.getObjectId());
 			}
 
 

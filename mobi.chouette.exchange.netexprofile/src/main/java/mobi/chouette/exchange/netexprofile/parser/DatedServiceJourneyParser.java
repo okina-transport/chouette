@@ -37,7 +37,7 @@ public class DatedServiceJourneyParser extends NetexParser implements Parser, Co
                 parseDatedServiceJourney(context, referential, (DatedServiceJourney) journeyStruct);
             } else {
                 if(log.isTraceEnabled()) {
-                    log.trace("Ignoring non-DatedServiceJourney with id: " + journeyStruct.getId());
+                    log.trace("Ignoring non-DatedServiceJourney with id: {}", journeyStruct.getId());
                 }
             }
         }
@@ -45,7 +45,7 @@ public class DatedServiceJourneyParser extends NetexParser implements Parser, Co
 
     private void parseDatedServiceJourney(Context context, Referential referential, DatedServiceJourney netexDatedServiceJourney) {
         String datedServiceJourneyId = netexDatedServiceJourney.getId();
-        log.debug("Parsing DatedServiceJourney with id: " + datedServiceJourneyId);
+        log.debug("Parsing DatedServiceJourney with id: {}", datedServiceJourneyId);
         mobi.chouette.model.DatedServiceJourney datedServiceJourney = ObjectFactory.getDatedServiceJourney(referential, datedServiceJourneyId);
 
         // operating day

@@ -176,7 +176,7 @@ public class StopPlaceParser implements Parser, Constant {
         try {
             return StopAreaTypeEnum.valueOf(StringUtils.capitalize(netexType.value()));
         } catch (IllegalArgumentException iae) {
-            log.warn("Unable to map unknown StopTypeEnumeration value: " + netexType);
+            log.warn("Unable to map unknown StopTypeEnumeration value: {}", netexType);
             return StopAreaTypeEnum.Other;
         }
 
@@ -218,7 +218,7 @@ public class StopPlaceParser implements Parser, Constant {
         try {
             return TransportSubModeNameEnum.valueOf(StringUtils.capitalize(netexValue));
         } catch (IllegalArgumentException iae) {
-            log.warn("Unable to map unknown TransportSubModeNameEnum value: " + netexValue);
+            log.warn("Unable to map unknown TransportSubModeNameEnum value: {}", netexValue);
             return null;
         }
     }

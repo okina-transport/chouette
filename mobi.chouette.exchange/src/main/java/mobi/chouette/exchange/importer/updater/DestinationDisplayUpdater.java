@@ -25,7 +25,7 @@ public class DestinationDisplayUpdater implements Updater<DestinationDisplay> {
 		Referential cache = (Referential) context.get(CACHE);
 
 		if (log.isTraceEnabled()) {
-			log.trace("Updating " + oldValue + " with " + newValue);
+			log.trace("Updating {} with {}", oldValue, newValue);
 
 		}
 		if (newValue.getName() != null

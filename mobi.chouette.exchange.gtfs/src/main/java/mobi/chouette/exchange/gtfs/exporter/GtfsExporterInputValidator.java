@@ -47,7 +47,7 @@ public class GtfsExporterInputValidator extends AbstractInputValidator {
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 
 		if (!(abstractParameter instanceof GtfsExportParameters)) {
-			log.error("invalid parameters for gtfs export " + abstractParameter.getClass().getName());
+			log.error("invalid parameters for gtfs export {}", abstractParameter.getClass().getName());
 			return false;
 		}
 

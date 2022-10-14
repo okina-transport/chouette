@@ -45,7 +45,7 @@ public class HibernateDeproxynator<T> {
 		boolean finished = false;
 		while (!finished) {
 			HashSet<Object> newObjectsToFollow = new HashSet<>(1000000);
-			log.info("Objects to follow initial queue size=" + moreObjectsToFollow.size());
+            log.info("Objects to follow initial queue size={}", moreObjectsToFollow.size());
 			Iterator<Object> it = moreObjectsToFollow.iterator();
 			while (it.hasNext()) {
 				Object next = it.next();
@@ -55,7 +55,7 @@ public class HibernateDeproxynator<T> {
 			}
 
 			moreObjectsToFollow.clear();
-			log.info("Adding " + newObjectsToFollow.size() + " more objects to follow");
+            log.info("Adding {} more objects to follow", newObjectsToFollow.size());
 			moreObjectsToFollow = newObjectsToFollow;
 			it = moreObjectsToFollow.iterator();
 			finished = !it.hasNext();
@@ -127,7 +127,7 @@ public class HibernateDeproxynator<T> {
                 for (int i = 0; i < orgList.size(); i++) {
                     T proxY = deepDeproxy(orgList.get(i), visited, moreObjectsToFollow);
                     if (i >= orgList.size()) {
-                        log.warn("Would have outbounded array: " + proxY + " for " + maybeProxy);
+                        log.warn("Would have outbounded array: {} for {}", proxY, maybeProxy);
                     } else {
                         deProxiedValues.add(proxY);
                     }

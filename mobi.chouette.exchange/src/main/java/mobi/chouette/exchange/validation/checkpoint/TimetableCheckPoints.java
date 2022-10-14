@@ -49,7 +49,7 @@ public class TimetableCheckPoints extends AbstractValidation<Timetable> implemen
             DataLocation locationTimetable = buildLocation(context, timetable);
             reporter.addCheckPointReportError(context, L4_TIME_TABLE_2, locationTimetable);
             if(log.isDebugEnabled()) {
-            		log.debug("Empty timetable detected: "  + timetable.getObjectId());
+                log.debug("Empty timetable detected: {}", timetable.getObjectId());
 			}
         }
 

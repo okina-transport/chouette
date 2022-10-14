@@ -146,7 +146,7 @@ public class AbstractExporterCommand implements Constant {
 					}
 				}
 			} catch (Exception e) {
-				log.warn("dispose commands failed " + e.getMessage());
+                log.warn("dispose commands failed {}", e.getMessage());
 			}
 		}
 		return result;

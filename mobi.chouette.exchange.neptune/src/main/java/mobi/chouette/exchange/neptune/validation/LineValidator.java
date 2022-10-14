@@ -122,8 +122,7 @@ public class LineValidator extends AbstractValidator implements Validator<Line>,
 					if (route.getStopPoints().size() > 0) {
 						StopArea area = route.getStopPoints().get(0).getScheduledStopPoint().getContainedInStopAreaRef().getObject();
 						if (area == null) {
-							log.error("missing stoparea for "
-									+ route.getStopPoints().get(0).getObjectId());
+                            log.error("missing stoparea for {}", route.getStopPoints().get(0).getObjectId());
 						} else {
 							endAreas.add(area.getObjectId());
 							if (area.getParent() != null)
@@ -131,8 +130,7 @@ public class LineValidator extends AbstractValidator implements Validator<Line>,
 						}
 						area = route.getStopPoints().get(route.getStopPoints().size() - 1).getScheduledStopPoint().getContainedInStopAreaRef().getObject();
 						if (area == null) {
-							log.error("missing stoparea for "
-									+ route.getStopPoints().get(route.getStopPoints().size() - 1).getObjectId());
+                            log.error("missing stoparea for {}", route.getStopPoints().get(route.getStopPoints().size() - 1).getObjectId());
 						} else {
 							endAreas.add(area.getObjectId());
 							if (area.getParent() != null)

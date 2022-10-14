@@ -50,7 +50,7 @@ public class ServiceLinkParser extends NetexParser implements Parser, Constant {
 							routeSection.setNoProcessing(true);
 							routeSection.setInputGeometry(lineString);
 						} else {
-							log.warn("Ignore linkSequenceProjection without linestring for: " + routeSection.getObjectId());
+                            log.warn("Ignore linkSequenceProjection without linestring for: {}", routeSection.getObjectId());
 						}
 					}
 				}

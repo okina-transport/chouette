@@ -50,7 +50,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 			hazelcastService = new ChouetteHazelcastService(new KubernetesService(getKubernetesNamespace(), isKubernetesEnabled()), List.of(new CleanUpAfterRemovedMembersListener()));
 			locks = hazelcastService.getLocksMap();
 			jobsLocks = hazelcastService.getJobLocksMap();
-			log.info("Initialized hazelcast: " + hazelcastService.information());
+            log.info("Initialized hazelcast: {}", hazelcastService.information());
 		} else {
 			log.info("Not initializing hazelcast as other referential lock manager impl is configured");
 		}
@@ -81,9 +81,9 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 			}
 
 			if (acquired) {
-				log.debug("Acquired lock: " + key);
+                log.debug("Acquired lock: {}", key);
 			} else {
-				log.debug("Failed to acquire lock: " + key);
+                log.debug("Failed to acquire lock: {}", key);
 
 			}
 			return acquired;
@@ -99,10 +99,10 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 		try {
 			if (jobsLocks.containsKey(jobId)) {
 				jobsLocks.remove(jobId);
-				log.info("Released job lock: " + jobId);
+                log.info("Released job lock: {}", jobId);
 			}
 		} catch (Throwable t) {
-			log.warn("Exception when trying to release job lock: " + jobId + " : " + t.getMessage(), t);
+            log.warn("Exception when trying to release job lock: {} : {}", jobId, t.getMessage(), t);
 		}
 
 	}
@@ -110,7 +110,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 	public final boolean isKubernetesEnabled() {
 		String prop = System.getProperty(contenerChecker.getContext() + PropertyNames.KUBERNETES_ENABLED);
 		boolean enabled = prop != null && Boolean.valueOf(prop);
-		log.info("Starting Hazelcast referential map with kubernetes enabled=" + enabled + " (from prop value=" + prop + ")");
+        log.info("Starting Hazelcast referential map with kubernetes enabled={} (from prop value={})", enabled, prop);
 		return enabled;
 	}
 
@@ -119,7 +119,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 		if(namespace == null) {
 			namespace = "default";
 		}
-		log.info("Hazelcast referential map configured in Kubernetes namespace " + namespace);
+        log.info("Hazelcast referential map configured in Kubernetes namespace {}", namespace);
 		return namespace;
 	}
 
@@ -134,19 +134,19 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 				}
 				acquiredLocks.add(referential);
 			} catch (Throwable t) {
-				log.debug("Exception while trying to acquire lock: " + referential + " : " + t.getMessage());
+                log.debug("Exception while trying to acquire lock: {} : {}", referential, t.getMessage());
 				success = false;
 				break;
 			}
 		}
 		if (success) {
-			log.info("Acquired locks: " + acquiredLocks);
+            log.info("Acquired locks: {}", acquiredLocks);
 		} else {
 			if (!acquiredLocks.isEmpty()) {
-				log.info("Failed to acquire all required locks, release successfully acquired locks : " + acquiredLocks);
+                log.info("Failed to acquire all required locks, release successfully acquired locks : {}", acquiredLocks);
 				releaseLocks(acquiredLocks);
 			} else {
-				log.info("Failed to acquire locks: " + referentials);
+                log.info("Failed to acquire locks: {}", referentials);
 			}
 		}
 		return success;
@@ -154,9 +154,9 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 
 	public void releaseLocks(Set<String> referentials) {
 		if (referentials.stream().allMatch(referential -> releaseLock(referential))) {
-			log.info("Released locks: " + referentials);
+            log.info("Released locks: {}", referentials);
 		} else {
-			log.warn("Attempted to release already free locks (probably cancelled job): " + referentials);
+            log.warn("Attempted to release already free locks (probably cancelled job): {}", referentials);
 		}
 	}
 
@@ -166,7 +166,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 				return locks.remove(referential) != null;
 			}
 		} catch (Throwable t) {
-			log.warn("Exception when trying to release lock: " + referential + " : " + t.getMessage(), t);
+            log.warn("Exception when trying to release lock: {} : {}", referential, t.getMessage(), t);
 		}
 
 		return false;
@@ -195,7 +195,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 			String memberUUID = membershipEvent.getMember().getUuid().toString();
 			cleanUpLocksForMember(locks, memberUUID);
 			cleanUpLocksForMember(jobsLocks, memberUUID);
-			log.info("Cleaned up all locks for removed member: " + memberUUID);
+            log.info("Cleaned up all locks for removed member: {}", memberUUID);
 		}
 
 		private <T> void cleanUpLocksForMember(Map<T, String> lockMap, String memberUUID) {

@@ -29,7 +29,7 @@ public class GtfsValidatorInputValidator extends GtfsImporterInputValidator {
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof GtfsValidateParameters)) {
-			log.error("invalid parameters for validator " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for validator {}", abstractParameter.getClass().getName());
 			return false;
 		}
 //		if (validationParameters == null) {

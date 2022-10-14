@@ -78,7 +78,7 @@ public class StopAreaCheckPoints extends AbstractValidation<StopArea> implements
 			prepareCheckPoint(context, STOP_AREA_4);
 
 		} catch (Exception e) {
-			log.error("cannot decode enveloppe " + parameters.getStopAreasArea());
+            log.error("cannot decode enveloppe {}", parameters.getStopAreasArea());
 		}
 
 		// prepare quadtree index

@@ -39,7 +39,7 @@ class NetexFileWriter implements Constant {
 					writer.flush();
 					writer.close();
 				} catch (XMLStreamException e) {
-					log.error("Error flushing and closing Netex Export XML file "+filePath.toString(),e);
+                    log.error("Error flushing and closing Netex Export XML file {}", filePath.toString(), e);
 					throw e;
 				}
 			}

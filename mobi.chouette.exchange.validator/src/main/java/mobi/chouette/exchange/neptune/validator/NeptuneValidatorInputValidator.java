@@ -30,7 +30,7 @@ public class NeptuneValidatorInputValidator extends NeptuneImporterInputValidato
 	@Override
 	public boolean checkParameters(AbstractParameter abstractParameter, ValidationParameters validationParameters) {
 		if (!(abstractParameter instanceof NeptuneValidateParameters)) {
-			log.error("invalid parameters for validator " + abstractParameter.getClass().getName());
+            log.error("invalid parameters for validator {}", abstractParameter.getClass().getName());
 			return false;
 		}
 //		if (validationParameters == null) {

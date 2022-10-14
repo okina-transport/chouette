@@ -527,7 +527,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 			int dayOffSetAtLastStop = getDayOffSetAtLastStop();
 			effectiveStartDate = startDate.minusDays(dayOffSetAtLastStop);
 			if (dayOffSetAtLastStop != 0 && log.isTraceEnabled()) {
-				log.trace("VJ " + getObjectId() + ": Day offset at last stop: " + dayOffSetAtLastStop + " day(s), shifting effective start date of active period: " + startDate + " --> " + effectiveStartDate);
+				log.trace("VJ {}: Day offset at last stop: {} day(s), shifting effective start date of active period: {} --> {}", getObjectId(), dayOffSetAtLastStop, startDate, effectiveStartDate);
 			}
 		} else {
 			effectiveStartDate = null;
@@ -547,7 +547,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 			int dayOffSetAtFirstStop = getDayOffSetAtFirstStop();
 			effectiveEndDate = endDate.minusDays(dayOffSetAtFirstStop);
 			if (dayOffSetAtFirstStop != 0 && log.isTraceEnabled()) {
-				log.trace("VJ " + getObjectId() + ": Day offset at first stop: " + dayOffSetAtFirstStop + " day(s), shifting effective end date of active period: " + endDate + " --> " + effectiveEndDate);
+				log.trace("VJ {}: Day offset at first stop: {} day(s), shifting effective end date of active period: {} --> {}", getObjectId(), dayOffSetAtFirstStop, endDate, effectiveEndDate);
 			}
 		} else {
 			effectiveEndDate = null;

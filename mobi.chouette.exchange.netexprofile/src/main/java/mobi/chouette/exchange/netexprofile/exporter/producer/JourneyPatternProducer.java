@@ -227,7 +227,7 @@ public class JourneyPatternProducer extends NetexProducer implements NetexEntity
 							.withProjectionRefOrProjection(netexFactory.createLinkSequenceProjection(linkSequenceProjection)));
 
 				} else {
-					log.info("Ignoring linestring for RouteSection with too great distance for from stop and/or to stop: " + routeSection.getObjectId());
+                    log.info("Ignoring linestring for RouteSection with too great distance for from stop and/or to stop: {}", routeSection.getObjectId());
 				}
 			}
 			if (routeSection.getDistance() != null) {

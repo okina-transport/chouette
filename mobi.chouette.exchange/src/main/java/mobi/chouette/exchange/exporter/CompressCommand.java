@@ -55,7 +55,7 @@ public class CompressCommand implements Command, Constant {
 			try {
 				FileUtils.deleteDirectory(target.toFile());
 			} catch (Exception e) {
-				log.warn("cannot purge output directory " + e.getMessage());
+				log.warn("cannot purge output directory {}", e.getMessage());
 			}
 
 		} catch (Exception e) {

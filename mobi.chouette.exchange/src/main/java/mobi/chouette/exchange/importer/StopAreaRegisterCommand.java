@@ -59,7 +59,7 @@ public class StopAreaRegisterCommand implements Command {
 				context.put(AREA_BLOC, areas);
 				command.execute(context);
 				// executeBloc( context, areas);
-				log.info("Areas proceded :" + count + "/" + orderedAreas.size());
+				log.info("Areas proceded :{}/{}", count, orderedAreas.size());
 			}
 			Collection<ConnectionLink> orderedlinks = referential.getConnectionLinks().values();
 			Iterable<List<ConnectionLink>> iterator2 = Iterables.partition(orderedlinks, batchSizeC);
@@ -69,10 +69,10 @@ public class StopAreaRegisterCommand implements Command {
 				context.put(CONNECTION_LINK_BLOC, links);
 				commandLink.execute(context);
 				// executeBloc( context, areas);
-				log.info("ConnectionLinks proceded :" + count + "/" + orderedlinks.size());
+				log.info("ConnectionLinks proceded :{}/{}", count, orderedlinks.size());
 			}
 		} catch (Exception ex) {
-			log.error("unable to save stops and connection links "+ex.getMessage(),ex);
+			log.error("unable to save stops and connection links {}", ex.getMessage(), ex);
 			ActionReporter reporter = ActionReporter.Factory.getInstance();
 			if (ex.getCause() != null) {
 				Throwable e = ex.getCause();

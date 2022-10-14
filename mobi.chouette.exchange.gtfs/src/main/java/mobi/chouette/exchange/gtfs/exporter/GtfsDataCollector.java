@@ -20,7 +20,7 @@ public class GtfsDataCollector extends DataCollector {
 	public boolean collect() {
 		boolean res = super.collect();
 		if (Boolean.TRUE.equals(line.getFlexibleService())) {
-			log.info("Omitting flexible line from gtfs export: " + line.getObjectId());
+			log.info("Omitting flexible line from gtfs export: {}", line.getObjectId());
 			return false;
 		}
 		if (res) {
@@ -52,7 +52,7 @@ public class GtfsDataCollector extends DataCollector {
 		}
 
 		if (company == null) {
-			log.info("line " + line.getObjectId() + " : missing company, using network instead");
+			log.info("line {} : missing company, using network instead", line.getObjectId());
 			company = new Company();
 			company.setObjectId(line.getNetwork().getObjectId());
 			company.setName(line.getNetwork().getName());

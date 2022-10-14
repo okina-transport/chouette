@@ -885,10 +885,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 						destinationDisplay.setFrontText(content);
 						departureStopPoint.setDestinationDisplay(destinationDisplay);
 					} else {
-						log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea name is null");
+						log.warn("Cannot create synthetic DestinationDisplay for StopPoint {} as StopArea name is null", departureStopPoint);
 					}
 				} else {
-					log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea is null");
+					log.warn("Cannot create synthetic DestinationDisplay for StopPoint {} as StopArea is null", departureStopPoint);
 				}
 			}
 		}
@@ -909,7 +909,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 		// Integer lineNumber = null;
 		for (GtfsShape gtfsShape : gtfsShapes) {
 			if (gtfsShape.getShapePtLon() == null || gtfsShape.getShapePtLat() == null) {
-				log.error("line " + gtfsShape.getId() + " missing coordinates for shape " + gtfsShape.getShapeId());
+				log.error("line {} missing coordinates for shape {}", gtfsShape.getId(), gtfsShape.getShapeId());
 				return sections;
 			}
 			if (shapeId == null) {
@@ -1008,12 +1008,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 						distance *= (Math.PI / 180) * 6378137;
 						section.setDistance(BigDecimal.valueOf(distance));
 					} catch (NumberFormatException e) {
-						log.error(shapeId + " : problem with section between " + previousLocation.getName() + "("
-								+ previousLocation.getObjectId() + " and " + location.getName() + "("
-								+ location.getObjectId());
-						log.error("coords (" + coords.size() + ") :");
+						log.error("{} : problem with section between {}({} and {}({}", shapeId, previousLocation.getName(), previousLocation.getObjectId(), location.getName(), location.getObjectId());
+						log.error("coords ({}) :", coords.size());
 						for (Coordinate coordinate : coords) {
-							log.error("lat = " + coordinate.y + " , lon = " + coordinate.x);
+							log.error("lat = {} , lon = {}", coordinate.y, coordinate.x);
 						}
 						sections.clear();
 						return sections;

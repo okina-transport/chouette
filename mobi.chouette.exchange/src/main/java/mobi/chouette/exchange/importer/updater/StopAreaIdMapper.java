@@ -60,12 +60,12 @@ public class StopAreaIdMapper {
         if (newId != null) {
             stopArea.setObjectId(newId);
             if(log.isTraceEnabled()) {
-                log.trace("Mapped id for " + stopArea.getAreaType() + " from: " + orgId + " to: " + newId);
+                log.trace("Mapped id for {} from: {} to: {}", stopArea.getAreaType(), orgId, newId);
             }
             referential.getStopAreaMapping().put(orgId,newId);
         } else {
             if(log.isTraceEnabled()) {
-                log.trace("Failed to map id for " + stopArea.getAreaType() + " from: " + orgId);
+                log.trace("Failed to map id for {} from: {}", stopArea.getAreaType(), orgId);
             }
         }
 
@@ -95,7 +95,7 @@ public class StopAreaIdMapper {
                         return transportModeMatch;
                     }
                 } else {
-                    log.warn("Unable to map transportModeName: " + transportModeName + "for StopArea with id: " + orgId);
+                    log.warn("Unable to map transportModeName: {}for StopArea with id: {}", transportModeName, orgId);
                 }
 
             }
@@ -123,7 +123,7 @@ public class StopAreaIdMapper {
         try {
             return StopAreaTypeEnum.valueOf(org.apache.commons.lang3.StringUtils.capitalize(netexType.value()));
         } catch (IllegalArgumentException iae) {
-            log.warn("Unable to map unknown StopTypeEnumeration value: " + netexType);
+            log.warn("Unable to map unknown StopTypeEnumeration value: {}", netexType);
             return null;
         }
 

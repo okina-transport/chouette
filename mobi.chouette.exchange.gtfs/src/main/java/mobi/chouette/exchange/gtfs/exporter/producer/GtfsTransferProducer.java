@@ -45,7 +45,7 @@ public class GtfsTransferProducer extends AbstractProducer {
 		try {
 			getExporter().getTransferExporter().export(transfer);
 		} catch (Exception e) {
-			log.error("fail to produce transfer " + e.getClass().getName() + " " + e.getMessage());
+			log.error("fail to produce transfer {} {}", e.getClass().getName(), e.getMessage());
 			return false;
 		}
 		return true;
@@ -89,7 +89,7 @@ public class GtfsTransferProducer extends AbstractProducer {
       }
       catch (Exception e)
       {
-          log.error("fail to produce transfer "+e.getClass().getName()+" "+e.getMessage(), e);
+		  log.error("fail to produce transfer {} {}", e.getClass().getName(), e.getMessage(), e);
          return false;
       }
       return true;

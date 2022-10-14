@@ -86,7 +86,7 @@ public class GtfsRouteProducer extends AbstractProducer
 //      
       if (isEmpty(route.getRouteShortName()) && isEmpty(route.getRouteLongName()))
       {
-          log.warn("no naming data for line "+neptuneObject.getObjectId());
+          log.warn("no naming data for line {}", neptuneObject.getObjectId());
           return false;
       }
       if (!isEmpty(route.getRouteShortName()) && route.getRouteShortName().equals(route.getRouteLongName()))
@@ -159,7 +159,7 @@ public class GtfsRouteProducer extends AbstractProducer
       }
       catch (Exception e)
       {
-         log.warn("export failed for line "+neptuneObject.getObjectId(),e);
+          log.warn("export failed for line {}", neptuneObject.getObjectId(), e);
          return false;
       }
 

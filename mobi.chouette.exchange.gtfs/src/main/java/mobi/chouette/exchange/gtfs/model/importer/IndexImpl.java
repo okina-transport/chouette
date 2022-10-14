@@ -449,10 +449,10 @@ public abstract class IndexImpl<T> extends AbstractIndex<T> {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			log.error("File "+_path+" not found", e);
+            log.error("File {} not found", _path, e);
 			throw new GtfsException(_path, 0, null, GtfsException.ERROR.MISSING_FILE, null, null, null, e);
 		} catch (Exception e) {
-			log.error("A system problem occurs while reading file "+_path, e);
+            log.error("A system problem occurs while reading file {}", _path, e);
 			throw new GtfsException(_path, 0, null, GtfsException.ERROR.SYSTEM, null, null, null, e);
 		} finally {
 			try {

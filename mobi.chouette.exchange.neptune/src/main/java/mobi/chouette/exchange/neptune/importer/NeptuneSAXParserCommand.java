@@ -135,7 +135,7 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 							"<ChouettePTNetwork xmlns=\"http://www.trident.org/schema/trident\" "
 									+ "xmlns:acsb=\"http://www.ifopt.org.uk/acsb\" "
 									+ "xmlns:siri=\"http://www.siri.org.uk/siri\">");
-					log.info(" <ChouettePTNetwork> replaced :" + l);
+					log.info(" <ChouettePTNetwork> replaced :{}", l);
 				}
 				writer.println(l);
 			}
@@ -144,7 +144,7 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 			tmp.delete();
 
 		} catch (IOException | URISyntaxException e) {
-	          log.error("fail to correct Neptune old fashion file "+e.getClass().getName()+" "+e.getMessage());
+			log.error("fail to correct Neptune old fashion file {} {}", e.getClass().getName(), e.getMessage());
 		}
 
 	}

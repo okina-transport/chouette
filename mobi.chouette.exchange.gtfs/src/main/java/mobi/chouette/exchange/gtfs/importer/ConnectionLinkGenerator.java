@@ -100,7 +100,7 @@ public class ConnectionLinkGenerator extends AbstractGenerator {
 								link.setLinkDistance(BigDecimal.valueOf(distance));
 								link.setStartOfLink(source);
 								link.setEndOfLink(target);
-								log.info("ConnectionLink " + link.getName() + " updated");
+								log.info("ConnectionLink {} updated", link.getName());
 							}
 							link = fixedLinkMap.get(reverseId);
 							if (link != null) {
@@ -109,7 +109,7 @@ public class ConnectionLinkGenerator extends AbstractGenerator {
 								link.setLinkDistance(BigDecimal.valueOf(distance));
 								link.setStartOfLink(source);
 								link.setEndOfLink(target);
-								log.info("ConnectionLink " + link.getName() + " updated");
+								log.info("ConnectionLink {} updated", link.getName());
 
 							}
 						} else {
@@ -148,8 +148,7 @@ public class ConnectionLinkGenerator extends AbstractGenerator {
 		}
 
 		if (links.isEmpty()) {
-			log.info("ConnectionLink : no links builded , minimal distance found = " + minDistanceRejected + " > "
-					+ distanceMax);
+			log.info("ConnectionLink : no links builded , minimal distance found = {} > {}", minDistanceRejected, distanceMax);
 		}
 		return;
 	}

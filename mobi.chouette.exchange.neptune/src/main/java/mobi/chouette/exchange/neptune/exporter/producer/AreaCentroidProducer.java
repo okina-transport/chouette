@@ -55,7 +55,7 @@ public class AreaCentroidProducer extends
       }
       else
       {
-			log.error("missing coordinates for StopArea "+area.getObjectId()+" "+area.getName());    	  
+          log.error("missing coordinates for StopArea {} {}", area.getObjectId(), area.getName());
     	  // longitude/latitude mmandatory
           jaxbAreaCentroid.setLatitude(BigDecimal.ZERO);
           jaxbAreaCentroid.setLongitude(BigDecimal.ZERO);

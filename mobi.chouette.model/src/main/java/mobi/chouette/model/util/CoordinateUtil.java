@@ -58,8 +58,7 @@ public class CoordinateUtil
       } catch (Exception e)
       {
     	  ex = e;
-         log.error("fail to convert from " + source + " to " + target
-               + " projected point " + p + " : " + e.getMessage());
+         log.error("fail to convert from {} to {} projected point {} : {}", source, target, p, e.getMessage());
       }
 
       return result;

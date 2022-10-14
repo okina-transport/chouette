@@ -79,7 +79,7 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
 		if (referencesType != null && !referencesType.isEmpty()) {
 			if (!Arrays.asList(allowedTypes).contains(referencesType.toLowerCase())) {
-				log.error("invalid type " + referencesType);
+				log.error("invalid type {}", referencesType);
 				return false;
 			}
 		}

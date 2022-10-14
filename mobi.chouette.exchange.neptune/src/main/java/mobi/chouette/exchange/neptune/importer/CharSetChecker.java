@@ -67,7 +67,7 @@ public class CharSetChecker {
 
 	      // Use given encoding.
 	      InputStreamReader reader;
-	      log.info("file "+fileName+" : encoding = "+encoding);
+        log.info("file {} : encoding = {}", fileName, encoding);
 	      if (encoding == null)
 	      {
 	         reader = new InputStreamReader(pushbackStream);
@@ -94,7 +94,7 @@ public class CharSetChecker {
 	      int startIndex = contentXml.indexOf("encoding=");
 	      if (startIndex == -1)
 	      {
-	         log.error("missing encoding for " + filename);
+              log.error("missing encoding for {}", filename);
 	         throw new RuntimeException("missing encoding for " + filename);
 	      }
 	      startIndex += 10;
@@ -102,7 +102,7 @@ public class CharSetChecker {
 	            startIndex);
 	      if (endIndex <= 0)
 	      {
-	         log.error("empty encoding for " + filename);
+              log.error("empty encoding for {}", filename);
 	         throw new RuntimeException("empty encoding for " + filename);
 	      }
 	      String charsetName = contentXml.substring(startIndex, endIndex);
@@ -112,7 +112,7 @@ public class CharSetChecker {
 	         return charsetName;
 	      } catch (Exception e)
 	      {
-	         log.error("invalid encoding for " + filename + " : " + charsetName);
+              log.error("invalid encoding for {} : {}", filename, charsetName);
 	         throw new RuntimeException("invalid encoding for " + filename + " : " + charsetName);
 	      }
 

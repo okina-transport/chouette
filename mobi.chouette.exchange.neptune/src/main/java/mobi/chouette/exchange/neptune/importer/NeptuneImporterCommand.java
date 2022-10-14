@@ -57,7 +57,7 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 		if (!(configuration instanceof NeptuneImportParameters)) {
 			// fatal wrong parameters
 
-			log.error("invalid parameters for neptune import " + configuration.getClass().getName());
+            log.error("invalid parameters for neptune import {}", configuration.getClass().getName());
 			reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS,"invalid parameters for neptune import " + configuration.getClass().getName());
 			return ERROR;
 		}

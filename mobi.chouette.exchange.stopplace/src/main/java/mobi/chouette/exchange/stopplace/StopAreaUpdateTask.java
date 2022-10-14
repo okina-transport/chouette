@@ -63,7 +63,7 @@ public class StopAreaUpdateTask {
 
 	private void updateExistingStopArea(StopArea stopArea, StopArea existing) throws Exception {
 		if(log.isTraceEnabled()) {
-			log.trace("Updating existing StopArea : " + stopArea);
+            log.trace("Updating existing StopArea : {}", stopArea);
 		}
 
 		Map<String, StopArea> existingContainedStopAreas = existing.getContainedStopAreas().stream().collect(Collectors.toMap(StopArea::getObjectId,
@@ -83,7 +83,7 @@ public class StopAreaUpdateTask {
 
 			} else {
 				if (log.isDebugEnabled()) {
-					log.debug("Updating existing contained StopArea : " + stopArea);
+                    log.debug("Updating existing contained StopArea : {}", stopArea);
 				}
 				updateExistingStopArea(containedStopArea, existingContainedStopAreaForSameParent);
 			}
@@ -93,7 +93,7 @@ public class StopAreaUpdateTask {
 			if (Objects.equals(obsoleteStopArea.objectIdPrefix(), stopArea.objectIdPrefix())) {
 				registerRemovedContainedStopArea(obsoleteStopArea);
 			} else {
-				log.info("Keep unknown StopArea : " + obsoleteStopArea.getObjectId() + " as id belongs to different code space than parent stop: " + stopArea.getObjectId());
+                log.info("Keep unknown StopArea : {} as id belongs to different code space than parent stop: {}", obsoleteStopArea.getObjectId(), stopArea.getObjectId());
 			}
 
 		}
@@ -105,12 +105,12 @@ public class StopAreaUpdateTask {
 		// Contained stop area with ID does not already exist for parent StopArea, but may exist for another. If so, move the existing contained stop area to new parent.
 		StopArea existing = stopAreaDAO.findByObjectId(stopArea.getObjectId());
 		if (existing != null) {
-			log.info("Moving contained StopArea: " + stopArea + " to new parent : " + parent);
+            log.info("Moving contained StopArea: {} to new parent : {}", stopArea, parent);
 			existing.setDetached(true);
 			updateExistingStopArea(stopArea, existing);
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Creating new contained StopArea: " + stopArea);
+                log.debug("Creating new contained StopArea: {}", stopArea);
 			}
 			stopArea.setParent(parent);
 			createNewStopArea(stopArea);
@@ -119,7 +119,7 @@ public class StopAreaUpdateTask {
 
 	private void createNewStopArea(StopArea stopArea) throws Exception {
 		if (log.isTraceEnabled()) {
-			log.trace("Creating new StopArea : " + stopArea);
+            log.trace("Creating new StopArea : {}", stopArea);
 		}
 
 		List<StopArea> containedStopAreas = new ArrayList<>();
@@ -142,7 +142,7 @@ public class StopAreaUpdateTask {
 
 	private void removeStopArea(String objectId) {
 		if (log.isTraceEnabled()) {
-			log.trace("Deleting obsolete StopArea : " + objectId);
+            log.trace("Deleting obsolete StopArea : {}", objectId);
 		}
 
 		StopArea stopArea = stopAreaDAO.findByObjectId(objectId);
@@ -151,7 +151,7 @@ public class StopAreaUpdateTask {
 			stopAreaDAO.delete(stopArea);
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("StopArea not found (already deleted), ignoring deletion request for: " + objectId);
+                log.debug("StopArea not found (already deleted), ignoring deletion request for: {}", objectId);
 			}
 		}
 
@@ -159,7 +159,7 @@ public class StopAreaUpdateTask {
 
 	private void removeContainedStopArea(StopArea containedStopArea) {
 		if (log.isTraceEnabled()) {
-			log.trace("Deleting obsolete contained StopArea: " + containedStopArea.getObjectId());
+            log.trace("Deleting obsolete contained StopArea: {}", containedStopArea.getObjectId());
 		}
 		stopAreaDAO.delete(containedStopArea);
 		if (containedStopArea.getContainedStopAreas() != null) {

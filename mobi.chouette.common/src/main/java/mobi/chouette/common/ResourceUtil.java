@@ -30,7 +30,7 @@ public class ResourceUtil {
 	public static boolean waitForMemory(long amount,int maxWait)
 	{
 		long mem = usedMemory();
-		log.info("before wait : used memory: " + mem + " %");
+		log.info("before wait : used memory: {} %", mem);
 		if (mem < amount) return true;
 		while (maxWait > 0)
 		{
@@ -41,7 +41,7 @@ public class ResourceUtil {
 			}
 			maxWait --;
 			mem = usedMemory();
-			log.info("before wait ("+maxWait+"): used memory: " + mem + " %");
+			log.info("before wait ({}): used memory: {} %", maxWait, mem);
 			if (mem < amount) return true;
 		}
 		return false;

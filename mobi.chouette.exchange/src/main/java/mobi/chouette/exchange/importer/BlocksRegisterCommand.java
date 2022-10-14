@@ -73,7 +73,7 @@ public class BlocksRegisterCommand implements Command {
 
             result = SUCCESS;
         } catch (Exception ex) {
-            log.error("Unable to save blocks: " + ex.getMessage(), ex);
+            log.error("Unable to save blocks: {}", ex.getMessage(), ex);
             ActionReporter reporter = ActionReporter.Factory.getInstance();
             if (ex.getCause() != null) {
                 Throwable e = ex.getCause();
@@ -92,7 +92,7 @@ public class BlocksRegisterCommand implements Command {
             }
         } finally {
             JamonUtils.logMagenta(log, monitor);
-            log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
+            log.info("{}{}{}", Color.LIGHT_GREEN, monitor.toString(), Color.NORMAL);
         }
 
         log.info("Saved blocks");

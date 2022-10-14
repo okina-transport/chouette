@@ -70,12 +70,12 @@ public class ReferentialService {
 
     public boolean createReferential(ReferentialInfo referentialInfo) throws ServiceException {
 
-        log.info("Creating referential for: " + referentialInfo);
+        log.info("Creating referential for: {}", referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
 
         if (referentialDAO.hasReferential(schemaName)) {
-            log.warn("The referential already exists: " + schemaName + ". Ignoring creation request");
+            log.warn("The referential already exists: {}. Ignoring creation request", schemaName);
             return false;
         }
 
@@ -114,7 +114,7 @@ public class ReferentialService {
             referentialDAO.createReferential(referentialInfo);
         }
 
-        log.info("Created referential for: " + referentialInfo);
+        log.info("Created referential for: {}", referentialInfo);
 
         return true;
 
@@ -122,7 +122,7 @@ public class ReferentialService {
 
     public void updateReferential(ReferentialInfo referentialInfo) throws ServiceException {
 
-        log.info("Updating referential for: " + referentialInfo);
+        log.info("Updating referential for: {}", referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
         if (!referentialDAO.getReferentials().contains(schemaName)) {
@@ -143,13 +143,13 @@ public class ReferentialService {
             throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Cannot update referential: internal error: " + referentialInfo);
         }
 
-        log.info("Updated referential for: " + referentialInfo);
+        log.info("Updated referential for: {}", referentialInfo);
     }
 
 
     public void deleteReferential(ReferentialInfo referentialInfo) throws ServiceException {
 
-        log.info("Deleting referential for: " + referentialInfo);
+        log.info("Deleting referential for: {}", referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
         if (!referentialDAO.getReferentials().contains(schemaName)) {
@@ -165,7 +165,7 @@ public class ReferentialService {
 
         referentialDAO.deleteReferential(referentialInfo);
 
-        log.info("Deleted referential for: " + referentialInfo);
+        log.info("Deleted referential for: {}", referentialInfo);
     }
 
     public List<String> getReferentialCodes() {

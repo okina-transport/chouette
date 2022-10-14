@@ -52,7 +52,7 @@ public class TransferExporterInputValidator extends AbstractInputValidator {
 		
 		if (ex.getStartDate() != null && ex.getEndDate() != null) {
 			if (ex.getStartDate().after(ex.getEndDate())) {
-				log.error("startDate "+ex.getStartDate()+ " cannot be after endDate "+ex.getEndDate());
+                log.error("startDate {} cannot be after endDate {}", ex.getStartDate(), ex.getEndDate());
 				return false;
 			}
 		}

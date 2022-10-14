@@ -99,7 +99,7 @@ public class NetexParserUtils extends ParserUtils {
 					case INTERNATIONAL_FLIGHT:
 						return TransportSubModeNameEnum.InternationalFlight;
 					default:
-						log.warn("Unsupported air sub mode " + mode);
+                        log.warn("Unsupported air sub mode {}", mode);
 				}
 			} else if (subModeStructure.getBusSubmode() != null) {
 				BusSubmodeEnumeration mode = subModeStructure.getBusSubmode();
@@ -125,7 +125,7 @@ public class NetexParserUtils extends ParserUtils {
 					case UNKNOWN:
 						return TransportSubModeNameEnum.Unknown;
 					default:
-						log.warn("Unsupported bus sub mode " + mode);
+                        log.warn("Unsupported bus sub mode {}", mode);
 				}
 			} else if (subModeStructure.getCoachSubmode() != null) {
 				CoachSubmodeEnumeration mode = subModeStructure.getCoachSubmode();
@@ -137,7 +137,7 @@ public class NetexParserUtils extends ParserUtils {
 					case NATIONAL_COACH:
 						return TransportSubModeNameEnum.NationalCoach;
 					default:
-						log.warn("Unsupported coach sub mode " + mode);
+                        log.warn("Unsupported coach sub mode {}", mode);
 				}
 			} else if (subModeStructure.getFunicularSubmode() != null) {
 				FunicularSubmodeEnumeration mode = subModeStructure.getFunicularSubmode();
@@ -145,7 +145,7 @@ public class NetexParserUtils extends ParserUtils {
 					case FUNICULAR:
 						return TransportSubModeNameEnum.Funicular;
 					default:
-						log.warn("Unsupported funicular sub mode " + mode);
+                        log.warn("Unsupported funicular sub mode {}", mode);
 				}
 			} else if (subModeStructure.getMetroSubmode() != null) {
 				MetroSubmodeEnumeration mode = subModeStructure.getMetroSubmode();
@@ -153,7 +153,7 @@ public class NetexParserUtils extends ParserUtils {
 					case METRO:
 						return TransportSubModeNameEnum.Metro;
 					default:
-						log.warn("Unsupported metro sub mode " + mode);
+                        log.warn("Unsupported metro sub mode {}", mode);
 				}
 			} else if (subModeStructure.getRailSubmode() != null) {
 				RailSubmodeEnumeration mode = subModeStructure.getRailSubmode();
@@ -175,7 +175,7 @@ public class NetexParserUtils extends ParserUtils {
 					case AIRPORT_LINK_RAIL:
 						return TransportSubModeNameEnum.AirportLinkRail;
 					default:
-						log.warn("Unsupported rail sub mode " + mode);
+                        log.warn("Unsupported rail sub mode {}", mode);
 				}
 			} else if (subModeStructure.getTelecabinSubmode() != null) {
 				TelecabinSubmodeEnumeration mode = subModeStructure.getTelecabinSubmode();
@@ -183,7 +183,7 @@ public class NetexParserUtils extends ParserUtils {
 					case TELECABIN:
 						return TransportSubModeNameEnum.Telecabin;
 					default:
-						log.warn("Unsupported telecabin sub mode " + mode);
+                        log.warn("Unsupported telecabin sub mode {}", mode);
 				}
 			} else if (subModeStructure.getTramSubmode() != null) {
 				TramSubmodeEnumeration mode = subModeStructure.getTramSubmode();
@@ -193,7 +193,7 @@ public class NetexParserUtils extends ParserUtils {
 					case CITY_TRAM:
 						return TransportSubModeNameEnum.CityTram;
 					default:
-						log.warn("Unsupported tram sub mode " + mode);
+                        log.warn("Unsupported tram sub mode {}", mode);
 				}
 			} else if (subModeStructure.getWaterSubmode() != null) {
 				WaterSubmodeEnumeration mode = subModeStructure.getWaterSubmode();
@@ -215,7 +215,7 @@ public class NetexParserUtils extends ParserUtils {
 					case SIGHTSEEING_SERVICE:
 						return TransportSubModeNameEnum.SightseeingService;
 					default:
-						log.warn("Unsupported water sub mode " + mode);
+                        log.warn("Unsupported water sub mode {}", mode);
 				}
 			}
 
@@ -239,7 +239,7 @@ public class NetexParserUtils extends ParserUtils {
 			case REPLACED:
 				return ServiceAlterationEnum.Replaced;
 			default:
-				log.warn("Unsupported NeTEx ServiceAlteration value: " + netexValue);
+                log.warn("Unsupported NeTEx ServiceAlteration value: {}", netexValue);
 		}
 
 		return null;
@@ -378,7 +378,7 @@ public class NetexParserUtils extends ParserUtils {
 				return Long.parseLong(netexObjectVersion);
 			} catch (NumberFormatException e) {
 				if (log.isTraceEnabled()) {
-					log.trace("Unable to parse version " + netexObjectVersion + " for Entity " + obj.getId() + " to Integer as supported by Neptune, returning 0");
+                    log.trace("Unable to parse version {} for Entity {} to Integer as supported by Neptune, returning 0", netexObjectVersion, obj.getId());
 				}
 				return 0L;
 			}

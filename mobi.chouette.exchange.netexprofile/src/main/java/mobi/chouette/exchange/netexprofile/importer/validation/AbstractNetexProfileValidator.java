@@ -146,7 +146,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 			validationReporter.reportSuccess(context, checkPointKey);
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Checkpoint " + checkPointKey + " failed: " + expression + " did not return 1 node");
+                log.debug("Checkpoint {} failed: {} did not return 1 node", checkPointKey, expression);
 			}
 			validationReporter.addCheckPointReportError(context, checkPointKey, DataLocationHelper.findDataLocation(context, document));
 		}
@@ -163,7 +163,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 			validationReporter.reportSuccess(context, checkPointKey);
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Checkpoint " + checkPointKey + " failed: " + expression + " did not return at least 1 node but " + nodes.size());
+                log.debug("Checkpoint {} failed: {} did not return at least 1 node but {}", checkPointKey, expression, nodes.size());
 			}
 			validationReporter.addCheckPointReportError(context, checkPointKey, DataLocationHelper.findDataLocation(context, document));
 		}
@@ -180,7 +180,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 			validationReporter.reportSuccess(context, checkPointKey);
 		} else {
 			if (log.isDebugEnabled()) {
-				log.debug("Checkpoint " + checkPointKey + " failed: " + expression + " should return 0 nodes, but returned " + nodes.size());
+                log.debug("Checkpoint {} failed: {} should return 0 nodes, but returned {}", checkPointKey, expression, nodes.size());
 			}
 			for (XdmItem item : nodes) {
 				validationReporter.addCheckPointReportError(context, checkPointKey, DataLocationHelper.findDataLocation(context, item));
@@ -190,7 +190,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 
 	protected void validateCheckpointExists(Context context, String checkPointKey, ValidationReporter validationReporter) {
 		if (!validationReporter.checkIfCheckPointExists(context, checkPointKey)) {
-			log.error("Checkpoint " + checkPointKey + " not present in ValidationReport");
+            log.error("Checkpoint {} not present in ValidationReport", checkPointKey);
 			throw new RuntimeException(
 					"Checkpoint " + checkPointKey + " does not exist - did you add a validation rule but forgot to register the checkpoint?");
 		}
@@ -258,7 +258,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 				// TODO add correct location
 				validationReporter.addCheckPointReportError(context, _1_NETEX_UNAPPROVED_CODESPACE_DEFINED, null,
 						DataLocationHelper.findDataLocation(context, (XdmNode) item), codespace.getXmlns() + "/" + codespace.getXmlnsUrl(), referenceValue);
-				log.info("Codespace " + codespace.getXmlns() + " is not accepted for this validation");
+                log.info("Codespace {} is not accepted for this validation", codespace.getXmlns());
 				onlyAcceptedCodespaces = false;
 			}
 		}
@@ -310,7 +310,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 						validationReporter.addCheckPointReportError(context, _1_NETEX_UNRESOLVED_REFERENCE_TO_COMMON_ELEMENTS, null,
 								DataLocationHelper.findDataLocation(id), id.getId());
 						if (log.isDebugEnabled()) {
-							log.debug("Unresolved reference to " + localRef + " in line file without any counterpart in the commonIds");
+                            log.debug("Unresolved reference to {} in line file without any counterpart in the commonIds", localRef);
 						}
 					}
 				}
@@ -335,7 +335,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 					validationReporter.addCheckPointReportError(context, _1_NETEX_MISSING_REFERENCE_VERSION_TO_LOCAL_ELEMENTS, null,
 							DataLocationHelper.findDataLocation(id), id.getId());
 					if (log.isDebugEnabled()) {
-						log.info("Found local reference to " + id.getId() + " in line file without use of version-attribute");
+                        log.info("Found local reference to {} in line file without use of version-attribute", id.getId());
 					}
 				}
 			}
@@ -355,7 +355,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 				validationReporter.addCheckPointReportError(context, _1_NETEX_MISSING_VERSION_ON_LOCAL_ELEMENTS, null, DataLocationHelper.findDataLocation(id),
 						id.getId());
 				if (log.isDebugEnabled()) {
-					log.debug("Id " + id + " in line file does not have version attribute set");
+                    log.debug("Id {} in line file does not have version attribute set", id);
 				}
 			}
 		} else {
@@ -380,8 +380,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 
 					}
 					if (log.isDebugEnabled()) {
-						log.debug("Id " + id + " used in both line file and common files "
-								+ ToStringBuilder.reflectionToString(commonFileNames.toArray(), ToStringStyle.SIMPLE_STYLE));
+                        log.debug("Id {} used in both line file and common files {}", id, ToStringBuilder.reflectionToString(commonFileNames.toArray(), ToStringStyle.SIMPLE_STYLE));
 					}
 				}
 			} else {
@@ -410,7 +409,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 						id.getId());
 
 				if (log.isDebugEnabled()) {
-					log.info("Id " + id + " in line file have already been defined in another file");
+                    log.info("Id {} in line file have already been defined in another file", id);
 				}
 			} else {
 				alreadyFoundLocalIds.add(id);
@@ -446,7 +445,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 				if (!possibleExternalReferences.isEmpty()) {
 					for (IdVersion id : possibleExternalReferences) {
 						if (log.isDebugEnabled()) {
-							log.debug("Unable to validate external reference " + id);
+                            log.debug("Unable to validate external reference {}", id);
 						}
 						validationReporter.addCheckPointReportError(context, _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE, null, DataLocationHelper.findDataLocation(id),
 								id.getId());
@@ -479,7 +478,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 			if (!m.matches()) {
 				validationReporter.addCheckPointReportError(context, _1_NETEX_INVALID_ID_STRUCTURE, null, DataLocationHelper.findDataLocation(id), id.getId());
 				if (log.isDebugEnabled()) {
-					log.debug("Id " + id + " in line file have an invalid format. Correct format is " + regex);
+                    log.debug("Id {} in line file have an invalid format. Correct format is {}", id, regex);
 				}
 				allIdStructuresValid = false;
 			} else {
@@ -488,7 +487,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 					validationReporter.addCheckPointReportError(context, _1_NETEX_INVALID_ID_STRUCTURE_NAME, null, DataLocationHelper.findDataLocation(id),
 							id.getId(), expectedId);
 					if (log.isDebugEnabled()) {
-						log.debug("Id " + id + " in file have an invalid format for the name part. Expected " + expectedId);
+                        log.debug("Id {} in file have an invalid format for the name part. Expected {}", id, expectedId);
 					}
 					allIdStructuresNameValid = false;
 				}
@@ -499,8 +498,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 						validationReporter.addCheckPointReportError(context, _1_NETEX_USE_OF_UNAPPROVED_CODESPACE, null,
 								DataLocationHelper.findDataLocation(id), id.getId());
 						if (log.isDebugEnabled()) {
-							log.debug("Id " + id + " in file are using an unaccepted codepsace prefix " + prefix + ". Valid prefixes are "
-									+ ToStringBuilder.reflectionToString(validPrefixes, ToStringStyle.SIMPLE_STYLE));
+                            log.debug("Id {} in file are using an unaccepted codepsace prefix {}. Valid prefixes are {}", id, prefix, ToStringBuilder.reflectionToString(validPrefixes, ToStringStyle.SIMPLE_STYLE));
 						}
 						allCodespacesValid = false;
 					}

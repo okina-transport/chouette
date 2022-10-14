@@ -63,10 +63,10 @@ public class ProgressionCommand implements Command, Constant, ReportConstant {
 
 		Monitor monitor = MonitorFactory.getTimeMonitor("ActionReport");
 		if (monitor != null)
-			log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
+            log.info("{}{}{}", Color.LIGHT_GREEN, monitor.toString(), Color.NORMAL);
 		monitor = MonitorFactory.getTimeMonitor("ValidationReport");
 		if (monitor != null)
-			log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
+            log.info("{}{}{}", Color.LIGHT_GREEN, monitor.toString(), Color.NORMAL);
 
 	}
 
@@ -150,7 +150,7 @@ public class ProgressionCommand implements Command, Constant, ReportConstant {
 		}
 		AbstractParameter params = (AbstractParameter) context.get(CONFIGURATION);
 		if (params.isTest()) {
-			log.info(Color.YELLOW + "Mode test on: waiting 10 s" + Color.NORMAL);
+            log.info("{}Mode test on: waiting 10 s{}", Color.YELLOW, Color.NORMAL);
 			Thread.sleep(10000);
 		}
 		return result;

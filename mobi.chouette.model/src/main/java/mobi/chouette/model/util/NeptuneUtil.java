@@ -203,7 +203,7 @@ public abstract class NeptuneUtil {
 		} else {
 			for (StopPoint stopPoint : stopPoints) {
 				if (stopPoint.getPosition() == null) {
-					log.warn("stopPoint without position " + stopPoint.getObjectId());
+					log.warn("stopPoint without position {}", stopPoint.getObjectId());
 					return;
 				}
 			}

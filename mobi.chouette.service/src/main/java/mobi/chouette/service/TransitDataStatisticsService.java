@@ -80,12 +80,7 @@ public class TransitDataStatisticsService {
 
 		ContextHolder.setContext(referential);
 
-		log.debug("Gettings statistics for "
-				+ referential
-				+ " using startDate="
-				+ startDate
-				+ " and minDaysValidityCategories="
-				+ minDaysValidityCategories);
+        log.debug("Gettings statistics for {} using startDate={} and minDaysValidityCategories={}", referential, startDate, minDaysValidityCategories);
 
 		// Defaulting to today if not given
 		if (startDate == null) {
@@ -127,7 +122,7 @@ public class TransitDataStatisticsService {
 				if (l.getName() != null) {
 					names.add(l.getName());
 				} else {
-					log.warn("Ignored line with null name: " + l.getObjectId());
+                    log.warn("Ignored line with null name: {}", l.getObjectId());
 				}
 			}
 
@@ -218,7 +213,7 @@ public class TransitDataStatisticsService {
 		// Load list of lineIds with corresponding Timetables
 		long now = System.currentTimeMillis();
 		Collection<LineAndTimetable> allTimetableForAllLines = timetableDAO.getAllTimetableForAllLines();
-		log.debug("Timetables took " + (System.currentTimeMillis() - now) + "ms");
+        log.debug("Timetables took {}ms", System.currentTimeMillis() - now);
 
 		// Find all ids and load all Chouette Lines
 		Set<Long> lineIds = new HashSet<>();
@@ -227,7 +222,7 @@ public class TransitDataStatisticsService {
 		}
 		now = System.currentTimeMillis();
 		List<mobi.chouette.model.Line> lines = lineDAO.findAll(lineIds);
-		log.debug("Lines took " + (System.currentTimeMillis() - now) + "ms");
+        log.debug("Lines took {}ms", System.currentTimeMillis() - now);
 
 		Map<Long, mobi.chouette.model.Line> lineIdToLine = new HashMap<>();
 		for (mobi.chouette.model.Line l : lines) {
@@ -312,7 +307,7 @@ public class TransitDataStatisticsService {
 							timetable.getPeriods().add(period);
 						} else {
 							if(log.isTraceEnabled()) {
-								log.trace("No from/to in timetable objectId=" + t.getObjectId() + " id=" + t.getId());
+                                log.trace("No from/to in timetable objectId={} id={}", t.getObjectId(), t.getId());
 							}
 						}
 
@@ -326,7 +321,7 @@ public class TransitDataStatisticsService {
 				Period fromCalendarDaysPattern = calculatePeriodFromCalendarDaysPattern(calendarDaysForLine);
 
 				if (fromCalendarDaysPattern != null) {
-					log.debug("Successfully created validity interval from included days for line: " + line.getId());
+                    log.debug("Successfully created validity interval from included days for line: {}", line.getId());
 					timetableForCalendarDays.getPeriods().add(fromCalendarDaysPattern);
 				}
 			}

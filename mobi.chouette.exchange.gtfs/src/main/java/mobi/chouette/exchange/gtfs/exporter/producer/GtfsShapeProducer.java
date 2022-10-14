@@ -37,7 +37,7 @@ public class GtfsShapeProducer extends AbstractProducer {
 		boolean result = true;
 		if (!neptuneObject.hasCompleteValidRouteSections()) {
 			if(log.isDebugEnabled()) {
-				log.debug("Skipping GTFS shape export for JourneyPattern with incomplete route sections: " + neptuneObject.getObjectId());
+				log.debug("Skipping GTFS shape export for JourneyPattern with incomplete route sections: {}", neptuneObject.getObjectId());
 			}
 			return false;
 		}
@@ -57,7 +57,7 @@ public class GtfsShapeProducer extends AbstractProducer {
 
 			if (ls == null || !rs.isRouteSectionValid()) {
 				result = false;
-				log.warn("Discarding shape for journeypattern with unexpected invalid RouteSection: " + rs);
+				log.warn("Discarding shape for journeypattern with unexpected invalid RouteSection: {}", rs);
 				continue;
 			}
 			// CoordinateSequence cs = ls.getCoordinateSequence();
@@ -77,7 +77,7 @@ public class GtfsShapeProducer extends AbstractProducer {
 				try {
 					getExporter().getShapeExporter().export(shape);
 				} catch (Exception e) {
-					log.warn("export failed for line " + neptuneObject.getObjectId(), e);
+					log.warn("export failed for line {}", neptuneObject.getObjectId(), e);
 					return false;
 				}
 			}

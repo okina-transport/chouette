@@ -132,7 +132,7 @@ public class AbstractImporterCommand implements Constant {
 					}
 				}
 			} catch (Exception e) {
-				log.warn("problem on dispose commands " + e.getMessage());
+				log.warn("problem on dispose commands {}", e.getMessage());
 			}
 			context.remove(CACHE);
 		}

@@ -122,23 +122,22 @@ public class JobServiceManager {
 				FileInputStream fileInput = new FileInputStream(propertyFile);
 				properties.load(fileInput);
 				fileInput.close();
-				log.info("reading properties from " + propertyFile.getAbsolutePath());
+                log.info("reading properties from {}", propertyFile.getAbsolutePath());
 			} catch (IOException e) {
-				log.error("cannot read properties " + propertyFile.getAbsolutePath()
-						          + " , using default properties", e);
+                log.error("cannot read properties {} , using default properties", propertyFile.getAbsolutePath(), e);
 			}
 		} else {
-			log.info("no property file found " + propertyFile.getAbsolutePath() + " , using default properties");
+            log.info("no property file found {} , using default properties", propertyFile.getAbsolutePath());
 		}
 	}
 
 	protected void loadPropertiesFromHttpEndpoint(String endpoint, Properties properties) {
-		log.info("Loading remote properties from: " + endpoint);
+        log.info("Loading remote properties from: {}", endpoint);
 		try {
 			HttpURLConnection con = (HttpURLConnection) new URL(endpoint).openConnection();
 			properties.load(con.getInputStream());
 		} catch (Exception e) {
-			log.error("Failed to load properties from remote source: " + e.getMessage(), e);
+            log.error("Failed to load properties from remote source: {}", e.getMessage(), e);
 		}
 
 	}
@@ -170,7 +169,7 @@ public class JobServiceManager {
 			Map<String, InputStream> inputStreamsByName) throws ServiceException {
 		JobService jobService = null;
 		try {
-			log.info("Creating job referential="+referential+" ...");
+            log.info("Creating job referential={} ...", referential);
 			// Instancier le modèle du service 'upload'
 			jobService = new JobService(rootDirectory, referential, action, type);
 
@@ -191,7 +190,7 @@ public class JobServiceManager {
 			jobDAO.update(jobService.getJob());
 			// jobDAO.detach(jobService.getJob());
 
-			log.info("Job id=" + jobService.getJob().getId() + " referential="+referential+" created");
+            log.info("Job id={} referential={} created", jobService.getJob().getId(), referential);
 			return jobService;
 
 		} catch (RequestServiceException ex) {
@@ -212,16 +211,16 @@ public class JobServiceManager {
 				FileStoreFactory.getFileStore().deleteFolder(jobService.getPath());
 			}
 		} catch (Exception e) {
-			log.error("Failed to delete directory " + jobService.getPath(), e);
+            log.error("Failed to delete directory {}", jobService.getPath(), e);
 		}
 		try {
 			Job job = jobService.getJob();
 			if (job != null && job.getId() != null) {
-				log.info("deleting bad job " + job.getId());
+                log.info("deleting bad job {}", job.getId());
 				jobDAO.deleteById(job.getId());
 			}
 		} catch (Exception e) {
-			log.error("Failed to delete job " + jobService.getJob().getId(), e);
+            log.error("Failed to delete job {}", jobService.getJob().getId(), e);
 		}
 
 	}
@@ -293,7 +292,7 @@ public class JobServiceManager {
 		String propertyName = checker.getContext() + PropertyNames.RESCHEDULE_INTERRUPTED_JOBS;
 		String property = System.getProperty(propertyName);
 		if (property == null || property.trim().equals("")) {
-			log.warn("Property " + propertyName + " not set. Falling back to default behaviour, which is to abort jobs");
+            log.warn("Property {} not set. Falling back to default behaviour, which is to abort jobs", propertyName);
 			return false;
 		}
 		return Boolean.parseBoolean(property);
@@ -332,7 +331,7 @@ public class JobServiceManager {
 		try {
 			FileStoreFactory.getFileStore().deleteFolder(jobService.getPath());
 		} catch (FileServiceException e) {
-			log.error("fail to delete directory " + jobService.getPath(), e);
+            log.error("fail to delete directory {}", jobService.getPath(), e);
 		}
 		jobDAO.delete(jobService.getJob());
 	}
@@ -354,7 +353,7 @@ public class JobServiceManager {
 					.stream().filter(job -> job.getUpdated() != null && job.getUpdated().isBefore(ageLimit)).collect(Collectors.toList());
 
 			for (Job deleteJob : deleteJobs) {
-				log.debug("Removing old, completed job: " + deleteJob);
+                log.debug("Removing old, completed job: {}", deleteJob);
 				remove(deleteJob.getReferential(), deleteJob.getId());
 			}
 
@@ -362,7 +361,7 @@ public class JobServiceManager {
 
 		}
 
-		log.info("Removed old jobs. Cnt: " + jobsDeleted);
+        log.info("Removed old jobs. Cnt: {}", jobsDeleted);
 	}
 
 	public void drop(String referential) throws ServiceException {
@@ -382,7 +381,7 @@ public class JobServiceManager {
 		try {
 			FileStoreFactory.getFileStore().deleteFolder(Paths.get(JobService.getRootPathName(rootDirectory, referential)));
 		} catch (FileServiceException e) {
-			log.error("fail to delete directory for" + referential, e);
+            log.error("fail to delete directory for{}", referential, e);
 		}
 
 		// remove referential from known ones

@@ -55,7 +55,7 @@ public class CommentExtension implements JsonExtension {
 						java.awt.Color.decode("0x" + json.getString(TEXT_COLOR));
 						line.setTextColor(json.getString(TEXT_COLOR));
 					} catch (Exception e) {
-						log.error("Line extension : cannot parse text color " + json.getString(TEXT_COLOR), e);
+                        log.error("Line extension : cannot parse text color {}", json.getString(TEXT_COLOR), e);
 					}
 				}
 				if (json.has(LINE_COLOR)) {
@@ -63,7 +63,7 @@ public class CommentExtension implements JsonExtension {
 						java.awt.Color.decode("0x" + json.getString(LINE_COLOR));
 						line.setColor(json.getString(LINE_COLOR));
 					} catch (Exception e) {
-						log.error("Line extension : cannot parse color " + json.getString(LINE_COLOR), e);
+                        log.error("Line extension : cannot parse color {}", json.getString(LINE_COLOR), e);
 					}
 				}
 				if (json.has(URL_REF)) {
@@ -71,11 +71,11 @@ public class CommentExtension implements JsonExtension {
 						new URL(json.getString(URL_REF));
 						line.setUrl(json.getString(URL_REF));
 					} catch (Exception e) {
-						log.error("Line extension : cannot parse url " + json.getString(URL_REF), e);
+                        log.error("Line extension : cannot parse url {}", json.getString(URL_REF), e);
 					}
 				}
 			} catch (Exception e1) {
-				log.warn("Line extension : unparsable json : " + comment);
+                log.warn("Line extension : unparsable json : {}", comment);
 				line.setComment(comment);
 			}
 
@@ -95,7 +95,7 @@ public class CommentExtension implements JsonExtension {
 						new URL(json.getString(URL_REF));
 						area.setUrl(json.getString(URL_REF));
 					} catch (Exception e) {
-						log.error("StopArea extension : cannot parse url " + json.getString(URL_REF), e);
+                        log.error("StopArea extension : cannot parse url {}", json.getString(URL_REF), e);
 					}
 				}
 				if (json.has(TIME_ZONE)) {
@@ -103,7 +103,7 @@ public class CommentExtension implements JsonExtension {
 						TimeZone.getTimeZone(json.getString(TIME_ZONE));
 						area.setTimeZone(json.getString(TIME_ZONE));
 					} catch (Exception e) {
-						log.error("StopArea extension : cannot parse time_zone " + json.getString(TIME_ZONE), e);
+                        log.error("StopArea extension : cannot parse time_zone {}", json.getString(TIME_ZONE), e);
 					}
 				}
 				if (json.has(ZIP_CODE)) {
@@ -113,7 +113,7 @@ public class CommentExtension implements JsonExtension {
 					area.setCityName(json.getString(CITY_NAME));
 				}
 			} catch (Exception e1) {
-				log.warn("StopArea extension : unparsable json : " + comment);
+                log.warn("StopArea extension : unparsable json : {}", comment);
 				area.setComment(comment);
 			}
 		}
@@ -130,7 +130,7 @@ public class CommentExtension implements JsonExtension {
 					groupOfLine.setRegistrationNumber(json.getString(REGISTRATION_NUMBER));
 				}
 			} catch (Exception e1) {
-				log.warn("GroupOfLine extension : unparsable json : " + comment);
+                log.warn("GroupOfLine extension : unparsable json : {}", comment);
 				groupOfLine.setComment(comment);
 			}
 		}
@@ -151,7 +151,7 @@ public class CommentExtension implements JsonExtension {
 									.getString(BOARDING));
 							point.setForBoarding(forBoarding);
 						} catch (IllegalArgumentException e) {
-							log.error("StopPoint extension : unknown value " + rc.getString(BOARDING) + " for boarding");
+                            log.error("StopPoint extension : unknown value {} for boarding", rc.getString(BOARDING));
 						}
 					}
 					if (rc.has(ALIGHTING)) {
@@ -160,13 +160,12 @@ public class CommentExtension implements JsonExtension {
 									.getString(ALIGHTING));
 							point.setForAlighting(forAlighting);
 						} catch (IllegalArgumentException e) {
-							log.error("StopPoint extension : unknown value " + rc.getString(ALIGHTING)
-									+ " for alighting");
+                            log.error("StopPoint extension : unknown value {} for alighting", rc.getString(ALIGHTING));
 						}
 					}
 				}
 			} catch (Exception e1) {
-				log.warn("StopPoint extension : unparsable json : " + comment);
+                log.warn("StopPoint extension : unparsable json : {}", comment);
 			}
 		}
 	}
@@ -198,7 +197,7 @@ public class CommentExtension implements JsonExtension {
 					vj.setMobilityRestrictedSuitability(json.getBoolean(MOBILITY_RESTRICTION));
 				}
 			} catch (Exception e) {
-				log.warn("VehicleJourney extension : unparsable json : " + comment+ ", reason "+e.getMessage());
+                log.warn("VehicleJourney extension : unparsable json : {}, reason {}", comment, e.getMessage());
 				vj.setComment(comment);
 			}
 		}

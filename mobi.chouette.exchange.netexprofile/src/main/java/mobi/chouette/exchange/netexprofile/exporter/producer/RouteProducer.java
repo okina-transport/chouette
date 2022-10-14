@@ -96,7 +96,7 @@ public class RouteProducer extends NetexProducer implements NetexEntityProducer<
 				return DirectionTypeEnumeration.ANTICLOCKWISE;
 		}
 
-		log.debug("Unable to map neptune direction to NeTEx: " + neptuneDirection);
+        log.debug("Unable to map neptune direction to NeTEx: {}", neptuneDirection);
 		return null;
 	}
 

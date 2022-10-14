@@ -72,7 +72,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 
 		if (oldValue.getId() != null && !oldValue.getImportMode().shouldUpdateStopAreas()) {
 			if(log.isDebugEnabled()) {
-				log.debug("Skip update of existing stop area: " + oldValue.getObjectId() + " with import mode " + oldValue.getImportMode());
+				log.debug("Skip update of existing stop area: {} with import mode {}", oldValue.getObjectId(), oldValue.getImportMode());
 			}
 			return;
 		}
@@ -88,7 +88,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
 
 		if (newValue.getAreaType() == null) {
-			log.error("stoparea without mandatory areatype " + newValue.getObjectId());
+			log.error("stoparea without mandatory areatype {}", newValue.getObjectId());
 			throw new IllegalArgumentException("area type null");
 		}
 
@@ -313,7 +313,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				}
 				StopArea endOfLinkArea = cache.getStopAreas().get(item.getEndOfLink().getObjectId());
 				if (endOfLinkArea == null) {
-					log.info(Color.LIGHT_CYAN + "search end stopArea for ConnectionLink" + Color.NORMAL);
+					log.info("{}search end stopArea for ConnectionLink{}", Color.LIGHT_CYAN, Color.NORMAL);
 					endOfLinkArea = stopAreaDAO.findByObjectId(item.getEndOfLink().getObjectId());
 				} else {
 					StopArea localArea = referential.getSharedStopAreas().get(endOfLinkArea.getObjectId());
@@ -346,7 +346,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				}
 				StopArea startOfLinkArea = cache.getStopAreas().get(item.getStartOfLink().getObjectId());
 				if (startOfLinkArea == null) {
-					log.info(Color.LIGHT_CYAN + "search start stopArea for ConnectionLink" + Color.NORMAL);
+					log.info("{}search start stopArea for ConnectionLink{}", Color.LIGHT_CYAN, Color.NORMAL);
 					startOfLinkArea = stopAreaDAO.findByObjectId(item.getStartOfLink().getObjectId());
 				} else {
 					StopArea localArea = referential.getSharedStopAreas().get(startOfLinkArea.getObjectId());

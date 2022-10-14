@@ -141,7 +141,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			try {
 				getExporter().getStopTimeExporter().export(time);
 			} catch (Exception e) {
-		          log.error("fail to produce stoptime "+e.getClass().getName()+" "+e.getMessage());
+				log.error("fail to produce stoptime {} {}", e.getClass().getName(), e.getMessage());
 				return false;
 			}
 

@@ -299,7 +299,7 @@ public class ConversionUtil {
 			case Replaced:
 				return ServiceAlterationEnumeration.REPLACED;
 			default:
-				log.error("Unsupported Chouette ServiceAlteration value: " + chouetteValue);
+                log.error("Unsupported Chouette ServiceAlteration value: {}", chouetteValue);
 		}
 
 		return null;

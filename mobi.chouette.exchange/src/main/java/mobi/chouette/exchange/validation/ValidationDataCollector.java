@@ -134,7 +134,7 @@ public class ValidationDataCollector {
 		Collection<StopPoint> data = route.getStopPoints();
 		for (StopPoint object : data) {
 			if (object == null) {
-				log.error("non continous sequence order in route " + route.getObjectId() + " stopPoints");
+				log.error("non continous sequence order in route {} stopPoints", route.getObjectId());
 			} else {
 				updateId(object, cache.getStopPoints());
 				collection.getStopPoints().add(object);

@@ -98,7 +98,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 					chouetteJourneyPattern.getRouteSections().add(ObjectFactory.getRouteSection(referential, serviceLinkInJourneyPattern.getServiceLinkRef().getRef()));
 				}
 			} else {
-				log.warn("Got unexpected linkInLinkSequence element: " + linkInLinkSequence);
+                log.warn("Got unexpected linkInLinkSequence element: {}", linkInLinkSequence);
 			}
 
 		}

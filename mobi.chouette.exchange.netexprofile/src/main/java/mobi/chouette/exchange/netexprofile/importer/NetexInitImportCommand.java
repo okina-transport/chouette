@@ -81,7 +81,7 @@ public class NetexInitImportCommand implements Command, Constant {
 
 			List<Codespace> referentialCodespaces = codespaceDAO.findAll();
 			if (referentialCodespaces.isEmpty()) {
-				log.error("No valid codespaces present for referential "+parameters.getReferentialName());
+				log.error("No valid codespaces present for referential {}", parameters.getReferentialName());
 			}
 
 			Set<Codespace> validCodespaces = new HashSet<>(referentialCodespaces);

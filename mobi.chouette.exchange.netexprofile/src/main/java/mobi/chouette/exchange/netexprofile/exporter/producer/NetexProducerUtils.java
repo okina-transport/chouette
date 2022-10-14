@@ -129,7 +129,7 @@ public class NetexProducerUtils {
 		if(splittedParts.length == 3) {
 			return original.replaceAll(splittedParts[1], newType);
 		} else {
-			log.warn("Could not transform identifier "+original+" to type "+newType+" as it does not conform to id standard (XXX:Type:YYY)");
+            log.warn("Could not transform identifier {} to type {} as it does not conform to id standard (XXX:Type:YYY)", original, newType);
 			return original;
 		}
 	}

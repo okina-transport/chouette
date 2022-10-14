@@ -29,7 +29,7 @@ public class LocalReferentialLockManager implements ReferentialLockManager {
 
 			if (allFree) {
 				referentials.stream().forEach(referential -> referentialRegistry.put(referential, new Object()));
-				log.info("Acquired locks: " + referentials);
+				log.info("Acquired locks: {}", referentials);
 				return true;
 			}
 
@@ -39,9 +39,9 @@ public class LocalReferentialLockManager implements ReferentialLockManager {
 
 	public void releaseLocks(Set<String> referentials) {
 		if (referentials.stream().allMatch(referential -> referentialRegistry.remove(referential) != null)) {
-			log.info("Released locks: " + referentials);
+			log.info("Released locks: {}", referentials);
 		} else {
-			log.warn("Attempted to release already free locks (probably cancelled job): " + referentials);
+			log.warn("Attempted to release already free locks (probably cancelled job): {}", referentials);
 		}
 
 	}

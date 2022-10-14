@@ -73,7 +73,7 @@ public class ValidatorCommand implements Command, Constant {
 			Object configuration = context.get(CONFIGURATION);
 			if (!(configuration instanceof ValidateParameters)) {
 				// fatal wrong parameters
-				log.error("invalid parameters for validation " + configuration.getClass().getName());
+				log.error("invalid parameters for validation {}", configuration.getClass().getName());
 				reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS,
 						"invalid parameters for validation " + configuration.getClass().getName());
 				return ERROR;

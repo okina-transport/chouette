@@ -40,7 +40,7 @@ public abstract class AbstractDisposeImportCommand implements Command, Constant 
 				try {
 					FileUtils.deleteDirectory(target.toFile());
 				} catch (Exception e) {
-					log.warn("caonnot purge input directory " + e.getMessage());
+					log.warn("caonnot purge input directory {}", e.getMessage());
 				}
 			}
 

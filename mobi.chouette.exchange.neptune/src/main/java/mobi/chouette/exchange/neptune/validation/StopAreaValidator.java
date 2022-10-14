@@ -130,12 +130,12 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 			StopArea stopArea = stopAreas.get(objectId);
 			if (stopArea == null) 
 			{
-				log.error("null area " +objectId);
+                log.error("null area {}", objectId);
 				continue;
 			}
 			if (stopArea.getAreaType() == null)
 			{
-				log.error("null area type " +stopArea);
+                log.error("null area type {}", stopArea);
 				continue;
 			}
 
