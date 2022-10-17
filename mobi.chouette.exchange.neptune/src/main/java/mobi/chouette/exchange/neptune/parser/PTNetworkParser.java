@@ -15,10 +15,10 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Log4j
 public class PTNetworkParser implements Parser, Constant {
@@ -47,7 +47,7 @@ public class PTNetworkParser implements Parser, Constant {
 				network = ObjectFactory.getPTNetwork(referential, objectId);
 				network.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				network.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

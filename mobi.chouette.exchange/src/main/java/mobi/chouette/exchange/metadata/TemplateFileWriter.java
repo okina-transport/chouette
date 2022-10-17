@@ -1,5 +1,13 @@
 package mobi.chouette.exchange.metadata;
 
+import lombok.Getter;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.tools.generic.EscapeTool;
+
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -7,17 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-
-import lombok.Getter;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.tools.generic.EscapeTool;
 
 public abstract class TemplateFileWriter {
 
@@ -36,10 +33,6 @@ public abstract class TemplateFileWriter {
 		velocityEngine.addProperty("resource.loader", "classpath");
 		velocityEngine.addProperty("classpath.resource.loader.class",
 				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-		velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-				"org.apache.velocity.runtime.log.Log4JLogChute");
-		velocityEngine.setProperty("runtime.log.logsystem.log4j.logger",
-                LOGGER_NAME);
 	}
 
 	protected ZipEntry writeZipEntry(String entryName, String templateName, ZipOutputStream zipFile)

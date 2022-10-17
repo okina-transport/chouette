@@ -1,8 +1,5 @@
 package mobi.chouette.exchange.importer.updater;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.DestinationDisplayDAO;
@@ -16,6 +13,9 @@ import mobi.chouette.model.type.StopAreaImportModeEnum;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 
 @Log4j
 @Stateless(name = ScheduledStopPointUpdater.BEAN_NAME)
@@ -55,6 +55,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 			oldValue.setCreationTime(newValue.getCreationTime());
 			oldValue.setCreatorId(newValue.getCreatorId());
 			oldValue.setName(newValue.getName());
+			oldValue.setTimingPointStatus(newValue.getTimingPointStatus());
 
 			oldValue.setDetached(false);
 		} else {
@@ -78,6 +79,9 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 			if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName())) {
 				oldValue.setName(newValue.getName());
 			}
+			if (newValue.getTimingPointStatus() != null && newValue.getTimingPointStatus()!=oldValue.getTimingPointStatus()) {
+				oldValue.setTimingPointStatus(newValue.getTimingPointStatus());
+			}
 
 		}
 
@@ -92,7 +96,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 
 			if (stopArea==null) {
 				// If stop area is not cache, check whether referential contains mapping for id
-				String mappedId = (String) ((Referential) context.get(REFERENTIAL)).getStopAreaMapping().get(objectId);
+				String mappedId = ((Referential) context.get(REFERENTIAL)).getStopAreaMapping().get(objectId);
 				if (mappedId != null) {
 					stopArea = cache.getStopAreas().get(mappedId);
 				}
@@ -146,7 +150,7 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 				log.error("ValidationData (data) is null");
 			} else if (data.getDataLocations() == null) {
 				log.error("ValidationData.getDataLocations() is null");
-			} else if (newSA!=null && data.getDataLocations().get(newSA.getObjectId()) == null) {
+			} else if (oldSA != null && newSA != null && data.getDataLocations().get(newSA.getObjectId()) == null){
 				log.error("No data location for new stop area: " + newSA.getObjectId() + " unlike old stop area: ");
 				if (oldSA != null) {
                     log.error("Old Stop Area : " + oldSA.getObjectId());

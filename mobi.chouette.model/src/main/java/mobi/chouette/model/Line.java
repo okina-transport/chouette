@@ -11,38 +11,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mobi.chouette.model.type.BikeAccessEnum;
-import mobi.chouette.model.type.TadEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
-import mobi.chouette.model.type.UserNeedEnum;
-import mobi.chouette.model.type.WheelchairAccessEnum;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.type.*;
+import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectIdTypes;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.ws.rs.DefaultValue;
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 /**
  * Chouette Line : a group of Routes which is generally known to the public by a
@@ -55,12 +39,13 @@ import java.util.List;
 @Table(name = "lines")
 @NoArgsConstructor
 @ToString(callSuper = true, exclude = { "routingConstraints" })
+@Log4j
 public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	private static final long serialVersionUID = -8086291270595894778L;
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "lines_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "lines_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "lines_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "lines_id_seq")
@@ -531,7 +516,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 	@Getter
@@ -577,4 +561,105 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 		}
 		return variations;
 	}
+
+	/**
+	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
+	 * @param startDate the start of the filtering period
+	 * @param endDate the end of the filtering period
+	 * @param onlyPublicData  filter out data marked with publication=restricted. #see {@link VehicleJourney#isPublic()}
+	 * @return true if there is at least one active route left after filtering.
+	 */
+	public boolean filter(LocalDate startDate, LocalDate endDate, boolean onlyPublicData) {
+		if(log.isDebugEnabled()) {
+			log.debug("Filtering line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
+		}
+		for (Iterator<Route> routeI = getRoutes().iterator(); routeI.hasNext(); ) {
+			Route route = routeI.next();
+			// filter out Routes with less than 2 stops
+			if (!route.hasAtLeastTwoStops()) {
+				routeI.remove();
+				continue;
+			}
+			for (Iterator<JourneyPattern> jpI = route.getJourneyPatterns().iterator(); jpI.hasNext(); ) {
+				JourneyPattern jp = jpI.next();
+				// filter out Journey Patterns with less than 2 stops
+				if (!jp.hasAtLeastTwoStops()) {
+					jpI.remove();
+					continue;
+				}
+				if (jp.getDepartureStopPoint() == null || jp.getArrivalStopPoint() == null) {
+					NeptuneUtil.refreshDepartureArrivals(jp);
+				}
+				for (Iterator<VehicleJourney> vjI = jp.getVehicleJourneys().iterator(); vjI.hasNext(); ) {
+					VehicleJourney vehicleJourney = vjI.next();
+					// filter out Vehicle Journeys without stops
+					if (!vehicleJourney.hasStops()) {
+						vjI.remove();
+						continue;
+					}
+					List<Timetable> activeTimetablesOnPeriod = vehicleJourney.getActiveTimetablesOnPeriod(startDate, endDate);
+					vehicleJourney.getTimetables().removeIf(timetable -> !activeTimetablesOnPeriod.contains(timetable));
+					List<DatedServiceJourney> activeDatedServiceJourneyOnPeriod = vehicleJourney.getActiveDatedServiceJourneysOnPeriod(startDate, endDate);
+						vehicleJourney.getDatedServiceJourneys().removeIf(dsj -> !activeDatedServiceJourneyOnPeriod.contains(dsj));
+					// filter out Vehicle Journey without timetables nor dated service journey
+					if(!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
+						if (log.isTraceEnabled()) {
+							log.trace("Removing VJ with no valid timetables nor valid dated service journeys: " + vehicleJourney.getObjectId());
+						}
+						vjI.remove();
+						continue;
+					}
+					if(onlyPublicData && !vehicleJourney.isPublic()) {
+						if (log.isTraceEnabled()) {
+							log.trace("Removing vj with restricted publication since only public data are retained: " + vehicleJourney.getObjectId());
+						}
+						vjI.remove();
+					}
+				}
+				if(jp.getVehicleJourneys().isEmpty() && jp.getDeadRuns().isEmpty()) {
+					if(log.isDebugEnabled()) {
+						log.debug("Removing JP with no valid service journey nor DeadRun: " + jp.getObjectId());
+					}
+					jpI.remove();
+				}
+			}
+			if(route.getJourneyPatterns().isEmpty()) {
+				if(log.isDebugEnabled()) {
+					log.debug("Removing route with no valid journey pattern: " + route.getObjectId());
+				}
+				routeI.remove();
+			}
+		}
+		if(log.isDebugEnabled()) {
+			log.debug("Filtered line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
+		}
+		return !getRoutes().isEmpty();
+	}
+
+	/**
+	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
+	 * By default elements with restricted publication are kept.
+	 * @param startDate start of the filtering period
+	 * @param endDate end of the filtering period
+	 * @return true if there is at least one active route left after filtering.
+	 */
+	public boolean filter(LocalDate startDate, LocalDate endDate) {
+		return filter(startDate, endDate, false);
+	}
+
+	/**
+	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
+	 * By default elements with restricted publication are kept.
+	 * @param startDate start of the filtering period
+	 * @param endDate end of the filtering period
+	 * @return true if there is at least one active route left after filtering.
+	 */
+	public boolean filter(Date startDate, Date endDate) {
+		LocalDate localStartDate = startDate == null ? null : toLocalDate(startDate);
+		LocalDate localEndDate = endDate == null ? null : toLocalDate(endDate);
+		return filter(localStartDate,localEndDate);
+	}
 }
+
+
+

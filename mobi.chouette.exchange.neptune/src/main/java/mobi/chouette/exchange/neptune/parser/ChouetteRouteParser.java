@@ -1,8 +1,6 @@
 package mobi.chouette.exchange.neptune.parser;
 
 
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -21,9 +19,10 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Log4j
 public class ChouetteRouteParser implements Parser, Constant {
@@ -53,7 +52,7 @@ public class ChouetteRouteParser implements Parser, Constant {
 				route = ObjectFactory.getRoute(referential, objectId);
 				route.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				route.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

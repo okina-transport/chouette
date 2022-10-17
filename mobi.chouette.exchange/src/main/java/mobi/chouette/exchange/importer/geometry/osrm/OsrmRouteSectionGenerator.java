@@ -1,16 +1,12 @@
 package mobi.chouette.exchange.importer.geometry.osrm;
 
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.ejb.Singleton;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Joiner;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.importer.geometry.PolylineDecoder;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
@@ -20,16 +16,20 @@ import mobi.chouette.exchange.importer.geometry.osrm.model.OsrmRoute;
 import mobi.chouette.exchange.importer.geometry.osrm.model.OsrmStep;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateUtils;
+
+import javax.ejb.Singleton;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static mobi.chouette.common.PropertyNames.OSRM_ROUTE_SECTIONS_BASE;
 
@@ -46,16 +46,26 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 
 	private Map<TransportModeNameEnum, String> urlPerTransportMode;
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectReader osrmResponseReader = new ObjectMapper().reader( OsrmResponse.class);
 	private PolylineDecoder polylineDecoder = new PolylineDecoder();
 	private GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), LongLatTypeEnum.WGS84.getValue());
 
 	@Override
-	public LineString getRouteSection(Coordinate from, Coordinate to, TransportModeNameEnum transportMode) {
+	public LineString getRouteSection(OsrmRouteSectionId osrmRouteSectionId) {
+
+		Coordinate from = osrmRouteSectionId.getFrom();
+		Coordinate to = osrmRouteSectionId.getTo();
+		TransportModeNameEnum transportMode = osrmRouteSectionId.getTransportMode();
+
 		try {
 			String url=getUrl(from, to, transportMode);
 			if (url!=null) {
-				return mapToLineString(invokeService(url));
+				String osrmResponseString = invokeService(url);
+				if(osrmResponseString != null) {
+					return mapToLineString(osrmResponseString);
+				} else {
+					log.info("Skipping route section generation since no route was found for request : " + url);
+				}
 			} else {
 				log.debug("Skipping route section generation as no osrm endpoint defined for transport mode: " + transportMode);
 			}
@@ -81,7 +91,7 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 	LineString mapToLineString(String osrmResponseString) {
 
 		try {
-			OsrmResponse osrmResponse = mapper.readValue(osrmResponseString, OsrmResponse.class);
+			OsrmResponse osrmResponse = osrmResponseReader.readValue(osrmResponseString);
 			if (osrmResponse != null && !CollectionUtils.isEmpty(osrmResponse.routes)) {
 				Coordinate[] coordinates = osrmResponse.routes.stream().map(OsrmRoute::getLegs).filter(Objects::nonNull).flatMap(List::stream)
 						.map(OsrmLeg::getSteps).filter(Objects::nonNull).flatMap(List::stream).map(OsrmStep::getGeometry)
@@ -94,6 +104,12 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 		return null;
 	}
 
+	/**
+	 * Return the LineString in JSON format corresponding to the routing request.
+	 * @param urlString the routing request.
+	 * @return the LineString in JSON format or null if no route is found.
+	 * @throws OsrmRouteSectionException if the service invocation fails.
+	 */
 	private String invokeService(String urlString) {
 		log.debug("Invoking osrm route generation: " + urlString);
 		try {
@@ -104,14 +120,19 @@ public class OsrmRouteSectionGenerator implements RouteSectionGenerator {
 			connection.setDoOutput(true);
 			connection.setConnectTimeout(TIMEOUT_SECONDS * (int) DateUtils.MILLIS_PER_SECOND);
 			connection.connect();
-
-			InputStream is = connection.getInputStream();
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(is, writer);
-			String rsp = writer.toString();
-			return rsp;
-		} catch (Exception e) {
-			throw new RuntimeException("Osrm route section generation failed for url: " + urlString, e);
+			int httpResponseCode = connection.getResponseCode();
+			if(httpResponseCode == 200) {
+				InputStream is = connection.getInputStream();
+				StringWriter writer = new StringWriter();
+				IOUtils.copy(is, writer);
+				return writer.toString();
+			} else if(httpResponseCode == 400) {
+				return null;
+			} else {
+				throw new OsrmRouteSectionException("Osrm route section generation failed with response code " + httpResponseCode + " for url: " + urlString);
+			}
+		} catch (IOException e) {
+			throw new OsrmRouteSectionException("Osrm route section generation failed for url: " + urlString, e);
 		}
 	}
 

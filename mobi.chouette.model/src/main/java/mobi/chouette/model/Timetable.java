@@ -1,35 +1,20 @@
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.persistence.Cacheable;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Chouette Timetable
@@ -48,9 +33,10 @@ public class Timetable extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "time_tables_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "time_tables_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "time_tables_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
+			@Parameter(name = "increment_size", value = "100")
+	})
 	@GeneratedValue(generator = "time_tables_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
@@ -230,6 +216,30 @@ public class Timetable extends NeptuneIdentifiedObject {
 	private List<VehicleJourney> vehicleJourneys = new ArrayList<VehicleJourney>(0);
 
 	/**
+	 * list of deadRuns
+	 *
+	 * @param vehicleJourneys
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ManyToMany(mappedBy = "timetables", fetch = FetchType.LAZY)
+	private List<DeadRun> deadRuns = new ArrayList<DeadRun>(0);
+
+	/**
+	 * list of blocks
+	 *
+	 * @param vehicleJourneys
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ManyToMany(mappedBy = "timetables", fetch = FetchType.LAZY)
+	private List<Block> blocks = new ArrayList<>(0);
+
+	/**
 	 * add a day if not already present
 	 * 
 	 * @param calendarDay
@@ -299,12 +309,54 @@ public class Timetable extends NeptuneIdentifiedObject {
 	/**
 	 * remove a vehicle journey
 	 * 
-	 * @param vehicleJourney
+	 * @param deadRun
 	 */
-	public void removeVehicleJourney(VehicleJourney vehicleJourney) {
-		getVehicleJourneys().remove(vehicleJourney);
-		vehicleJourney.getTimetables().remove(this);
+	public void removeVehicleJourney(VehicleJourney deadRun) {
+		getVehicleJourneys().remove(deadRun);
+		deadRun.getTimetables().remove(this);
 	}
+
+
+	/**
+	 * add a dead run if not already present
+	 *
+	 * @param deadRun
+	 */
+	public void addDeadRun(DeadRun deadRun) {
+		if (!getDeadRuns().contains(deadRun)) {
+			getDeadRuns().add(deadRun);
+		}
+		if (!deadRun.getTimetables().contains(this)) {
+			deadRun.getTimetables().add(this);
+		}
+	}
+
+	/**
+	 * remove a dead run
+	 *
+	 * @param deadRun
+	 */
+	public void removeDeadRun(DeadRun deadRun) {
+		getDeadRuns().remove(deadRun);
+		deadRun.getTimetables().remove(this);
+	}
+
+
+	/**
+	 * add a block if not already present
+	 *
+	 * @param block
+	 */
+	public void addBlock(Block block) {
+		if (!getBlocks().contains(block)) {
+			getBlocks().add(block);
+		}
+		if (!block.getTimetables().contains(this)) {
+			block.getTimetables().add(this);
+		}
+	}
+
+
 
 	/**
 	 * build a bitwise dayType mask for filtering
@@ -385,12 +437,57 @@ public class Timetable extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * check if a Timetable is active on a given date
-	 * 
-	 * @param aDay
-	 * @return true if timetable is active on given date
+	 * Return sorted set of all dates this timetable is active.
+	 *
+	 * (Seems to be the same purpose as getEffectiveDates, but this does not behave like that and changing it seems risky.)
+	 *
 	 */
-	public boolean isActiveOn(final LocalDate aDay) {
+	public SortedSet<LocalDate> getActiveDates(){
+		SortedSet<LocalDate> activeDates=new TreeSet<>();
+
+		activeDates.addAll(getPeriods().stream().map(this::toDates).flatMap(List::stream).collect(Collectors.toSet()));
+		activeDates.addAll(getCalendarDays().stream().filter(cd -> !Boolean.FALSE.equals(cd.getIncluded())).map(CalendarDay::getDate).collect(Collectors.toSet()));
+		activeDates.removeAll(getCalendarDays().stream().filter(cd -> Boolean.FALSE.equals(cd.getIncluded())).map(CalendarDay::getDate).collect(Collectors.toSet()));
+
+
+		return activeDates;
+	}
+
+	/**
+	 * Check if the timetable is active on a given period.
+	 * The method returns false if there is no period nor calendar day.
+	 * The method return true if both startDate and endDate are null.
+	 * If either side of the interval is null, then the interval is considered unbounded on that side and the
+	 * method will return true if the timetable is active on any day after the start date (respectively any day before
+	 * the end date).
+	 * @param startDate start date of the interval (inclusive)
+	 * @param endDate end date of the interval (inclusive)
+	 * @return if the timetable is active on a given period.
+	 */
+	public boolean isActiveOnPeriod(LocalDate startDate, LocalDate endDate) {
+		if (getPeriods().isEmpty() && getCalendarDays().isEmpty()) {
+			return false;
+		}
+		if(startDate == null && endDate == null) {
+			return true;
+		}
+		if (startDate == null) {
+			return isActiveBefore(endDate);
+		} else {
+			if (endDate == null) {
+				return isActiveAfter(startDate);
+			} else {
+				return isActiveBetween(startDate, endDate);
+			}
+		}
+	}
+
+	/**
+	 * check if the Timetable is active on a given date.
+	 * @param aDay the date to check.
+	 * @return true if timetable is active on the given date.
+	 */
+	private boolean isActiveOn(final LocalDate aDay) {
 		if (getCalendarDays() != null) {
 			CalendarDay includedDay = new CalendarDay(aDay, true);
 			if (getCalendarDays().contains(includedDay))
@@ -401,7 +498,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 		}
 		if (getIntDayTypes() != null && getIntDayTypes().intValue() != 0 && getPeriods() != null) {
 
-			int aDayOfWeek = aDay.getDayOfWeek() - 1; // zero on monday
+			int aDayOfWeek = aDay.getDayOfWeek().getValue() - 1; // zero on monday
 			int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
 			if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {
 				// check if day is in a period
@@ -415,15 +512,32 @@ public class Timetable extends NeptuneIdentifiedObject {
 		return false;
 	}
 
-	public boolean isActiveBefore(final LocalDate aDay) {
-		return isActiveOnPeriod(getStartOfPeriod(), aDay);
+	/**
+	 * check if the Timetable is active before a given date, inclusive of the given date.
+	 * @param aDay the date to check.
+	 * @return true if the Timetable is active before a given date
+	 */
+	private boolean isActiveBefore(final LocalDate aDay) {
+		return isActiveBetween(getStartOfPeriod(), aDay);
 	}
 
-	public boolean isActiveAfter(final LocalDate aDay) {
-		return isActiveOnPeriod(aDay, getEndOfPeriod());
+	/**
+	 * check if the Timetable is active after a given date, inclusive of the given date.
+	 * @param aDay the date to check.
+	 * @return true if the Timetable is active after the given date.
+	 */
+	private boolean isActiveAfter(final LocalDate aDay) {
+		return isActiveBetween(aDay, getEndOfPeriod());
 	}
 
-	public boolean isActiveOnPeriod(final LocalDate start, final LocalDate end) {
+	/**
+	 * Check if the Timetable is active between a start date (inclusive) and an end date (inclusive).
+	 * The method returns false if either side of the interval is null.
+	 * @param start the start date of the interval.
+	 * @param end the end date of the interval
+	 * @return true if the Timetable is active between a start date (inclusive) and an end date (inclusive).
+	 */
+	private boolean isActiveBetween(final LocalDate start, final LocalDate end) {
 		if(start == null || end == null) {
 			return false;
 		} else {
@@ -525,7 +639,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 
 			while (!date.isAfter(period.getEndDate())) {
 
-				int aDayOfWeek = date.getDayOfWeek() - 1; // zero on
+				int aDayOfWeek = date.getDayOfWeek().getValue() - 1; // zero on
 				// monday
 				int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
 				if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {

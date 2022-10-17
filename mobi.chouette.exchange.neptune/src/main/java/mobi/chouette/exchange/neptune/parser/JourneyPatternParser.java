@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -11,16 +7,19 @@ import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.JourneyPatternValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.JourneyPattern;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDateTime;
 
 @Log4j
 public class JourneyPatternParser implements Parser, Constant {
@@ -50,7 +49,7 @@ public class JourneyPatternParser implements Parser, Constant {
 						objectId);
 				journeyPattern.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				journeyPattern.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

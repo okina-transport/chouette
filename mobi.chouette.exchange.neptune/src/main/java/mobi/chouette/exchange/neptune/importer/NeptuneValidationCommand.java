@@ -1,33 +1,14 @@
 package mobi.chouette.exchange.neptune.importer;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.neptune.Constant;
-import mobi.chouette.exchange.neptune.validation.AbstractValidator;
-import mobi.chouette.exchange.neptune.validation.AccessLinkValidator;
-import mobi.chouette.exchange.neptune.validation.AccessPointValidator;
-import mobi.chouette.exchange.neptune.validation.AreaCentroidValidator;
-import mobi.chouette.exchange.neptune.validation.ChouetteRouteValidator;
-import mobi.chouette.exchange.neptune.validation.CompanyValidator;
-import mobi.chouette.exchange.neptune.validation.ConnectionLinkValidator;
-import mobi.chouette.exchange.neptune.validation.GroupOfLineValidator;
-import mobi.chouette.exchange.neptune.validation.ITLValidator;
-import mobi.chouette.exchange.neptune.validation.JourneyPatternValidator;
-import mobi.chouette.exchange.neptune.validation.LineValidator;
-import mobi.chouette.exchange.neptune.validation.PTNetworkValidator;
-import mobi.chouette.exchange.neptune.validation.PtLinkValidator;
-import mobi.chouette.exchange.neptune.validation.StopAreaValidator;
-import mobi.chouette.exchange.neptune.validation.StopPointValidator;
-import mobi.chouette.exchange.neptune.validation.TimeSlotValidator;
-import mobi.chouette.exchange.neptune.validation.TimetableValidator;
-import mobi.chouette.exchange.neptune.validation.VehicleJourneyValidator;
+import mobi.chouette.exchange.neptune.validation.*;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
@@ -37,8 +18,8 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
 
 @Log4j
 public class NeptuneValidationCommand implements Command, Constant {
@@ -158,7 +139,7 @@ public class NeptuneValidationCommand implements Command, Constant {
 			throw e;
 		} finally {
 			AbstractValidator.resetContext(context);
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		if (result == ERROR) {
 			reporter.addFileErrorInReport(context, fileName, ActionReporter.FILE_ERROR_CODE.INVALID_FORMAT,

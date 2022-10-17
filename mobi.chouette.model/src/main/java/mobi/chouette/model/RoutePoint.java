@@ -1,23 +1,14 @@
 package mobi.chouette.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "route_points")
@@ -29,7 +20,7 @@ public class RoutePoint extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "route_points_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
+	@GenericGenerator(name = "route_points_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {
 					@Parameter(name = "sequence_name", value = "route_points_id_seq"),
 					@Parameter(name = "increment_size", value = "100")})

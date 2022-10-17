@@ -11,10 +11,11 @@ package mobi.chouette.exchange.gtfs.exporter;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.exchange.exporter.ExportableData;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsAgencyProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsServiceProducer;
@@ -27,20 +28,11 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
+import mobi.chouette.model.*;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  *
@@ -83,7 +75,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;
@@ -102,6 +94,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		String prefix = configuration.getObjectIdPrefix();
 		ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 		Map<String, List<Timetable>> timetables = collection.getTimetableMap();
+		List<DatedServiceJourney> datedServiceJourneys = collection.getDatedServiceJourneys();
 		Set<StopArea> commercialStops = collection.getCommercialStops();
 		Set<StopArea> physicalStops = collection.getPhysicalStops();
 		Set<ConnectionLink> connectionLinks = collection.getConnectionLinks();
@@ -114,7 +107,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		if (!companies.isEmpty()) {
 			agencyProducer = new GtfsAgencyProducer(exporter);
 		}
-		if (!timetables.isEmpty()) {
+		if (!timetables.isEmpty() || !datedServiceJourneys.isEmpty()) {
 			calendarProducer = new GtfsServiceProducer(exporter);
 		}
 
@@ -168,14 +161,28 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 		}
 
+		for (DatedServiceJourney datedServiceJourney : datedServiceJourneys) {
+			// replaced and cancelled services are excluded from the GTFS export.
+			if (datedServiceJourney.isNeitherCancelledNorReplaced()) {
+				CalendarDay calendarDay = new CalendarDay();
+				calendarDay.setDate(datedServiceJourney.getOperatingDay());
+				calendarDay.setIncluded(true);
+				calendarProducer.saveDay(datedServiceJourney.getVehicleJourney().getObjectId(), calendarDay);
+			}
+		}
+
 	}
 
 	/**
 	 * Interchange relations are not enforced in db. Make sure they are valid before exporting.
 	 */
 	private boolean isInterchangeValid(Interchange interchange) {
-		return interchange.getConsumerVehicleJourney() != null && interchange.getFeederVehicleJourney() != null
-				&& interchange.getConsumerStopPoint() != null && interchange.getFeederStopPoint() != null;
+		return interchange.getConsumerVehicleJourney() != null
+				&& interchange.getFeederVehicleJourney() != null
+				&& interchange.getConsumerStopPoint() != null
+				&& interchange.getFeederStopPoint() != null
+				&& interchange.getConsumerVehicleJourney().isNeitherCancelledNorReplaced()
+				&& interchange.getFeederVehicleJourney().isNeitherCancelledNorReplaced();
 	}
 
 

@@ -1,13 +1,25 @@
 package mobi.chouette.dao;
 
+import mobi.chouette.model.dto.ReferentialInfo;
+
 import java.util.List;
 
-import mobi.chouette.core.CoreException;
-import mobi.chouette.model.Referential;
 
-public interface ReferentialDAO extends GenericDAO<Referential> {
+public interface ReferentialDAO {
+
+    boolean hasReferential(String referentialName);
 
     List<String> getReferentials();
+
+    void createReferential(ReferentialInfo referentialInfo);
+
+    void createMigratedReferential(ReferentialInfo referentialInfo);
+
+    boolean updateReferential(ReferentialInfo referentialInfo);
+
+    boolean updateMigratedReferential(ReferentialInfo referentialInfo);
+
+    boolean deleteReferential(ReferentialInfo referentialInfo);
 
     String getReferentialNameBySlug(String slug);
 

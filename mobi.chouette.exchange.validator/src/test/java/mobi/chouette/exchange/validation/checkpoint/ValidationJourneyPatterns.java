@@ -1,17 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -25,14 +13,8 @@ import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.exchange.validator.DummyChecker;
 import mobi.chouette.exchange.validator.JobDataTest;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -44,6 +26,16 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class ValidationJourneyPatterns extends AbstractTestValidation {
@@ -411,8 +403,8 @@ public class ValidationJourneyPatterns extends AbstractTestValidation {
 		ValidationReport report = (ValidationReport) context.get(VALIDATION_REPORT);
 		Assert.assertNotEquals(report.getCheckPoints().size(), 0, " report must have items");
 		
-		CheckPointReport checkPointReport = report.findCheckPointReportByName("3-RouteSection-1");
-		Assert.assertNotNull(checkPointReport, "report must contain a 3-RouteSection-1 checkPoint");
+		CheckPointReport checkPointReport = report.findCheckPointReportByName("3-RouteSection-2-1");
+		Assert.assertNotNull(checkPointReport, "report must contain a 3-RouteSection-2-1 checkPoint");
 
 		Assert.assertEquals(checkPointReport.getState(), ValidationReporter.RESULT.OK, " checkPointReport must be ok");
 		
@@ -430,8 +422,8 @@ public class ValidationJourneyPatterns extends AbstractTestValidation {
 		ValidationReport report2 = (ValidationReport) context.get(VALIDATION_REPORT);
 		Assert.assertNotEquals(report2.getCheckPoints().size(), 0, " report must have items");
 		
-		CheckPointReport checkPointReport2 = report2.findCheckPointReportByName("3-RouteSection-1");
-		Assert.assertNotNull(checkPointReport2, "report must contain a 3-RouteSection-1 checkPoint");
+		CheckPointReport checkPointReport2 = report2.findCheckPointReportByName("3-RouteSection-2-2");
+		Assert.assertNotNull(checkPointReport2, "report must contain a 3-RouteSection-2-2 checkPoint");
 		
 		Assert.assertEquals(checkPointReport2.getState(), ValidationReporter.RESULT.NOK, " checkPointReport must be nok");
 		

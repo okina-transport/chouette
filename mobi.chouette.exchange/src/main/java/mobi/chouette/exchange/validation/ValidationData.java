@@ -1,28 +1,10 @@
 package mobi.chouette.exchange.validation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import lombok.Data;
 import mobi.chouette.exchange.validation.report.DataLocation;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
+
+import java.util.*;
 
 @Data
 public class ValidationData {
@@ -45,26 +27,26 @@ public class ValidationData {
 	private Set<String> accessPointIds = new HashSet<>();
 	private Set<Timetable> timetables = new HashSet<>();
 	private Set<String> timetableIds = new HashSet<>();
+	private Set<VehicleJourney> allVehicleJourneys = new HashSet<>();
 	private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
 	private List<JourneyPattern> journeyPatterns = new ArrayList<>();
 	private List<Route> routes = new ArrayList<>();
 	private List<StopPoint> stopPoints = new ArrayList<>();
 	private Line currentLine;
-	private Map<String,DataLocation> dataLocations = new HashMap<>();
-	private Map<String,Set<String>> linesOfStopAreas = new HashMap<>();
+	private Map<String, DataLocation> dataLocations = new HashMap<>();
+	private Map<String, Set<String>> linesOfStopAreas = new HashMap<>();
 	private Set<Interchange> interchanges = new HashSet<>();
 
 
 	public void clear() {
-		vehicleJourneys.clear();
+	    vehicleJourneys.clear();
 		journeyPatterns.clear();
 		routes.clear();
 		stopPoints.clear();
 		currentLine = null;
 	}
 
-	public void dispose()
-	{
+	public void dispose() {
 		clear();
 		networks.clear();
 		networkIds.clear();
@@ -88,5 +70,11 @@ public class ValidationData {
 		dataLocations.clear();
 		linesOfStopAreas.clear();
 		interchanges.clear();
+		allVehicleJourneys.clear();
+	}
+
+	public void addVehicleJourney(VehicleJourney vehicleJourney) {
+		vehicleJourneys.add(vehicleJourney);
+		allVehicleJourneys.add(vehicleJourney);
 	}
 }

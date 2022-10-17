@@ -33,7 +33,7 @@ import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -124,14 +124,14 @@ public class GtfsTripProducer extends AbstractProducer {
 			}
 			addDropOffAndPickUpType(time, l, vj, vjas);
 
-			if (vj.getJourneyPattern().getSectionStatus() == SectionStatusEnum.Completed) {
-				Float shapeDistTraveled = new Float(distance);
+			if (vj.getJourneyPattern().hasCompleteValidRouteSections()) {
+				Float shapeDistTraveled = Float.valueOf((float) distance);
 				time.setShapeDistTraveled(shapeDistTraveled);
 				while (index < routeSections.size() && routeSections.get(index) == null) {
 					index++;
 				}
 				if (index < routeSections.size()) {
-					distance += (float) computeDistance(routeSections.get(index));
+					distance += computeDistance(routeSections.get(index));
 				}
 				index++;
 			}
@@ -264,7 +264,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		trip.setTripId(tripId);
 
 		JourneyPattern jp = vj.getJourneyPattern();
-		if (jp.getSectionStatus() == SectionStatusEnum.Completed && jp.getRouteSections().size() != 0) {
+		if (jp.getSectionStatus() == SectionStatusEnum.Completed && jp.hasCompleteValidRouteSections()) {
 			String shapeId = toGtfsId(jp.getObjectId(), schemaPrefix, keepOriginalId);
 			trip.setShapeId(shapeId);
 		}
@@ -342,7 +342,7 @@ public class GtfsTripProducer extends AbstractProducer {
 					frequency.setEndTime(new GtfsTime(journeyFrequency.getLastDepartureTime(), 0));
 				else
 					frequency.setEndTime(new GtfsTime(journeyFrequency.getLastDepartureTime(), 1));
-				frequency.setHeadwaySecs((int) journeyFrequency.getScheduledHeadwayInterval().getStandardSeconds());
+				frequency.setHeadwaySecs((int) journeyFrequency.getScheduledHeadwayInterval().getSeconds());
 				try {
 					getExporter().getFrequencyExporter().export(frequency);
 				} catch (Exception e) {

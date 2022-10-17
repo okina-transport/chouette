@@ -1,15 +1,10 @@
 package mobi.chouette.exchange.validation.parameters;
 
-import java.util.Arrays;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import lombok.Data;
-import mobi.chouette.model.Company;
+import mobi.chouette.model.Interchange;
+
+import javax.xml.bind.annotation.*;
+import java.util.Arrays;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
@@ -20,7 +15,7 @@ public class InterchangeParameters {
 	public static String[] fields = { "ObjectId", "Name"} ;
 	
 	static {
-		ValidationParametersUtil.addFieldList(Company.class.getSimpleName(), Arrays.asList(fields));
+		ValidationParametersUtil.addFieldList(Interchange.class.getSimpleName(), Arrays.asList(fields));
 	}
 
 	@XmlElement(name = "objectid")

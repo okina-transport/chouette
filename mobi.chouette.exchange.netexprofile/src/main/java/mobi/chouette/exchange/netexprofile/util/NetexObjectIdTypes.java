@@ -33,9 +33,11 @@ public final class NetexObjectIdTypes {
     public static final String DAY_TYPES = "dayTypes";
     public static final String DAY_TYPE_ASSIGNMENTS = "dayTypeAssignments";
     public static final String OPERATING_PERIODS = "operatingPeriods";
+    public static final String OPERATING_DAYS = "operatingDays";
     public static final String DESTINATION_DISPLAYS = "destinationDisplays";
     public static final String JOURNEY_INTERCHANGES = "journeyInterchanges";
     public static final String SERVICE_LINKS = "serviceLinks";
+    public static final String BLOCKS = "blocks";
     public static final String GROUPS_OF_LINES = "groupsOfLines";
     public static final String DIRECTION = "Direction";
 
@@ -44,6 +46,7 @@ public final class NetexObjectIdTypes {
     public static final String RESOURCE_FRAME = "ResourceFrame";
     public static final String SITE_FRAME = "SiteFrame";
     public static final String SERVICE_FRAME = "ServiceFrame";
+    public static final String VEHICLE_SCHEDULE_FRAME = "VehicleScheduleFrame";
     public static final String SERVICE_CALENDAR_FRAME = "ServiceCalendarFrame";
     public static final String TIMETABLE_FRAME = "TimetableFrame";
     public static final String GENERAL_FRAME = "GeneralFrame";

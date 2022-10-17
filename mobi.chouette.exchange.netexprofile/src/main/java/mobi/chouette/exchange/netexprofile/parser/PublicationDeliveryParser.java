@@ -1,16 +1,5 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.bind.JAXBElement;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
@@ -19,70 +8,26 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
-import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.Branding;
-import org.rutebanken.netex.model.Common_VersionFrameStructure;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DataManagedObjectStructure;
-import org.rutebanken.netex.model.DayTypeAssignment;
-import org.rutebanken.netex.model.DayTypeAssignmentsInFrame_RelStructure;
-import org.rutebanken.netex.model.DayTypesInFrame_RelStructure;
 import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.DestinationDisplaysInFrame_RelStructure;
-import org.rutebanken.netex.model.Direction;
-import org.rutebanken.netex.model.DirectionsInFrame_RelStructure;
-import org.rutebanken.netex.model.EntityStructure;
-import org.rutebanken.netex.model.GeneralFrame;
-import org.rutebanken.netex.model.JourneyInterchangesInFrame_RelStructure;
-import org.rutebanken.netex.model.JourneyPatternsInFrame_RelStructure;
-import org.rutebanken.netex.model.Journey_VersionStructure;
-import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
-import org.rutebanken.netex.model.LinesInFrame_RelStructure;
-import org.rutebanken.netex.model.LinkSequence_VersionStructure;
 import org.rutebanken.netex.model.Network;
-import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.OperatingDay;
-import org.rutebanken.netex.model.OperatingDaysInFrame_RelStructure;
-import org.rutebanken.netex.model.OperatingPeriod_VersionStructure;
-import org.rutebanken.netex.model.OperatingPeriodsInFrame_RelStructure;
-import org.rutebanken.netex.model.OrganisationsInFrame_RelStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.QuayAssignmentView;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.Quays_RelStructure;
-import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.RouteLink;
-import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
-import org.rutebanken.netex.model.RoutesInFrame_RelStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.ScheduledStopPointsInFrame_RelStructure;
-import org.rutebanken.netex.model.ServiceCalendarFrame;
-import org.rutebanken.netex.model.ServiceFrame;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
-import org.rutebanken.netex.model.SiteConnection;
-import org.rutebanken.netex.model.SiteFrame;
-import org.rutebanken.netex.model.StopAssignment_VersionStructure;
-import org.rutebanken.netex.model.StopAssignmentsInFrame_RelStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
-import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
-import org.rutebanken.netex.model.TimetableFrame;
-import org.rutebanken.netex.model.TypesOfValueInFrame_RelStructure;
-import org.rutebanken.netex.model.ValidBetween;
-import org.rutebanken.netex.model.ValidityConditions_RelStructure;
+import org.rutebanken.netex.model.*;
+
+import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j
 public class PublicationDeliveryParser extends NetexParser implements Parser, Constant {
@@ -156,6 +101,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				List<SiteFrame> siteFrames = NetexObjectUtil.getFrames(SiteFrame.class, frames);
 				List<ServiceCalendarFrame> serviceCalendarFrames = NetexObjectUtil.getFrames(ServiceCalendarFrame.class, frames);
 				List<TimetableFrame> timetableFrames = NetexObjectUtil.getFrames(TimetableFrame.class, frames);
+				List<VehicleScheduleFrame> vehicleScheduleFrames = NetexObjectUtil.getFrames(VehicleScheduleFrame.class, frames);
 				List<GeneralFrame> generalFrames = NetexObjectUtil.getFrames(GeneralFrame.class, frames);
 
 				List<ServiceCalendarFrame> generatedServiceCalendarFrames = generalFrames.stream()
@@ -177,6 +123,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				}
 				parseServiceFrames(context, serviceFrames, isCommonDelivery);
 				parseServiceCalendarFrame(context, serviceCalendarFrames);
+				parseVehicleScheduleFrames(context, vehicleScheduleFrames);
 				parseGeneralFrames(context,generalFrames);
 
 				if (!isCommonDelivery) {
@@ -191,6 +138,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<SiteFrame> siteFrames = NetexObjectUtil.getFrames(SiteFrame.class, dataObjectFrames);
 			List<ServiceCalendarFrame> serviceCalendarFrames = NetexObjectUtil.getFrames(ServiceCalendarFrame.class, dataObjectFrames);
 			List<TimetableFrame> timetableFrames = NetexObjectUtil.getFrames(TimetableFrame.class, dataObjectFrames);
+			List<VehicleScheduleFrame> vehicleScheduleFrames = NetexObjectUtil.getFrames(VehicleScheduleFrame.class, dataObjectFrames);
 			List<GeneralFrame> generalFrames = NetexObjectUtil.getFrames(GeneralFrame.class, dataObjectFrames);
 
 			List<ServiceCalendarFrame> generatedServiceCalendarFrames = generalFrames.stream()
@@ -216,6 +164,9 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			if (!isCommonDelivery) {
 				parseTimetableFrames(context, timetableFrames);
 			}
+
+
+			parseVehicleScheduleFrames(context, vehicleScheduleFrames);
 		}
 
 		// post processing
@@ -436,7 +387,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 
 	private void parseGeneralFrames(Context context, List<GeneralFrame> generalFrames) throws Exception {
-		
+
 		for (GeneralFrame generalFrame : generalFrames ){
 			List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
 
@@ -859,7 +810,16 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 			JourneysInFrame_RelStructure vehicleJourneysStruct = timetableFrame.getVehicleJourneys();
 			context.put(NETEX_LINE_DATA_CONTEXT, vehicleJourneysStruct);
+
+			// TODO : Check merge entur : Ici le serviceJourneyParser de entur est rédéfini. La version Mobi-iti réutilise celui déclaré dans la classe. J'ai gardé la version entur.
+			Parser serviceJourneyParser = ParserFactory.create(ServiceJourneyParser.class.getName());
 			serviceJourneyParser.parse(context);
+
+			Parser datedServiceJourneyParser = ParserFactory.create(DatedServiceJourneyParser.class.getName());
+			datedServiceJourneyParser.parse(context);
+
+			Parser deadRunParser = ParserFactory.create(DeadRunParser.class.getName());
+			deadRunParser.parse(context);
 
 			JourneyInterchangesInFrame_RelStructure journeyInterchangesStruct = timetableFrame.getJourneyInterchanges();
 			if (journeyInterchangesStruct != null) {
@@ -868,6 +828,17 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				serviceInterchangeParser.parse(context);
 			}
 
+		}
+	}
+
+	private void parseVehicleScheduleFrames(Context context, List<VehicleScheduleFrame> vehicleScheduleFrames) throws Exception {
+		for (VehicleScheduleFrame vehicleScheduleFrame : vehicleScheduleFrames) {
+			BlocksInFrame_RelStructure blocks = vehicleScheduleFrame.getBlocks();
+			if(blocks != null) {
+				context.put(NETEX_LINE_DATA_CONTEXT, blocks);
+				Parser blocKParser = ParserFactory.create(BlockParser.class.getName());
+				blocKParser.parse(context);
+			}
 		}
 	}
 
@@ -903,6 +874,19 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		Footnote footnote = ObjectFactory.getFootnote(referential, notice.getId());
 		footnote.setLabel(ConversionUtil.getValue(notice.getText()));
 		footnote.setCode(notice.getPublicCode());
+
+		if (notice.getAlternativeTexts() != null) {
+			for (AlternativeText alternativeText : notice.getAlternativeTexts().getAlternativeText()) {
+				FootNoteAlternativeText footNoteAlternativeText = ObjectFactory.getFootnoteAlternativeText(referential, alternativeText.getId());
+				footNoteAlternativeText.setFootnote(footnote);
+				if(alternativeText.getText() != null) {
+					footNoteAlternativeText.setText(alternativeText.getText().getValue());
+					footNoteAlternativeText.setLanguage(alternativeText.getText().getLang());
+				}
+				footnote.getAlternativeTexts().add(footNoteAlternativeText);
+			}
+		}
+
 	}
 
 	private void parseSiteConnections(Context context, List<SiteConnection> siteConnections) throws Exception {

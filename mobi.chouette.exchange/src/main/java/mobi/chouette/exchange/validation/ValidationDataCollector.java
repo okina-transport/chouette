@@ -1,25 +1,13 @@
 package mobi.chouette.exchange.validation;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.*;
+import mobi.chouette.model.util.Referential;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneIdentifiedObject;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.util.Referential;
 
 @Log4j
 public class ValidationDataCollector {
@@ -38,7 +26,7 @@ public class ValidationDataCollector {
 						addAllTimeTables(collection, vehicleJourney.getTimetables(), cache);
 					}
 					updateId(vehicleJourney, cache.getVehicleJourneys());
-					collection.getVehicleJourneys().add(vehicleJourney);
+					collection.addVehicleJourney(vehicleJourney);
 					if (vehicleJourney.getCompany() != null) {
 						updateId(vehicleJourney.getCompany(), cache.getCompanies());
 						collection.getCompanyIds().add(vehicleJourney.getCompany().getObjectId());

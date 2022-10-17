@@ -1,23 +1,21 @@
 package mobi.chouette.exchange.report;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "name", "status", "ioType", "errors", "checkPointErrorKeys", "checkPointWarningKeys", "checkPointInfoKeys", "checkPointErrorCount",
@@ -89,15 +87,15 @@ public class FileReport extends AbstractReport{
 
 		switch (severity) {
 			case INFO:
-				if (checkPointInfoCount < MAX_ERRORS_PER_CHECKPOINT) {
-					checkPointInfoKeys.add(new Integer(checkPointErrorId));
+				if (checkPointInfoCount < MAX_INFOS_PER_CHECKPOINT) {
+					checkPointInfoKeys.add(checkPointErrorId);
 					ret = true;
 				}
 				checkPointInfoCount++;
 				break;
 		case WARNING:
-			if (checkPointWarningCount < MAX_ERRORS_PER_CHECKPOINT) {
-				checkPointWarningKeys.add(new Integer(checkPointErrorId));
+			if (checkPointWarningCount < MAX_WARNINGS_PER_CHECKPOINT) {
+				checkPointWarningKeys.add(checkPointErrorId);
 				ret = true;
 			}
 			checkPointWarningCount++;
@@ -105,7 +103,7 @@ public class FileReport extends AbstractReport{
 
 		default: // ERROR
 			if (checkPointErrorCount < MAX_ERRORS_PER_CHECKPOINT) {
-				checkPointErrorKeys.add(new Integer(checkPointErrorId));
+				checkPointErrorKeys.add(checkPointErrorId);
 				ret = true;
 			}
 			checkPointErrorCount++;
@@ -160,13 +158,13 @@ public class FileReport extends AbstractReport{
 				break;
 		}
 		for(Integer numWarning: checkPointWarningKeys) {
-			if(lstErrorKeys.size() < MAX_ERRORS_PER_CHECKPOINT)
+			if(lstErrorKeys.size() < MAX_WARNINGS_PER_CHECKPOINT)
 				lstErrorKeys.add(numWarning);
 			else
 				break;
 		}
 		for(Integer numInfo: checkPointInfoKeys) {
-			if(lstErrorKeys.size() < MAX_ERRORS_PER_CHECKPOINT)
+			if(lstErrorKeys.size() < MAX_INFOS_PER_CHECKPOINT)
 				lstErrorKeys.add(numInfo);
 			else
 				break;

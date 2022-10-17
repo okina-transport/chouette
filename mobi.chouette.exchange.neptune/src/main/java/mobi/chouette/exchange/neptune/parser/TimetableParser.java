@@ -10,18 +10,14 @@ import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.TimetableValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Log4j
 public class TimetableParser implements Parser, Constant {
@@ -52,7 +48,7 @@ public class TimetableParser implements Parser, Constant {
 				timetable = ObjectFactory.getTimetable(referential, objectId);
 				timetable.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				timetable.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

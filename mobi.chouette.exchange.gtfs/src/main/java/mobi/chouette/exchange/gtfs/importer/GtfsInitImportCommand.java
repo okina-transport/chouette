@@ -1,18 +1,13 @@
 package mobi.chouette.exchange.gtfs.importer;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.model.importer.FactoryParameters;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
@@ -20,8 +15,11 @@ import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 
 @Log4j
 public class GtfsInitImportCommand implements Command, Constant {
@@ -64,7 +62,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 			log.error(e, e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

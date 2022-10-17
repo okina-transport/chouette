@@ -1,28 +1,25 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-
-import mobi.chouette.exchange.NetexParserUtils;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
-import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
-import org.rutebanken.netex.model.GroupOfLines;
-import org.rutebanken.netex.model.LineRefStructure;
-import org.rutebanken.netex.model.OrganisationRefStructure;
-
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
+import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.rutebanken.netex.model.GroupOfLines;
+import org.rutebanken.netex.model.LineRefStructure;
+import org.rutebanken.netex.model.OrganisationRefStructure;
+
+import javax.xml.bind.JAXBElement;
+import java.util.List;
 
 public class NetworkParser extends NetexParser implements Parser, Constant {
 
@@ -39,10 +36,10 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         chouetteNetwork.setObjectVersion(NetexParserUtils.getVersion(netexNetwork));
 
         if (netexNetwork.getCreated() != null) {
-            chouetteNetwork.setCreationTime(TimeUtil.toJodaLocalDateTime(netexNetwork.getCreated()));
+            chouetteNetwork.setCreationTime(netexNetwork.getCreated());
         }
         if (netexNetwork.getChanged() != null) {
-            chouetteNetwork.setVersionDate(TimeUtil.toJodaLocalDateTime(netexNetwork.getChanged()).toLocalDate());
+            chouetteNetwork.setVersionDate(netexNetwork.getChanged().toLocalDate());
         }
 
         chouetteNetwork.setName(netexNetwork.getName().getValue());

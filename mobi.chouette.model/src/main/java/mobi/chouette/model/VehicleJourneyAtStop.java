@@ -7,23 +7,9 @@ import lombok.ToString;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalTime;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +25,13 @@ import java.util.List;
 		"vehicle_journey_id", "stop_point_id" }, name = "index_vehicle_journey_at_stops_on_stop_point_id"))
 @NoArgsConstructor
 @ToString(callSuper=true, exclude = { "vehicleJourney" })
-public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
+public class VehicleJourneyAtStop extends NeptuneIdentifiedObject implements JourneyAtStop{
 
 	private static final long serialVersionUID = 194243517715939830L;
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "vehicle_journey_at_stops_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
+	@GenericGenerator(name = "vehicle_journey_at_stops_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 		parameters = {
 			@Parameter(name = "sequence_name", value = "vehicle_journey_at_stops_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })
@@ -211,7 +197,7 @@ public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JoinColumn(name = "stop_point_id")
 	private StopPoint stopPoint;
 	

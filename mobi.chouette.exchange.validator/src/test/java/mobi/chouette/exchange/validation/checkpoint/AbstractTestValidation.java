@@ -1,15 +1,8 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -23,45 +16,28 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.ObjectReport;
 import mobi.chouette.exchange.report.ReportConstant;
-import mobi.chouette.exchange.validation.parameters.AccessLinkParameters;
-import mobi.chouette.exchange.validation.parameters.AccessPointParameters;
-import mobi.chouette.exchange.validation.parameters.CompanyParameters;
-import mobi.chouette.exchange.validation.parameters.ConnectionLinkParameters;
-import mobi.chouette.exchange.validation.parameters.FieldParameters;
-import mobi.chouette.exchange.validation.parameters.GroupOfLineParameters;
-import mobi.chouette.exchange.validation.parameters.JourneyPatternParameters;
-import mobi.chouette.exchange.validation.parameters.LineParameters;
-import mobi.chouette.exchange.validation.parameters.NetworkParameters;
-import mobi.chouette.exchange.validation.parameters.RouteParameters;
-import mobi.chouette.exchange.validation.parameters.StopAreaParameters;
-import mobi.chouette.exchange.validation.parameters.TimetableParameters;
-import mobi.chouette.exchange.validation.parameters.TransportModeParameters;
-import mobi.chouette.exchange.validation.parameters.ValidationParameters;
-import mobi.chouette.exchange.validation.parameters.VehicleJourneyParameters;
+import mobi.chouette.exchange.validation.parameters.*;
 import mobi.chouette.exchange.validation.report.CheckPointErrorReport;
 import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validator.JobDataTest;
 import mobi.chouette.exchange.validator.ValidateParameters;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneLocalizedObject;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.testng.Arquillian;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
 import org.testng.Assert;
+import org.threeten.extra.Seconds;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Log4j
 public abstract class AbstractTestValidation  extends Arquillian implements Constant, ReportConstant {
@@ -284,7 +260,7 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 	{
 		if (first == null || last == null)
 			return Long.MIN_VALUE; // TODO
-		long diff = Seconds.secondsBetween(first, last).getSeconds();
+		long diff = Seconds.between(first, last).getAmount();
 		if (diff < 0)
 			diff += 86400L; // step upon midnight : add one day in seconds
 		return diff;
@@ -433,20 +409,20 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
         ret.setCheckStopParent(0);        
         ret.setCheckConnectionLinkOnPhysical(0);
         
-        ret.setModeCoach(new TransportModeParameters(1, 500, 10000, 90, 40, 20, 20));
-        ret.setModeAir(new TransportModeParameters(1, 200, 10000, 800, 700, 60, 1000));
-        ret.setModeWater(new TransportModeParameters(1, 200, 10000, 40, 5, 60, 20));
-        ret.setModeBus(new TransportModeParameters(1, 100, 40000, 1000, 5, 2000, 20));
-        ret.setModeFerry(new TransportModeParameters(1, 200, 10000, 40, 5, 60, 100));
-        ret.setModeWalk(new TransportModeParameters(1, 1, 10000, 6, 1, 10, 20));
-        ret.setModeMetro(new TransportModeParameters(1, 300 ,20000, 500, 25, 2000, 100));
-        ret.setModeTaxi(new TransportModeParameters(1, 500, 300000, 130, 20, 60, 20));
-        ret.setModeRail(new TransportModeParameters(1, 2000, 500000, 300, 20, 60, 100));
-        ret.setModeTram(new TransportModeParameters(1, 300,2000,50,20,30, 20));
-        ret.setModeTrolleyBus(new TransportModeParameters(1,  300,2000,50,20,30, 20));
-        ret.setModePrivateVehicle(new TransportModeParameters(1, 500, 300000, 130, 20, 60, 20));
-        ret.setModeBicycle(new TransportModeParameters(1, 300, 30000, 40, 10, 10, 20));
-        ret.setModeOther(new TransportModeParameters(1, 300, 30000, 40, 10, 10, 20));
+        ret.setModeCoach(new TransportModeParameters(1, 500, 10000, 90, 80,40, 20, 20));
+        ret.setModeAir(new TransportModeParameters(1, 200, 10000, 10000, 900, 700, 60, 1000));
+        ret.setModeWater(new TransportModeParameters(1, 200, 10000, 40, 30, 5, 60, 20));
+        ret.setModeBus(new TransportModeParameters(1, 100, 40000, 1000, 900,5, 2000, 20));
+        ret.setModeFerry(new TransportModeParameters(1, 200, 10000, 40, 30, 5, 60, 100));
+        ret.setModeWalk(new TransportModeParameters(1, 1, 10000, 6, 5, 1, 10, 20));
+        ret.setModeMetro(new TransportModeParameters(1, 300 ,20000, 500, 400, 25, 2000, 100));
+        ret.setModeTaxi(new TransportModeParameters(1, 500, 300000, 130, 110, 20, 60, 20));
+        ret.setModeRail(new TransportModeParameters(1, 2000, 500000, 300, 200, 20, 60, 100));
+        ret.setModeTram(new TransportModeParameters(1, 300,2000,50,40, 20,30, 20));
+        ret.setModeTrolleyBus(new TransportModeParameters(1,  300,2000,50,240, 0,30, 20));
+        ret.setModePrivateVehicle(new TransportModeParameters(1, 500, 300000, 130, 110, 20, 60, 20));
+        ret.setModeBicycle(new TransportModeParameters(1, 300, 30000, 40, 30, 10, 10, 20));
+        ret.setModeOther(new TransportModeParameters(1, 300, 30000, 40, 30, 10, 10, 20));
 
         return ret;
 	}

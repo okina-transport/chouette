@@ -1,22 +1,21 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
-import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalTime;
-import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
+import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +35,8 @@ public class ServiceJourneyProducer extends NetexProducer {
 
 		serviceJourney.setName(ConversionUtil.getMultiLingualString(vehicleJourney.getPublishedJourneyName()));
 		serviceJourney.setPublicCode(vehicleJourney.getPublishedJourneyIdentifier());
+		// TODO : Check merge entur : La partie Publication n'est pas présente dans le model NETEX-FR Okina. Donc le lien ici ne peut pas fonctionner. A voir la récup du Netex Entur dans le Netex-FR.
+		//serviceJourney.setPublication(ConversionUtil.toPublicationEnumeration(vehicleJourney.getPublication()));
 
 		if (vehicleJourney.getPrivateCode()!=null){
 			serviceJourney.setPrivateCode(new PrivateCodeStructure().withValue(vehicleJourney.getPrivateCode()));
@@ -108,7 +109,7 @@ public class ServiceJourneyProducer extends NetexProducer {
 				if (departureTime != null) {
 					if ((i + 1 < vehicleJourneyAtStops.size())) {
 						NetexTimeConversionUtil.populatePassingTimeUtc(timetabledPassingTime, false, vehicleJourneyAtStop);
-						timetabledPassingTime.setDepartureTime(TimeUtil.toLocalTimeFromJoda(departureTime));
+						timetabledPassingTime.setDepartureTime(departureTime);
 						if (vehicleJourneyAtStop.getDepartureDayOffset() > 0) {
 							timetabledPassingTime.setDepartureDayOffset(BigInteger.valueOf(vehicleJourneyAtStop.getDepartureDayOffset()));
 						}
@@ -117,7 +118,7 @@ public class ServiceJourneyProducer extends NetexProducer {
 				}
 
 				passingTimesStruct.getTimetabledPassingTime().add(timetabledPassingTime);
-
+				
 				NoticeProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, exportableNetexData.getNoticeAssignmentsTimetableFrame(), vehicleJourneyAtStop.getFootnotes(), vehicleJourneyAtStop);
 			}
 
@@ -143,8 +144,8 @@ public class ServiceJourneyProducer extends NetexProducer {
 					if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
 						netexFSP.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
 					}
-					netexFSP.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-					netexFSP.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+					netexFSP.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+					netexFSP.setMinimumBookingPeriod(bookingArrangement.getMinimumBookingPeriod());
 
 					// TODO à vérifier profil IDFM/Norvégien
 					//netexFSP.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));

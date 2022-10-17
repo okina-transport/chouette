@@ -1,25 +1,13 @@
 package mobi.chouette.exchange.validation.report;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneIdentifiedObject;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NamingUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @ToString (exclude={"object"})
@@ -203,7 +191,7 @@ public class DataLocation {
 	//
 	// }
 
-	public class Path {
+	public static class Path {
 		@Getter
 		String objectClass;
 		@Getter

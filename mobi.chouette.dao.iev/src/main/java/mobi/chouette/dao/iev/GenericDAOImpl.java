@@ -1,25 +1,13 @@
 package mobi.chouette.dao.iev;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.Table;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.google.common.collect.Iterables;
 import mobi.chouette.dao.GenericDAO;
-
 import org.hibernate.Session;
 
-import com.google.common.collect.Iterables;
+import javax.persistence.*;
+import javax.persistence.criteria.*;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 
@@ -87,12 +75,32 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 	}
 
 
+	/**
+	 * Find entities by object ids.
+	 * @param objectIds
+	 * @return
+	 */
 	@Override
 	public List<T> findByObjectId(final Collection<String> objectIds) {
-		// System.out.println("GenericDAOImpl.findByObjectId() : " + objectIds);
+		return findByObjectId(objectIds, true);
+	}
+
+	/**
+	 * Find entities by object ids, without flushing the session first for performance.
+	 * This assumes that there is no pending update in the persistence context
+	 * @param objectIds
+	 * @return
+	 */
+	@Override
+	public List<T> findByObjectIdNoFlush(final Collection<String> objectIds) {
+		return findByObjectId(objectIds, false);
+	}
+
+	private List<T> findByObjectId(final Collection<String> objectIds, boolean flush) {
 		List<T> result = null;
-		if (objectIds.isEmpty()) return result;
-		
+		if (objectIds.isEmpty())
+			return result;
+
 		Iterable<List<String>> iterator = Iterables.partition(objectIds, 32000);
 		for (List<String> ids : iterator) {
 			CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -101,10 +109,13 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 			Predicate predicate = builder.in(root.get("objectId")).value(ids);
 			criteria.where(predicate);
 			TypedQuery<T> query = em.createQuery(criteria);
+			if(!flush) {
+				query.setFlushMode(FlushModeType.COMMIT);
+			}
 			if (result == null)
-			   result = query.getResultList();
+				result = query.getResultList();
 			else
-			   result.addAll(query.getResultList());
+				result.addAll(query.getResultList());
 		}
 		return result;
 	}
@@ -142,10 +153,9 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 	
 	@Override
 	public int truncate() {
-		String query = new StringBuilder("TRUNCATE TABLE ")
-        .append(type.getAnnotation(Table.class).name())
-        .append(" CASCADE")
-        .toString();        
+		String query = "TRUNCATE TABLE " +
+				type.getAnnotation(Table.class).name() +
+				" CASCADE";
         return em.createNativeQuery(query).executeUpdate();
 	}
 
@@ -168,5 +178,5 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 			em.detach(object);
 		}
 	}
-	
+
 }

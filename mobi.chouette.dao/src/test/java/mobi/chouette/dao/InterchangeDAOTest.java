@@ -1,17 +1,5 @@
 package mobi.chouette.dao;
 
-import java.io.File;
-import java.sql.SQLException;
-
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.ScheduledStopPoint;
@@ -19,16 +7,21 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.Duration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.transaction.*;
+import java.io.File;
+import java.sql.SQLException;
+import java.time.Duration;
 
 @Log4j
 public class InterchangeDAOTest extends Arquillian {
@@ -74,17 +67,17 @@ public class InterchangeDAOTest extends Arquillian {
 			interchange.setGuaranteed(Boolean.TRUE);
 			interchange.setPlanned(Boolean.TRUE);
 			interchange.setStaySeated(Boolean.TRUE);
-			interchange.setMaximumWaitTime(Duration.standardSeconds(3661));
-			interchange.setMinimumTransferTime(Duration.standardSeconds(7322));
+			interchange.setMaximumWaitTime(Duration.ofSeconds(3661));
+			interchange.setMinimumTransferTime(Duration.ofSeconds(7322));
 			interchange.setName("Test interchange");
 			interchange.setPriority(1);
 
-			interchange.setConsumerVehicleJourneyObjectid("TST:" + Interchange.VEHICLEJOURNEY_KEY + ":1");
+			interchange.setConsumerVehicleJourneyObjectid("TST:" + Interchange.SERVICEJOURNEY_KEY + ":1");
 			interchange.setConsumerStopPointObjectid("TST:" + ObjectIdTypes.SCHEDULED_STOP_POINT_KEY + ":1");
 			interchange.setConsumerVisitNumber(2);
 
 
-			interchange.setFeederVehicleJourneyObjectid("TST:" + Interchange.VEHICLEJOURNEY_KEY + ":2");
+			interchange.setFeederVehicleJourneyObjectid("TST:" + Interchange.SERVICEJOURNEY_KEY + ":2");
 			interchange.setFeederStopPointObjectid("TST:" + ObjectIdTypes.SCHEDULED_STOP_POINT_KEY + ":2");
 			interchange.setFeederVisitNumber(3);
 
@@ -154,11 +147,11 @@ public class InterchangeDAOTest extends Arquillian {
 			
 			
 			VehicleJourney j1 = new VehicleJourney();
-			j1.setObjectId("TST:"+VehicleJourney.VEHICLEJOURNEY_KEY+":1");
+			j1.setObjectId("TST:"+VehicleJourney.SERVICEJOURNEY_KEY+":1");
 			vehicleJourneyDao.create(j1);
 			
 			VehicleJourney j2 = new VehicleJourney();
-			j2.setObjectId("TST:"+VehicleJourney.VEHICLEJOURNEY_KEY+":2");
+			j2.setObjectId("TST:"+VehicleJourney.SERVICEJOURNEY_KEY+":2");
 			vehicleJourneyDao.create(j2);
 			
 			

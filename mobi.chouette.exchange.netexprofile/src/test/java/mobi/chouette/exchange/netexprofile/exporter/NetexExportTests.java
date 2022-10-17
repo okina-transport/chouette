@@ -5,9 +5,7 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.CodespaceDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.netexprofile.DummyChecker;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.NetexTestUtils;
@@ -43,6 +41,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,10 +58,16 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
     private CodespaceDAO codespaceDao;
 
     @EJB
+    private BlockDAO blockDao;
+
+    @EJB
     private LineDAO lineDao;
 
     @EJB
     private StopAreaDAO stopAreaDao;
+
+    @EJB
+    private JourneyFrequencyDAO journeyFrequencyDAO;
 
     @PersistenceContext(unitName = "referential")
     private EntityManager em;
@@ -231,17 +236,39 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
     }
 
     private void clearOldDatabaseRecords() throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        log.info("Dumping old codespace records...");
-        codespaceDao.deleteAll();
-        codespaceDao.flush();
-        lineDao.deleteAll();
-        lineDao.flush();
-        stopAreaDao.deleteAll();
-        stopAreaDao.flush();
+        try {
+            utx.begin();
 
-        utx.commit();
+            em.joinTransaction();
+            log.info("Dumping old codespace records...");
+
+            codespaceDao.deleteAll();
+            codespaceDao.flush();
+
+            blockDao.deleteAll();
+            blockDao.flush();
+
+            journeyFrequencyDAO.deleteAll();
+            journeyFrequencyDAO.flush();
+
+            lineDao.deleteAll();
+            lineDao.flush();
+
+            stopAreaDao.deleteAll();
+            stopAreaDao.flush();
+
+            utx.commit();
+
+        } catch (RuntimeException ex) {
+            Throwable cause = ex.getCause();
+            while (cause != null) {
+                log.error(cause);
+                if (cause instanceof SQLException)
+                    traceSqlException((SQLException) cause);
+                cause = cause.getCause();
+            }
+            throw ex;
+        }
     }
 
     private void insertCodespaceRecords(List<Codespace> codespaces) throws Exception {
@@ -611,6 +638,53 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
 
     }
 
+    @Test(groups = {"ExportBlocks"}, description = "Export Plugin should export file")
+    public void exportLineWithCommonBlocks() throws Exception {
+        importLines("avinor_single_line_with_blocks.zip", 2, 1, Arrays.asList(
+                createCodespace(null, "NSR", "http://www.rutebanken.org/ns/nsr"),
+                createCodespace(null, "AVI", "http://www.rutebanken.org/ns/avi"))
+        );
+
+        log.info("*********IMPORT COMPLETE, STARTING EXPORT**********@");
+
+        Context context = initExportContext();
+        NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+        configuration.setValidateAfterExport(true);
+        configuration.setAddMetadata(false);
+        configuration.setReferencesType("line");
+        configuration.setExportStops(true);
+        configuration.setExportBlocks(true);
+        configuration.setDefaultCodespacePrefix("AVI");
+
+        Command command = CommandFactory.create(initialContext, NetexprofileExporterCommand.class.getName());
+
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
+        NetexTestUtils.verifyValidationReport(context);
+
+        NetexTestUtils.verifyValidationReport(context);
+        ActionReport report = (ActionReport) context.get(REPORT);
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        Assert.assertEquals(report.getFiles().size(), 2, "file reported");
+
+        for (FileReport info : report.getFiles()) {
+            Reporter.log(info.toString(),true);
+        }
+
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
+
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+            Assert.assertEquals(info.getStatus(), ActionReporter.OBJECT_STATE.OK, "line status");
+            Reporter.log(info.toString(), true);
+        }
+
+    }
+
+
     @Test(groups = {"ExportLine"}, description = "Export Plugin should export file")
     public void exportLineWithSameLineInterchanges() throws Exception {
 
@@ -752,6 +826,14 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
             if (cp.getState().equals(ValidationReporter.RESULT.NOK)) {
                 Reporter.log(cp.toString(), true);
             }
+        }
+    }
+
+
+    private void traceSqlException(SQLException ex) {
+        while (ex.getNextException() != null) {
+            ex = ex.getNextException();
+            log.error(ex);
         }
     }
 

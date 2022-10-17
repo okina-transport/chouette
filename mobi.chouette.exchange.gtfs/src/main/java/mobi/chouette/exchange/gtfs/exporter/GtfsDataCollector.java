@@ -2,30 +2,31 @@ package mobi.chouette.exchange.gtfs.exporter;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
+import mobi.chouette.exchange.exporter.ExportableData;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.joda.time.LocalDate;
 
-import java.util.Collection;
+import java.time.LocalDate;
 
 @Log4j
 public class GtfsDataCollector extends DataCollector {
-	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-		boolean res = collect(collection, line, startDate, endDate, false, false);
+	public GtfsDataCollector(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
+		super(collection, line, startDate, endDate, false, false, true);
+	}
+
+	@Override
+	public boolean collect() {
+		boolean res = super.collect();
 		if (res) {
+			// TODO : Check merge entur Le Agency est décris par Entur et nous non. Je sais pas ce qui est adapté
 //			collectAgencyCompany(line, collection);
 			collectOperatorCompany(line, collection);
 		}
 		return res;
-	}
-
-	public boolean collect(ExportableData collection, Collection<StopArea> stopAreas) {
-		return collect(collection, stopAreas, false, false);
-
 	}
 
 	/**

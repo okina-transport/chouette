@@ -3,10 +3,10 @@ package mobi.chouette.exchange.netexprofile.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.CodespaceDAO;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
@@ -56,7 +56,11 @@ public class NetexInitImportCommand implements Command, Constant {
 
 			NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 			context.put(IMPORTER, importer);
-			context.put(NETEX_XPATH_COMPILER, importer.getXPathCompiler());
+
+			if(parameters.isValidateAgainstProfile()) {
+				context.put(NETEX_XPATH_COMPILER, importer.getXPathCompiler());
+			}
+
 			context.put(REFERENTIAL, new Referential());
 			context.put(NETEX_REFERENTIAL, new NetexReferential());
 			context.put(VALIDATION_DATA, new ValidationData());
@@ -109,7 +113,7 @@ public class NetexInitImportCommand implements Command, Constant {
 			log.error(e, e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

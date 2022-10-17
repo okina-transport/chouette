@@ -1,19 +1,17 @@
 package mobi.chouette.exchange.gtfs.importer;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.gtfs.validation.Constant;
 import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
 
 @Log4j
 public class GtfsValidationRulesCommand implements Command, Constant {
@@ -30,7 +28,7 @@ public class GtfsValidationRulesCommand implements Command, Constant {
 			context.put(GTFS_REPORTER, gtfsValidationReporter);
 		}
 		
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		JamonUtils.logMagenta(log, monitor);
 		return SUCCESS;
 	}
 

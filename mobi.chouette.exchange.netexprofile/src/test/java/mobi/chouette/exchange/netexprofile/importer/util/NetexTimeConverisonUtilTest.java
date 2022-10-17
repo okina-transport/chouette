@@ -1,13 +1,12 @@
 package mobi.chouette.exchange.netexprofile.importer.util;
 
-import java.math.BigInteger;
-import java.time.LocalTime;
-
+import mobi.chouette.model.VehicleJourneyAtStop;
 import org.rutebanken.netex.model.TimetabledPassingTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import mobi.chouette.model.VehicleJourneyAtStop;
+import java.math.BigInteger;
+import java.time.LocalTime;
 
 public class NetexTimeConverisonUtilTest {
 
@@ -23,7 +22,7 @@ public class NetexTimeConverisonUtilTest {
 		
 		NetexTimeConversionUtil.parsePassingTime(tpt, false, vj);
 		
-		Assert.assertEquals(vj.getDepartureTime().getHourOfDay(), 18);
+		Assert.assertEquals(vj.getDepartureTime().getHour(), 18);
 		Assert.assertEquals(vj.getDepartureDayOffset(), 0);
 		
 		NetexTimeConversionUtil.populatePassingTimeUtc(tpt, false, vj);
@@ -43,7 +42,7 @@ public class NetexTimeConverisonUtilTest {
 		
 		NetexTimeConversionUtil.parsePassingTime(tpt, false, vj);
 		
-		Assert.assertEquals(vj.getDepartureTime().getHourOfDay(), 1);
+		Assert.assertEquals(vj.getDepartureTime().getHour(), 1);
 		Assert.assertEquals(vj.getDepartureDayOffset(), 1);
 		
 		NetexTimeConversionUtil.populatePassingTimeUtc(tpt, false, vj);

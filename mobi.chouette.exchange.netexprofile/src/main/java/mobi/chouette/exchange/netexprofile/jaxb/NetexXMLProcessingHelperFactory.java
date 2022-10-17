@@ -40,6 +40,7 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.model.NetexProfileVersion;
 import mobi.chouette.exchange.netexprofile.parser.xml.PublicactionDeliveryVersionAttributeReader;
 import mobi.chouette.exchange.netexprofile.parser.xml.SkippingXMLStreamReaderFactory;
+
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -62,7 +63,7 @@ public class NetexXMLProcessingHelperFactory {
 		Schema schema = netexSchema.get(version);
 
 		if (schema == null) {
-			log.info("Initializing Netex schema version "+version+", this may take a few seconds");
+			log.info("Initializing Netex schema version " + version + ", this may take a few seconds");
 			schema = new NeTExValidator(version).getSchema();
 			netexSchema.put(version, schema);
 		}
@@ -77,13 +78,23 @@ public class NetexXMLProcessingHelperFactory {
 
 		if (netexSchemaVersion != null) {
 			switch (netexSchemaVersion) {
-			case "1.04":
-				return NetexVersion.V1_0_4beta;
-			case "1.07":
-				return NetexVersion.V1_0_7;
-			case "1.08":
-				return NetexVersion.v1_0_8;
-			default:
+				case "1.04":
+					return NetexVersion.V1_0_4beta;
+				case "1.07":
+					return NetexVersion.V1_0_7;
+				case "1.08":
+					return NetexVersion.v1_0_8;
+				case "1.09":
+					return NetexVersion.v1_0_9;
+				case "1.10":
+					return NetexVersion.v1_10;
+				case "1.11":
+					return NetexVersion.v1_11;
+				case "1.12":
+					return NetexVersion.v1_12;
+				case "1.13":
+					return NetexVersion.v1_13;
+				default:
 
 			}
 		}

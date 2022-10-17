@@ -1,23 +1,17 @@
 package mobi.chouette.exchange.neptune.model;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mobi.chouette.exchange.neptune.model.facility.FacilityFeature;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneLocalizedObject;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.util.List;
 
 /**
  * Chouette Facility : specific feature on different kind of Public Transport
@@ -36,7 +30,7 @@ public class Facility extends NeptuneLocalizedObject
 
    @Getter
 	@Setter
-	@GenericGenerator(name = "facilities_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
+	@GenericGenerator(name = "facilities_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
 		parameters = {
 			@Parameter(name = "sequence_name", value = "facilities_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })

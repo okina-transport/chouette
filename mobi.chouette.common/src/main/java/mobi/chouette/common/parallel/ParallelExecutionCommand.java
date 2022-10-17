@@ -1,30 +1,23 @@
 package mobi.chouette.common.parallel;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 @Log4j
 public class ParallelExecutionCommand implements Command {
@@ -46,7 +39,10 @@ public class ParallelExecutionCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 
 		if (context == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Context is null");
+		}
+		if (commands.size() == 0) {
+			throw new IllegalStateException("No command to execute");
 		}
 		boolean result = SUCCESS;
 		Monitor monitor = MonitorFactory.start(COMMAND);
@@ -91,14 +87,14 @@ public class ParallelExecutionCommand implements Command {
 			result = ERROR;
 		} finally {
 			executor.shutdown();
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 
 		return result;
 	}
 
-	private class CommandTask implements Callable<Boolean> {
+	private static class CommandTask implements Callable<Boolean> {
 
 		private Command command;
 

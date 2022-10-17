@@ -3,48 +3,27 @@ package mobi.chouette.exchange.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.CategoriesForLinesDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.VariationsDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.exchange.importer.updater.LineOptimiser;
-import mobi.chouette.exchange.importer.updater.LineUpdater;
-import mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater;
-import mobi.chouette.exchange.importer.updater.StopAreaIdMapper;
-import mobi.chouette.exchange.importer.updater.Updater;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.dao.*;
+import mobi.chouette.exchange.importer.updater.*;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.JourneyFrequency;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -55,11 +34,13 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -99,6 +80,7 @@ public class LineRegisterCommand implements Command {
 
     @Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@TransactionTimeout(value = 30, unit = TimeUnit.MINUTES)
 	public boolean execute(Context context) throws Exception {
 
 		boolean result = ERROR;
@@ -164,7 +146,7 @@ public class LineRegisterCommand implements Command {
 				optimiser.initialize(cache, referential);
 
 				// Point d'arrêt existant
-
+// TODO : Check merge entur : ce bloc de code n'est pas présent sur Entur, a supprimer a priori. (Il était déjà commenté, j'ai laissé comme ça)
 //				// TODO okina : à revoir, pas stable a priori
 //				for(StopArea oldValueStopArea : cache.getStopAreas().values()){
 //					for(StopArea newValueStopArea : referential.getStopAreas().values()){
@@ -179,7 +161,7 @@ public class LineRegisterCommand implements Command {
 //					}
 //				}
 
-	
+
 				Line oldValue = cache.getLines().get(newValue.getObjectId());
 				lineUpdater.update(context, oldValue, newValue);
 				if(oldValue.getCategoriesForLine() == null){
@@ -227,19 +209,22 @@ public class LineRegisterCommand implements Command {
 						log.error(e.getMessage());
 						e = e.getCause();
 					}
-					if (e instanceof SQLException) {
+					if (e instanceof SQLException && ((SQLException) e).getNextException()!= null) {
 						e = ((SQLException) e).getNextException();
 						reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.LINE, ERROR_CODE.WRITE_ERROR,  e.getMessage());
-						
+						reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+
 					} else {
 						reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.LINE, ERROR_CODE.INTERNAL_ERROR,  e.getMessage());
+						reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, e.getMessage());
 					}
 				} else {
 					reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.LINE, ERROR_CODE.INTERNAL_ERROR,  ex.getMessage());
+					reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
 				}
 				throw ex;
 			} finally {
-				log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+				JamonUtils.logMagenta(log, monitor);
 				
 	//			monitor = MonitorFactory.getTimeMonitor("LineOptimiser");
 	//			if (monitor != null)
@@ -280,7 +265,7 @@ public class LineRegisterCommand implements Command {
 			}
 		} else {
 			log.info("skipping obsolete line : " + newValue.getObjectId());
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 	}
@@ -386,8 +371,8 @@ public class LineRegisterCommand implements Command {
 		// VehicleJourneyAtStop newValue)
 		
 
-		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 		if (keepBoardingAlighting){
 			Optional<BoardingAlightingPossibilityEnum> currentBoardingAlightingPossibilityOpt = getActualBordingAlightingPossibility(vehicleJourney, vehicleJourneyAtStop);
@@ -399,7 +384,7 @@ public class LineRegisterCommand implements Command {
 		buffer.write(vehicleJourneyAtStop.getObjectVersion().toString());
 		buffer.append(SEP);
 		if(vehicleJourneyAtStop.getCreationTime() != null) {
-			buffer.write(dateTimeFormat.print(vehicleJourneyAtStop.getCreationTime()));
+			buffer.write(dateTimeFormat.format(vehicleJourneyAtStop.getCreationTime()));
 		} else {
 			buffer.write(NULL);
 		}
@@ -415,12 +400,12 @@ public class LineRegisterCommand implements Command {
 		buffer.write(stopPoint.getId().toString());
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getArrivalTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getArrivalTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getArrivalTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getDepartureTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getDepartureTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getDepartureTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);

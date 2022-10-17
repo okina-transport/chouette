@@ -1,22 +1,21 @@
 package mobi.chouette.exchange.neptune.exporter.util;
 
-import org.joda.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import mobi.chouette.exchange.neptune.model.PTLink;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.NeptuneUtil;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class NeptuneObjectUtil extends NeptuneUtil {
 
 
 	/**
 	 * build PTLink list of route
-	 * @throws NeptuneException 
 	 */
 	public static List<PTLink> getPtLinks(Route route)
 	{

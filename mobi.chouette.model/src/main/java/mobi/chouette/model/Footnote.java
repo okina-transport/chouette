@@ -1,21 +1,16 @@
 package mobi.chouette.model;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Chouette Footnote : a note for vehicle journeys
@@ -40,7 +35,7 @@ public class Footnote extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "footnotes_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "footnotes_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "footnotes_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "footnotes_id_seq")
@@ -101,5 +96,10 @@ public class Footnote extends NeptuneIdentifiedObject {
 	@Setter
 	@Transient
 	private String key;
+
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "footnote", cascade = { CascadeType.PERSIST})
+	private List<FootNoteAlternativeText> alternativeTexts = new ArrayList<>();
 
 }

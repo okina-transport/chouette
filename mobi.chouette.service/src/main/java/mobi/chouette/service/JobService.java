@@ -16,7 +16,7 @@ import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Link;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;

@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.neptune.exporter.producer;
 
-import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.List;
-
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.neptune.JsonExtension;
 import mobi.chouette.model.Footnote;
@@ -13,14 +9,17 @@ import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.type.DropOffTypeEnum;
 import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.LocalTime;
 import org.trident.schema.trident.BoardingAlightingPossibilityType;
 import org.trident.schema.trident.TransportModeNameType;
 import org.trident.schema.trident.VehicleJourneyAtStopType;
 import org.trident.schema.trident.VehicleJourneyType;
+
+import java.math.BigInteger;
+import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.List;
 
 public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJourneyType, VehicleJourney> implements
 		JsonExtension {

@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -20,7 +14,6 @@ import mobi.chouette.exchange.validator.JobDataTest;
 import mobi.chouette.exchange.validator.ValidateParameters;
 import mobi.chouette.exchange.validator.ValidatorCommand;
 import mobi.chouette.model.Line;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -32,6 +25,11 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class ValidationNominal extends AbstractTestValidation {
@@ -126,10 +124,13 @@ public class ValidationNominal extends AbstractTestValidation {
 		unchecked.add("3-VehicleJourney-6");
 		unchecked.add("3-VehicleJourney-7");
 		unchecked.add("3-VehicleJourney-8");
-		
+		// no route points
+		unchecked.add("3-Route-2");
+
 		List<String> expectedErrors = new ArrayList<>();
 		expectedErrors.add("rutebanken_3-StopPoint-2");
 		expectedErrors.add("3-JourneyPattern-4");
+		expectedErrors.add("3-JourneyPattern-5");
 
 		// no route points
 		unchecked.add("3-Route-rutebanken-3");
@@ -144,6 +145,8 @@ public class ValidationNominal extends AbstractTestValidation {
 				bLine2 = true;
 			if (checkPoint.getName().equals("3-Route-7"))
 				bRoute7 = true;
+			if (checkPoint.getName().equals("3-Route-2"))
+				bLine2 = true;
 			if (unchecked.contains(checkPoint.getName())) {
 				Assert.assertEquals(checkPoint.getState(), ValidationReporter.RESULT.UNCHECK, "checkPoint "
 						+ checkPoint.getName() + " must not be on level " + checkPoint.getState());

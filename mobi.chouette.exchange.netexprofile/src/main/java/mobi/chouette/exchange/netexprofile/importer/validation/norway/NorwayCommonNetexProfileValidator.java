@@ -1,14 +1,5 @@
 package mobi.chouette.exchange.netexprofile.importer.validation.norway;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.util.DataLocationHelper;
@@ -19,12 +10,10 @@ import mobi.chouette.exchange.netexprofile.importer.validation.norway.StopPlaceR
 import mobi.chouette.exchange.netexprofile.util.NetexIdExtractorHelper;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.model.Codespace;
+import net.sf.saxon.s9api.*;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
+import javax.xml.xpath.XPathExpressionException;
+import java.util.*;
 
 public class NorwayCommonNetexProfileValidator extends AbstractNorwayNetexProfileValidator implements NetexProfileValidator {
 
@@ -41,7 +30,7 @@ public class NorwayCommonNetexProfileValidator extends AbstractNorwayNetexProfil
 
 
         // Find id-fields and to check for duplicates later
-		Set<IdVersion> localIdsInCommonFile = new HashSet<>(NetexIdExtractorHelper.collectEntityIdentificators(context, xpath, commonDom, new HashSet<>(Arrays.asList("Codespace"))));
+		Set<IdVersion> localIdsInCommonFile = new HashSet<>(NetexIdExtractorHelper.collectEntityIdentificators(context, xpath, commonDom, Set.of("Codespace")));
         ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
 		for(IdVersion id : localIdsInCommonFile) {
             data.getDataLocations().put(id.getId(), DataLocationHelper.findDataLocation(id));
@@ -53,9 +42,10 @@ public class NorwayCommonNetexProfileValidator extends AbstractNorwayNetexProfil
             list.add(fileName);
 		}
 
-
 		@SuppressWarnings("unchecked")
 		Set<Codespace> validCodespaces = (Set<Codespace>) context.get(NETEX_VALID_CODESPACES);
+
+		verifyIdStructure(context, localIdsInCommonFile, ID_STRUCTURE_REGEXP, validCodespaces);
 
 		// Validate elements in common files
 		verifyAcceptedCodespaces(context, xpath, commonDom, validCodespaces);
@@ -159,6 +149,11 @@ public class NorwayCommonNetexProfileValidator extends AbstractNorwayNetexProfil
 			validateElementNotPresent(context, xpath, subLevel, "routes/Route", _1_NETEX_COMMON_SERVICE_FRAME_ROUTE);
 			validateElementNotPresent(context, xpath, subLevel, "journeyPatterns/JourneyPattern | journeyPatterns/ServiceJourneyPattern",
 					_1_NETEX_COMMON_SERVICE_FRAME_SERVICE_JOURNEY_PATTERN);
+
+			validateElementNotPresent(context, xpath, subLevel, "destinationDisplays/DestinationDisplay[not(FrontText) or normalize-space(FrontText) = '']",
+					_1_NETEX_SERVICE_FRAME_DESTINATION_DISPLAY_FRONTTEXT);
+			validateElementNotPresent(context, xpath, subLevel, "destinationDisplays/DestinationDisplay/vias/Via[not(DestinationDisplayRef)]",
+					_1_NETEX_SERVICE_FRAME_DESTINATION_DISPLAY_VIA_DESTINATIONDISPLAYREF);
 		}
 	}
 
@@ -179,6 +174,7 @@ public class NorwayCommonNetexProfileValidator extends AbstractNorwayNetexProfil
 				}
 				instance.addExternalReferenceValidator(new ServiceJourneyInterchangeIgnorer());
 				instance.addExternalReferenceValidator(new BlockJourneyReferencesIgnorerer());
+				instance.addExternalReferenceValidator(new TrainElementRegistryIdValidator());
 				context.put(NAME, instance);
 			}
 			return instance;

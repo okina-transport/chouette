@@ -6,36 +6,18 @@
  */
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.ws.rs.DefaultValue;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.PTDirectionEnum;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Chouette Route : An ordered list of StopPoints defining one single path
@@ -56,7 +38,7 @@ public class Route extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "routes_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "routes_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "routes_id_seq"),
 			@Parameter(name = "increment_size", value = "50")})
 	@GeneratedValue(generator = "routes_id_seq")
@@ -278,8 +260,10 @@ public class Route extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
+	public boolean hasAtLeastTwoStops() {
+		return getStopPoints().size() >= 2;
+	}
 
 }

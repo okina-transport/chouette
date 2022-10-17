@@ -68,30 +68,38 @@ public interface ObjectIdTypes {
 		public static final String SCHEDULED_STOP_POINT_KEY = "ScheduledStopPoint";
 	   /**
 	    * default objectId type for time slots
-	    */
+		*/
 	   public static final String TIMESLOT_KEY = "TimeSlot";
-	   /**
-	    * default objectId type for timetables
-	    */
-	   public static final String TIMETABLE_KEY = "Timetable";
-	   /**
-	    * default objectId type for timebands
-	    */
-	   public static final String TIMEBAND_KEY = "Timeband";
-	   /**
-	    * default objectId type for vehicle journeys
-	    */
-	   public static final String VEHICLEJOURNEY_KEY = "VehicleJourney";
+	/**
+	 * default objectId type for timetables
+	 */
+	public static final String TIMETABLE_KEY = "Timetable";
+	/**
+	 * default objectId type for timebands
+	 */
+	public static final String TIMEBAND_KEY = "Timeband";
 
-	   /**
-	    * default objectId type for vehicle journeys 
-	    */
-	   public static final String DESTINATIONDISPLAY_KEY = "DestinationDisplay";
-	   /**
-	    * default objectId type for interchanges
-	    */
-	   public static final String INTERCHANGE_KEY = "ServiceInterchange";
-	   /**
+	public static final String VEHICLEJOURNEY_KEY = "VehicleJourney";
+
+	/**
+	 * default objectId type for service journeys
+	 */
+	public static final String SERVICEJOURNEY_KEY = "ServiceJourney";
+
+	/**
+	 * default objectId type for service journeys
+	 */
+	public static final String DEADRUN_KEY = "ServiceJourney";
+
+	/**
+	 * default objectId type for vehicle journeys
+	 */
+	public static final String DESTINATIONDISPLAY_KEY = "DestinationDisplay";
+	/**
+	 * default objectId type for interchanges
+	 */
+	public static final String INTERCHANGE_KEY = "ServiceInterchange";
+	/**
 	    * default objectId type for notices/footnotes
 	    */
 	   public static final String FOOTNOTE_KEY = "Notice";

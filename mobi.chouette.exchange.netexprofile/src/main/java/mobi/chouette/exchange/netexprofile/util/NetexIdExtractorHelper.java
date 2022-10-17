@@ -1,21 +1,14 @@
 package mobi.chouette.exchange.netexprofile.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XPathSelector;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.s9api.*;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class NetexIdExtractorHelper {
 	public static List<IdVersion> collectEntityIdentificators(Context context, XPathCompiler xpath, XdmNode dom, Set<String> ignorableElementNames)
@@ -34,10 +27,10 @@ public class NetexIdExtractorHelper {
 		filterClause.append("//n:*[");
 		if (ignorableElementNames != null) {
 			for (String elementName : ignorableElementNames) {
-				filterClause.append("not(local-name(.)='" + elementName + "') and ");
+				filterClause.append("not(local-name(.)='").append(elementName).append("') and ");
 			}
 		}
-		filterClause.append("@" + attributeName + "]");
+		filterClause.append("@").append(attributeName).append("]");
 
 		XPathSelector selector = xpath.compile(filterClause.toString()).load();
 		selector.setContextItem(dom);

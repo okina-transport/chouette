@@ -1,18 +1,19 @@
 package mobi.chouette.exchange.netexprofile.parser.xml;
 
-import java.io.InputStream;
-import java.util.Set;
-
 import javax.xml.namespace.QName;
 import javax.xml.stream.StreamFilter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.InputStream;
+import java.util.Set;
+
+import static mobi.chouette.exchange.netexprofile.parser.xml.XMLParserUtil.getSecureXmlInputFactory;
 
 public class SkippingXMLStreamReaderFactory {
 
 	public static XMLStreamReader newXMLStreamReader(final InputStream is, final Set<QName> elementsToSkip) throws XMLStreamException {
-		XMLInputFactory factory = XMLInputFactory.newInstance();
+		XMLInputFactory factory = getSecureXmlInputFactory();
 		XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(is);
 		if (elementsToSkip.size() == 0) {
 			return xmlStreamReader;

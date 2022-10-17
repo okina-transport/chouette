@@ -7,6 +7,7 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.validation.AbstractNetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
@@ -35,14 +36,15 @@ public class NetexValidationCommand implements Command, Constant {
 
             result = !reporter.hasFileValidationErrors(context, fileName);
         } catch (Exception e) {
-            log.error("Netex validation failed ", e);
+            log.error("Error while validating NeTEx file " + fileName, e);
             throw e;
         } finally {
             AbstractNetexProfileValidator.resetContext(context);
-            log.info(Color.MAGENTA + "Profile validation finished " + fileName + " " + monitor.stop() + Color.NORMAL);
+            log.info(Color.MAGENTA + "Profile validation finished " + fileName + Color.NORMAL);
+            JamonUtils.logMagenta(log, monitor);
         }
         if (result == ERROR) {
-            log.error("Netex compliance failed");
+            log.info("NeTEx validation failed for file: " + fileName);
             reporter.addFileErrorInReport(context, fileName,
                     ActionReporter.FILE_ERROR_CODE.INVALID_FORMAT, "Netex compliance failed");
             if (!reporter.hasActionError(context))

@@ -1,47 +1,11 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.RouteSection;
+import org.rutebanken.netex.model.*;
 
-import org.rutebanken.netex.model.AvailabilityCondition;
-import org.rutebanken.netex.model.Branding;
-import org.rutebanken.netex.model.Codespace;
-import org.rutebanken.netex.model.DayType;
-import org.rutebanken.netex.model.DayTypeAssignment;
-import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.Direction;
-import org.rutebanken.netex.model.GroupOfLines;
-import org.rutebanken.netex.model.HeadwayJourneyGroup;
-import org.rutebanken.netex.model.JourneyPattern;
-import org.rutebanken.netex.model.Line;
-import org.rutebanken.netex.model.Line_VersionStructure;
-import org.rutebanken.netex.model.Network;
-import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.OperatingPeriod;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.Route;
-import org.rutebanken.netex.model.RouteLink;
-import org.rutebanken.netex.model.RoutePoint;
-import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.ServiceJourneyInterchange;
-import org.rutebanken.netex.model.ServiceJourneyPattern;
-import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
-import org.rutebanken.netex.model.ServiceLink;
-import org.rutebanken.netex.model.SiteConnection;
-import org.rutebanken.netex.model.StopPlace;
+import java.util.*;
 
 public class ExportableNetexData {
 
@@ -123,6 +87,18 @@ public class ExportableNetexData {
 
     @Getter
     @Setter
+    private List<DeadRun> deadRuns = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private List<DatedServiceJourney> datedServiceJourneys = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private List<Block> blocks = new ArrayList<>();
+
+    @Getter
+    @Setter
     private Map<String,Notice> sharedNotices = new HashMap<>();
 
     @Getter
@@ -148,6 +124,10 @@ public class ExportableNetexData {
     @Getter
     @Setter
     private Map<String,OperatingPeriod> sharedOperatingPeriods = new HashMap<>();
+
+    @Getter
+    @Setter
+    private Map<String, OperatingDay> sharedOperatingDays = new HashMap<>();
 
     @Getter
     @Setter
@@ -186,6 +166,7 @@ public class ExportableNetexData {
         journeyPatterns.clear();
         serviceJourneys.clear();
         headwayJourneys.clear();
+        datedServiceJourneys.clear();
         noticeAssignmentsServiceFrame.clear();
         noticeAssignmentsTimetableFrame.clear();
         serviceJourneyInterchanges.clear();
@@ -202,6 +183,7 @@ public class ExportableNetexData {
         sharedDayTypes.clear();
         sharedDayTypeAssignments.clear();
         sharedOperatingPeriods.clear();
+        sharedOperatingDays.clear();
         commonCondition = null;
         sharedCodespaces.clear();
         sharedNetworks.clear();

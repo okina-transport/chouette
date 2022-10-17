@@ -4,8 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
+import mobi.chouette.model.DatedServiceJourney;
+import mobi.chouette.model.DeadRun;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Interchange;
@@ -85,6 +88,15 @@ public class ExportableData {
 	private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
 	@Getter
 	@Setter
+	private List<DeadRun> deadRuns = new ArrayList<>();
+	@Getter
+	@Setter
+	private List<DatedServiceJourney> datedServiceJourneys = new ArrayList<>();
+	@Getter
+	@Setter
+	private Set<Block> blocks = new HashSet<>();
+	@Getter
+	@Setter
 	private List<JourneyPattern> journeyPatterns = new ArrayList<>();
 	@Getter
 	@Setter
@@ -105,6 +117,18 @@ public class ExportableData {
 	@Getter
 	@Setter
 	private Set<StopArea> sharedStops = new HashSet<>();
+
+	// TODO : Check merge entur : Les 2 instructions ci-dessous ont été repris de gtfs.exporter.ExportableData. La classe a été supprimée donc dans la partie gtfs pour la reprendre ici.
+	/**
+	 * Companies that are referred to as agencies by gtfs routes.
+	 */
+	@Getter
+	@Setter
+	private Set<Company> agencyCompanies = new HashSet<>();
+
+	@Getter
+	@Setter
+	private Set<Company> operatorCompanies = new HashSet<>();
 
 //	public Timetable findTimetable(String objectId) {
 //		for (Timetable tm : timetables) {
@@ -138,6 +162,7 @@ public class ExportableData {
 		restrictionConstraints.clear();
 		timetableMap.clear();
 		vehicleJourneys.clear();
+		datedServiceJourneys.clear();
 		journeyPatterns.clear();
 		routes.clear();
 		stopPoints.clear();
@@ -145,5 +170,7 @@ public class ExportableData {
 		interchanges.clear();
 		footnotes.clear();
 		scheduledStopPoints.clear();
+		agencyCompanies.clear();
+		operatorCompanies.clear();
 	}
 }

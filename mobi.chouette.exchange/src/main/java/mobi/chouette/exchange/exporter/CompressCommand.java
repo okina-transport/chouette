@@ -1,14 +1,8 @@
 package mobi.chouette.exchange.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
@@ -16,10 +10,14 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.file.FileStoreFactory;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import org.apache.commons.io.FileUtils;
+
+import javax.naming.InitialContext;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Log4j
 public class CompressCommand implements Command, Constant {
@@ -61,7 +59,7 @@ public class CompressCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

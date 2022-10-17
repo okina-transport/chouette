@@ -1,23 +1,17 @@
 package mobi.chouette.exchange.netexprofile.exporter.writer;
 
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.JOURNEY_INTERCHANGES;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.TIMETABLE_FRAME;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.VEHICLE_JOURNEYS;
+import mobi.chouette.common.Context;
+import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
+import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.ServiceJourneyInterchange;
-
-import mobi.chouette.common.Context;
-import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
-import org.rutebanken.netex.model.TemplateServiceJourney;
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
+import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.*;
 
 public class TimetableFrameWriter extends AbstractNetexWriter {
 
@@ -52,7 +46,12 @@ public class TimetableFrameWriter extends AbstractNetexWriter {
                     marshaller.marshal(netexFactory.createTemplateServiceJourney((TemplateServiceJourney) serviceJourney), writer);
                 }
             }
-            writer.writeEndElement();
+            for (DatedServiceJourney datedServiceJourney : exportableData.getDatedServiceJourneys()) {
+				marshaller.marshal(netexFactory.createDatedServiceJourney(datedServiceJourney), writer);
+			}
+			for (DeadRun deadRun : exportableData.getDeadRuns()) {
+				marshaller.marshal(netexFactory.createDeadRun(deadRun), writer);
+			}writer.writeEndElement();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

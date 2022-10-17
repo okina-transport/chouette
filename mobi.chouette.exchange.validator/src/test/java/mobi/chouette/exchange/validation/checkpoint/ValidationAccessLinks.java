@@ -1,17 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -27,7 +15,6 @@ import mobi.chouette.exchange.validator.JobDataTest;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.StopArea;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -38,7 +25,18 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class ValidationAccessLinks extends AbstractTestValidation {
@@ -351,7 +349,7 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 		}
 		double distance = AbstractTestValidation.distance(link.getAccessPoint(), link.getStopArea());
 		link.setLinkDistance(BigDecimal.valueOf(150000));
-		link.setDefaultDuration(link.getDefaultDuration().minus(19000));
+		link.setDefaultDuration(link.getDefaultDuration().minusMillis(19000));
 		link.setOccasionalTravellerDuration(link.getDefaultDuration());
 		link.setFrequentTravellerDuration(link.getDefaultDuration());
 		link.setMobilityRestrictedTravellerDuration(link.getDefaultDuration());

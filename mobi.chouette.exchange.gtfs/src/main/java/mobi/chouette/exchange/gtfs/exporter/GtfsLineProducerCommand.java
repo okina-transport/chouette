@@ -11,11 +11,13 @@ package mobi.chouette.exchange.gtfs.exporter;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.ConnectionLinkDAO;
+import mobi.chouette.exchange.exporter.ExportableData;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsRouteProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsServiceProducer;
@@ -29,21 +31,13 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NamingUtil;
-import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  *
@@ -83,18 +77,18 @@ public class GtfsLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate = null;
 			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
+				startDate = TimeUtil.toLocalDate(configuration.getStartDate());
 			}
 
 			LocalDate endDate = null;
 			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
+				endDate = TimeUtil.toLocalDate(configuration.getEndDate());
 			}
 
-			GtfsDataCollector collector = new GtfsDataCollector();
+			GtfsDataCollector collector = new GtfsDataCollector(collection, line, startDate, endDate);
 			collector.setConnectionLinkDAO(connectionLinkDao);
 
-			boolean cont = collector.collect(collection, line, startDate, endDate);
+			boolean cont = collector.collect();
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.JOURNEY_PATTERN,
 					collection.getJourneyPatterns().size());
@@ -119,7 +113,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;
@@ -144,33 +138,40 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		// utiliser la collection
 		if (!collection.getVehicleJourneys().isEmpty()) {
 			for (VehicleJourney vj : collection.getVehicleJourneys()) {
-				String tmKey = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
-				if (tmKey != null) {
-					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
 
-					if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(),idParams)) {
-						hasVj = true;
-						jps.add(vj.getJourneyPattern());
-						if (!timetables.containsKey(tmKey)) {
-							timetables.put(tmKey, new ArrayList<>(vj.getTimetables()));
+				String tmKey = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
+				if (vj.hasTimetables() && vj.isNeitherCancelledNorReplaced()) {
+					String timeTableServiceId = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
+					if (timeTableServiceId != null) {
+						IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), configuration.getIdSuffix(), configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+
+						if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(), idParams)) {
+							hasVj = true;
+							jps.add(vj.getJourneyPattern());
+							// TODO : Check merge entur : Le if du dessous est supprimé dans Entur. Doit-on le garder ?
+							if (!timetables.containsKey(tmKey)) {
+								timetables.put(tmKey, new ArrayList<>(vj.getTimetables()));
+							}
 						}
 					}
+
+				} // vj loop
+				for (JourneyPattern jp : jps) {
+					shapeProducer.save(jp, prefix, configuration.isKeepOriginalId());
 				}
-			} // vj loop
-			for (JourneyPattern jp : jps) {
-				shapeProducer.save(jp, prefix, configuration.isKeepOriginalId());
-			}
-			if (hasVj) {
-				IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
-				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseTpegHvt(),idParams);
-				hasLine = true;
-				if (metadata != null) {
-					metadata.getResources().add(
-							metadata.new Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
-									NeptuneObjectPresenter.getName(line)));
+				if (hasVj) {
+					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), configuration.getIdSuffix(), configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+					routeProducer.save(line, prefix, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams);
+					hasLine = true;
+					if (metadata != null) {
+						metadata.getResources().add(
+								new Metadata.Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
+										NeptuneObjectPresenter.getName(line)));
+					}
 				}
 			}
 		}
+
 		return hasLine;
 	}
 

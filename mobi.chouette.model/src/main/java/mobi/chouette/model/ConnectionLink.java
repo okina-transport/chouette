@@ -7,12 +7,12 @@ import lombok.ToString;
 import mobi.chouette.model.converter.ConnectionLinkTypeToStringConverter;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.type.UserNeedEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
-import org.joda.time.Duration;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,61 +140,61 @@ public class ConnectionLink extends NeptuneIdentifiedObject {
     @Column(name = "stairs_availability")
     private Boolean stairsAvailable = false;
 
-    /**
-     * medium time to follow the link <br/>
-     * null if unknown
-     *
-     * @param defaultDuration
-     * New value
-     * @return The actual value
-     */
-    @Getter
-    @Setter
-    @Column(name = "default_duration")
-    @Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
-    private Duration defaultDuration;
+	/**
+	 * medium time to follow the link <br/>
+	 * null if unknown
+	 * 
+	 * @param defaultDuration
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Column(name = "default_duration")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
+	private Duration defaultDuration;
 
-    /**
-     * time to follow the link for a frequent traveller <br/>
-     * null if unknown
-     *
-     * @param frequentTravellerDuration
-     * New value
-     * @return The actual value
-     */
-    @Getter
-    @Setter
-    @Column(name = "frequent_traveller_duration")
-    @Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
-    private Duration frequentTravellerDuration;
+	/**
+	 * time to follow the link for a frequent traveller <br/>
+	 * null if unknown
+	 * 
+	 * @param frequentTravellerDuration
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Column(name = "frequent_traveller_duration")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
+	private Duration frequentTravellerDuration;
 
-    /**
-     * time to follow the link for an occasional traveller <br/>
-     * null if unknown
-     *
-     * @param occasionalTravellerDuration
-     * New value
-     * @return The actual value
-     */
-    @Getter
-    @Setter
-    @Column(name = "occasional_traveller_duration")
-    @Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
-    private Duration occasionalTravellerDuration;
+	/**
+	 * time to follow the link for an occasional traveller <br/>
+	 * null if unknown
+	 * 
+	 * @param occasionalTravellerDuration
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Column(name = "occasional_traveller_duration")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
+	private Duration occasionalTravellerDuration;
 
-    /**
-     * time to follow the link for a traveller with mobility restriction <br/>
-     * null if unknown
-     *
-     * @param mobilityRestrictedTravellerDuration
-     * New value
-     * @return The actual value
-     */
-    @Getter
-    @Setter
-    @Column(name = "mobility_restricted_traveller_duration")
-    @Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
-    private Duration mobilityRestrictedTravellerDuration;
+	/**
+	 * time to follow the link for a traveller with mobility restriction <br/>
+	 * null if unknown
+	 * 
+	 * @param mobilityRestrictedTravellerDuration
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Column(name = "mobility_restricted_traveller_duration")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
+	private Duration mobilityRestrictedTravellerDuration;
 
     /**
      * link type

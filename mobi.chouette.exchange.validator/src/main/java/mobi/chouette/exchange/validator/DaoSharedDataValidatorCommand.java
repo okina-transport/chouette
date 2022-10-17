@@ -8,37 +8,23 @@
 
 package mobi.chouette.exchange.validator;
 
-import java.io.IOException;
-
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.ConnectionLinkDAO;
-import mobi.chouette.dao.GroupOfLineDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.NetworkDAO;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.dao.TimetableDAO;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 import mobi.chouette.exchange.validation.ValidationData;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 /**
  *
@@ -129,7 +115,7 @@ public class DaoSharedDataValidatorCommand implements Command, Constant {
 			result = validateSharedData.execute(context);
 			// daoContext.setRollbackOnly();
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

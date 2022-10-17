@@ -6,46 +6,22 @@ import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.exporter.producer.BrandingProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.JourneyPatternProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.LineProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetworkProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.OrganisationProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.RouteProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyInterchangeProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.StopPlaceProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.*;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Branding;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.GroupOfLine;
+import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.rutebanken.netex.model.AvailabilityCondition;
+import org.rutebanken.netex.model.DeadRun;
 import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.DestinationDisplayRefStructure;
-import org.rutebanken.netex.model.GroupOfLines;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.PointProjection;
-import org.rutebanken.netex.model.PointRefStructure;
-import org.rutebanken.netex.model.Projections_RelStructure;
-import org.rutebanken.netex.model.QuayRefStructure;
 import org.rutebanken.netex.model.RoutePoint;
 import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.Via_VersionedChildStructure;
-import org.rutebanken.netex.model.Vias_RelStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.Marshaller;
 import java.io.File;
@@ -54,15 +30,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.createUniqueId;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PASSENGER_STOP_ASSIGNMENT;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.POINT_PROJECTION;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.SCHEDULED_STOP_POINT;
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.*;
+import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.*;
 
 public class NetexLineDataProducer extends NetexProducer implements Constant {
 
@@ -74,6 +47,8 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 	private static JourneyPatternProducer journeyPatternProducer = new JourneyPatternProducer();
 	private static CalendarProducer calendarProducer = new CalendarProducer();
 	private static ServiceJourneyProducer serviceJourneyProducer = new ServiceJourneyProducer();
+	private static DeadRunProducer deadRunProducer = new DeadRunProducer();
+	private static DatedServiceJourneyProducer datedServiceJourneyProducer = new DatedServiceJourneyProducer();
 	private static ServiceJourneyInterchangeProducer serviceJourneyInterchangeProducer = new ServiceJourneyInterchangeProducer();
 	private static BrandingProducer brandingProducer = new BrandingProducer();
 
@@ -103,7 +78,7 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 			Metadata metadata = (Metadata) context.get(METADATA);
 			if (metadata != null) {
 				metadata.getResources().add(
-						metadata.new Resource(fileName, NeptuneObjectPresenter.getName(neptuneLine.getNetwork()), NeptuneObjectPresenter.getName(neptuneLine)));
+						new Metadata.Resource(fileName, NeptuneObjectPresenter.getName(neptuneLine.getNetwork()), NeptuneObjectPresenter.getName(neptuneLine)));
 			}
 		}
 	}
@@ -136,8 +111,22 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 		calendarProducer.produce(context, exportableData, exportableNetexData);
 
 		for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
-			ServiceJourney serviceJourney = serviceJourneyProducer.produce(context, vehicleJourney, exportableData.getLine());
-			exportableNetexData.getServiceJourneys().add(serviceJourney);
+			if(configuration.isExportBlocks() || vehicleJourney.isPublic()) {
+				ServiceJourney serviceJourney = serviceJourneyProducer.produce(context, vehicleJourney, exportableData.getLine());
+				exportableNetexData.getServiceJourneys().add(serviceJourney);
+			}
+		}
+
+		if (configuration.isExportBlocks()) {
+			for (mobi.chouette.model.DeadRun chouetteDeadRun : exportableData.getDeadRuns()) {
+				DeadRun deadRun = deadRunProducer.produce(context, chouetteDeadRun, exportableData.getLine());
+				exportableNetexData.getDeadRuns().add(deadRun);
+			}
+		}
+
+		for (DatedServiceJourney datedServiceJourney : exportableData.getDatedServiceJourneys()) {
+			 org.rutebanken.netex.model.DatedServiceJourney netexDatedServiceJourney = datedServiceJourneyProducer.produce(context, datedServiceJourney, exportableData.getLine());
+			exportableNetexData.getDatedServiceJourneys().add(netexDatedServiceJourney);
 		}
 
 		for (Interchange interchange : exportableData.getInterchanges()) {
@@ -238,7 +227,11 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 						}
 					} else {
 						throw new RuntimeException(
-								"RoutePoint with id : " + neptuneRoutePoint.getObjectId() + " is not contained in a StopArea. Cannot produce RoutePoint.");
+								"RoutePoint " + neptuneRoutePoint.getObjectId()
+										+ " refers to a ScheduledStopPoint "
+										+ neptuneRoutePoint.getScheduledStopPoint().getObjectId()
+										+ " (" + neptuneRoutePoint.getScheduledStopPoint().getName()
+										+ ") that is not contained in a StopArea.");
 					}
 				}
 			}
@@ -278,21 +271,29 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 	private void produceAndCollectScheduledStopPoints(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
 		for (mobi.chouette.model.Route route : routes) {
 			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-				for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-					if (stopPoint != null) {
-						collectScheduledStopPoint(stopPoint.getScheduledStopPoint(), exportableNetexData);
-					}
+				if(journeyPattern.hasOnlyDeadRuns()) {
+					journeyPattern.getStopPoints().stream().filter(Objects::nonNull).forEach(stopPoint -> collectScheduledStopPointForDeadRuns(stopPoint.getScheduledStopPoint(), exportableNetexData));
+				} else {
+					journeyPattern.getStopPoints().stream().filter(Objects::nonNull).forEach(stopPoint -> collectScheduledStopPointForVehicleJourneyAndRoute(stopPoint.getScheduledStopPoint(), exportableNetexData));
 				}
 			}
 			for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
-				collectScheduledStopPoint(routePoint.getScheduledStopPoint(), exportableNetexData);
+				collectScheduledStopPointForVehicleJourneyAndRoute(routePoint.getScheduledStopPoint(), exportableNetexData);
 			}
 		}
 	}
 
-	public void collectScheduledStopPoint(mobi.chouette.model.ScheduledStopPoint chouetteScheduledStopPoint, ExportableNetexData exportableNetexData) {
+	private void collectScheduledStopPointForDeadRuns(mobi.chouette.model.ScheduledStopPoint scheduledStopPoint, ExportableNetexData exportableNetexData) {
+		collectScheduledStopPoint(scheduledStopPoint, exportableNetexData, true);
+	}
+
+	private void collectScheduledStopPointForVehicleJourneyAndRoute(mobi.chouette.model.ScheduledStopPoint scheduledStopPoint, ExportableNetexData exportableNetexData) {
+		collectScheduledStopPoint(scheduledStopPoint, exportableNetexData, false);
+	}
+
+	private void collectScheduledStopPoint(mobi.chouette.model.ScheduledStopPoint chouetteScheduledStopPoint, ExportableNetexData exportableNetexData, boolean ignoreMissingStopAreaRef) {
 		if (chouetteScheduledStopPoint != null) {
-			if (isSet(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject())) {
+			if (ignoreMissingStopAreaRef || isSet(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject())) {
 
 				String scheduledStopPointId = chouetteScheduledStopPoint.getObjectId();
 
@@ -300,6 +301,7 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 					ScheduledStopPoint scheduledStopPoint = netexFactory.createScheduledStopPoint();
 					NetexProducerUtils.populateId(chouetteScheduledStopPoint, scheduledStopPoint);
 					scheduledStopPoint.setName(ConversionUtil.getMultiLingualString(chouetteScheduledStopPoint.getName()));
+					scheduledStopPoint.setTimingPointStatus(ConversionUtil.toTimingPointStatus(chouetteScheduledStopPoint.getTimingPointStatus()));
 					exportableNetexData.getSharedScheduledStopPoints().put(scheduledStopPointId, scheduledStopPoint);
 				}
 			} else {
@@ -362,22 +364,31 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 												  NetexprofileExportParameters parameters) {
 		for (mobi.chouette.model.Route route : routes) {
 			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-				for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-					if (stopPoint != null) {
-						collectStopAssignment(exportableNetexData, parameters, stopPoint.getScheduledStopPoint());
-					}
+				if(journeyPattern.hasOnlyDeadRuns()) {
+					journeyPattern.getStopPoints().stream().filter(Objects::nonNull).forEach(stopPoint -> collectStopAssignmentForDeadRuns(exportableNetexData, parameters, stopPoint.getScheduledStopPoint()));
+				} else {
+					journeyPattern.getStopPoints().stream().filter(Objects::nonNull).forEach(stopPoint -> collectStopAssignmentForVehicleJourneyAndRoute(exportableNetexData, parameters, stopPoint.getScheduledStopPoint()));
 				}
+
 			}
 			for (mobi.chouette.model.RoutePoint routePoint: route.getRoutePoints()){
 				if (routePoint.getScheduledStopPoint()!=null) {
-					collectStopAssignment(exportableNetexData, parameters, routePoint.getScheduledStopPoint());
+					collectStopAssignmentForVehicleJourneyAndRoute(exportableNetexData, parameters, routePoint.getScheduledStopPoint());
 				}
 			}
 		}
 	}
 
-	private void collectStopAssignment(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint) {
-		if (isSet(scheduledStopPoint)) {
+	private void collectStopAssignmentForDeadRuns(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint) {
+		collectStopAssignment(exportableNetexData, parameters, scheduledStopPoint, true);
+	}
+
+	private void collectStopAssignmentForVehicleJourneyAndRoute(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint) {
+		collectStopAssignment(exportableNetexData, parameters, scheduledStopPoint, false);
+	}
+
+	private void collectStopAssignment(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint, boolean ignoreMissingStopAreaRef) {
+		if (isSet(scheduledStopPoint) && scheduledStopPoint.getContainedInStopAreaRef().getObject() != null) {
 
 			String stopAssignmentIdSuffix = scheduledStopPoint.objectIdSuffix();
 			String stopAssignmentId = netexId(scheduledStopPoint.objectIdPrefix(), PASSENGER_STOP_ASSIGNMENT, stopAssignmentIdSuffix);
@@ -387,8 +398,10 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 				exportableNetexData.getSharedStopAssignments().put(stopAssignmentId, stopAssignment);
 			}
 		} else {
-			throw new RuntimeException(
-					"ScheduledStopPoint with id : " + scheduledStopPoint.getObjectId() + " is not contained in a StopArea. Cannot produce StopAssignment.");
+			if(!ignoreMissingStopAreaRef) {
+				throw new RuntimeException(
+						"ScheduledStopPoint with id : " + scheduledStopPoint.getObjectId() + " is not contained in a StopArea. Cannot produce StopAssignment.");
+			}
 		}
 	}
 
@@ -408,7 +421,7 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 			mobi.chouette.model.StopArea containedInStopArea = scheduledStopPoint.getContainedInStopAreaRef().getObject();
 			QuayRefStructure quayRefStruct = netexFactory.createQuayRefStructure();
 			NetexProducerUtils.populateReference(containedInStopArea, quayRefStruct, parameters.isExportStops());
-			stopAssignment.setQuayRef(netexFactory.createQuayRef(quayRefStruct));
+			stopAssignment.setQuayRef(netexFactory.createQuayRef(quayRefStruct).getValue());
 		}
 
 		return stopAssignment;

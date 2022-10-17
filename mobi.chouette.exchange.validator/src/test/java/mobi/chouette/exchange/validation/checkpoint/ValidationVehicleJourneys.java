@@ -1,15 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -23,14 +13,8 @@ import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.exchange.validator.DummyChecker;
 import mobi.chouette.exchange.validator.JobDataTest;
-import mobi.chouette.model.JourneyFrequency;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -39,10 +23,19 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class ValidationVehicleJourneys extends AbstractTestValidation {
@@ -115,7 +108,8 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 				.addClass(DummyChecker.class)
 				.addClass(JobDataTest.class)
 				.addClass(AbstractTestValidation.class)
-				.addClass(ValidationVehicleJourneys.class);
+				.addClass(ValidationVehicleJourneys.class)
+				.addClass(ValidationDatedServiceJourneys.class);
 		
 		result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
 				.addAsLibraries(jars.toArray(new File[0]))

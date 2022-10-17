@@ -1,17 +1,14 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
-
-import java.time.LocalDateTime;
-
-import org.rutebanken.netex.model.AuthorityRef;
+import mobi.chouette.common.Context;
+import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import org.rutebanken.netex.model.AuthorityRefStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 
-import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
-import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import java.time.LocalDateTime;
+
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 
 public class NetworkProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Network, mobi.chouette.model.Network> {
 
@@ -22,7 +19,7 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
         NetexProducerUtils.populateId(neptuneNetwork, netexNetwork);
 
         if (isSet(neptuneNetwork.getVersionDate())) {
-            LocalDateTime changedDateTime = TimeUtil.toLocalDateFromJoda(neptuneNetwork.getVersionDate()).atStartOfDay();
+            LocalDateTime changedDateTime = neptuneNetwork.getVersionDate().atStartOfDay();
             netexNetwork.setChanged(changedDateTime);
         }
 
@@ -37,7 +34,7 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
         netexNetwork.setDescription(ConversionUtil.getMultiLingualString(neptuneNetwork.getDescription()));
 
         if(neptuneNetwork.getCompany() != null) {
-            AuthorityRef authorityRef = netexFactory.createAuthorityRef();
+            AuthorityRefStructure authorityRef = netexFactory.createAuthorityRefStructure();
         	NetexProducerUtils.populateReference(neptuneNetwork.getCompany(), authorityRef, true);
             netexNetwork.setTransportOrganisationRef(netexFactory.createAuthorityRef(authorityRef));
         }

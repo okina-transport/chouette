@@ -1,12 +1,8 @@
 package mobi.chouette.exchange.validation.parameters;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import lombok.Data;
+
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "validation")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,7 +67,9 @@ import lombok.Data;
 		"checkVehicleJourney",
 		"vehicleJourney",
 		"checkInterchange",
-		"interchange"
+		"interchange",
+		"interchangeMaxDistance",
+		"interchangeMaxWaitSeconds"
 })
 public class ValidationParameters {
 
@@ -255,4 +253,9 @@ public class ValidationParameters {
 	@XmlElement(name = "interchange")
 	private InterchangeParameters interchange;
 
+	@XmlElement(name = "interchange_max_distance", defaultValue="1000")
+	private int interchangeMaxDistance = 1000;
+
+	@XmlElement(name = "interchange_max_wait_seconds", defaultValue="3600")
+	private int interchangeMaxWaitSeconds = 3600;
 }

@@ -1,25 +1,14 @@
 package mobi.chouette.dao;
 
+import com.google.common.collect.Iterables;
+import org.hibernate.Session;
+
+import javax.persistence.*;
+import javax.persistence.criteria.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.Table;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import mobi.chouette.model.NeptuneIdentifiedObject;
-import org.hibernate.Session;
-
-import com.google.common.collect.Iterables;
+import java.util.NoSuchElementException;
 
 public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 
@@ -89,12 +78,42 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 		return result;
 	}
 
-	
+
+	/**
+	 * Find entities by object ids.
+	 * @param objectIds
+	 * @return
+	 */
+	@Override
 	public List<T> findByObjectId(final Collection<String> objectIds) {
-		// System.out.println("GenericDAOImpl.findByObjectId() : " + objectIds);
+		return findByObjectId(objectIds, true);
+	}
+
+	/**
+	 * Find entities by object ids, without flushing the session first for performance.
+	 * This assumes that there is no pending update in the persistence context
+	 * @param objectIds
+	 * @return
+	 */
+	@Override
+	public List<T> findByObjectIdNoFlush(final Collection<String> objectIds) {
+        return findByObjectId(objectIds, false);
+	}
+
+	private List<T> findByObjectId(final Collection<String> objectIds, boolean flush) {
 		List<T> result = null;
 		if (objectIds.isEmpty())
-			return result;
+			return null;
+
+		// When there is only one objectId, it is faster to lookup by natural id as done in the findByObjectId() method.
+		if(objectIds.size() == 1) {
+			T entity = findByObjectId(objectIds.stream().findFirst().orElseThrow(NoSuchElementException::new));
+			if(entity == null) {
+				return Collections.emptyList();
+			} else {
+				return Collections.singletonList(entity);
+			}
+		}
 
 		Iterable<List<String>> iterator = Iterables.partition(objectIds, 32000);
 		for (List<String> ids : iterator) {
@@ -104,6 +123,9 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 			Predicate predicate = builder.in(root.get("objectId")).value(ids);
 			criteria.where(predicate);
 			TypedQuery<T> query = em.createQuery(criteria);
+			if(!flush) {
+				query.setFlushMode(FlushModeType.COMMIT);
+			}
 			if (result == null)
 				result = query.getResultList();
 			else
@@ -112,7 +134,6 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 		return result;
 	}
 
-	
 	public void create(final T entity) {
 		em.persist(entity);
 	}

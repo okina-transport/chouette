@@ -1,14 +1,12 @@
 package mobi.chouette.exchange.neptune.importer;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.importer.AbstractDisposeImportCommand;
 import mobi.chouette.exchange.neptune.Constant;
 import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
@@ -17,8 +15,8 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.model.util.Referential;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
 
 @Log4j
 public class NeptuneDisposeImportCommand extends AbstractDisposeImportCommand implements Constant {
@@ -57,7 +55,7 @@ public class NeptuneDisposeImportCommand extends AbstractDisposeImportCommand im
 			log.error(e, e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

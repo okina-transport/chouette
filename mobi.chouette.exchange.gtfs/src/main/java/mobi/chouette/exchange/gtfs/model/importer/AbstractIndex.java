@@ -1,12 +1,12 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractIndex<T> implements Index<T> {
 
@@ -36,7 +36,8 @@ public abstract class AbstractIndex<T> implements Index<T> {
 	protected boolean withValidation = false;
 
 	@ToString
-	class Token {
+    static
+    class Token {
 		int offset = -1;
 		int lenght = 0;
 	}

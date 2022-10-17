@@ -1,11 +1,16 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ContenerChecker;
+import mobi.chouette.common.Context;
+import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.chain.Command;
+import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -15,19 +20,12 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.ContenerChecker;
-import mobi.chouette.common.Context;
-import mobi.chouette.common.PropertyNames;
-import mobi.chouette.common.chain.Command;
-import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.persistence.hibernate.ContextHolder;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 @Log4j
 @Stateless(name = CopyCommand.COMMAND)
@@ -108,7 +106,7 @@ public class CopyCommand implements Command {
 			Monitor monitor = MonitorFactory.start(COMMAND);
 			ContextHolder.setContext(schema);
 			vehicleJourneyDAO.copy(buffer);
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 			ContextHolder.setContext(null);
 			log.info("VehicleJourney copy  ended successfully");
 			return null;

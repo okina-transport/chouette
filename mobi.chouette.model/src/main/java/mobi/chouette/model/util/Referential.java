@@ -116,6 +116,10 @@ public class Referential implements java.io.Serializable {
     private Map<String, VehicleJourney> vehicleJourneys = new HashMap<String, VehicleJourney>();
 
     @Getter
+	@Setter
+	private Map<String, DeadRun> deadRuns = new HashMap<String, DeadRun>();
+
+	@Getter
     @Setter
     private Map<String, AccessLink> accessLinks = new HashMap<String, AccessLink>();
 
@@ -170,6 +174,22 @@ public class Referential implements java.io.Serializable {
 
 
     @Getter
+	@Setter
+	private Map<String, FootNoteAlternativeText> footnoteAlternativeTexts = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, DatedServiceJourney> datedServiceJourneys = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Block> sharedBlocks = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Block> blocks = new HashMap<>();
+
+	@Getter
     @Setter
     private Map<String, Branding> brandings = new HashMap<>();
 
@@ -178,7 +198,9 @@ public class Referential implements java.io.Serializable {
     @Setter
     private Map<String, VehicleJourneyAtStop> vehicleJourneyAtStops = new HashMap<String, VehicleJourneyAtStop>();
 
-    public void clear(boolean cascade) {
+    @Getter
+	@Setter
+	private Map<String, DeadRunAtStop> deadRunAtStops = new HashMap<>();public void clear(boolean cascade) {
         if (cascade) {
             for (Line line : lines.values()) {
                 line.getRoutes().clear();
@@ -199,7 +221,7 @@ public class Referential implements java.io.Serializable {
                 jp.getVehicleJourneys().clear();
                 jp.getRouteSections().clear();
                 jp.getFootnotes().clear();
-                jp.getRouteSections().clear();
+
             }
             for (VehicleJourney vj : vehicleJourneys.values()) {
                 for (VehicleJourneyAtStop vjas : vj.getVehicleJourneyAtStops()) {
@@ -208,7 +230,11 @@ public class Referential implements java.io.Serializable {
                 vj.getVehicleJourneyAtStops().clear();
                 vj.getTimetables().clear();
                 vj.getJourneyFrequencies().clear();
-                vj.getFootnotes().clear();
+                vj.getFootnotes().clear();vj.getDatedServiceJourneys().clear();
+			}
+			for (DeadRun dr : deadRuns.values()) {
+				dr.getDeadRunAtStops().clear();
+				dr.getTimetables().clear();
             }
             for (Timetable timetable : timetables.values()) {
                 timetable.getVehicleJourneys().clear();
@@ -228,9 +254,7 @@ public class Referential implements java.io.Serializable {
             for (StopArea area : sharedStopAreas.values()) {
                 area.getContainedScheduledStopPoints().clear();
             }
-            for (DestinationDisplay display : sharedDestinationDisplays.values()) {
-                display.getVias().clear();
-            }
+
         }
         accessLinks.clear();
         accessPoints.clear();
@@ -247,13 +271,14 @@ public class Referential implements java.io.Serializable {
         timebands.clear();
         timetables.clear();
         vehicleJourneys.clear();
-        routeSections.clear();
+        datedServiceJourneys.clear();routeSections.clear();
         destinationDisplays.clear();
         interchanges.clear();
         footnotes.clear();
         vehicleJourneyAtStops.clear();
         brandings.clear();
-    }
+    blocks.clear();
+	}
 
     public void dispose() {
         // clear(false);
@@ -274,6 +299,7 @@ public class Referential implements java.io.Serializable {
         sharedBrandings.clear();
         sharedRoutePoints.clear();
         sharedRouteSections.clear();
-    }
+    	sharedBlocks.clear();
+	}
 
 }

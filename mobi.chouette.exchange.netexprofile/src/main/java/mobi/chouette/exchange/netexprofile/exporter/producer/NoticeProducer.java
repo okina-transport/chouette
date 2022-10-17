@@ -1,21 +1,18 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NOTICE_ASSIGNMENT;
+import mobi.chouette.common.Context;
+import mobi.chouette.exchange.netexprofile.ConversionUtil;
+import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
+import mobi.chouette.model.FootNoteAlternativeText;
+import mobi.chouette.model.Footnote;
+import mobi.chouette.model.NeptuneIdentifiedObject;
+import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Set;
 
-import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.NoticeRefStructure;
-import org.rutebanken.netex.model.VersionOfObjectRefStructure;
-
-import mobi.chouette.common.Context;
-import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.NeptuneIdentifiedObject;
+import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.NOTICE_ASSIGNMENT;
 
 public class NoticeProducer extends NetexProducer {
 
@@ -37,6 +34,20 @@ public class NoticeProducer extends NetexProducer {
 
 			VersionOfObjectRefStructure noticedObjectRef = netexFactory.createVersionOfObjectRefStructure();
 			NetexProducerUtils.populateReference(noticedObject, noticedObjectRef, true);
+
+			if (!footnote.getAlternativeTexts().isEmpty()) {
+				AlternativeTexts_RelStructure alternativeTextsRelStructure = netexFactory.createAlternativeTexts_RelStructure();
+				for (FootNoteAlternativeText footNoteAlternativeText : footnote.getAlternativeTexts()) {
+					AlternativeText alternativeText = netexFactory.createAlternativeText();
+					NetexProducerUtils.populateId(footNoteAlternativeText, alternativeText);
+					MultilingualString multilingualString = netexFactory.createMultilingualString();
+					multilingualString.setLang(footNoteAlternativeText.getLanguage());
+					multilingualString.setValue(footNoteAlternativeText.getText());
+					alternativeText.withText(multilingualString);
+					alternativeTextsRelStructure.getAlternativeText().add(alternativeText);
+				}
+				notice.withAlternativeTexts(alternativeTextsRelStructure);
+			}
 
 			String noticeAssignmentId = NetexProducerUtils.createUniqueId(context, NOTICE_ASSIGNMENT);
 			NoticeAssignment noticeAssignment = netexFactory.createNoticeAssignment().withVersion("1").withId(noticeAssignmentId)

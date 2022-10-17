@@ -1,23 +1,20 @@
 package mobi.chouette.dao.interceptor;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.dao.ScheduledStopPointDAO;
+import mobi.chouette.model.ScheduledStopPoint;
+import mobi.chouette.model.StopArea;
+import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.type.Type;
+
+import javax.enterprise.inject.spi.CDI;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.enterprise.inject.spi.CDI;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.dao.ScheduledStopPointDAO;
-import mobi.chouette.dao.StopPointDAO;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.persistence.hibernate.ContextHolder;
-
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
 
 /**
  * StopPoint and StopArea reside in separate schemas. This Interceptor enriches these entities with relations between them upon load.
@@ -38,7 +35,9 @@ public class StopAreaRelationInterceptor extends EmptyInterceptor {
         if (entity instanceof StopArea) {
 
             StopArea stopArea = (StopArea) entity;
-            log.trace("On load StopArea id: " + stopArea.getId());
+            if(log.isTraceEnabled()) {
+                log.trace("On load StopArea id: " + stopArea.getId());
+            }
 
             String stopAreaObjectId = getProperty(STOP_AREA_OBJECT_ID_PROPERTY, propertyNames, state);
 
@@ -96,10 +95,14 @@ public class StopAreaRelationInterceptor extends EmptyInterceptor {
         private synchronized void setTarget() {
             if (target == null) {
                 if (ContextHolder.getContext() != null) {
-                    log.debug("Lazy loading scheduled stop points for stop area: " + stopAreaObjectId);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Lazy loading scheduled stop points for stop area: " + stopAreaObjectId);
+                    }
                     target = scheduledStopPointDAO.getScheduledStopPointsContainedInStopArea(stopAreaObjectId);
                 } else {
-                    log.debug("Initialize empty scheduled stop point list for stop area outside context: " + stopAreaObjectId);
+                    if (log.isTraceEnabled()) {
+                        log.trace("Initialize empty scheduled stop point list for stop area outside context: " + stopAreaObjectId);
+                    }
                     target = new ArrayList<>();
                 }
             }

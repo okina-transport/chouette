@@ -1,18 +1,16 @@
 package mobi.chouette.dao.iev;
 
 
-import java.util.List;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.iev.Stat;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.iev.Stat;
-
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
+import java.util.List;
 
 @Stateless
 @Log4j

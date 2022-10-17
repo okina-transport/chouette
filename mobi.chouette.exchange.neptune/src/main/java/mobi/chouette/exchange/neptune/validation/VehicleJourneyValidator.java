@@ -1,12 +1,6 @@
 package mobi.chouette.exchange.neptune.validation;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.neptune.Constant;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -19,7 +13,8 @@ import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.util.Referential;
 
-import org.joda.time.Duration;
+import java.time.Duration;
+import java.util.*;
 
 public class VehicleJourneyValidator extends AbstractValidator implements Validator<VehicleJourney> , Constant{
 

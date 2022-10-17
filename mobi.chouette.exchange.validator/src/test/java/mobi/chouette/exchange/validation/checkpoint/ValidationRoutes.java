@@ -1,16 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -23,15 +12,7 @@ import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.exchange.validator.DummyChecker;
 import mobi.chouette.exchange.validator.JobDataTest;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RoutePoint;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.type.TransportModeNameEnum;
-
+import mobi.chouette.model.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -43,6 +24,16 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Log4j
 public class ValidationRoutes extends AbstractTestValidation {
@@ -300,9 +291,17 @@ public class ValidationRoutes extends AbstractTestValidation {
 			route2.setOppositeRoute(route1);
 		}
 
-		StopArea area1 = route1.getStopPoints().get(1).getScheduledStopPoint().getContainedInStopAreaRef().getObject().getParent();
-		StopArea area0 = route1.getStopPoints().get(0).getScheduledStopPoint().getContainedInStopAreaRef().getObject();
-		area0.setParent(area1);
+		RoutePoint rp1 = new RoutePoint();
+		rp1.setObjectId("NINOXE:RoutePoint:1");
+		rp1.setScheduledStopPoint(route1.getStopPoints().get(0).getScheduledStopPoint());
+		route1.getRoutePoints().add(rp1);
+		route2.getRoutePoints().add(rp1);
+
+		RoutePoint rp2 = new RoutePoint();
+		rp2.setScheduledStopPoint(route1.getStopPoints().get(1).getScheduledStopPoint());
+		rp2.setObjectId("NINOXE:RoutePoint:2");
+		route1.getRoutePoints().add(rp2);
+		route2.getRoutePoints().add(rp2);
 
 		ValidationData data = new ValidationData();
 		context.put(VALIDATION_DATA, data);

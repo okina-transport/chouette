@@ -1,10 +1,9 @@
 package mobi.chouette.dao.iev;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.iev.Job;
+import mobi.chouette.model.iev.Job_;
+import mobi.chouette.model.iev.Link;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,13 +14,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.iev.Job;
-import mobi.chouette.model.iev.Job_;
-import mobi.chouette.model.iev.Link;
-
-import org.joda.time.LocalDateTime;
+import static mobi.chouette.common.TimeUtil.toDate;
 
 @Stateless
 @Log4j
@@ -61,7 +60,7 @@ public class JobDAO extends GenericDAOImpl<Job> {
 			predicates.add(referentialPredicate);
 		}
 
-		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
+		criteria.where(builder.and(predicates.toArray(new Predicate[0])));
 
 		criteria.orderBy(builder.asc(root.get(Job_.created)));
 		TypedQuery<Job> query = em.createQuery(criteria);
@@ -98,7 +97,7 @@ public class JobDAO extends GenericDAOImpl<Job> {
 			predicates.add(referentialPredicate);
 		}
 
-		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
+		criteria.where(builder.and(predicates.toArray(new Predicate[0])));
 
 		criteria.orderBy(builder.asc(root.get(Job_.created)));
 		TypedQuery<Job> query = em.createQuery(criteria);
@@ -127,7 +126,7 @@ public class JobDAO extends GenericDAOImpl<Job> {
 		Root<Job> root = criteria.from(type);
 		Predicate statusPredicate = root.get(Job_.status).in(statuses);
 		// Created jobs are only in initialization phase, should not be sent
-		Predicate updatedSincePredicate = builder.greaterThan(root.get(Job_.updated), since);
+		Predicate updatedSincePredicate = builder.greaterThan(root.get(Job_.updated), toDate(since));
 		criteria.where(builder.and(statusPredicate, updatedSincePredicate));
 		criteria.orderBy(builder.asc(root.get(Job_.created)));
 		TypedQuery<Job> query = em.createQuery(criteria);

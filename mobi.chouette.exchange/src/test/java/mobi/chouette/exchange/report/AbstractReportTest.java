@@ -1,19 +1,18 @@
 package mobi.chouette.exchange.report;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import mobi.chouette.common.Constant;
 import mobi.chouette.exchange.report.DummyReport.DUMMY_ENUM;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AbstractReportTest implements Constant{
 	@Test(groups = { "JsonGeneration" }, description = "Json generated", priority = 104)
@@ -24,7 +23,7 @@ public class AbstractReportTest implements Constant{
 			PrintStream stream = new PrintStream(oStream);
 			StringBuilder sb = new StringBuilder();
 			List<Number> lstNumber = new ArrayList<Number>();
-			lstNumber.add(new Integer(1));
+			lstNumber.add(1);
 			stream.print(dummyReport.addLevel(sb, 1).append('{'));
 			dummyReport.printIntArray(stream, sb, 1, "int_array_test", lstNumber, true);
 			stream.print(dummyReport.addLevel(sb.append('\n'), 1).append('}'));
@@ -42,9 +41,9 @@ public class AbstractReportTest implements Constant{
 			StringBuilder sb = new StringBuilder();
 			List<Number> lstNumber = new ArrayList<Number>();
 			
-			lstNumber.add(new Integer(2));
-			lstNumber.add(new Integer(3));
-			lstNumber.add(new Integer(4));
+			lstNumber.add(2);
+			lstNumber.add(3);
+			lstNumber.add(4);
 			
 			stream.print(dummyReport.addLevel(sb, 1).append('{'));
 			dummyReport.printIntArray(stream, sb, 1, "int_array_test", lstNumber, true);
@@ -64,7 +63,7 @@ public class AbstractReportTest implements Constant{
 			StringBuilder sb = new StringBuilder();
 			List<Number> lstNumber = new ArrayList<Number>();
 			
-			lstNumber.add(new Integer(1));
+			lstNumber.add(1);
 			stream.print(dummyReport.addLevel(sb, 1).append('{'));
 			dummyReport.printObject(stream, sb, 1, "first", dummyReport, true);
 

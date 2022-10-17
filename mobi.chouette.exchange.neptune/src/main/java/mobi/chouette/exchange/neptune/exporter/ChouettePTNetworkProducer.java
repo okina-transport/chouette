@@ -1,68 +1,29 @@
 package mobi.chouette.exchange.neptune.exporter;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
-import mobi.chouette.exchange.neptune.exporter.producer.AbstractJaxbNeptuneProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.AccessLinkProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.AccessPointProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.AreaCentroidProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.CompanyProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.ConnectionLinkProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.GroupOfLineProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.JourneyPatternProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.LineProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.PTLinkProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.PTNetworkProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.RouteProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.RoutingConstraintProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.StopAreaProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.StopPointProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.TimeSlotProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.TimetableProducer;
-import mobi.chouette.exchange.neptune.exporter.producer.VehicleJourneyProducer;
+import mobi.chouette.exchange.neptune.exporter.producer.*;
 import mobi.chouette.exchange.neptune.exporter.util.NeptuneObjectUtil;
 import mobi.chouette.exchange.neptune.jaxb.JaxbNeptuneFileConverter;
 import mobi.chouette.exchange.neptune.model.PTLink;
 import mobi.chouette.exchange.neptune.model.TimeSlot;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyFrequency;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timeband;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
-
-import org.trident.schema.trident.ChouettePTNetworkType;
+import org.trident.schema.trident.*;
 import org.trident.schema.trident.ChouettePTNetworkType.ChouetteArea;
 import org.trident.schema.trident.ChouettePTNetworkType.ChouetteLineDescription;
 import org.trident.schema.trident.ChouettePTNetworkType.ChouetteLineDescription.ChouetteRoute;
-import org.trident.schema.trident.CompanyType;
-import org.trident.schema.trident.GroupOfLineType;
-import org.trident.schema.trident.ITLType;
-import org.trident.schema.trident.JourneyPatternType;
-import org.trident.schema.trident.PTLinkType;
-import org.trident.schema.trident.TimeSlotType;
-import org.trident.schema.trident.TimetableType;
-import org.trident.schema.trident.VehicleJourneyType;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ChouettePTNetworkProducer implements Constant {
@@ -307,9 +268,9 @@ public class ChouettePTNetworkProducer implements Constant {
 		reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);
 
 		if (metadata != null)
-			metadata.getResources().add(metadata.new Resource(fileName, 
-					NeptuneObjectPresenter.getName(collection.getLine().getNetwork()), 
-					NeptuneObjectPresenter.getName(collection.getLine())));
+			metadata.getResources().add(new Metadata.Resource(fileName,
+                    NeptuneObjectPresenter.getName(collection.getLine().getNetwork()),
+                    NeptuneObjectPresenter.getName(collection.getLine())));
 	}
 
 

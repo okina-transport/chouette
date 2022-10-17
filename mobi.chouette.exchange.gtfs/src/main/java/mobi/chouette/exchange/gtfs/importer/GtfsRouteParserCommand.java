@@ -5,10 +5,10 @@ import com.jamonapi.MonitorFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.parser.GtfsAgencyParser;
 import mobi.chouette.exchange.gtfs.parser.GtfsCalendarParser;
@@ -23,10 +23,10 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @Log4j
 public class GtfsRouteParserCommand implements Command, Constant {
@@ -130,7 +130,7 @@ public class GtfsRouteParserCommand implements Command, Constant {
 			throw e;
 		}
 
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		JamonUtils.logMagenta(log, monitor);
 		return result;
 	}
 

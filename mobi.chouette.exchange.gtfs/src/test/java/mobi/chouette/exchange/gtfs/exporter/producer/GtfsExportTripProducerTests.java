@@ -10,23 +10,14 @@ import mobi.chouette.exchange.gtfs.model.exporter.TripExporter;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
-
-import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
+
+import java.time.LocalTime;
 
 import static mobi.chouette.exchange.gtfs.parameters.IdFormat.SOURCE;
 
@@ -526,7 +517,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
          vjas.setStopPoint(sp);
          vjas.setArrivalDayOffset(current_arrival_offset);
          vjas.setDepartureDayOffset(current_departure_offset);
-         vjas.setArrivalTime(new LocalTime(h,m,0));
+         vjas.setArrivalTime(LocalTime.of(h,m,0));
          
          h = h + 1;
          if (h > 23)
@@ -535,7 +526,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
             
          }
       
-         vjas.setDepartureTime(new LocalTime(h,m,0));
+         vjas.setDepartureTime(LocalTime.of(h,m,0));
          
          if(previous_vjas == null) {
         	 if(vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {
@@ -617,7 +608,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
          vjas.setStopPoint(sp);
          vjas.setArrivalDayOffset(current_arrival_offset);
          vjas.setDepartureDayOffset(current_departure_offset);
-         vjas.setArrivalTime(new LocalTime(h,m,0));
+         vjas.setArrivalTime(LocalTime.of(h,m,0));
 
          h = h + 1;
          if (h > 23)
@@ -626,7 +617,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
 
          }
 
-         vjas.setDepartureTime(new LocalTime(h,m,0));
+         vjas.setDepartureTime(LocalTime.of(h,m,0));
 
          if(previous_vjas == null) {
             if(vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {
@@ -708,7 +699,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
          vjas.setStopPoint(sp);
          vjas.setArrivalDayOffset(current_arrival_offset);
          vjas.setDepartureDayOffset(current_departure_offset);
-         vjas.setArrivalTime(new LocalTime(h,m,0));
+         vjas.setArrivalTime(LocalTime.of(h,m,0));
 
          h = h + 1;
          if (h > 23)
@@ -717,7 +708,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
 
          }
 
-         vjas.setDepartureTime(new LocalTime(h,m,0));
+         vjas.setDepartureTime(LocalTime.of(h,m,0));
 
          if(previous_vjas == null) {
             if(vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {

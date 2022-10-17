@@ -1,14 +1,13 @@
 package mobi.chouette.exchange.netexprofile.parser.xml;
 
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.namespace.QName;
+import java.util.Set;
 
 public class SkippingElementContentHandler extends DefaultHandler {
 
@@ -35,7 +34,7 @@ public class SkippingElementContentHandler extends DefaultHandler {
 		return elementsToSkip.contains(new QName(uri, localName));
 	}
 
-	private class IgnoringContentHandler extends DefaultHandler {
+	private static class IgnoringContentHandler extends DefaultHandler {
 
 	    private int depth = 1;
 	    private XMLReader xmlReader;

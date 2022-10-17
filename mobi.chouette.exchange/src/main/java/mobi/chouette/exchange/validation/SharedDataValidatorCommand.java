@@ -8,31 +8,20 @@
 
 package mobi.chouette.exchange.validation;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.exchange.validation.checkpoint.AccessLinkCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.AccessPointCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.CompanyCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.ConnectionLinkCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.GroupOfLineCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.InterchangeCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.NetworkCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.SharedLineCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.StopAreaCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.StopPointCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.TimetableCheckPoints;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.exchange.report.ActionReporter;
+import mobi.chouette.exchange.validation.checkpoint.*;
 import mobi.chouette.exchange.validation.report.ValidationReport;
+
+import javax.naming.InitialContext;
+import java.io.IOException;
 
 /**
  *
@@ -81,9 +70,11 @@ public class SharedDataValidatorCommand implements Command, Constant {
 
 			result = SUCCESS;
 		} catch (Exception e) {
+			ActionReporter reporter = ActionReporter.Factory.getInstance();
+			reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, "Validation of shared data failed: " + e);
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

@@ -1,25 +1,23 @@
 package mobi.chouette.exchange.report;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
-
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -52,9 +50,9 @@ public class ObjectCollectionReport  extends AbstractReport {
 	 */
 	protected void addStatTypeToObject(ActionReporter.OBJECT_TYPE type, int count) {
 		if (stats.containsKey(type)) {
-			stats.put(type, new Integer(stats.get(type).intValue() + count));
+			stats.put(type, stats.get(type).intValue() + count);
 		} else {
-			stats.put(type, new Integer(count));
+			stats.put(type, count);
 		}
 	}
 

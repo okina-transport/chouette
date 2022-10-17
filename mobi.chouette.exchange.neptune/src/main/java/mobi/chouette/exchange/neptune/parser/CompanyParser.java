@@ -1,10 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -12,13 +7,17 @@ import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.CompanyValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.Company;
+import mobi.chouette.model.Line;
+import mobi.chouette.model.type.OrganisationTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDateTime;
 
 @Log4j
 public class CompanyParser implements Parser, Constant {
@@ -47,7 +46,7 @@ public class CompanyParser implements Parser, Constant {
 				company.setFilled(true);
 				company.setOrganisationType(OrganisationTypeEnum.Operator);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				company.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

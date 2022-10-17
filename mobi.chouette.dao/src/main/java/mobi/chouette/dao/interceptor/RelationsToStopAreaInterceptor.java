@@ -1,17 +1,15 @@
 package mobi.chouette.dao.interceptor;
 
-import java.io.Serializable;
-
-import javax.enterprise.inject.spi.CDI;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.model.ObjectReference;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
-
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
+
+import javax.enterprise.inject.spi.CDI;
+import java.io.Serializable;
 
 /**
  * StopPoint and RouteSections reside in separate schemas from StopArea. This Interceptor enriches these entities with relations between them upon load.
@@ -35,7 +33,9 @@ public class RelationsToStopAreaInterceptor extends EmptyInterceptor {
 
 	private void loadStopAreasForScheduledStopPoint(ScheduledStopPoint entity, Object[] state, String[] propertyNames) {
 		ScheduledStopPoint scheduledStopPoint = entity;
-		log.trace("On load StopPoint id: " + scheduledStopPoint.getId());
+		if(log.isTraceEnabled()) {
+			log.trace("On load StopPoint id: " + scheduledStopPoint.getId());
+		}
 		String containedInStopAreaId = getProperty(STOP_POINT_CONTAINED_IN_STOP_AREA_ID_PROPERTY, propertyNames, state);
 
 		if (!(scheduledStopPoint.getContainedInStopAreaRef() instanceof LazyLoadingStopAreaReference)) {
@@ -63,7 +63,9 @@ public class RelationsToStopAreaInterceptor extends EmptyInterceptor {
 			if (scheduledStopPoint.getContainedInStopAreaRef().isLoaded()) {
 				StopArea stopArea = scheduledStopPoint.getContainedInStopAreaRef().getObject();
 				if (stopArea != null && stopArea.getId() == null && !stopArea.isDetached() && stopArea.getImportMode().shouldCreateMissingStopAreas()) {
-					log.debug("Cascading persist of new stop area " + stopArea.getObjectId() + " for created/updated stop point: " + scheduledStopPoint.getObjectId());
+					if(log.isDebugEnabled()) {
+						log.debug("Cascading persist of new stop area " + stopArea.getObjectId() + " for created/updated stop point: " + scheduledStopPoint.getObjectId());
+					}
 					stopAreaDAO.create(stopArea);
 				}
 			}

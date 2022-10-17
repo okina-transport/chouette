@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 public class LineStatistics {
 
-	// Use sql date for reliable serialization of date only (Should have been java.time/joda LocalDate)
+	// Use sql date for reliable serialization of date only (Should have been java.time.LocalDate)
 	@XmlJavaTypeAdapter(DateAdapter.class)
 	private java.sql.Date startDate;
 	private int days;

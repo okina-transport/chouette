@@ -3,10 +3,11 @@ package mobi.chouette.exchange.netexprofile.exporter;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.exchange.exporter.SharedDataKeys;
 import mobi.chouette.exchange.netexprofile.Constant;
@@ -14,13 +15,13 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXParseException;
 
 import javax.naming.InitialContext;
 import javax.xml.bind.MarshalException;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @Log4j
 public class NetexLineProducerCommand implements Command, Constant {
@@ -38,7 +39,7 @@ public class NetexLineProducerCommand implements Command, Constant {
         try {
 
             Line line = (Line) context.get(LINE);
-            log.info("processing line " + NamingUtil.getName(line));
+            log.info("Processing NeTEx export for line " + line.getObjectId() + " (" + NamingUtil.getName(line) + ')');
 
             if(line != null && line.getCategoriesForLine() != null && !line.getCategoriesForLine().getName().equalsIgnoreCase("idfm")){
                 log.error("Ligne : " + line.getObjectId() + " en catégorie IDFM mais CODIFLIGNE manquant.");
@@ -51,7 +52,6 @@ public class NetexLineProducerCommand implements Command, Constant {
                 reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "Codifligne manquant");
                 return ERROR;
             }
-
             NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
             
             
@@ -80,17 +80,17 @@ public class NetexLineProducerCommand implements Command, Constant {
 
             LocalDate startDate = null;
             if (configuration.getStartDate() != null) {
-                startDate = new LocalDate(configuration.getStartDate());
+                startDate = TimeUtil.toLocalDate(configuration.getStartDate());
             }
 
             LocalDate endDate = null;
             if (configuration.getEndDate() != null) {
-                endDate = new LocalDate(configuration.getEndDate());
+                endDate = TimeUtil.toLocalDate(configuration.getEndDate());
             }
 
-            NetexDataCollector collector = new NetexDataCollector();
+            NetexDataCollector collector = new NetexDataCollector(collection, line, startDate, endDate, !configuration.isExportBlocks());
             collector.setConnectionLinkDAO(connectionLinkDao);
-            boolean cont = (collector.collect(collection, line, startDate, endDate));
+            boolean cont = collector.collect();
 
             reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
             reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 0);
@@ -141,7 +141,7 @@ public class NetexLineProducerCommand implements Command, Constant {
                 result = ERROR;
             }
         } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+            JamonUtils.logMagenta(log, monitor);
         }
 
         return result;

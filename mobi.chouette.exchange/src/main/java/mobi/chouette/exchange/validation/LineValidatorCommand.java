@@ -8,25 +8,19 @@
 
 package mobi.chouette.exchange.validation;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.exchange.validation.checkpoint.JourneyPatternCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.LineCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.RouteCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.StopPointCheckPoints;
-import mobi.chouette.exchange.validation.checkpoint.VehicleJourneyCheckPoints;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.exchange.validation.checkpoint.*;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
 
 /**
  *
@@ -40,6 +34,7 @@ public class LineValidatorCommand implements Command, Constant
 	private RouteCheckPoints routeCheckPoints = new RouteCheckPoints();
 	private JourneyPatternCheckPoints journeyPatternCheckPoints = new JourneyPatternCheckPoints();
 	private VehicleJourneyCheckPoints vehicleJourneyCheckPoints = new VehicleJourneyCheckPoints();
+	private DatedServiceJourneyCheckPoints datedServiceJourneyCheckPointsCheckPoints = new DatedServiceJourneyCheckPoints();
 	private StopPointCheckPoints stopPointCheckPoints = new StopPointCheckPoints();
 
 	@Override
@@ -57,13 +52,14 @@ public class LineValidatorCommand implements Command, Constant
 			routeCheckPoints.validate(context, null);
 			journeyPatternCheckPoints.validate(context, null);
 			vehicleJourneyCheckPoints.validate(context, null);
+			datedServiceJourneyCheckPointsCheckPoints.validate(context, null);
 			stopPointCheckPoints.validate(context, null);
 
 			result = SUCCESS;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

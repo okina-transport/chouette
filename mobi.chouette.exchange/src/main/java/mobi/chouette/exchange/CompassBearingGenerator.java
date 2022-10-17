@@ -1,22 +1,17 @@
 package mobi.chouette.exchange;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.*;
+import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.type.ChouetteAreaEnum;
-import mobi.chouette.model.util.Referential;
 
 @Log4j
 public class CompassBearingGenerator {
@@ -136,7 +131,7 @@ public class CompassBearingGenerator {
 
 			// 1 to 360 degrees, not 0 to 359
 
-			return new Integer((int) bearing + 1);
+			return (int) bearing + 1;
 		} else {
 			if(fromArea == null) {
 				log.warn("StopPoint "+from.getObjectId()+" in route "+from.getRoute().getObjectId()+" and line "+from.getRoute().getLine().getObjectId()+"/" +from.getRoute().getLine().getName()+" has no StopArea");

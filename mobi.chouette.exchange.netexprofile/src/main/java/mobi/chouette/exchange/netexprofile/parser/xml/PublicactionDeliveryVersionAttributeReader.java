@@ -1,22 +1,17 @@
 package mobi.chouette.exchange.netexprofile.parser.xml;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
+import lombok.extern.log4j.Log4j;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.io.*;
+import java.util.Iterator;
 
-import lombok.extern.log4j.Log4j;
-
-import javax.xml.stream.events.Attribute;
+import static mobi.chouette.exchange.netexprofile.parser.xml.XMLParserUtil.getSecureXmlInputFactory;
 
 @Log4j
 public class PublicactionDeliveryVersionAttributeReader {
@@ -25,7 +20,7 @@ public class PublicactionDeliveryVersionAttributeReader {
 		String versionAttribute = null;
 		try {
 			// First create a new XMLInputFactory
-			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+			XMLInputFactory inputFactory = getSecureXmlInputFactory();
 			// Setup a new eventReader
 			InputStream in = new FileInputStream(f);
 			XMLEventReader eventReader = inputFactory.createXMLEventReader(new BufferedInputStream(in));

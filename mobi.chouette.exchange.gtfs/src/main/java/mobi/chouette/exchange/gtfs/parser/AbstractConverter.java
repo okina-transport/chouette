@@ -1,14 +1,13 @@
 package mobi.chouette.exchange.gtfs.parser;
 
-import java.net.URL;
-import java.util.TimeZone;
-
 import mobi.chouette.common.Constant;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTime;
-
 import org.apache.log4j.Logger;
-import org.joda.time.LocalTime;
+
+import java.net.URL;
+import java.time.LocalTime;
+import java.util.TimeZone;
 
 public abstract class AbstractConverter implements Constant{
 

@@ -57,8 +57,8 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
+import java.time.Duration;
+import java.time.LocalTime;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
@@ -548,7 +548,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 continue;
 
             String objectId = AbstractConverter.composeObjectId(configuration,
-                    VehicleJourney.VEHICLEJOURNEY_KEY, gtfsTrip.getTripId(), log);
+                    VehicleJourney.SERVICEJOURNEY_KEY, gtfsTrip.getTripId(), log);
             VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, objectId);
             convert(gtfsTrip, vehicleJourney);
 
@@ -639,7 +639,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
-        return vehicleJourneyAtStop.stopId.replace(":", COLON_REPLACEMENT_CODE);
+        return vehicleJourneyAtStop.stopId .replace(":", COLON_REPLACEMENT_CODE);
     }
 
     private void createInterchanges(Referential referential, GtfsImporter importer, GtfsImportParameters configuration, GtfsTrip gtfsTrip,
@@ -651,7 +651,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 Interchange interchange = createInterchange(referential, configuration, gtfsTransfer);
 
                 if (gtfsTransfer.getMinTransferTime() != null && gtfsTransfer.getTransferType() == TransferType.Minimal) {
-                    interchange.setMinimumTransferTime(Duration.standardSeconds(gtfsTransfer.getMinTransferTime()));
+                    interchange.setMinimumTransferTime(Duration.ofSeconds(gtfsTransfer.getMinTransferTime()));
                     interchange.setGuaranteed(Boolean.FALSE);
                 } else if (gtfsTransfer.getTransferType().equals(TransferType.Timed)) {
                     interchange.setGuaranteed(Boolean.TRUE);
@@ -682,7 +682,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 Interchange interchange = createInterchange(referential, configuration, gtfsTransfer);
 
                 if (gtfsTransfer.getMinTransferTime() != null && gtfsTransfer.getTransferType() == TransferType.Minimal) {
-                    interchange.setMinimumTransferTime(Duration.standardSeconds(gtfsTransfer.getMinTransferTime()));
+                    interchange.setMinimumTransferTime(Duration.ofSeconds(gtfsTransfer.getMinTransferTime()));
                     interchange.setGuaranteed(Boolean.FALSE);
                 } else if (gtfsTransfer.getTransferType().equals(TransferType.Timed)) {
                     interchange.setGuaranteed(Boolean.TRUE);
@@ -781,7 +781,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             journeyFrequency.setExactTime(frequency.getExactTimes());
             journeyFrequency.setFirstDepartureTime(frequency.getStartTime().getTime());
             journeyFrequency.setLastDepartureTime(frequency.getEndTime().getTime());
-            journeyFrequency.setScheduledHeadwayInterval(Duration.standardSeconds(frequency.getHeadwaySecs()));
+            journeyFrequency.setScheduledHeadwayInterval(Duration.ofSeconds(frequency.getHeadwaySecs()));
             journeyFrequency.setTimeband(timeband);
             journeyFrequency.setVehicleJourney(vehicleJourney);
 
@@ -790,8 +790,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             LocalTime firstArrivalTime = firstVjas.getArrivalTime();
             LocalTime firstDepartureTime = firstVjas.getDepartureTime();
             for (VehicleJourneyAtStop vjas : vjass) {
-                LocalTime arrivalTime = new LocalTime(TimeUtil.subtract(vjas.getArrivalTime(), firstArrivalTime).getMillis());
-                LocalTime departureTime = new LocalTime(TimeUtil.subtract(vjas.getDepartureTime(), firstDepartureTime).getMillis());
+                LocalTime arrivalTime = TimeUtil.toLocalTime(TimeUtil.subtract(vjas.getArrivalTime(), firstArrivalTime).toMillis());
+                LocalTime departureTime = TimeUtil.toLocalTime(TimeUtil.subtract(vjas.getDepartureTime(), firstDepartureTime).toMillis());
                 vjas.setArrivalTime(arrivalTime);
                 vjas.setDepartureTime(departureTime);
             }
@@ -802,8 +802,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         LocalTime start = frequency.getStartTime().getTime();
         LocalTime end = frequency.getEndTime().getTime();
 
-        return (start.getHourOfDay() + ":" + start.getMinuteOfHour() + " - "
-                + end.getHourOfDay() + ":" + end.getMinuteOfHour());
+        return (start.getHour() + ":" + start.getMinute() + " - "
+                + end.getHour() + ":" + end.getMinute());
     }
 
     private JourneyPattern createJourneyPattern(Context context, Referential referential,
@@ -874,7 +874,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
         }
 
-        addSyntheticDestinationDisplayIfMissingOnFirstStopPoint(configuration, referential, journeyPattern);
+        addDestinationDisplayIfMissingOnFirstStopPoint(configuration, referential, journeyPattern, gtfsTrip);
 
         return journeyPattern;
     }
@@ -893,7 +893,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         return firstRoutePoint;
     }
 
-    private void addSyntheticDestinationDisplayIfMissingOnFirstStopPoint(GtfsImportParameters configuration, Referential referential, JourneyPattern jp) {
+    private void addDestinationDisplayIfMissingOnFirstStopPoint(GtfsImportParameters configuration, Referential referential, JourneyPattern jp, GtfsTrip gtfsTrip) {
         StopPoint departureStopPoint = jp.getDepartureStopPoint();
         if (departureStopPoint.getDestinationDisplay() == null) {
             // Create a forced DestinationDisplay
@@ -906,7 +906,11 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     AbstractConverter.composeObjectId(configuration,
                             DestinationDisplay.DESTINATIONDISPLAY_KEY, journeyPatternId + "-" + stopPointId, null));
 
-            if (jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+            if (!StringUtils.isEmpty(gtfsTrip.getTripHeadSign())) {
+				destinationDisplay.setName(gtfsTrip.getTripHeadSign());
+				destinationDisplay.setFrontText(gtfsTrip.getTripHeadSign());
+				departureStopPoint.setDestinationDisplay(destinationDisplay);
+			} else {if (jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
                 String content = jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
 
                 if (content != null) {
@@ -919,7 +923,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             } else {
                 log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea is null");
             }
-        }
+        }}
 
     }
 
@@ -1026,7 +1030,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     section.setToScheduledStopPoint(stop.getScheduledStopPoint());
                     inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude()
                             .doubleValue());
-                    section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[coords.size()])));
+                    section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[0])));
                     section.setInputGeometry(factory.createLineString(inputCoords));
                     section.setNoProcessing(false);
                     try {
@@ -1266,7 +1270,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     @AllArgsConstructor
-    class VehicleJourneyAtStopWrapper extends VehicleJourneyAtStop {
+    static
+	class VehicleJourneyAtStopWrapper extends VehicleJourneyAtStop {
 
         private static final long serialVersionUID = 5052093726657799027L;
         String stopId;
@@ -1288,9 +1293,22 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
     };
 
-    static class OrderedCoordinateComparator implements Comparator<OrderedCoordinate> {
-        @Override
-        public int compare(OrderedCoordinate o1, OrderedCoordinate o2) {
+	static class OrderedCoordinate extends Coordinate {
+		private static final long serialVersionUID = 1L;
+		public int order;
+
+		public OrderedCoordinate(double x, double y, Integer order) {
+			this.x = x;
+			this.y = y;
+			this.order = order.intValue();
+		}
+	}
+
+	;
+
+	static class OrderedCoordinateComparator implements Comparator<OrderedCoordinate> {
+		@Override
+		public int compare(OrderedCoordinate o1, OrderedCoordinate o2) {
 
             return o1.order - o2.order;
         }

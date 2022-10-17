@@ -3,7 +3,6 @@ package mobi.chouette.ws;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.scheduler.ReferentialLockManagerFactory;
 import mobi.chouette.service.HealthService;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -11,7 +10,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-@Component
+// TODO : Check merge entur : Le @Component disparait avec Entur, en a t'on toujours besoin.
+//@Component
 @Log4j
 @Produces("application/json")
 @Path("health")
@@ -35,11 +35,7 @@ public class HealthResource {
 	@Path("/live")
 	public Response isLive() {
 		log.debug("Checking liveness...");
-		if (healthService.isLive()) {
-			return Response.ok().build();
-		} else {
-			return Response.serverError().build();
-		}
+		return Response.ok().build();
 	}
 
 	@GET

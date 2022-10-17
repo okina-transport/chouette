@@ -75,6 +75,9 @@ public interface Constant {
 	
 	public static final String BUFFER = "buffer";
 
+	public static final String REFERENTIAL_LAST_UPDATE_TIMESTAMP = "REFERENTIAL_LAST_UPDATE_TIMESTAMP";
+
+
 	public static final String CREATION_DATE = "CreationDate";
 
 	public static final String AREA_CENTROID_MAP = "areaCentroidMap";

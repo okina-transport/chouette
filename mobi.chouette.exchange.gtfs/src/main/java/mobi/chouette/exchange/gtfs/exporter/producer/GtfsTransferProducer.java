@@ -42,8 +42,8 @@ public class GtfsTransferProducer extends AbstractProducer {
 	   transfer.setToStopId(endStopId);
 
 
-	   if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getStandardSeconds() > 1) {
-		   transfer.setMinTransferTime((int) neptuneObject.getDefaultDuration().getStandardSeconds());
+	   if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getSeconds() > 1) {
+		   transfer.setMinTransferTime((int) neptuneObject.getDefaultDuration().getSeconds());
 		   transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
 	   } else {
 		   transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
@@ -72,11 +72,11 @@ public class GtfsTransferProducer extends AbstractProducer {
 			transfer.setTransferType(GtfsTransfer.TransferType.Timed);
 		} else if (neptuneObject.getMinimumTransferTime() !=null){
          transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
-         transfer.setMinTransferTime(Integer.valueOf((int) (neptuneObject.getMinimumTransferTime().getStandardSeconds())));
-		} else if (neptuneObject.getPriority() != null && neptuneObject.getPriority() >= 0){
-			transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
-		} else {
+         transfer.setMinTransferTime(Integer.valueOf((int) (neptuneObject.getMinimumTransferTime().getSeconds())));
+		} else if (neptuneObject.getPriority() != null && neptuneObject.getPriority() < 0){
 			transfer.setTransferType(GtfsTransfer.TransferType.NoAllowed);
+		} else {
+			transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
 		}
 
 		if (neptuneObject.getFeederVehicleJourney()!=null) {

@@ -3,11 +3,11 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
-
-import org.joda.time.LocalDate;
 import org.trident.schema.trident.DayTypeType;
 import org.trident.schema.trident.PeriodType;
 import org.trident.schema.trident.TimetableType;
+
+import java.time.LocalDate;
 
 public class TimetableProducer extends
       AbstractJaxbNeptuneProducer<TimetableType, Timetable>

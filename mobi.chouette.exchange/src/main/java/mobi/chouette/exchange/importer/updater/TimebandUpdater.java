@@ -1,19 +1,18 @@
 package mobi.chouette.exchange.importer.updater;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.TimebandDAO;
 import mobi.chouette.model.Timeband;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.time.format.DateTimeFormatter;
 
 @Stateless(name = TimebandUpdater.BEAN_NAME)
 public class TimebandUpdater implements Updater<Timeband> {
 
 	public static final String BEAN_NAME = "TimebandUpdater";
+	public static final DateTimeFormatter DATE_TIME_FORMATTER_HH_MM = DateTimeFormatter.ofPattern("HH:mm");
 
 	@EJB 
 	private TimebandDAO timebandDAO;
@@ -56,8 +55,7 @@ public class TimebandUpdater implements Updater<Timeband> {
 			oldValue.setEndTime(newValue.getEndTime());
 		}
 		if (oldValue.getName() == null || oldValue.getName().isEmpty()) {
-			DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:MM");
-			oldValue.setName(timeFormatter.print(oldValue.getStartTime())+" - "+timeFormatter.print(oldValue.getEndTime()));
+			oldValue.setName(DATE_TIME_FORMATTER_HH_MM.format(oldValue.getStartTime())+" - "+ DATE_TIME_FORMATTER_HH_MM.format(oldValue.getEndTime()));
 		}
 		if (timebandDAO.findByObjectId(oldValue.getObjectId()) == null)
 			timebandDAO.create(oldValue);

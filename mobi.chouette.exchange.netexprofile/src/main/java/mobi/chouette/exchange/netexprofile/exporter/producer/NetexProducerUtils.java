@@ -75,13 +75,12 @@ public class NetexProducerUtils {
 
     @SuppressWarnings("unchecked")
     public static List<DayOfWeekEnumeration> toDayOfWeekEnumeration(List<DayTypeEnum> dayTypeEnums) {
-        EnumSet actualDaysOfWeek = EnumSet.noneOf(DayTypeEnum.class);
-        for (DayTypeEnum dayTypeEnum : dayTypeEnums) {
-            actualDaysOfWeek.add(dayTypeEnum);
-        }
+		EnumSet actualDaysOfWeek = EnumSet.noneOf(DayTypeEnum.class);
 
-        if (actualDaysOfWeek.isEmpty()) {
-            return Collections.EMPTY_LIST;
+		actualDaysOfWeek.addAll(dayTypeEnums);
+
+		if (actualDaysOfWeek.isEmpty()) {
+			return Collections.EMPTY_LIST;
         } else if (actualDaysOfWeek
                 .equals(EnumSet.of(DayTypeEnum.Monday, DayTypeEnum.Tuesday, DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday))) {
             return Collections.singletonList(DayOfWeekEnumeration.WEEKDAYS);

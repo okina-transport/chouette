@@ -5,10 +5,11 @@
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
     <container qualifier="wildfly-embedded" default="true">
         <configuration>
-            <property name="jbossHome">../target/wildfly-8.2.0.Final</property>
-            <property name="modulePath">../target/wildfly-8.2.0.Final/modules</property>
+            <property name="jbossHome">../target/wildfly-${wildfly.version}</property>
+            <property name="modulePath">../target/wildfly-${wildfly.version}/modules</property>
             <property name="managementPort">10290</property>
             <property name="serverConfig">standalone.xml</property>
+            <property name="javaVmArguments">--add-modules=java.se --add-opens=java.base/java.util=ALL-UNNAMED</property>
        </configuration>
     </container>
 </arquillian>

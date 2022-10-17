@@ -1,12 +1,10 @@
 package mobi.chouette.dao;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.EJB;
-
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.DestinationDisplay;
+import mobi.chouette.model.ScheduledStopPoint;
+import mobi.chouette.model.StopPoint;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -16,10 +14,11 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.persistence.hibernate.ContextHolder;
+import javax.ejb.EJB;
+import java.io.File;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 @Log4j
 public class DestinationDisplayDaoTest extends Arquillian {
@@ -55,7 +54,7 @@ public class DestinationDisplayDaoTest extends Arquillian {
 	public void checkDirectPersistDestinationDisplay() {
 		try {
 			ContextHolder.setContext("chouette_gui"); // set tenant schema
-			
+			stopPointDAO.deleteAll();
 			destinationDisplayDAO.deleteAll();
 			
 			DestinationDisplay parent = new DestinationDisplay();
@@ -127,9 +126,13 @@ public class DestinationDisplayDaoTest extends Arquillian {
 			parent.setFrontText("FrontText");
 			parent.setSideText("SideText");
 			parent.setObjectId("X:DestinationDisplay:1");
-			
+
+			ScheduledStopPoint scheduledStopPoint = new ScheduledStopPoint();
+			scheduledStopPoint.setObjectId("X:ScheduledStopPoint:1");
+
 			StopPoint sp = new StopPoint();
 			sp.setObjectId("X:StopPoint:1");
+			sp.setScheduledStopPoint(scheduledStopPoint);
 			sp.setDestinationDisplay(parent);
 			
 			stopPointDAO.create(sp);

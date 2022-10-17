@@ -1,28 +1,5 @@
 package mobi.chouette.scheduler;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.Timeout;
-import javax.ejb.TimerService;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.enterprise.concurrent.ManagedTaskListener;
-import javax.naming.InitialContext;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
@@ -33,8 +10,17 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.JobService;
 import mobi.chouette.service.JobServiceManager;
 import mobi.chouette.service.ServiceException;
-
 import org.apache.commons.collections.CollectionUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedTaskListener;
+import javax.naming.InitialContext;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 /**
  * @author michel
@@ -208,7 +194,7 @@ public class Scheduler {
 		if (System.getProperty(key) != null) {
 			scheduleFrequencyMs = Long.parseLong(System.getProperty(key));
 		} else {
-			log.warn("No value set for property: " + key + ", using default value: " + scheduleFrequencyMs);
+			log.info("No value set for property: " + key + ", using default value: " + scheduleFrequencyMs);
 		}
 
 		return scheduleFrequencyMs;
@@ -220,7 +206,7 @@ public class Scheduler {
 			if (System.getProperty(maxJobsKey) != null) {
 				maxJobs = Integer.parseInt(System.getProperty(maxJobsKey));
 			} else {
-				log.warn("No value set for property: " + maxJobsKey + ", using default value: " + MAX_JOBS_DEFAULT);
+				log.info("No value set for property: " + maxJobsKey + ", using default value: " + MAX_JOBS_DEFAULT);
 				return MAX_JOBS_DEFAULT;
 			}
 		}
@@ -233,7 +219,7 @@ public class Scheduler {
 			if (System.getProperty(maxTransfersKey) != null) {
 				maxTransfers = Integer.parseInt(System.getProperty(maxTransfersKey));
 			} else {
-				log.warn("No value set for property: " + maxTransfersKey + ", using default value: " + MAX_JOBS_DEFAULT);
+				log.info("No value set for property: " + maxTransfersKey + ", using default value: " + MAX_JOBS_DEFAULT);
 				return MAX_JOBS_DEFAULT;
 			}
 		}

@@ -1,21 +1,14 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Map;
-
-import javax.naming.InitialContext;
-
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.parser.PublicationDeliveryParser;
@@ -25,7 +18,11 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.nio.file.Path;
 
 @Log4j
 public class NetexLineParserCommand implements Command, Constant {
@@ -67,7 +64,7 @@ public class NetexLineParserCommand implements Command, Constant {
             reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_DATA, "Error");
             throw e;
         } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+            JamonUtils.logMagenta(log, monitor);
         }
 
         return result;

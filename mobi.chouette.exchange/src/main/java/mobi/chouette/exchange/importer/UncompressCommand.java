@@ -1,15 +1,8 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
@@ -17,13 +10,18 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.file.FileStore;
 import mobi.chouette.common.file.FileStoreFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.report.ReportConstant;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import org.apache.commons.io.FilenameUtils;
+
+import javax.naming.InitialContext;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * execute use in context :
@@ -69,7 +67,7 @@ public class UncompressCommand implements Command, ReportConstant {
 				FileUtil.uncompress(tmpZip.getAbsolutePath(), target.toString());
 				result = SUCCESS;
 			} catch (Exception e) {
-				log.error(e.getMessage());
+				log.warn("Exception while uncompressing file " + filename.toString(), e);
 				reporter.addZipErrorInReport(context, file, ActionReporter.FILE_ERROR_CODE.READ_ERROR, e.getMessage());
 				reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS, "invalid_zip");
 			} finally {
@@ -83,7 +81,7 @@ public class UncompressCommand implements Command, ReportConstant {
 			result = SUCCESS;
 		}
 
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		JamonUtils.logMagenta(log, monitor);
 		return result;
 	}
 

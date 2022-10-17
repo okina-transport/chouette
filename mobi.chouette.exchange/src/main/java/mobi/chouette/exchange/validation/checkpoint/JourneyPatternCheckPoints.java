@@ -1,6 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -9,22 +8,18 @@ import mobi.chouette.exchange.validation.parameters.TransportModeParameters;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
+import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.util.NeptuneUtil;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 @Log4j
 public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern> implements Validator<JourneyPattern> {
-	@Setter
-	private VehicleJourneyCheckPoints vehicleJourneyCheckPoints;
 
 	@Override
 	public void validate(Context context, JourneyPattern target) {
@@ -41,11 +36,15 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 		initCheckPoint(context, JOURNEY_PATTERN_1, SEVERITY.W);
 		if (!sourceFile)
 			initCheckPoint(context, JOURNEY_PATTERN_2, SEVERITY.E);
-		initCheckPoint(context, ROUTE_SECTION_1, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_2_1, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_2_2, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_2_3, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_3);
 		initCheckPoint(context, JOURNEY_PATTERN_3, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_4);
-		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.W);
+		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.E);
+		prepareCheckPoint(context, JOURNEY_PATTERN_5);
+		initCheckPoint(context, JOURNEY_PATTERN_5, SEVERITY.E);
 
 		initCheckPoint(context, JOURNEY_PATTERN_RB_1, SEVERITY.W);
 		initCheckPoint(context, JOURNEY_PATTERN_RB_2, SEVERITY.W);
@@ -89,6 +88,9 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 			// gap as parameter
 			check3RouteSection1(context, jp, parameters);
 
+            // 3-RouteSection-2 : Check if the scheduled stop points on the route section are part of the journey pattern
+			check3RouteSection2(context, jp, parameters);
+
 			// 3-JourneyPattern-3: Check that Line.TransportMode matches StopArea.TransportMode
 			check3JourneyPattern3(context, jp);
 
@@ -97,6 +99,8 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 				check4Generic1(context, jp, L4_JOURNEY_PATTERN_1, parameters, log);
 
 			check3JourneyPattern4(context, jp);
+
+			check3JourneyPattern5(context, jp);
 
 			// 3-JourneyPattern-RB-1 : check distance between stops
 			check3JourneyPatternRb1(context, jp, parameters);
@@ -173,11 +177,24 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 		}
 	}
 
+	// 3-JourneyPattern-5 : Check that last stop on journey pattern does not allow boarding
+	private void check3JourneyPattern5(Context context, JourneyPattern jp) {
+		if (jp.getDepartureStopPoint() == null) {
+			return;
+		}
+		if (!AlightingPossibilityEnum.forbidden.equals(jp.getDepartureStopPoint().getForAlighting())) {
+			DataLocation location = buildLocation(context, jp);
+			ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+			reporter.addCheckPointReportError(context, JOURNEY_PATTERN_5, location);
+		}
+	}
+
 	// 3-RouteSection-1 : Check if route section distance doesn't exceed gap as
 	// parameter
 	private void check3RouteSection1(Context context, JourneyPattern jp, ValidationParameters parameters) {
 
-		prepareCheckPoint(context, ROUTE_SECTION_1);
+		prepareCheckPoint(context, ROUTE_SECTION_2_1);
+		prepareCheckPoint(context, ROUTE_SECTION_2_2);
 
 		String modeKey = jp.getRoute().getLine().getTransportModeName().toString();
 		TransportModeParameters mode = getModeParameters(parameters, modeKey, log);
@@ -191,7 +208,7 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 			}
 		}
 		double distanceMax = mode.getRouteSectionStopAreaDistanceMax();
-		if (distanceMax <=0 ){
+		if (distanceMax <= 0) {
 			// No use unless max distance has been specified
 			return;
 		}
@@ -204,57 +221,88 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 			double plotFirstLong = 0;
 			double plotLastLong = 0;
 
-			StopArea fromStopArea = rs.getFromScheduledStopPoint().getContainedInStopAreaRef().getObject();
-			StopArea toStopArea = rs.getToScheduledStopPoint().getContainedInStopAreaRef().getObject();
-			if (fromStopArea == null) {
-				continue;
+			if (rs.getFromScheduledStopPoint() != null) {
+
+				StopArea fromStopArea = rs.getFromScheduledStopPoint().getContainedInStopAreaRef().getObject();
+
+				if (fromStopArea == null || fromStopArea.getLatitude() == null) {
+					continue;
+				}
+
+				if (rs.getNoProcessing() && rs.getInputGeometry() != null) {
+					plotFirstLong = rs.getInputGeometry().getStartPoint().getX();
+					plotFirstLat = rs.getInputGeometry().getStartPoint().getY();
+					plotLastLong = rs.getInputGeometry().getEndPoint().getX();
+					plotLastLat = rs.getInputGeometry().getEndPoint().getY();
+				} else if (rs.getProcessedGeometry() != null) {
+					plotFirstLong = rs.getProcessedGeometry().getStartPoint().getX();
+					plotFirstLat = rs.getProcessedGeometry().getStartPoint().getY();
+					plotLastLong = rs.getProcessedGeometry().getEndPoint().getX();
+					plotLastLat = rs.getProcessedGeometry().getEndPoint().getY();
+				} else {
+					continue;
+				}
+
+				// Departuredepart
+				distance = quickDistanceFromCoordinates(fromStopArea.getLatitude().doubleValue(), plotFirstLat,
+						fromStopArea.getLongitude().doubleValue(), plotFirstLong);
+				// If route section distance doesn't exceed gap as parameter
+				if (distance > distanceMax) {
+					DataLocation location = buildLocation(context, rs);
+					DataLocation targetLocation = buildLocation(context, fromStopArea);
+
+					ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+					reporter.addCheckPointReportError(context, ROUTE_SECTION_2_1, location, String.valueOf(distance),
+							String.valueOf(distanceMax), targetLocation);
+				}
 			}
 
-			if (rs.getNoProcessing() && rs.getInputGeometry() != null) {
-				plotFirstLong = rs.getInputGeometry().getStartPoint().getX();
-				plotFirstLat = rs.getInputGeometry().getStartPoint().getY();
-				plotLastLong = rs.getInputGeometry().getEndPoint().getX();
-				plotLastLat = rs.getInputGeometry().getEndPoint().getY();
-			} else if (rs.getProcessedGeometry() != null) {
-				plotFirstLong = rs.getProcessedGeometry().getStartPoint().getX();
-				plotFirstLat = rs.getProcessedGeometry().getStartPoint().getY();
-				plotLastLong = rs.getProcessedGeometry().getEndPoint().getX();
-				plotLastLat = rs.getProcessedGeometry().getEndPoint().getY();
-			} else {
-				continue;
-			}
+			if (rs.getToScheduledStopPoint() != null) {
+				StopArea toStopArea = rs.getToScheduledStopPoint().getContainedInStopAreaRef().getObject();
 
-			// Departuredepart
-			distance = quickDistanceFromCoordinates(fromStopArea.getLatitude().doubleValue(), plotFirstLat,
-					fromStopArea.getLongitude().doubleValue(), plotFirstLong);
-			// If route section distance doesn't exceed gap as parameter
-			if (distance > distanceMax) {
-				DataLocation location = buildLocation(context, rs);
-				DataLocation targetLocation = buildLocation(context, fromStopArea);
+				if (toStopArea == null || toStopArea.getLatitude() == null) {
+					continue;
+				}
+				// Arrival
+				distance = quickDistanceFromCoordinates(toStopArea.getLatitude().doubleValue(), plotLastLat,
+						toStopArea.getLongitude().doubleValue(), plotLastLong);
+				// If route section distance doesn't exceed gap as parameter
+				if (distance > distanceMax) {
+					DataLocation location = buildLocation(context, rs);
+					DataLocation targetLocation = buildLocation(context, toStopArea);
 
-				ValidationReporter reporter = ValidationReporter.Factory.getInstance();
-				reporter.addCheckPointReportError(context, ROUTE_SECTION_1, location, String.valueOf(distance),
-						String.valueOf(distanceMax), targetLocation);
-			}
-
-
-			if (toStopArea == null) {
-				continue;
-			}
-			// Arrival
-			distance = quickDistanceFromCoordinates(toStopArea.getLatitude().doubleValue(), plotLastLat,
-					toStopArea.getLongitude().doubleValue(), plotLastLong);
-			// If route section distance doesn't exceed gap as parameter
-			if (distance > distanceMax) {
-				DataLocation location = buildLocation(context, rs);
-				DataLocation targetLocation = buildLocation(context, fromStopArea);
-
-				ValidationReporter reporter = ValidationReporter.Factory.getInstance();
-				reporter.addCheckPointReportError(context, ROUTE_SECTION_1, location, String.valueOf(distance),
-						String.valueOf(distanceMax), targetLocation);
+					ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+					reporter.addCheckPointReportError(context, ROUTE_SECTION_2_2, location, String.valueOf(distance),
+							String.valueOf(distanceMax), targetLocation);
+				}
 			}
 		}
 
+	}
+
+	// 3-RouteSection-2 : Check if the scheduled stop points on the route section are part of the journey pattern
+	private void check3RouteSection2(Context context, JourneyPattern jp, ValidationParameters parameters) {
+
+		prepareCheckPoint(context, ROUTE_SECTION_2_3);
+
+		ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+		List<ScheduledStopPoint> scheduledStopPointsOnJourneyPattern = jp.getStopPoints().stream().map(e -> e.getScheduledStopPoint()).collect(Collectors.toList());
+
+		for (RouteSection rs : jp.getRouteSections()) {
+			DataLocation location = buildLocation(context, rs);
+
+			ScheduledStopPoint from = rs.getFromScheduledStopPoint();
+			if (from != null && !scheduledStopPointsOnJourneyPattern.contains(from)) {
+				DataLocation targetLocation = buildLocation(context, from);
+				reporter.addCheckPointReportError(context, ROUTE_SECTION_2_3, location, null, null, targetLocation);
+			}
+
+			ScheduledStopPoint to = rs.getToScheduledStopPoint();
+			if (to != null && !scheduledStopPointsOnJourneyPattern.contains(to)) {
+				DataLocation targetLocation = buildLocation(context, to);
+				reporter.addCheckPointReportError(context, ROUTE_SECTION_2_3, location, null, null, targetLocation);
+			}
+		}
 	}
 
 	public void check3JourneyPattern3(Context context, JourneyPattern vj) {

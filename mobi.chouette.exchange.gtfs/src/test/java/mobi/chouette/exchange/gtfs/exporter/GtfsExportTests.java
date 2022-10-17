@@ -1,40 +1,10 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
-import mobi.chouette.dao.ConnectionLinkDAO;
-import org.apache.commons.io.FileUtils;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testng.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.importer.ZipImporter;
-import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.testng.Assert;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.dao.InterchangeDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.StopAreaDAO;
@@ -47,18 +17,40 @@ import mobi.chouette.exchange.gtfs.importer.GtfsImporterCommand;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.importer.NeptuneImporterCommand;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
-import mobi.chouette.exchange.report.ActionReport;
-import mobi.chouette.exchange.report.ActionReporter;
+import mobi.chouette.exchange.report.*;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
-import mobi.chouette.exchange.report.FileReport;
-import mobi.chouette.exchange.report.ObjectReport;
-import mobi.chouette.exchange.report.ReportConstant;
 import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
 import mobi.chouette.model.Line;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.io.FileUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.testng.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.importer.ZipImporter;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.testng.Assert;
+import org.testng.Reporter;
+import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Log4j
 public class GtfsExportTests extends Arquillian implements Constant, ReportConstant
@@ -433,7 +425,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 				exptectedInterchanges = 1;
 			}
 
- 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
+ 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), Integer.valueOf(exptectedInterchanges), "interchange status");
  		}
  		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
  		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");

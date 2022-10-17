@@ -6,12 +6,11 @@ import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
-import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.ScheduledStopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
@@ -160,6 +159,10 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 
 		for (int i = 0; i < pointsInLinkSequence.size(); i++) {
 			PointInLinkSequence_VersionedChildStructure pointInSequence = pointsInLinkSequence.get(i);
+			if (!(pointInSequence instanceof StopPointInJourneyPattern)) {
+				// Ignore points in link sequence besides StopPointInJourneyPattern.
+				continue;
+			}
 			StopPointInJourneyPattern pointInPattern = (StopPointInJourneyPattern) pointInSequence;
 
 			String stopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"StopPoint",pointInPattern.getId());
@@ -199,7 +202,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 				// HACK TODO HACK
 				// Remove Line/PublicCode from DestinationDisplay if FrontText starts with it
 				String lineNumber = referential.getLines().values().iterator().next().getNumber();
-				if (destinationDisplay.getFrontText().startsWith(lineNumber + " ")) {
+				if (destinationDisplay.getFrontText() != null && destinationDisplay.getFrontText().startsWith(lineNumber + " ")) {
 					String modifiedDestinationDisplayId = destinationDisplayId + "-NOLINENUMBER";
 					DestinationDisplay modifiedDestinationDisplay = referential.getSharedDestinationDisplays().get(modifiedDestinationDisplayId);
 					if (modifiedDestinationDisplay == null) {
@@ -225,8 +228,8 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexBookingArrangement.getBookWhen()));
 				bookingArrangement.setBuyWhen(netexBookingArrangement.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
 				bookingArrangement.setBookingMethods(netexBookingArrangement.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexBookingArrangement.getLatestBookingTime()));
-				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexBookingArrangement.getMinimumBookingPeriod()));
+				bookingArrangement.setLatestBookingTime(netexBookingArrangement.getLatestBookingTime());
+				bookingArrangement.setMinimumBookingPeriod(netexBookingArrangement.getMinimumBookingPeriod());
 
 				bookingArrangement.setBookingContact(contactStructureParser.parse(netexBookingArrangement.getBookingContact()));
 

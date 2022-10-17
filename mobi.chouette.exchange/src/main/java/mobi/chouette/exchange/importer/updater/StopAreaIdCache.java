@@ -1,5 +1,13 @@
 package mobi.chouette.exchange.importer.updater;
 
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
+import org.rutebanken.netex.model.StopTypeEnumeration;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.Singleton;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,16 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
-
-import lombok.extern.log4j.Log4j;
-
-import org.apache.commons.lang.StringUtils;
-import org.rutebanken.netex.model.StopTypeEnumeration;
 
 // TODO replace local cache in StopPlaceRegistryIdValidator with this
 @Log4j

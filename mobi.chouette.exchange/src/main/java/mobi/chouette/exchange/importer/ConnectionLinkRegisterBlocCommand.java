@@ -1,17 +1,5 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -25,6 +13,17 @@ import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 @Log4j
 @Stateless(name = ConnectionLinkRegisterBlocCommand.COMMAND)
@@ -76,7 +75,7 @@ public class ConnectionLinkRegisterBlocCommand implements Command {
 			log.error(e);
 			throw e;
 //		} finally {
-//			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+//			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 

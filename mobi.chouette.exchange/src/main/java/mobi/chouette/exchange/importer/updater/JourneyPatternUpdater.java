@@ -1,29 +1,21 @@
 package mobi.chouette.exchange.importer.updater;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
-import mobi.chouette.dao.FootnoteDAO;
-import mobi.chouette.dao.RouteSectionDAO;
-import mobi.chouette.dao.StopPointDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Collection;
+import java.util.List;
 
 @Stateless(name = JourneyPatternUpdater.BEAN_NAME)
 @Log4j
@@ -38,10 +30,16 @@ public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 	private VehicleJourneyDAO vehicleJourneyDAO;
 
 	@EJB
+	private DeadRunDAO deadRunDAO;
+
+	@EJB
 	private RouteSectionDAO routeSectionDAO;
 
 	@EJB(beanName = VehicleJourneyUpdater.BEAN_NAME)
 	private Updater<VehicleJourney> vehicleJourneyUpdater;
+
+	@EJB(beanName = DeadRunUpdater.BEAN_NAME)
+	private Updater<DeadRun> deadRunUpdater;
 
 	@EJB(beanName = RouteSectionUpdater.BEAN_NAME)
 	private Updater<RouteSection> routeSectionUpdater;
@@ -242,6 +240,43 @@ public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 		for (Pair<VehicleJourney, VehicleJourney> pair : modifiedVehicleJourney) {
 			vehicleJourneyUpdater.update(context, pair.getLeft(), pair.getRight());
 		}
+
+		// DeadRun
+		Collection<DeadRun> addedDeadRun = CollectionUtil.substract(newValue.getDeadRuns(),
+				oldValue.getDeadRuns(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		List<DeadRun> deadRuns = null;
+		for (DeadRun item : addedDeadRun) {
+
+			DeadRun deadRun = cache.getDeadRuns().get(item.getObjectId());
+			if (deadRun == null) {
+				if (deadRuns == null) {
+					deadRuns = deadRunDAO.findByObjectId(UpdaterUtils.getObjectIds(addedDeadRun));
+					for (DeadRun object : deadRuns) {
+						cache.getDeadRuns().put(object.getObjectId(), object);
+					}
+				}
+				deadRun = cache.getDeadRuns().get(item.getObjectId());
+			}
+
+			if (deadRun == null) {
+				deadRun = ObjectFactory.getDeadRun(cache, item.getObjectId());
+			}
+			if(deadRun.getJourneyPattern() != null) {
+				//TODO twoDatabaseDeadRunOneTest(validationReporter, context, deadRun, item, data);
+			} else {
+				deadRun.setJourneyPattern(oldValue);
+			}
+		}
+
+		Collection<Pair<DeadRun, DeadRun>> modifiedDeadRun = CollectionUtil.intersection(
+				oldValue.getDeadRuns(), newValue.getDeadRuns(),
+				NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (Pair<DeadRun, DeadRun> pair : modifiedDeadRun) {
+			deadRunUpdater.update(context, pair.getLeft(), pair.getRight());
+		}
+
+
 
 
 		updateFootnotes(context,oldValue,newValue,cache);

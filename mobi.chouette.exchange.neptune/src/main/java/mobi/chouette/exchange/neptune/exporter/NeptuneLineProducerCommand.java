@@ -1,15 +1,13 @@
 package mobi.chouette.exchange.neptune.exporter;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-import javax.xml.bind.MarshalException;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.exchange.exporter.SharedDataKeys;
 import mobi.chouette.exchange.neptune.Constant;
@@ -19,11 +17,12 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
 import org.xml.sax.SAXParseException;
+
+import javax.naming.InitialContext;
+import javax.xml.bind.MarshalException;
+import java.io.IOException;
+import java.time.LocalDate;
 
 @Log4j
 public class NeptuneLineProducerCommand implements Command, Constant {
@@ -58,18 +57,18 @@ public class NeptuneLineProducerCommand implements Command, Constant {
 			}
 			LocalDate startDate = null;
 			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
+				startDate = TimeUtil.toLocalDate(configuration.getStartDate());
 			}
 
 			LocalDate endDate = null;
 			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
+				endDate = TimeUtil.toLocalDate(configuration.getEndDate());
 			}
 
-			NeptuneDataCollector collector = new NeptuneDataCollector();
+			NeptuneDataCollector collector = new NeptuneDataCollector(collection, line, startDate, endDate);
 			collector.setScheduledStopPointDAO(scheduledStopPointDAO);
 
-			boolean cont = (collector.collect(collection, line, startDate, endDate));
+			boolean cont = collector.collect();
 			reporter.addObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(line),
 					OBJECT_STATE.OK, IO_TYPE.OUTPUT);
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
@@ -138,7 +137,7 @@ public class NeptuneLineProducerCommand implements Command, Constant {
 			}
 
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

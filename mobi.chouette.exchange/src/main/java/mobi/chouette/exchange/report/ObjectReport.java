@@ -1,24 +1,22 @@
 package mobi.chouette.exchange.report;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.bind.annotation.XmlElement;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @ToString
 public class ObjectReport extends AbstractReport {
@@ -103,16 +101,16 @@ public class ObjectReport extends AbstractReport {
 
 		switch (severity) {
 			case INFO:
-				if (checkPointInfoCount < MAX_ERRORS_PER_CHECKPOINT) {
-					checkPointInfoKeys.add(new Integer(checkPointErrorId));
+				if (checkPointInfoCount < MAX_INFOS_PER_CHECKPOINT) {
+					checkPointInfoKeys.add(checkPointErrorId);
 					ret = true;
 				}
 				checkPointInfoCount++;
 				break;
 
 		case WARNING:
-			if (checkPointWarningCount < MAX_ERRORS_PER_CHECKPOINT) {
-				checkPointWarningKeys.add(new Integer(checkPointErrorId));
+			if (checkPointWarningCount < MAX_WARNINGS_PER_CHECKPOINT) {
+				checkPointWarningKeys.add(checkPointErrorId);
 				ret = true;
 			}
 			checkPointWarningCount++;
@@ -120,7 +118,7 @@ public class ObjectReport extends AbstractReport {
 
 		default: // ERROR
 			if (checkPointErrorCount < MAX_ERRORS_PER_CHECKPOINT) {
-				checkPointErrorKeys.add(new Integer(checkPointErrorId));
+				checkPointErrorKeys.add(checkPointErrorId);
 				ret = true;
 			}
 			checkPointErrorCount++;
@@ -139,9 +137,9 @@ public class ObjectReport extends AbstractReport {
 	protected void addStatTypeToObject(OBJECT_TYPE type, int count) {
 
 		if (stats.containsKey(type)) {
-			stats.put(type, new Integer(stats.get(type).intValue() + count));
+			stats.put(type, stats.get(type).intValue() + count);
 		} else {
-			stats.put(type, new Integer(count));
+			stats.put(type, count);
 		}
 
 	}
@@ -159,7 +157,7 @@ public class ObjectReport extends AbstractReport {
 		if (stats.containsKey(type)) {
 			oldvalue = stats.get(type).intValue();
 		}
-		stats.put(type, new Integer(count));
+		stats.put(type, count);
 		return oldvalue;
 
 	}
@@ -227,13 +225,13 @@ public class ObjectReport extends AbstractReport {
 				break;
 		}
 		for(Integer numWarning: checkPointWarningKeys) {
-			if(lstErrorKeys.size() < MAX_ERRORS_PER_CHECKPOINT)
+			if(lstErrorKeys.size() < MAX_WARNINGS_PER_CHECKPOINT)
 				lstErrorKeys.add(numWarning);
 			else
 				break;
 		}
 		for(Integer numInfo: checkPointInfoKeys) {
-			if(lstErrorKeys.size() < MAX_ERRORS_PER_CHECKPOINT)
+			if(lstErrorKeys.size() < MAX_INFOS_PER_CHECKPOINT)
 				lstErrorKeys.add(numInfo);
 			else
 				break;

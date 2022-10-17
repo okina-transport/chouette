@@ -1,12 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -14,11 +7,11 @@ import mobi.chouette.exchange.validation.Validator;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NeptuneUtil;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class RouteCheckPoints extends AbstractValidation<Route> implements Validator<Route> {
@@ -56,6 +49,7 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 			prepareCheckPoint(context, ROUTE_7);
 		}
 		initCheckPoint(context, ROUTE_8, SEVERITY.W);
+		initCheckPoint(context, ROUTE_10, SEVERITY.E);
 
 		boolean test4_1 = (parameters.getCheckRoute() != 0);
 		if (test4_1) {
@@ -90,6 +84,9 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 			// 3-Route-8 : check if all stopPoints are used by journeyPatterns
 			check3Route8(context, route);
 
+			// check that ScheduledStopPoint used in RoutePoint are defined in a stop area
+			check3Route10(context, route);
+
 			// 4-Route-1 : check columns constraints
 			if (test4_1)
 				check4Generic1(context, route, L4_ROUTE_1, parameters, log);
@@ -104,7 +101,7 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 			}
 
 		}
-		// log.info(Color.CYAN + monitor.stop() + Color.NORMAL);
+		// JamonUtils.logCyan(log, monitor);
 		return;
 	}
 
@@ -119,7 +116,7 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 		if (!hasOppositeRoute(route, log))
 			return;
 
-		List<StopArea> areas = NeptuneUtil.getStopAreaOfRoute(route);
+		List<StopArea> areas = getStopAreaOfRouteFromRoutePoints(route);
 		// test can be passed if areas exist and have parents
 		if (areas.isEmpty())
 			return;
@@ -132,7 +129,7 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 		if (first == null || last == null)
 			return;
 		Route routeWb = route.getOppositeRoute();
-		List<StopArea> areasWb = NeptuneUtil.getStopAreaOfRoute(routeWb);
+		List<StopArea> areasWb = getStopAreaOfRouteFromRoutePoints(routeWb);
 		// test can be passed if wayback areas exist and have parents
 		if (!areasWb.isEmpty()) {
 			StopArea firstWbChild = areasWb.get(0);
@@ -180,12 +177,12 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 		// test can be passed if areas exist and have parents
 		if (areas.isEmpty())
 			return;
-		StopArea firstBoarding=areas.get(0);
-		StopArea lastBoarding=areas.get(areas.size() - 1);
+		StopArea firstBoarding = areas.get(0);
+		StopArea lastBoarding = areas.get(areas.size() - 1);
 		if (firstBoarding == null || lastBoarding == null)
 			return;
-		StopArea first =firstBoarding.getParent();
-		StopArea last =lastBoarding.getParent();
+		StopArea first = firstBoarding.getParent();
+		StopArea last = lastBoarding.getParent();
 		if (first == null || last == null)
 			return;
 		prepareCheckPoint(context, ROUTE_5);
@@ -241,9 +238,9 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 			return;
 		prepareCheckPoint(context, ROUTE_8);
 		List<StopPoint> points = new ArrayList<StopPoint>(route.getStopPoints());
-		for (Iterator<StopPoint> iterator = points.iterator(); iterator.hasNext();) {
+		for (Iterator<StopPoint> iterator = points.iterator(); iterator.hasNext(); ) {
 			StopPoint stopPoint = iterator.next();
-			if (stopPoint == null || stopPoint.getScheduledStopPoint()==null || stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() == null)
+			if (stopPoint == null || stopPoint.getScheduledStopPoint() == null || stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() == null)
 				iterator.remove();
 		}
 		for (JourneyPattern jp : route.getJourneyPatterns()) {
@@ -263,6 +260,20 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 			ValidationReporter reporter = ValidationReporter.Factory.getInstance();
 			reporter.addCheckPointReportError(context, ROUTE_8, location, Integer.toString(points.size()), null,
 					targets);
+		}
+	}
+
+	// check that ScheduledStopPoints used in RoutePoints are contained in a stop area
+	private void check3Route10(Context context, Route route) {
+		prepareCheckPoint(context, ROUTE_10);
+		ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+		for (RoutePoint routePoint : route.getRoutePoints()) {
+			ScheduledStopPoint scheduledStopPoint = routePoint.getScheduledStopPoint();
+			if (scheduledStopPoint != null && scheduledStopPoint.getContainedInStopAreaRef().getObject() == null) {
+				DataLocation location = buildLocation(context, routePoint);
+				DataLocation targetLocation = buildLocation(context, scheduledStopPoint);
+				reporter.addCheckPointReportError(context, ROUTE_10, location, null, null, targetLocation);
+			}
 		}
 	}
 
@@ -324,7 +335,7 @@ public class RouteCheckPoints extends AbstractValidation<Route> implements Valid
 	}
 
 	private List<StopArea> getStopAreaOfRouteFromRoutePoints(Route route) {
-		return route.getRoutePoints().stream().filter(rp -> rp!=null).map(rp -> rp.getScheduledStopPoint().getContainedInStopAreaRef().getObject()).filter(sa -> sa!=null).collect(Collectors.toList());
+		return route.getRoutePoints().stream().filter(rp -> rp != null).map(rp -> rp.getScheduledStopPoint().getContainedInStopAreaRef().getObject()).filter(sa -> sa != null).collect(Collectors.toList());
 	}
 
 

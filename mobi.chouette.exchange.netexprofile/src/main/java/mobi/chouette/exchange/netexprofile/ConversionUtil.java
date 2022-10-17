@@ -1,45 +1,8 @@
 package mobi.chouette.exchange.netexprofile;
 
-import java.math.BigInteger;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.OffsetTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.type.BookingAccessEnum;
-import mobi.chouette.model.type.BookingMethodEnum;
-import mobi.chouette.model.type.DayTypeEnum;
-import mobi.chouette.model.type.FlexibleLineTypeEnum;
-import mobi.chouette.model.type.FlexibleServiceTypeEnum;
-import mobi.chouette.model.type.PurchaseMomentEnum;
-import mobi.chouette.model.type.PurchaseWhenEnum;
-import mobi.chouette.model.type.ServiceAlterationEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
-import org.apache.commons.lang.StringUtils;
-import org.rutebanken.netex.model.AirSubmodeEnumeration;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.BookingAccessEnumeration;
-import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.BusSubmodeEnumeration;
-import org.rutebanken.netex.model.CoachSubmodeEnumeration;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.FlexibleServiceEnumeration;
-import org.rutebanken.netex.model.MetroSubmodeEnumeration;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.PurchaseMomentEnumeration;
-import org.rutebanken.netex.model.PurchaseWhenEnumeration;
-import org.rutebanken.netex.model.RailSubmodeEnumeration;
-import org.rutebanken.netex.model.ServiceAlterationEnumeration;
-import org.rutebanken.netex.model.TelecabinSubmodeEnumeration;
-import org.rutebanken.netex.model.TramSubmodeEnumeration;
-import org.rutebanken.netex.model.TransportSubmodeStructure;
-import org.rutebanken.netex.model.WaterSubmodeEnumeration;
+import mobi.chouette.model.type.*;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
@@ -47,7 +10,6 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mobi.chouette.common.TimeUtil.toLocalTimeFromJoda;
 
 @Log4j
 public class ConversionUtil {
@@ -298,6 +260,8 @@ public class ConversionUtil {
 				return ServiceAlterationEnumeration.CANCELLATION;
 			case ExtraJourney:
 				return ServiceAlterationEnumeration.EXTRA_JOURNEY;
+			case Replaced:
+				return ServiceAlterationEnumeration.REPLACED;
 			default:
 				log.error("Unsupported Chouette ServiceAlteration value: " + chouetteValue);
 		}
@@ -315,9 +279,9 @@ public class ConversionUtil {
 
 	}
 
-	public static OffsetTime toOffsetTimeUtc(org.joda.time.LocalTime time) {
+	public static OffsetTime toOffsetTimeUtc(java.time.LocalTime time) {
 		return time == null ? null
-				: toLocalTimeFromJoda(time).atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
+				: time.atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
 	}
 
 	public static final ZoneId LOCAL_ZONE_ID = ZoneId.of("Europe/Paris");
@@ -460,6 +424,44 @@ public class ConversionUtil {
 				return PurchaseMomentEnumeration.ON_CHECK_OUT;
 			case other:
 				return PurchaseMomentEnumeration.OTHER;
+		}
+		return null;
+	}
+
+	public static TimingPointStatusEnumeration toTimingPointStatus(TimingPointStatusEnum chouetteType) {
+		if (chouetteType == null) {
+			return null;
+		}
+
+		switch (chouetteType) {
+			case notTimingPoint:
+				return TimingPointStatusEnumeration.NOT_TIMING_POINT;
+			case timingPoint:
+				return TimingPointStatusEnumeration.TIMING_POINT;
+			case secondaryTimingPoint:
+				return TimingPointStatusEnumeration.SECONDARY_TIMING_POINT;
+		}
+		return null;
+	}
+
+	public static PublicationEnumeration toPublicationEnumeration(PublicationEnum chouetteType) {
+		if (chouetteType == null) {
+			return null;
+		}
+
+		switch (chouetteType) {
+			case Public:
+				return PublicationEnumeration.PUBLIC;
+			case Authorised:
+				return PublicationEnumeration.AUTHORISED;
+			case Confidential:
+				return PublicationEnumeration.CONFIDENTIAL;
+			case Private:
+				return PublicationEnumeration.PRIVATE;
+			case Restricted:
+				return PublicationEnumeration.RESTRICTED;
+			case Test:
+				return PublicationEnumeration.TEST;
 		}
 		return null;
 	}

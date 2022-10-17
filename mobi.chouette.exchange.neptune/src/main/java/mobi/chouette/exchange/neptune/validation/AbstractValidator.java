@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.neptune.validation;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.neptune.Constant;
 import mobi.chouette.exchange.neptune.model.AreaCentroid;
@@ -14,6 +10,10 @@ import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 import mobi.chouette.model.util.Referential;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractValidator implements Constant {
 
@@ -147,9 +147,9 @@ public abstract class AbstractValidator implements Constant {
 			if (object instanceof PTLink) {
 				try {
 					List<DataLocation.Path> path = loc.getPath();
-					path.add(loc.new Path(object));
-					path.add(loc.new Path(((PTLink) object).getRoute()));
-					path.add(loc.new Path(((PTLink) object).getRoute().getLine()));
+					path.add(new DataLocation.Path(object));
+					path.add(new DataLocation.Path(((PTLink) object).getRoute()));
+					path.add(new DataLocation.Path(((PTLink) object).getRoute().getLine()));
 
 //					Line line = ((PTLink) object).getRoute().getLine();
 //					if (line != null)
@@ -160,8 +160,8 @@ public abstract class AbstractValidator implements Constant {
 			} else if (object instanceof AreaCentroid) {
 				try {
 					List<DataLocation.Path> path = loc.getPath();
-					path.add(loc.new Path(object));
-					path.add(loc.new Path(((AreaCentroid) object).getContainedIn()));
+					path.add(new DataLocation.Path(object));
+					path.add(new DataLocation.Path(((AreaCentroid) object).getContainedIn()));
 				} catch (NullPointerException e) {
 
 				}

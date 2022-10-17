@@ -11,11 +11,7 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.type.ChouetteAreaEnum;
-import mobi.chouette.model.type.LongLatTypeEnum;
-import mobi.chouette.model.type.StopAreaTypeEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
+import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import net.opengis.gml._3.DirectPositionType;
@@ -46,19 +42,11 @@ public class StopPlaceParser implements Parser, Constant {
             TariffZonesInFrame_RelStructure tariffZonesStruct = (TariffZonesInFrame_RelStructure) relationshipStruct;
             List<JAXBElement<? extends Zone_VersionStructure>> tariffZones = tariffZonesStruct.getTariffZone_();
 
-            String zoneStrucId = tariffZonesStruct.getId();
-            Properties properties;
-
-            if (this.tariffZoneProperties.containsKey(zoneStrucId)){
-                properties = this.tariffZoneProperties.get(zoneStrucId);
-            }else{
-                properties = new Properties();
-                this.tariffZoneProperties.put(zoneStrucId, properties);
-            }
-
-
-            for (JAXBElement<? extends Zone_VersionStructure> zone : tariffZones) {
-                properties.put(NAME, zone.getName());
+            // TODO : Check merge entur : Diff algo entre Mobi-iti et entur. J'ai gardé la version entur a voir si c'est pertinent.
+            for (JAXBElement<? extends Zone_VersionStructure> tariffZone : tariffZones) {
+                Properties properties = new Properties();
+                properties.put(NAME, tariffZone.getValue().getName().getValue());
+                this.tariffZoneProperties.put(tariffZone.getValue().getId(), properties);
             }
         } else if (relationshipStruct instanceof StopPlacesInFrame_RelStructure) {
             StopPlacesInFrame_RelStructure stopPlacesStruct = (StopPlacesInFrame_RelStructure) relationshipStruct;
@@ -231,7 +219,7 @@ public class StopPlaceParser implements Parser, Constant {
         try {
             return TransportSubModeNameEnum.valueOf(StringUtils.capitalize(netexValue));
         } catch (IllegalArgumentException iae) {
-            log.warn("Unable to map unknown TransportModeNameEnum value: " + netexValue);
+            log.warn("Unable to map unknown TransportSubModeNameEnum value: " + netexValue);
             return null;
         }
     }

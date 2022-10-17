@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.writer;
 
+import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.validation.france.AbstractFranceNetexProfileValidator;
 
 import javax.xml.stream.XMLStreamException;
@@ -8,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-public class AbstractNetexWriter {
+public class AbstractNetexWriter  implements Constant {
 
     //TODO changer les infos ci dessous pour changement de profil
     static final String NETEX_PROFILE_VERSION = AbstractFranceNetexProfileValidator.EXPORT_PROFILE_ID;

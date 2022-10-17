@@ -1,15 +1,7 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBElement;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -17,28 +9,22 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
-import mobi.chouette.model.BookingArrangement;
-import mobi.chouette.model.Company;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.DayTypeRefStructure;
-import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
-import org.rutebanken.netex.model.JourneyPatternRefStructure;
-import org.rutebanken.netex.model.Journey_VersionStructure;
-import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.TimetabledPassingTime;
+import org.rutebanken.netex.model.*;
+
+import javax.xml.bind.JAXBElement;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j
 public class ServiceJourneyParser extends NetexParser implements Parser, Constant {
@@ -58,7 +44,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
 			if (! (journeyStruct instanceof ServiceJourney)) {
-				log.debug("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+				if(log.isTraceEnabled()) {
+					log.trace("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+				}
 				continue;
 			}
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
@@ -85,6 +73,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			}
 
 			vehicleJourney.setObjectVersion(NetexParserUtils.getVersion(serviceJourney));
+
+			// TODO : Check merge entur : La partie Publication n'est pas présente dans le model NETEX-FR Okina. Donc le lien ici ne peut pas fonctionner. A voir la récup du Netex Entur dans le Netex-FR.
+			//vehicleJourney.setPublication(NetexParserUtils.toPublicationEnum(serviceJourney.getPublication()));
 
 			vehicleJourney.setPublishedJourneyIdentifier(serviceJourney.getPublicCode());
 
@@ -166,8 +157,8 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexFSP.getBookWhen()));
 				bookingArrangement.setBuyWhen(netexFSP.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
 				bookingArrangement.setBookingMethods(netexFSP.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexFSP.getLatestBookingTime()));
-				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexFSP.getMinimumBookingPeriod()));
+				bookingArrangement.setLatestBookingTime(netexFSP.getLatestBookingTime());
+				bookingArrangement.setMinimumBookingPeriod(netexFSP.getMinimumBookingPeriod());
 
 				//bookingArrangement.setBookingContact(contactStructureParser.parse(netexFSP.getBookingContact()));
 

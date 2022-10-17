@@ -23,6 +23,8 @@ public class ServiceJourneyInterchangeProducer extends NetexProducer implements 
         netex.setAdvertised(interchange.getAdvertised());
         netex.setPlanned(interchange.getPlanned());
         netex.setGuaranteed(interchange.getGuaranteed());
+        netex.setMaximumWaitTime(interchange.getMaximumWaitTime());
+        netex.setMinimumTransferTime(interchange.getMinimumTransferTime());
 
         
         // Consumer stoppoint ref 

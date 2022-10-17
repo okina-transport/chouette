@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -23,11 +19,13 @@ import mobi.chouette.model.type.LinkOrientationEnum;
 import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class AccessLinkParser implements Parser, Constant {
@@ -55,7 +53,7 @@ public class AccessLinkParser implements Parser, Constant {
 				accessLink = ObjectFactory.getAccessLink(referential, objectId);
 				accessLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				accessLink.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

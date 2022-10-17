@@ -1,12 +1,12 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import lombok.ToString;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import lombok.ToString;
 
 public class GtfsIteratorImpl implements Iterator<Boolean>, GtfsIterator, Constant {
 
@@ -263,6 +263,7 @@ public class GtfsIteratorImpl implements Iterator<Boolean>, GtfsIterator, Consta
 	}
 
 	@ToString
+	static
 	class Field {
 		int offset;
 		int length;

@@ -1,36 +1,18 @@
 package mobi.chouette.model;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import mobi.chouette.model.type.BookingAccessEnum;
 import mobi.chouette.model.type.BookingMethodEnum;
 import mobi.chouette.model.type.PurchaseMomentEnum;
 import mobi.chouette.model.type.PurchaseWhenEnum;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
+
+import javax.persistence.*;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "booking_arrangements")
@@ -41,7 +23,7 @@ public class BookingArrangement extends NeptuneObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "booking_arrangements_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "booking_arrangements_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "booking_arrangements_id_seq"),
 			@Parameter(name = "increment_size", value = "100")})
 	@GeneratedValue(generator = "booking_arrangements_id_seq")
@@ -78,7 +60,7 @@ public class BookingArrangement extends NeptuneObject {
 	@Getter
 	@Setter
 	@Column(name = "minimum_booking_period")
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration minimumBookingPeriod;
 
 

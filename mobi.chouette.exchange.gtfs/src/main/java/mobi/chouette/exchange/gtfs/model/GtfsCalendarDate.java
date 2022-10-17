@@ -1,15 +1,9 @@
 package mobi.chouette.exchange.gtfs.model;
 
+import lombok.*;
+
 import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)

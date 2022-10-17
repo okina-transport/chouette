@@ -7,6 +7,16 @@
  */
 package mobi.chouette.exchange.neptune.jaxb;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.neptune.exporter.producer.AbstractJaxbNeptuneProducer;
+import org.trident.schema.trident.ChouettePTNetworkType;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,25 +24,6 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import lombok.extern.log4j.Log4j;
-
-import mobi.chouette.exchange.neptune.exporter.producer.AbstractJaxbNeptuneProducer;
-import org.trident.schema.trident.ChouettePTNetworkType;
-import org.xml.sax.SAXException;
-
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**
  * Reader tool to extract XML Neptune Schema Objects (jaxb) from a file or a
@@ -64,6 +55,7 @@ public class JaxbNeptuneFileConverter {
 	private JaxbNeptuneFileConverter() throws JAXBException, SAXException, URISyntaxException, IOException {
 		context = JAXBContext.newInstance(ChouettePTNetworkType.class);
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 		schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("xsd/neptune.xsd"));
 	}
 

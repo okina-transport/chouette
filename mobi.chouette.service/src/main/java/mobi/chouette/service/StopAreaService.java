@@ -325,9 +325,13 @@ public class StopAreaService {
 		@Override
 		public Integer call() throws Exception {
 			ContextHolder.setContext(referential);
-			log.info("Starting delete for referential:" + referential);
+			if(log.isDebugEnabled()) {
+				log.info("Starting delete for referential:" + referential);
+			}
 			Integer count = stopAreaUpdateService.delete();
-			log.info("Delete completed for referential:" + referential);
+			if(log.isDebugEnabled()) {
+				log.info("Delete completed for referential:" + referential);
+			}
 			return count;
 		}
 	}

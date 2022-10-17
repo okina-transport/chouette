@@ -60,16 +60,18 @@ public class StopAreaIdMapper {
 
         if (newId != null) {
             stopArea.setObjectId(newId);
-            log.debug("Mapped id for " + stopArea.getAreaType() + " from: " + orgId + " to: " + newId);
-
-            Integer objectVersion = stopAreaDAO.findByObjectId(newId).getObjectVersion();
+            if(log.isTraceEnabled()) {
+                log.trace("Mapped id for " + stopArea.getAreaType() + " from: " + orgId + " to: " + newId);
+            }
+            Long objectVersion = stopAreaDAO.findByObjectId(newId).getObjectVersion();
             stopArea.setObjectVersion(objectVersion);
             log.debug("Set object version for " + orgId + "/" + newId + " to : " + objectVersion);
 
             referential.getStopAreaMapping().put(orgId, newId);
-
         } else {
-            log.debug("Failed to map id for " + stopArea.getAreaType() + " from: " + orgId);
+            if(log.isTraceEnabled()) {
+                log.trace("Failed to map id for " + stopArea.getAreaType() + " from: " + orgId);
+            }
         }
 
         //stopArea.getContainedStopAreas().forEach(child -> mapIdsForStopArea(child));
@@ -136,5 +138,4 @@ public class StopAreaIdMapper {
     public void setStopAreaIdCache(StopAreaIdCache stopAreaIdCache) {
         this.stopAreaIdCache = stopAreaIdCache;
     }
-
 }

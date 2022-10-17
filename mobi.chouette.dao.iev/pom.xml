@@ -3,61 +3,15 @@
   <parent>
     <groupId>mobi.chouette</groupId>
     <artifactId>mobi.chouette</artifactId>
-    <version>5.3.1-mobi-iti-SNAPSHOT</version>
+    <version>5.4-mobi-iti-SNAPSHOT</version>
   </parent>
   <artifactId>mobi.chouette.dao.iev</artifactId>
   <packaging>ejb</packaging>
    <properties>
       <project.rootDir>${project.basedir}/..</project.rootDir>
    </properties>
+
    <dependencies>
-      <!-- Default Dependencies -->
-      <dependency>
-         <groupId>org.projectlombok</groupId>
-         <artifactId>lombok</artifactId>
-         <scope>provided</scope>
-      </dependency>
-
-      <!-- Others Dependencies -->
-      <dependency>
-         <groupId>org.jboss.spec.javax.ejb</groupId>
-         <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-core</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-entitymanager</artifactId>
-         <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.spec.javax.transaction</groupId>
-         <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.jboss.ironjacamar</groupId>
-         <artifactId>ironjacamar-jdbc</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>com.google.guava</groupId>
-         <artifactId>guava</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.jadira.usertype</groupId>
-         <artifactId>usertype.core</artifactId>
-      </dependency>
 
       <!-- Modules -->
       <dependency>
@@ -79,6 +33,56 @@
          <version>${project.version}</version>
       </dependency>
 
+      <!-- Jakarta EE -->
+      <dependency>
+         <groupId>org.jboss.spec.javax.ejb</groupId>
+         <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.spec.javax.transaction</groupId>
+         <artifactId>jboss-transaction-api_1.3_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- Others Dependencies -->
+      <dependency>
+         <groupId>org.projectlombok</groupId>
+         <artifactId>lombok</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-core</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.ironjacamar</groupId>
+         <artifactId>ironjacamar-jdbc</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.picketbox</groupId>
+               <artifactId>picketbox</artifactId>
+            </exclusion>
+         </exclusions>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.dom4j</groupId>
+         <artifactId>dom4j</artifactId>
+         <version>${dom4j.version}</version>
+         <scope>provided</scope>
+      </dependency>
+
       <!-- Test Dependencies -->
       <dependency>
          <groupId>org.testng</groupId>
@@ -86,12 +90,18 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
+         <groupId>org.wildfly.core</groupId>
          <artifactId>wildfly-embedded</artifactId>
          <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>sun.jdk</groupId>
+               <artifactId>jconsole</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
+         <groupId>org.wildfly.arquillian</groupId>
          <artifactId>wildfly-arquillian-container-embedded</artifactId>
          <scope>test</scope>
       </dependency>
@@ -113,6 +123,7 @@
       </dependency>
 
    </dependencies>
+
    <build>
       <plugins>
          <plugin>

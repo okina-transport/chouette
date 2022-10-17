@@ -1,10 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -19,7 +16,6 @@ import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.validation.AreaCentroidValidator;
 import mobi.chouette.exchange.neptune.validation.StopAreaValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.Line;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
@@ -30,11 +26,13 @@ import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
@@ -90,7 +88,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 				stopArea.setOriginalStopId(objectId.replaceFirst("^" + configuration.getStopAreaPrefixToRemove(),""));
 				stopArea.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				stopArea.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

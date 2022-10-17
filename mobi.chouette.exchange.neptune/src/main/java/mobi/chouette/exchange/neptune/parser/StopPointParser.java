@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -12,18 +8,17 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.StopPointValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDateTime;
 
 @Log4j
 public class StopPointParser implements Parser, Constant, JsonExtension {
@@ -53,7 +48,7 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 				stopPoint = ObjectFactory.getStopPoint(referential, objectId);
 				stopPoint.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				stopPoint.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

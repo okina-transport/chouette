@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.validator;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.exchange.AbstractInputValidator;
@@ -15,6 +9,12 @@ import mobi.chouette.exchange.TestDescription;
 import mobi.chouette.exchange.parameters.AbstractParameter;
 import mobi.chouette.exchange.validation.checkpoint.AbstractValidation;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Log4j
 public class ValidatorInputValidator extends AbstractInputValidator {
@@ -105,9 +105,8 @@ public class ValidatorInputValidator extends AbstractInputValidator {
 
 	@Override
 	public List<TestDescription> getTestList() {
-		List<TestDescription> lstResults = new ArrayList<TestDescription>();
-		
-		lstResults.addAll(AbstractValidation.getTestLevel3DatabaseList());
+
+		List<TestDescription> lstResults = new ArrayList<TestDescription>(AbstractValidation.getTestLevel3DatabaseList());
 		
 		return lstResults;
 	}

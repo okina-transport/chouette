@@ -1,16 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -26,7 +15,6 @@ import mobi.chouette.exchange.validator.JobDataTest;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -38,6 +26,16 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class ValidationConnectionLinks extends AbstractTestValidation {
@@ -259,10 +257,10 @@ public class ValidationConnectionLinks extends AbstractTestValidation {
 			}
 		}
 
-		link.setDefaultDuration(link.getDefaultDuration().minus(500000));
-		link.setOccasionalTravellerDuration(link.getOccasionalTravellerDuration().minus(400000));
-		link.setFrequentTravellerDuration(link.getFrequentTravellerDuration().minus(250000));
-		link.setMobilityRestrictedTravellerDuration(link.getMobilityRestrictedTravellerDuration().minus(850000));
+		link.setDefaultDuration(link.getDefaultDuration().minusMillis(500000));
+		link.setOccasionalTravellerDuration(link.getOccasionalTravellerDuration().minusMillis(400000));
+		link.setFrequentTravellerDuration(link.getFrequentTravellerDuration().minusMillis(250000));
+		link.setMobilityRestrictedTravellerDuration(link.getMobilityRestrictedTravellerDuration().minusMillis(850000));
 
 		ValidationData data = new ValidationData();
 		data.getConnectionLinks().addAll(beans);

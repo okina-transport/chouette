@@ -1,5 +1,9 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.gtfs.model.GtfsAgency;
+import mobi.chouette.exchange.gtfs.model.GtfsObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,19 +13,7 @@ import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
-import lombok.extern.log4j.Log4j;
-//import mobi.chouette.common.Color;
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
-import mobi.chouette.exchange.gtfs.model.GtfsObject;
+import java.util.*;
 
 //import com.jamonapi.Monitor;
 //import com.jamonapi.MonitorFactory;
@@ -125,7 +117,7 @@ public abstract class IndexImpl<T> extends AbstractIndex<T> {
 			}
 		} finally {
 			file.close();
-			//log.info(Color.BLUE + monitor.stop() + Color.NORMAL);
+			//JamonUtils.logBlue(log, monitor);
 		}
 	}
 	
@@ -434,8 +426,8 @@ public abstract class IndexImpl<T> extends AbstractIndex<T> {
 	
 	public Integer getIndex(String key) {
 		if (_fields.get(key) == null)
-			return new Integer(-1);
-		return new Integer(_fields.get(key).intValue()+1);
+			return -1;
+		return _fields.get(key).intValue() + 1;
 	}
 
 	protected String getField(GtfsIterator reader, String key, String value) {

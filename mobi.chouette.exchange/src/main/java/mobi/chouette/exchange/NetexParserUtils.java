@@ -1,49 +1,16 @@
 package mobi.chouette.exchange;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.importer.ParserUtils;
+import mobi.chouette.model.type.*;
+import org.rutebanken.netex.model.*;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.exchange.importer.ParserUtils;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-import mobi.chouette.model.type.BookingAccessEnum;
-import mobi.chouette.model.type.BookingMethodEnum;
-import mobi.chouette.model.type.DayTypeEnum;
-import mobi.chouette.model.type.FlexibleLineTypeEnum;
-import mobi.chouette.model.type.FlexibleServiceTypeEnum;
-import mobi.chouette.model.type.OrganisationTypeEnum;
-import mobi.chouette.model.type.PurchaseMomentEnum;
-import mobi.chouette.model.type.PurchaseWhenEnum;
-import mobi.chouette.model.type.ServiceAlterationEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
-
-import org.rutebanken.netex.model.AirSubmodeEnumeration;
-import org.rutebanken.netex.model.BookingAccessEnumeration;
-import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.BusSubmodeEnumeration;
-import org.rutebanken.netex.model.CoachSubmodeEnumeration;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.EntityInVersionStructure;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.FlexibleServiceEnumeration;
-import org.rutebanken.netex.model.FunicularSubmodeEnumeration;
-import org.rutebanken.netex.model.MetroSubmodeEnumeration;
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
-import org.rutebanken.netex.model.PurchaseMomentEnumeration;
-import org.rutebanken.netex.model.PurchaseWhenEnumeration;
-import org.rutebanken.netex.model.RailSubmodeEnumeration;
-import org.rutebanken.netex.model.ServiceAlterationEnumeration;
-import org.rutebanken.netex.model.TelecabinSubmodeEnumeration;
-import org.rutebanken.netex.model.TramSubmodeEnumeration;
-import org.rutebanken.netex.model.TransportSubmodeStructure;
-import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 
 @Log4j
 public class NetexParserUtils extends ParserUtils {
@@ -358,21 +325,21 @@ public class NetexParserUtils extends ParserUtils {
         return null;
     }
 
-    public static Integer getVersion(EntityInVersionStructure obj) {
-        Integer version = 0;
+    public static Long getVersion(EntityInVersionStructure obj) {
+        Long version = 0L;
         try {
-            version = Integer.parseInt(obj.getVersion());
+            version = Long.parseLong(obj.getVersion());
         } catch (NumberFormatException e) {
             log.debug("Unable to parse " + obj.getVersion() + " to Integer as supported by Neptune, returning 0");
         }
         return version;
     }
 
-    public static Integer getVersion(String version) {
+    public static Long getVersion(String version) {
         try {
-            return Integer.parseInt(version);
+            return Long.parseLong(version);
         } catch (NumberFormatException e) {
-            return 0;
+            return 0L;
         }
     }
 

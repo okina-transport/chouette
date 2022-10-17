@@ -1,19 +1,5 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import static mobi.chouette.common.Constant.REFERENTIAL;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.xml.sax.SAXException;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
@@ -21,6 +7,18 @@ import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.xml.sax.SAXException;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+
+import static mobi.chouette.common.Constant.REFERENTIAL;
 
 public class ServiceCalendarFrameParserTest {
 
@@ -37,8 +35,8 @@ public class ServiceCalendarFrameParserTest {
 
 		Timetable t1 = referential.getTimetables().get("KOL:DayType:1");
 		Assert.assertNotNull(t1);
-		Assert.assertEquals(t1.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-08-18")); // Start date in validity condition
-		Assert.assertEquals(t1.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-12-23")); // Limited by last date in dayTypeAssignments
+		Assert.assertEquals(t1.getStartOfPeriod(), java.time.LocalDate.parse("2017-08-18")); // Start date in validity condition
+		Assert.assertEquals(t1.getEndOfPeriod(), java.time.LocalDate.parse("2017-12-23")); // Limited by last date in dayTypeAssignments
 
 	}
 
@@ -51,8 +49,8 @@ public class ServiceCalendarFrameParserTest {
 
 		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
 		Assert.assertNotNull(t2);
-		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-10-27")); // Start date as first usable date in calendar
-		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
+		Assert.assertEquals(t2.getStartOfPeriod(), java.time.LocalDate.parse("2017-10-27")); // Start date as first usable date in calendar
+		Assert.assertEquals(t2.getEndOfPeriod(), java.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
 	}
 
 	@Test
@@ -64,8 +62,8 @@ public class ServiceCalendarFrameParserTest {
 
 		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
 		Assert.assertNotNull(t2);
-		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-08-18")); // Start date as start date in validity condition
-		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
+		Assert.assertEquals(t2.getStartOfPeriod(), java.time.LocalDate.parse("2017-08-18")); // Start date as start date in validity condition
+		Assert.assertEquals(t2.getEndOfPeriod(), java.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
 	}
 
 	@Test(enabled = false)
@@ -78,8 +76,8 @@ public class ServiceCalendarFrameParserTest {
 
 		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
 		Assert.assertNotNull(t2);
-		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2016-10-17")); // Start date of service calendar
-		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2016-12-23")); // End date in service calendar
+		Assert.assertEquals(t2.getStartOfPeriod(), java.time.LocalDate.parse("2016-10-17")); // Start date of service calendar
+		Assert.assertEquals(t2.getEndOfPeriod(), java.time.LocalDate.parse("2016-12-23")); // End date in service calendar
 		Assert.assertEquals(t2.getEffectiveDates().size(), 0);
 	}
 
@@ -93,8 +91,8 @@ public class ServiceCalendarFrameParserTest {
 
 		Timetable t2 = referential.getTimetables().get("BRA:DayType:2");
 		Assert.assertNotNull(t2);
-		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2016-09-19")); // Start date of service calendar
-		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2016-12-22")); // End date in service calendar // TODO 1 day off, must be fixed when date/time parsing is on local time
+		Assert.assertEquals(t2.getStartOfPeriod(), java.time.LocalDate.parse("2016-09-19")); // Start date of service calendar
+		Assert.assertEquals(t2.getEndOfPeriod(), java.time.LocalDate.parse("2016-12-22")); // End date in service calendar // TODO 1 day off, must be fixed when date/time parsing is on local time
 		Assert.assertEquals(t2.getEffectiveDates().size(), 0);
 	}
 

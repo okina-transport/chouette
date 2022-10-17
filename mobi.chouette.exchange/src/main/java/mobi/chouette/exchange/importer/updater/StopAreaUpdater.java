@@ -1,7 +1,12 @@
 package mobi.chouette.exchange.importer.updater;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Color;
@@ -23,11 +28,8 @@ import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @Stateless(name = StopAreaUpdater.BEAN_NAME)
 @Log4j

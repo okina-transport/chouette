@@ -3,39 +3,43 @@ package mobi.chouette.exchange.exporter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.util.NeptuneUtil;
+import mobi.chouette.model.*;
 import org.hibernate.Hibernate;
-import org.joda.time.LocalDate;
 
-import javax.ejb.EJB;
-import java.util.Collection;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 
 @Log4j
 public class DataCollector {
 
+	// TODO : Check merge entur La partie collect et collectLine diffère beaucoup.
 	private ScheduledStopPointDAO scheduledStopPointDAO;
 
 	private ConnectionLinkDAO connectionLinkDAO;
 
-	protected boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate,
-							  boolean skipNoCoordinate, boolean followLinks) {
+	protected LocalDate startDate;
+	protected LocalDate endDate;
+	protected boolean skipNoCoordinate;
+	protected boolean followLinks;
+	protected boolean onlyPublicData;
+
+	protected ExportableData collection;
+	protected Line line;
+
+	public DataCollector(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate, boolean skipNoCoordinate, boolean followLinks, boolean onlyPublicData) {
+		this.collection = collection;
+		this.line = line;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.skipNoCoordinate = skipNoCoordinate;
+		this.followLinks = followLinks;
+		this.onlyPublicData = onlyPublicData;
+	}
+
+	protected boolean collect() {
 		boolean validLine = false;
 		collection.setLine(null);
 		collection.getRoutes().clear();
@@ -44,128 +48,79 @@ public class DataCollector {
 		collection.getVehicleJourneys().clear();
 		collection.getFootnotes().clear();
 
-		for (Route route : line.getRoutes()) {
-			boolean validRoute = false;
-			if (route.getStopPoints().size() < 2)
-				continue;
-			for (JourneyPattern jp : route.getJourneyPatterns()) {
-				boolean validJourneyPattern = false;
-				if (jp.getStopPoints().size() < 2)
-					continue; // no stops
-				if (jp.getDepartureStopPoint() == null || jp.getArrivalStopPoint() == null) {
-					NeptuneUtil.refreshDepartureArrivals(jp);
-				}
-				for (VehicleJourney vehicleJourney : jp.getVehicleJourneys()) {
-					Hibernate.initialize(vehicleJourney.getKeyValues());
+		boolean isValid = line.filter(startDate, endDate, onlyPublicData);
 
-					if (vehicleJourney.getVehicleJourneyAtStops().isEmpty()) {
-						continue;
-					}
-					if (startDate == null && endDate == null) {
-						boolean isValid = false;
-						for (Timetable timetable : vehicleJourney.getTimetables()) {
-
-							if (collection.getTimetables().contains(timetable)) {
-								isValid = true;
-							} else {
-								if (!timetable.getPeriods().isEmpty() || !timetable.getCalendarDays().isEmpty()) {
-									collection.getTimetables().add(timetable);
-									isValid = true;
-								}
-							}
-						}
-						if (isValid) {
-							collection.getTimetables().addAll(vehicleJourney.getTimetables());
-							collection.getVehicleJourneys().add(vehicleJourney);
-							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
-							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
-								collection.getFootnotes().addAll(vjas.getFootnotes());
-							}
-							collection.getFootnotes().addAll(vehicleJourney.getFootnotes());
-							validJourneyPattern = true;
-							validRoute = true;
-							validLine = true;
-						}
-					} else {
-						boolean isVehicleJourneyValid = false;
-						for (Timetable timetable : vehicleJourney.getTimetables()) {
-							boolean isTimetableValid = false;
-							if (collection.getTimetables().contains(timetable)) {
-								isTimetableValid = true;
-							} else if (collection.getExcludedTimetables().contains(timetable)) {
-								isTimetableValid = false;
-							} else {
-
-								if (startDate == null)
-									isTimetableValid = timetable.isActiveBefore(endDate);
-								else if (endDate == null)
-									isTimetableValid = timetable.isActiveAfter(startDate);
-								else
-									isTimetableValid = timetable.isActiveOnPeriod(startDate, endDate);
-								if (isTimetableValid)
-									collection.getTimetables().add(timetable);
-								else
-									collection.getExcludedTimetables().add(timetable);
-							}
-							isVehicleJourneyValid |= isTimetableValid;
-						}
-						if (isVehicleJourneyValid) {
-							collection.getVehicleJourneys().add(vehicleJourney);
-							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
-							collection.getFootnotes().addAll(vehicleJourney.getFootnotes());
-							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
-								collection.getFootnotes().addAll(vjas.getFootnotes());
-							}
-							if (vehicleJourney.getCompany() != null) {
-								collection.getCompanies().add(vehicleJourney.getCompany());
-							}
-							validJourneyPattern = true;
-							validRoute = true;
-							validLine = true;
-						}
-					}
-				} // end vehiclejourney loop
-				if (validJourneyPattern) {
-					collection.getJourneyPatterns().add(jp);
-					collection.getFootnotes().addAll(jp.getFootnotes());
-				}
-			}// end journeyPattern loop
-			if (validRoute) {
-				collection.getRoutes().add(route);
-				route.getOppositeRoute(); // to avoid lazy loading afterward
-				for (StopPoint stopPoint : route.getStopPoints()) {
-					if (stopPoint == null)
-						continue; // protection from missing stopPoint ranks
-					collection.getStopPoints().add(stopPoint);
-					collection.getAllParsedStopPoints().add(stopPoint);
-					if (stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject()!=null)
-						collectStopAreas(collection, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks);
-					collection.getFootnotes().addAll(stopPoint.getFootnotes());
-				}
-			}
-		}// end route loop
-		if (validLine) {
-			collection.setLine(line);
-			Network network = line.getNetwork();
-			if(network != null) {
-				collection.getNetworks().add(network);
-				if(network.getCompany() != null) { // Authority
-					collection.getCompanies().add(network.getCompany());
-				}
-			}
-			if (line.getCompany() != null) { // Operator
-				collection.getCompanies().add(line.getCompany());
-			}
-			if (line.getGroupOfLines() != null) {
-				collection.getGroupOfLines().addAll(line.getGroupOfLines());
-			}
-			if (!line.getRoutingConstraints().isEmpty()) {
-				collection.getStopAreas().addAll(line.getRoutingConstraints());
-			}
-			collection.getFootnotes().addAll(line.getFootnotes());
+		if(isValid) {
+			collectLine();
 		}
+		return isValid;
+	}
+
+	private void collectLine() {
+		line.getRoutes().forEach(this::collectRoute);
+		collection.setLine(line);
+		Network network = line.getNetwork();
+		if (network != null) {
+			collection.getNetworks().add(network);
+			if (network.getCompany() != null) { // Authority
+				collection.getCompanies().add(network.getCompany());
+			}
+		}
+		if (line.getCompany() != null) { // Operator
+			collection.getCompanies().add(line.getCompany());
+		}
+		if (line.getGroupOfLines() != null) {
+			collection.getGroupOfLines().addAll(line.getGroupOfLines());
+		}
+		if (!line.getRoutingConstraints().isEmpty()) {
+			collection.getStopAreas().addAll(line.getRoutingConstraints());
+		}
+		collection.getFootnotes().addAll(line.getFootnotes());
 		completeSharedData(collection);
-		return validLine;
+	}
+
+	private void collectRoute(Route route) {
+		route.getJourneyPatterns().forEach(this::collectJourneyPattern);
+		collection.getRoutes().add(route);
+		route.getOppositeRoute(); // to avoid lazy loading afterward
+		for (StopPoint stopPoint : route.getStopPoints()) {
+			if (stopPoint == null)
+				continue; // protection from missing stopPoint ranks
+			collection.getStopPoints().add(stopPoint);
+			if (stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null)
+				collectStopAreas(collection, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks);
+			collection.getFootnotes().addAll(stopPoint.getFootnotes());
+		}
+	}
+
+	private void collectJourneyPattern(JourneyPattern journeyPattern) {
+		journeyPattern.getVehicleJourneys().forEach(this::collectVehicleJourney);
+		journeyPattern.getDeadRuns().forEach(this::collectDeadRun);
+		collection.getJourneyPatterns().add(journeyPattern);
+		collection.getFootnotes().addAll(journeyPattern.getFootnotes());
+	}
+
+	private void collectVehicleJourney(VehicleJourney vehicleJourney) {
+		collection.getTimetables().addAll(vehicleJourney.getTimetables());
+		collection.getDatedServiceJourneys().addAll(vehicleJourney.getDatedServiceJourneys());
+		collection.getBlocks().addAll(vehicleJourney.getBlocks());
+		collection.getTimetables().addAll(vehicleJourney.getBlocks().stream().map(Block::getTimetables).flatMap(List::stream).collect(Collectors.toList()));
+		collection.getVehicleJourneys().add(vehicleJourney);
+		collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
+		collection.getFootnotes().addAll(vehicleJourney.getFootnotes());
+		for (VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
+			collection.getFootnotes().addAll(vjas.getFootnotes());
+		}
+		if (vehicleJourney.getCompany() != null) {
+			collection.getCompanies().add(vehicleJourney.getCompany());
+		}
+	}
+
+	private void collectDeadRun(DeadRun deadRun) {
+		collection.getTimetables().addAll(deadRun.getTimetables());
+		collection.getBlocks().addAll(deadRun.getBlocks());
+		collection.getTimetables().addAll(deadRun.getBlocks().stream().map(Block::getTimetables).flatMap(List::stream).collect(Collectors.toList()));
+		collection.getDeadRuns().add(deadRun);
 	}
 
 	public ScheduledStopPointDAO getScheduledStopPointDAO() {
@@ -182,7 +137,7 @@ public class DataCollector {
 
 	private void collectInterchanges(ExportableData collection, VehicleJourney vehicleJourney, boolean skipNoCoordinate, boolean followLinks, LocalDate startDate, LocalDate endDate) {
 		for (Interchange interchange : vehicleJourney.getConsumerInterchanges()) {
-			if (interchange.getFeederVehicleJourney() != null && !isVehicleJourneyValid(interchange.getFeederVehicleJourney(), collection, startDate, endDate)) {
+			if (interchange.getFeederVehicleJourney() != null && !interchange.getFeederVehicleJourney().isActiveOnPeriod(startDate, endDate)) {
 				continue;
 			}
 
@@ -192,16 +147,6 @@ public class DataCollector {
 				collectStopAreas(collection, interchange.getFeederStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks);
 			}
 		}
-	}
-
-	protected boolean collect(ExportableData collection, Collection<StopArea> stopAreas, boolean skipNoCoordinate,
-			boolean followLinks) {
-		for (StopArea stopArea : stopAreas) {
-			collectStopAreas(collection, stopArea, skipNoCoordinate, followLinks);
-		}
-		completeSharedData(collection);
-		return !collection.getPhysicalStops().isEmpty();
-
 	}
 
 	protected void completeSharedData(ExportableData collection) {
@@ -217,6 +162,14 @@ public class DataCollector {
 
 			collectStopAreas(collection, connectionLink.getStartOfLink(), false, false);
 			collectStopAreas(collection, connectionLink.getEndOfLink(), false, false);
+		}
+		for(Block block: collection.getBlocks()) {
+			if(block.getStartPoint() != null &&  block.getStartPoint().getContainedInStopAreaRef().getObject() != null) {
+				collectStopAreas(collection, block.getStartPoint().getContainedInStopAreaRef().getObject(), false, false);
+			}
+			if(block.getEndPoint() != null && block.getEndPoint().getContainedInStopAreaRef().getObject() != null) {
+				collectStopAreas(collection, block.getEndPoint().getContainedInStopAreaRef().getObject(), false, false);
+			}
 		}
 	}
 
@@ -304,30 +257,6 @@ public class DataCollector {
 			collection.getAccessPoints().add(point);
 		}
 
-	}
-
-	private boolean isVehicleJourneyValid(VehicleJourney vehicleJourney, ExportableData collection, LocalDate startDate, LocalDate endDate) {
-		for (Timetable timetable : vehicleJourney.getTimetables()) {
-			boolean isTimetableValid = false;
-			if (collection.getTimetables().contains(timetable)) {
-				isTimetableValid = true;
-			} else if (collection.getExcludedTimetables().contains(timetable)) {
-				isTimetableValid = false;
-			} else {
-
-				if (startDate == null)
-					isTimetableValid = timetable.isActiveBefore(endDate);
-				else if (endDate == null)
-					isTimetableValid = timetable.isActiveAfter(startDate);
-				else
-					isTimetableValid = timetable.isActiveOnPeriod(startDate, endDate);
-			}
-
-			if (isTimetableValid) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

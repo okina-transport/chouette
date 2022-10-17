@@ -1,42 +1,30 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.naming.InitialContext;
-import javax.xml.namespace.QName;
-
-import mobi.chouette.model.Line;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.validation.AbstractNetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import net.sf.saxon.s9api.XdmNode;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+
+import javax.naming.InitialContext;
+import javax.xml.namespace.QName;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
 
 @Log4j
 public class NetexInitReferentialCommand implements Command, Constant {
@@ -79,13 +67,15 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			}
 
 			NetexXMLProcessingHelperFactory importer = (NetexXMLProcessingHelperFactory) context.get(IMPORTER);
-			
 
-			XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip);
+			if(parameters.isValidateAgainstProfile()) {
+				XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip);
+				context.put(NETEX_DATA_DOM, netexDom);
+			}
+
 			PublicationDeliveryStructure netexJava = importer.unmarshal(file,elementsToSkip);
 
 			context.put(NETEX_DATA_JAVA, netexJava);
-			context.put(NETEX_DATA_DOM, netexDom);
 
 			List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 			if (incomingLineList == null){
@@ -125,7 +115,7 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			log.error("Netex referential initialization failed ", e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 	}

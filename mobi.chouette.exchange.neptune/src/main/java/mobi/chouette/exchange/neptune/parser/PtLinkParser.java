@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -13,15 +7,19 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.Constant;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.model.PTLink;
 import mobi.chouette.exchange.neptune.validation.PtLinkValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Log4j
 public class PtLinkParser implements Parser, Constant {
@@ -51,7 +49,7 @@ public class PtLinkParser implements Parser, Constant {
 				ptLink = factory.getPTLink(objectId);
 				ptLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				ptLink.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

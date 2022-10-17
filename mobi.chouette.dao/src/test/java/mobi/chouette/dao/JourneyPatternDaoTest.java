@@ -1,21 +1,14 @@
 package mobi.chouette.dao;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -25,10 +18,14 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.sql.SQLException;
+import java.util.UUID;
 
 @Log4j
 public class JourneyPatternDaoTest extends Arquillian {
@@ -96,7 +93,7 @@ public class JourneyPatternDaoTest extends Arquillian {
 			
 			Footnote f = new Footnote();
 			f.setObjectId("XYZ:Notice:"+UUID.randomUUID());
-			f.setObjectVersion(1);
+			f.setObjectVersion(1L);
 			f.setCode("Code");
 			f.setLabel("Label");
 			

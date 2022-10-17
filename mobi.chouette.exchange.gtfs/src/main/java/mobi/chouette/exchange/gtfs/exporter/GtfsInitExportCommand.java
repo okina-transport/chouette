@@ -1,5 +1,19 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
+import mobi.chouette.common.chain.Command;
+import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.exchange.gtfs.Constant;
+import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
+import mobi.chouette.exchange.metadata.Metadata;
+import mobi.chouette.model.util.Referential;
+
+import javax.naming.InitialContext;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,25 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
-
-import javax.naming.InitialContext;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.Context;
-import mobi.chouette.common.JobData;
-import mobi.chouette.common.chain.Command;
-import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.exchange.gtfs.Constant;
-import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
-import mobi.chouette.exchange.metadata.Metadata;
-import mobi.chouette.model.util.Referential;
-
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDateTime;
 
 @Log4j
 public class GtfsInitExportCommand implements Command, Constant {
@@ -80,7 +77,7 @@ public class GtfsInitExportCommand implements Command, Constant {
 			log.error(e, e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

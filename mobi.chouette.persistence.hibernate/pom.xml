@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>5.3.1-mobi-iti-SNAPSHOT</version>
+		<version>5.4-mobi-iti-SNAPSHOT</version>
 	</parent>
 	<artifactId>mobi.chouette.persistence.hibernate</artifactId>
 	<packaging>ejb</packaging>
@@ -12,33 +12,25 @@
 		<project.rootDir>${project.basedir}/..</project.rootDir>
 		<skipInitDb>true</skipInitDb>
 	</properties>
+
 	<dependencies>
 
-		<!-- Default Dependencies -->
+		<!-- Other dependencies -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
 		</dependency>
-
-
-		<!-- Others Dependencies -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Modules -->
 
 	</dependencies>
+
 </project>

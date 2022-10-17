@@ -13,6 +13,7 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.parallel.ParallelExecutionCommand;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
+import mobi.chouette.exchange.importer.BlocksRegisterCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
 import mobi.chouette.exchange.importer.CopyCommand;
@@ -29,8 +30,11 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 
+import mobi.chouette.exchange.validation.checkpoint.AbstractValidation;
+import mobi.chouette.exchange.validation.report.DataLocation;
+import mobi.chouette.exchange.validation.report.ValidationReporter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -48,6 +52,7 @@ import static mobi.chouette.exchange.netexprofile.Constant.NETEX_FILE_PATHS;
 @Log4j
 public class NetexImporterProcessingCommands implements ProcessingCommands, Constant {
 
+	private static final String VALIDATION_ERROR_NO_LINE = "3-No-Line";
 
 	private Integer lineValidationTimeoutSeconds;
 
@@ -148,8 +153,9 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 
 
 			for (Path file : commonFilePaths) {
-				Chain commonFileChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				ChainCommand commonFileChain = (ChainCommand) CommandFactory.create(initialContext, ChainCommand.class.getName());
 				commonFileChains.add(commonFileChain);
+				commonFileChain.setIgnored(parameters.isContinueOnLineErrors());
 
 				// init referentials
 				NetexInitReferentialCommand initializer = (NetexInitReferentialCommand) CommandFactory.create(initialContext,
@@ -187,30 +193,34 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			// profile validation
 			if (parameters.isValidateAgainstProfile()) {
 
-				ParallelExecutionCommand lineValidationCommands = (ParallelExecutionCommand) CommandFactory.create(initialContext, ParallelExecutionCommand.class.getName());
-				if (lineValidationTimeoutSeconds != null) {
-					lineValidationCommands.setTimeoutSeconds(lineValidationTimeoutSeconds);
-				}
-				mainChain.add(lineValidationCommands);
+				if(lineFilePaths.size() < 1) {
+					reportNoLineValidationError(context);
+				} else {
+					ParallelExecutionCommand lineValidationCommands = (ParallelExecutionCommand) CommandFactory.create(initialContext, ParallelExecutionCommand.class.getName());
+					if (lineValidationTimeoutSeconds != null) {
+						lineValidationCommands.setTimeoutSeconds(lineValidationTimeoutSeconds);
+					}
+					mainChain.add(lineValidationCommands);
 
-				// Compare by file size, largest first
-				List<Path> allPathsSortedLargestFirst = new ArrayList<>(lineFilePaths);
-				Collections.sort(allPathsSortedLargestFirst, (o1, o2) -> (int) (o2.toFile().length() - o1.toFile().length()));
-				for (Path file : allPathsSortedLargestFirst) {
-					Chain lineChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+					// Compare by file size, largest first
+					List<Path> allPathsSortedLargestFirst = new ArrayList<>(lineFilePaths);
+					Collections.sort(allPathsSortedLargestFirst, (o1, o2) -> (int) (o2.toFile().length() - o1.toFile().length()));
+					for (Path file : allPathsSortedLargestFirst) {
+						Chain lineChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-					lineValidationCommands.add(lineChain, c -> new Context(context));
+						lineValidationCommands.add(lineChain, c -> new Context(context));
 
-					// init referentials
-					NetexInitReferentialCommand initializer = (NetexInitReferentialCommand) CommandFactory.create(initialContext,
-							NetexInitReferentialCommand.class.getName());
-					initializer.setPath(file);
-					initializer.setLineFile(true);
-					lineChain.add(initializer);
+						// init referentials
+						NetexInitReferentialCommand initializer = (NetexInitReferentialCommand) CommandFactory.create(initialContext,
+								NetexInitReferentialCommand.class.getName());
+						initializer.setPath(file);
+						initializer.setLineFile(true);
+						lineChain.add(initializer);
 
-					Command validator = CommandFactory.create(initialContext, NetexValidationCommand.class.getName());
-					lineChain.add(validator);
+						Command validator = CommandFactory.create(initialContext, NetexValidationCommand.class.getName());
+						lineChain.add(validator);
 
+					}
 				}
 			}
 
@@ -240,7 +250,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 					lineChain.add(initGeolocCommand);
 
 					if (withDao && !parameters.isNoSave()) {
-
+						// TODO : Check merge entur : Ces 2 lignes ci-dessous ont été désactivées sur Mobi-iti mais sont présente sur entur.
 //						Command clean = CommandFactory.create(initialContext, NetexprofileLineDeleteCommand.class.getName());
 //						lineChain.add(clean);
 
@@ -258,6 +268,10 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 					}
 				}
 
+				Command blocksRegister = CommandFactory.create(initialContext, BlocksRegisterCommand.class.getName());
+				mainChain.add(blocksRegister);
+
+
 				mainChain.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
 			}
 
@@ -268,6 +282,13 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 		return commands;
 	}
 
+
+	private void reportNoLineValidationError(Context context) {
+		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
+		validationReporter.prepareCheckPointReport(context, VALIDATION_ERROR_NO_LINE);
+		validationReporter.addItemToValidationReport(context, VALIDATION_ERROR_NO_LINE, AbstractValidation.SEVERITY.E.toString());
+		validationReporter.addCheckPointReportError(context, VALIDATION_ERROR_NO_LINE, new DataLocation("data"));
+	}
 
 
 
@@ -289,6 +310,9 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 			if (!CollectionUtils.isEmpty(parameters.getGenerateMissingRouteSectionsForModes())) {
 				commands.add(CommandFactory.create(initialContext, GenerateRouteSectionsCommand.class.getName()));
 			}
+
+			commands.add(CommandFactory.create(initialContext, UpdateReferentialLastUpdateTimestampCommand.class.getName()));
+
 		} catch (Exception e) {
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");

@@ -82,6 +82,10 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	private LineDAO lineDAO;
 
 	@EJB
+	private DatedServiceJourneyDAO datedServiceJourneyDAO;
+
+
+	@EJB
 	private InterchangeDAO interchangeDAO;
 
 	@EJB(beanName = TimetableUpdater.BEAN_NAME)
@@ -101,6 +105,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
 	@EJB(beanName = InterchangeUpdater.BEAN_NAME)
 	private Updater<Interchange> interchangeUpdater;
+
+	@EJB(beanName = DatedServiceJourneyUpdater.BEAN_NAME)
+	private Updater<DatedServiceJourney> datedServiceJourneyUpdater;
 
 
 	@Override
@@ -148,6 +155,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			oldValue.setKeyValues(newValue.getKeyValues());
 			oldValue.setServiceAlteration(newValue.getServiceAlteration());
 			oldValue.setFlexibleServiceProperties(newValue.getFlexibleServiceProperties());
+			oldValue.setPublication(newValue.getPublication());
 			oldValue.setDetached(false);
 		} else {
 			twoDatabaseVehicleJourneyTwoTest(validationReporter, context, oldValue.getCompany(), newValue.getCompany(), data);
@@ -217,6 +225,10 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			}
 			if (newValue.getFlexibleServiceProperties() != null && !newValue.getFlexibleServiceProperties().equals(oldValue.getFlexibleServiceProperties())) {
 				oldValue.setFlexibleServiceProperties(newValue.getFlexibleServiceProperties());
+			}
+
+			if (newValue.getPublication() != null && !newValue.getPublication().equals(oldValue.getPublication())) {
+				oldValue.setPublication(newValue.getPublication());
 			}
 		}
 
@@ -378,9 +390,48 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			}
 		}
 
+		updateDatedServiceJourneys(context, oldValue, newValue, cache);
+		// TODO : Check merge entur : Le updateInterchanges est appelé au préallable ici puis rappeler après. Visiblement ça a été supprimé sur mobi-iti je sais pas si c'est normal.
+		//updateInterchanges(context, oldValue, newValue);
 		updateFootnotes(context,oldValue,newValue,cache);
 		updateInterchanges(context, oldValue, newValue);
 //		monitor.stop();
+	}
+
+	private void updateDatedServiceJourneys(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
+		Collection<DatedServiceJourney> addedDatedServiceJourney = CollectionUtil.substract(newValue.getDatedServiceJourneys(),
+				oldValue.getDatedServiceJourneys(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		List<DatedServiceJourney> datedServiceJourneys = null;
+		for (DatedServiceJourney item : addedDatedServiceJourney) {
+
+			DatedServiceJourney datedServiceJourney = cache.getDatedServiceJourneys().get(item.getObjectId());
+			if (datedServiceJourney == null) {
+				if (datedServiceJourneys == null) {
+					datedServiceJourneys = datedServiceJourneyDAO.findByObjectId(UpdaterUtils.getObjectIds(addedDatedServiceJourney));
+					for (DatedServiceJourney object : datedServiceJourneys) {
+						cache.getDatedServiceJourneys().put(object.getObjectId(), object);
+					}
+				}
+				datedServiceJourney = cache.getDatedServiceJourneys().get(item.getObjectId());
+			}
+
+			if (datedServiceJourney == null) {
+				datedServiceJourney = ObjectFactory.getDatedServiceJourney(cache, item.getObjectId());
+			}
+			if(datedServiceJourney.getVehicleJourney() != null) {
+				//twoDatabaseVehicleJourneyOneTest(validationReporter, context, datedServiceJourney, item, data);
+			} else {
+				datedServiceJourney.setVehicleJourney(oldValue);
+			}
+		}
+
+		Collection<Pair<DatedServiceJourney, DatedServiceJourney>> modifiedDatedServiceJourney = CollectionUtil.intersection(
+				oldValue.getDatedServiceJourneys(), newValue.getDatedServiceJourneys(),
+				NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (Pair<DatedServiceJourney, DatedServiceJourney> pair : modifiedDatedServiceJourney) {
+			datedServiceJourneyUpdater.update(context, pair.getLeft(), pair.getRight());
+		}
 	}
 
 	private void updateFootnotes(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {

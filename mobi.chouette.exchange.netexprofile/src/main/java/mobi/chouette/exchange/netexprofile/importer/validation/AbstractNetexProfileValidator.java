@@ -1,5 +1,23 @@
 package mobi.chouette.exchange.netexprofile.importer.validation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.rutebanken.netex.model.DataManagedObjectStructure;
+
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
@@ -242,9 +260,15 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
 
         for (XdmItem item : selector) {
             Codespace codespace = new Codespace();
-            codespace.setXmlns(getChild((XdmNode) item, new QName("n", Constant.NETEX_NAMESPACE, "Xmlns")).getStringValue());
-            codespace.setXmlnsUrl(getChild((XdmNode) item, new QName("n", Constant.NETEX_NAMESPACE, "XmlnsUrl")).getStringValue());
-
+            XdmNode codespaceNamespaceNode = getChild((XdmNode) item, new QName("n", Constant.NETEX_NAMESPACE, "Xmlns"));
+			// TODO : Check Merge Entur
+			if (codespaceNamespaceNode!=null) {
+				codespace.setXmlns(codespaceNamespaceNode.getStringValue());
+            }
+			XdmNode codespaceNamespaceUrlNode = getChild((XdmNode) item, new QName("n", Constant.NETEX_NAMESPACE, "XmlnsUrl"));
+			if (codespaceNamespaceUrlNode!=null) {
+				codespace.setXmlnsUrl(codespaceNamespaceUrlNode.getStringValue());
+			}
             Predicate<Codespace> equalsXmlns = (validCodespace) -> validCodespace.getXmlns().equals(codespace.getXmlns());
             Predicate<Codespace> equalsXmlnsUrl = (validCodespace) -> validCodespace.getXmlnsUrl().equals(codespace.getXmlnsUrl());
 
@@ -252,7 +276,7 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
                 // TODO add correct location
                 validationReporter.addCheckPointReportError(context, _1_NETEX_UNAPPROVED_CODESPACE_DEFINED, null,
                         DataLocationHelper.findDataLocation(context, (XdmNode) item), codespace.getXmlns() + "/" + codespace.getXmlnsUrl(), referenceValue);
-                log.error("Codespace " + codespace + " is not accepted for this validation");
+                log.info("Codespace " + codespace.getXmlns() + " is not accepted for this validation");
                 onlyAcceptedCodespaces = false;
             }
         }
@@ -416,40 +440,42 @@ public abstract class AbstractNetexProfileValidator implements Constant, NetexPr
         }
     }
 
-    protected void verifyExternalRefs(Context context, List<IdVersion> externalRefs, Set<IdVersion> localIds, Set<IdVersion> commonIds) {
-
-        Set<IdVersion> possibleExternalReferences = externalRefs.stream().filter(e -> !localIds.contains(e)).collect(Collectors.toSet());
-        Set<IdVersion> idsFoundInCommonFiles = new HashSet<>();
-        for (IdVersion possibleMissingReference : possibleExternalReferences) {
-            for (IdVersion commonId : commonIds) {
-                if (commonId.getId().equals(possibleMissingReference.getId())) {
-                    idsFoundInCommonFiles.add(possibleMissingReference);
-                }
-            }
-        }
-
-        possibleExternalReferences.removeAll(idsFoundInCommonFiles);
-
-        ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-        Set<IdVersion> verifiedExternalRefs = new HashSet<>();
-
-        for (ExternalReferenceValidator validator : externalReferenceValidators) {
-            verifiedExternalRefs.addAll(validator.validateReferenceIds(context, possibleExternalReferences));
-        }
-
-        possibleExternalReferences.removeAll(verifiedExternalRefs);
-
-        if (possibleExternalReferences.size() > 0) {
-            for (IdVersion id : possibleExternalReferences) {
-                log.error("Unable to validate external reference " + id);
-                validationReporter.addCheckPointReportError(context, _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE, null, DataLocationHelper.findDataLocation(id),
-                        id.getId());
-            }
-
-        } else {
-            validationReporter.reportSuccess(context, _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE);
-        }
-    }
+	/**
+	 * Validate external id references.
+	 * References are valid if they refer to local ids, or if they refer to ids in the common files, or if they are
+	 * valid according to the external ids validators (example: NSR id validator).
+	 * @param context
+	 * @param externalRefs
+	 * @param localIds
+	 * @param commonIds
+	 */
+	// TODO : Check Merge Entur
+	protected void verifyExternalRefs(Context context, List<IdVersion> externalRefs, Set<IdVersion> localIds, Set<IdVersion> commonIds) {
+		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
+		// Remove duplicates, that is: references that have the same id and version (see #IdVersion.equals)
+		Set<IdVersion> possibleExternalReferences = new HashSet<>(externalRefs);
+		// Remove references that are found in local ids, comparing by id and version
+		possibleExternalReferences.removeAll(localIds);
+		if (!possibleExternalReferences.isEmpty()) {
+			// Remove references that are found in the common files, comparing only by id, not by id and version
+			possibleExternalReferences.removeIf(ref -> commonIds.stream().anyMatch(commonId -> commonId.getId().equals(ref.getId())));
+			if (!possibleExternalReferences.isEmpty()) {
+				// Remove references that are valid according to the external id validators
+				externalReferenceValidators.forEach(validator -> possibleExternalReferences.removeAll(validator.validateReferenceIds(context, possibleExternalReferences)));
+				if (!possibleExternalReferences.isEmpty()) {
+					for (IdVersion id : possibleExternalReferences) {
+						if (log.isDebugEnabled()) {
+							log.debug("Unable to validate external reference " + id);
+						}
+						validationReporter.addCheckPointReportError(context, _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE, null, DataLocationHelper.findDataLocation(id),
+								id.getId());
+					}
+					return;
+				}
+			}
+		}
+		validationReporter.reportSuccess(context, _1_NETEX_UNRESOLVED_EXTERNAL_REFERENCE);
+	}
 
     protected void verifyIdStructure(Context context, Set<IdVersion> localIds, String regex, Set<Codespace> validCodespaces) {
         Set<String> validPrefixes = null;

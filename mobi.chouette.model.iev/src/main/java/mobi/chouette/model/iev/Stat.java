@@ -1,21 +1,13 @@
 package mobi.chouette.model.iev;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.joda.time.LocalDate;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDate;
 
 
 /**

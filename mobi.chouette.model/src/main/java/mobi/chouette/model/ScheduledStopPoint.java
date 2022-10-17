@@ -1,29 +1,15 @@
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-
+import mobi.chouette.model.type.TimingPointStatusEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "scheduled_stop_points")
@@ -34,7 +20,7 @@ public class ScheduledStopPoint extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "scheduled_stop_points_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
+	@GenericGenerator(name = "scheduled_stop_points_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {
 					@Parameter(name = "sequence_name", value = "scheduled_stop_points_id_seq"),
 					@Parameter(name = "increment_size", value = "100")})
@@ -94,6 +80,12 @@ public class ScheduledStopPoint extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(mappedBy = "consumerStopPoint", fetch = FetchType.LAZY)
 	private List<Interchange> consumerInterchanges = new ArrayList<>(0);
+
+	@Getter
+	@Setter
+	@Enumerated(EnumType.STRING)
+	@Column(name = "timing_point_status")
+	private TimingPointStatusEnum timingPointStatus;
 
 	@Transient
 	public ObjectReference<StopArea> getContainedInStopAreaRef() {

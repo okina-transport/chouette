@@ -1,8 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -11,14 +8,16 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.GroupOfLineValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.time.LocalDateTime;
 
 @Log4j
 public class GroupOfLineParser implements Parser, Constant, JsonExtension {
@@ -48,7 +47,7 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 						objectId);
 				groupOfLine.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				groupOfLine.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

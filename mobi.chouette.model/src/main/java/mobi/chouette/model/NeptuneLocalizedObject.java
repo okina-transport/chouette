@@ -7,22 +7,16 @@
  */
 package mobi.chouette.model;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.Coordinate;
 import mobi.chouette.model.util.CoordinateUtil;
+import org.apache.commons.lang3.StringUtils;
 
-import org.apache.commons.lang.StringUtils;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * Abstract object used for all Localized Chouette Objects

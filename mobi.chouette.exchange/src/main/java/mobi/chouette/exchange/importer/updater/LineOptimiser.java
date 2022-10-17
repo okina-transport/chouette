@@ -1,42 +1,18 @@
 package mobi.chouette.exchange.importer.updater;
 
-import java.util.Collection;
-import java.util.List;
+import mobi.chouette.dao.*;
+import mobi.chouette.model.*;
+import mobi.chouette.model.util.ObjectFactory;
+import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.ConnectionLinkDAO;
-import mobi.chouette.dao.GroupOfLineDAO;
-import mobi.chouette.dao.JourneyPatternDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.NetworkDAO;
-import mobi.chouette.dao.RouteDAO;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.dao.StopPointDAO;
-import mobi.chouette.dao.TimebandDAO;
-import mobi.chouette.dao.TimetableDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timeband;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.util.ObjectFactory;
-import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang.StringUtils;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Stateless
 public class LineOptimiser {
@@ -81,6 +57,10 @@ public class LineOptimiser {
 	private StopPointDAO stopPointDAO;
 
 	@EJB
+	private ScheduledStopPointDAO scheduledStopPointDAO;
+
+
+	@EJB
 	private TimebandDAO timebandDAO;
 
 	public void initialize(Referential cache, Referential referential) {
@@ -100,6 +80,7 @@ public class LineOptimiser {
 		initializeLine(cache, referential.getLines().values());
 		initializeRoute(cache, referential.getRoutes().values());
 		initializeStopPoint(cache, referential.getStopPoints().values());
+		initializeReferencedStopAreas(cache, referential.getStopPoints().values(), referential.getRoutePoints().values());
 		initializeJourneyPattern(cache, referential.getJourneyPatterns().values());
 		initializeVehicleJourney(cache, referential.getVehicleJourneys().values());
 
@@ -297,6 +278,31 @@ public class LineOptimiser {
 			}
 		}
 	}
+
+	private void initializeReferencedStopAreas(Referential cache, Collection<StopPoint> stopPoints, Collection<RoutePoint> routePoints) {
+
+		Set<String> stopPointReferencedStopAreasObjectIds = stopPoints.stream()
+				.map(StopPoint::getScheduledStopPoint)
+				.distinct()
+				.filter(Objects::nonNull)
+				.map(ScheduledStopPoint::getContainedInStopAreaRef)
+				.filter(Objects::nonNull)
+				.map(ObjectReference::getObject)
+				.filter(Objects::nonNull)
+				.map(NeptuneIdentifiedObject::getObjectId)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+
+		List<StopArea> referencedStopAreas = stopAreaDAO.findByObjectId(stopPointReferencedStopAreasObjectIds);
+		for (StopArea referencedStopArea : referencedStopAreas) {
+			cache.getStopAreas().put(referencedStopArea.getObjectId(), referencedStopArea);
+			for (ScheduledStopPoint scheduledStopPoint : referencedStopArea.getContainedScheduledStopPoints()) {
+				cache.getScheduledStopPoints().put(scheduledStopPoint.getObjectId(), scheduledStopPoint);
+			}
+		}
+
+	}
+
 
 	private void initializeJourneyPattern(Referential cache, Collection<JourneyPattern> list) {
 		if (list != null && !list.isEmpty()) {
