@@ -1109,6 +1109,7 @@ CREATE TABLE networks (
     source_type character varying(255),
     source_identifier character varying(255),
     comment character varying(255),
+    supprime boolean DEFAULT false,
     pos integer
 );
 
