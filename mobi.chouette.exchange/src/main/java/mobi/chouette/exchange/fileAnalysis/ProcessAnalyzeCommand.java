@@ -7,9 +7,9 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
-import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.exchange.validation.report.DataLocation;
+import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -46,6 +46,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private String currentFileName;
     private Map<String, Set<String>> missingRouteLinks;
     private Map<String, Set<String>> wrongRouteLinks;
+    public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
 
     public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
@@ -214,7 +215,22 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         List<String> vehicleJourneys = new ArrayList<>();
 
-        String networkName = line.getNetwork().getName();
+        String networkName = "";
+
+
+        if (line.getNetwork() == null) {
+            DataLocation sourceLocation = new DataLocation((String)context.get(FILE_NAME));
+            List<DataLocation> dataLocations = new ArrayList<>();
+
+            ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
+            validationReporter.addItemToValidationReport(context, _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION, "E");
+
+            validationReporter.addCheckPointReportError(context, _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION, sourceLocation, line.getRegistrationNumber(),
+                    null, dataLocations.toArray(new DataLocation[0]));
+
+        }else{
+            networkName = line.getNetwork().getName();
+        }
 
         Map<String, Set<String>> networksByTimetable = analyzeReport.getNetworksByTimetable();
 
