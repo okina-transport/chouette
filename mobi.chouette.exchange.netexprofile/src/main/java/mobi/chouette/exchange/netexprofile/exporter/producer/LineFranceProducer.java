@@ -1,31 +1,19 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
-import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import org.apache.commons.collections.CollectionUtils;
-import org.rutebanken.netex.model.AccessibilityAssessment;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.FlexibleLine;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.GroupOfLinesRefStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.OperatorRefStructure;
-import org.rutebanken.netex.model.PresentationStructure;
-import org.rutebanken.netex.model.PrivateCodeStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GROUP_OF_LINES;
 
 public class LineFranceProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Line_VersionStructure, mobi.chouette.model.Line> {
 
@@ -123,8 +111,8 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
                 if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
                     flexibleLine.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
                 }
-                flexibleLine.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-                flexibleLine.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+                flexibleLine.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+                flexibleLine.setMinimumBookingPeriod(bookingArrangement.getMinimumBookingPeriod());
 
                 flexibleLine.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));
             }

@@ -4,16 +4,15 @@ import mobi.chouette.common.JSONUtil;
 import mobi.chouette.exchange.concerto.model.ConcertoObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
 public interface ConcertoConverter {
 
-	DateTimeFormatter BASIC_ISO_DATE =  DateTimeFormat.forPattern("yyyy-MM-dd");
+	DateTimeFormatter BASIC_ISO_DATE =  DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	DefaultFieldConverter<String> STRING_CONVERTER = new DefaultFieldConverter<String>() {
 
@@ -109,7 +108,7 @@ public interface ConcertoConverter {
 
 		@Override
 		protected String convertTo(LocalDate input) {
-			return (input != null) ? BASIC_ISO_DATE.print(input) : "";
+			return (input != null) ? BASIC_ISO_DATE.format(input) : "";
 		}
 
 	};

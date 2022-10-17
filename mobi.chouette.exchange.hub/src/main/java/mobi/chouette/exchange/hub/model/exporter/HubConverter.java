@@ -2,9 +2,8 @@ package mobi.chouette.exchange.hub.model.exporter;
 
 import mobi.chouette.exchange.hub.model.HubException;
 
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 public interface HubConverter {

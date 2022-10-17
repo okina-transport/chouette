@@ -40,7 +40,7 @@ public class Route extends NeptuneIdentifiedObject {
 	@Setter
 	@GenericGenerator(name = "routes_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "routes_id_seq"),
-			@Parameter(name = "increment_size", value = "50")})
+			@Parameter(name = "increment_size", value = "1")})
 	@GeneratedValue(generator = "routes_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)

@@ -6,6 +6,8 @@ import org.rutebanken.netex.model.AuthorityRefStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.time.LocalDateTime;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
@@ -36,7 +38,10 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
         if(neptuneNetwork.getCompany() != null) {
             AuthorityRefStructure authorityRef = netexFactory.createAuthorityRefStructure();
         	NetexProducerUtils.populateReference(neptuneNetwork.getCompany(), authorityRef, true);
-            netexNetwork.setTransportOrganisationRef(netexFactory.createAuthorityRef(authorityRef));
+
+            // TODO : Check merge entur : J'ai récupéré le code de tuyauterie du netexFactory.createAuthorityRef(authorityRefStruct) a virer une fois la récup du netex-java-model faite
+            JAXBElement<AuthorityRefStructure> authorityRefJaxb = new JAXBElement<AuthorityRefStructure>(new QName("http://www.netex.org.uk/netex", "AuthorityRef"), AuthorityRefStructure.class, (Class) null, authorityRef);
+            netexNetwork.setTransportOrganisationRef(authorityRefJaxb);
         }
 
         if (isSet(neptuneNetwork.getRegistrationNumber())) {

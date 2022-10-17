@@ -74,9 +74,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 			vehicleJourney.setObjectVersion(NetexParserUtils.getVersion(serviceJourney));
 
-			// TODO : Check merge entur : La partie Publication n'est pas présente dans le model NETEX-FR Okina. Donc le lien ici ne peut pas fonctionner. A voir la récup du Netex Entur dans le Netex-FR.
-			//vehicleJourney.setPublication(NetexParserUtils.toPublicationEnum(serviceJourney.getPublication()));
-
 			vehicleJourney.setPublishedJourneyIdentifier(serviceJourney.getPublicCode());
 
 			if (serviceJourney.getPrivateCode() != null) {

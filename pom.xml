@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>mobi.chouette</groupId>
 	<artifactId>mobi.chouette</artifactId>
-	<version>5.4-mobi-iti-SNAPSHOT</version>
+	<version>5.3.7-mobi-iti-SNAPSHOT-MIGJAVA11_2</version>
 
 	<packaging>pom</packaging>
 
@@ -680,6 +680,11 @@
 				<artifactId>mobi.chouette.ws</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>net.sf.saxon</groupId>
+				<artifactId>Saxon-HE</artifactId>
+				<version>9.8.0-3</version>
+			</dependency>
 
 			<!-- Jakarta EE -->
 			<dependency>
@@ -992,14 +997,23 @@
 		<module>mobi.chouette.dao.iev</module>
 		<module>mobi.chouette.exchange</module>
  		<module>mobi.chouette.exchange.neptune</module>
+		<module>mobi.chouette.exchange.netex</module>
 		<module>mobi.chouette.exchange.netexprofile</module>
+		<!--        <module>mobi.chouette.exchange.kml</module>-->
+		<!--        <module>mobi.chouette.exchange.hub</module>-->
 		<module>mobi.chouette.exchange.gtfs</module>
+		<module>mobi.chouette.exchange.concerto</module>
+		<!--        <module>mobi.chouette.exchange.geojson</module>-->
+		<!--        <module>mobi.chouette.exchange.sig</module>-->
+		<!--        <module>mobi.chouette.exchange.regtopp</module>-->
 		<module>mobi.chouette.exchange.stopplace</module>
 		<module>mobi.chouette.exchange.validator</module>
+		<module>mobi.chouette.exchange.converter</module>
 		<module>mobi.chouette.exchange.transfer</module>
 		<module>mobi.chouette.service</module>
 		<module>mobi.chouette.schema.checker</module>
 		<module>mobi.chouette.ws</module>
+		<!--        <module>mobi.chouette.command</module>-->
 		<module>chouette_iev</module>
 	</modules>
 

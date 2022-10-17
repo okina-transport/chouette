@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -13,8 +11,9 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.util.List;
 
 @Log4j
 public class JourneyPatternParser implements Parser, Constant {
@@ -51,8 +50,8 @@ public class JourneyPatternParser implements Parser, Constant {
 		JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(
 				referential, id);
 
-		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		journeyPattern.setObjectVersion(version != null ? version : 0);
+		Long version = Long.valueOf(xpp.getAttributeValue(null, VERSION));
+		journeyPattern.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 

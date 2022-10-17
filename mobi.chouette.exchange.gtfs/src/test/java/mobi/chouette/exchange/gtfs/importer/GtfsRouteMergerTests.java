@@ -14,15 +14,7 @@ import mobi.chouette.exchange.gtfs.GtfsTestsUtils;
 import mobi.chouette.exchange.gtfs.JobDataTest;
 import mobi.chouette.exchange.importer.RouteMergerCommand;
 import mobi.chouette.exchange.report.ReportConstant;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -36,7 +28,6 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,6 +35,7 @@ import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -284,8 +276,8 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
             VehicleJourneyAtStop vjas = new VehicleJourneyAtStop();
             vjas.setObjectId("MOBIITI:VJAS:" + tripPattern + "_" + stopName + "_" + currentPosition);
             vjas.setStopPoint(stopPoint);
-            vjas.setDepartureTime(new LocalTime(startingHour, currentPosition, 0));
-            vjas.setArrivalTime(new LocalTime(startingHour, currentPosition, 0));
+            vjas.setDepartureTime(LocalTime.of(startingHour, currentPosition, 0));
+            vjas.setArrivalTime(LocalTime.of(startingHour, currentPosition, 0));
 
             vehicleJourney.getVehicleJourneyAtStops().add(vjas);
 

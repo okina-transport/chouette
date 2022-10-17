@@ -1,35 +1,19 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
-import mobi.chouette.model.JourneyFrequency;
 import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalTime;
-import org.rutebanken.netex.model.DayTypeRefStructure;
-import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
-import org.rutebanken.netex.model.FrequencyGroups_RelStructure;
-import org.rutebanken.netex.model.HeadwayJourneyGroup;
-import org.rutebanken.netex.model.HeadwayJourneyGroupRefStructure;
-import org.rutebanken.netex.model.JourneyPatternRefStructure;
-import org.rutebanken.netex.model.LuggageCarriageEnumeration;
-import org.rutebanken.netex.model.ServiceFacilitySet;
-import org.rutebanken.netex.model.ServiceFacilitySets_RelStructure;
-import org.rutebanken.netex.model.ServiceJourney_VersionStructure;
-import org.rutebanken.netex.model.TemplateServiceJourney;
-import org.rutebanken.netex.model.TemplateVehicleJourneyTypeEnumeration;
-import org.rutebanken.netex.model.TimetabledPassingTime;
-import org.rutebanken.netex.model.TimetabledPassingTimes_RelStructure;
+import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -107,7 +91,7 @@ public class ServiceJourneyFranceProducer {
                 }
                 if (departureTime != null) {
                     NetexTimeConversionUtil.populatePassingTimeUtc(timetabledPassingTime, false, vehicleJourneyAtStop);
-                    timetabledPassingTime.setDepartureTime(TimeUtil.toLocalTimeFromJoda(departureTime));
+                    timetabledPassingTime.setDepartureTime(departureTime);
                     if (vehicleJourneyAtStop.getDepartureDayOffset() > 0) {
                         timetabledPassingTime.setDepartureDayOffset(BigInteger.valueOf(vehicleJourneyAtStop.getDepartureDayOffset()));
                     }
@@ -151,9 +135,9 @@ public class ServiceJourneyFranceProducer {
         for (JourneyFrequency journeyFrequency : vehicleJourney.getJourneyFrequencies()) {
 
             HeadwayJourneyGroup headwayJourneyGroup = netexFactory.createHeadwayJourneyGroup();
-            headwayJourneyGroup.setScheduledHeadwayInterval(TimeUtil.toDurationFromJodaDuration(journeyFrequency.getScheduledHeadwayInterval()));
-            headwayJourneyGroup.setFirstDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getFirstDepartureTime()));
-            headwayJourneyGroup.setLastDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getLastDepartureTime()));
+            headwayJourneyGroup.setScheduledHeadwayInterval(journeyFrequency.getScheduledHeadwayInterval());
+            headwayJourneyGroup.setFirstDepartureTime(journeyFrequency.getFirstDepartureTime());
+            headwayJourneyGroup.setLastDepartureTime(journeyFrequency.getLastDepartureTime());
 
             String headWayId = vehicleJourney.getObjectId().replace(":VehicleJourney:", ":HeadwayJourney:") + "_" + headwayNb + ":LOC";
             headwayNb++;

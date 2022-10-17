@@ -6,7 +6,6 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.neptune.JobDataTest;
 import mobi.chouette.exchange.neptune.jaxb.JaxbNeptuneFileConverter;
 import org.apache.commons.io.FileUtils;
-import org.joda.time.DateTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.trident.schema.trident.ChouettePTNetworkType;
@@ -14,13 +13,10 @@ import org.trident.schema.trident.TimetableType;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -113,7 +109,7 @@ public class NeptuneTimetablePeriodFixerCommandTests {
 
         Assert.assertEquals(timetableList.size(), 47, "Number of timetables must not be changed");
 
-        DateTime now = new DateTime();
+        LocalDateTime now = LocalDateTime.now();
         int currentYear = now.getYear();
 
 

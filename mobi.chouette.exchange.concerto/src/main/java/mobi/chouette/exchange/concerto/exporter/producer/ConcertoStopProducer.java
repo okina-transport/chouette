@@ -12,15 +12,12 @@ import mobi.chouette.exchange.concerto.model.ConcertoObjectId;
 import mobi.chouette.exchange.concerto.model.ConcertoStopArea;
 import mobi.chouette.exchange.concerto.model.StopAreaTypeEnum;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporterInterface;
-import mobi.chouette.model.MappingHastusZdep;
 import mobi.chouette.model.StopArea;
-import org.joda.time.LocalDate;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
-import static mobi.chouette.exchange.concerto.model.StopAreaTypeEnum.ZDEP;
-import static mobi.chouette.exchange.concerto.model.StopAreaTypeEnum.ZDER;
-import static mobi.chouette.exchange.concerto.model.StopAreaTypeEnum.ZDLR;
+import static mobi.chouette.exchange.concerto.model.StopAreaTypeEnum.*;
 
 /**
  * Data pour stop_area

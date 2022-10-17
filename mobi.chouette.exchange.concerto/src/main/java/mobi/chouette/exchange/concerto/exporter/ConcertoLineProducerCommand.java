@@ -12,6 +12,7 @@ import mobi.chouette.exchange.concerto.exporter.producer.ConcertoLineProducer;
 import mobi.chouette.exchange.concerto.model.ConcertoLineObjectIdGenerator;
 import mobi.chouette.exchange.concerto.model.ConcertoObjectId;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporter;
+import mobi.chouette.exchange.exporter.ExportableData;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
@@ -19,14 +20,16 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 //@todo SCH revoir les trucs de reporters etc après avoir vu le chargement des données
 @Log4j
@@ -80,22 +83,22 @@ public class ConcertoLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate;
 			if (parameters.getStartDate() != null) {
-				startDate = LocalDate.fromDateFields(parameters.getStartDate());
+				startDate = toLocalDate(parameters.getStartDate());
 			} else {
-				startDate = new LocalDate();
+				startDate = LocalDate.now();
 			}
 
 			LocalDate endDate;
 			if (parameters.getEndDate() != null) {
-				endDate = LocalDate.fromDateFields(parameters.getEndDate());
+				endDate = toLocalDate(parameters.getEndDate());
 			} else if (parameters.getPeriodDays() != null) {
 				endDate = startDate.plusDays(parameters.getPeriodDays());
 			} else {
 				endDate = startDate.plusDays(30);
 			}
 
-			ConcertoDataCollector collector = new ConcertoDataCollector();
-			boolean cont = collector.collect(collection, line, startDate, endDate);
+			ConcertoDataCollector collector = new ConcertoDataCollector(collection, line, startDate, endDate);
+			boolean cont = collector.collect();
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ROUTE, collection.getRoutes().size());
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.VEHICLE_JOURNEY,collection.getVehicleJourneys().size());

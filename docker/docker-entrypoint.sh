@@ -6,6 +6,7 @@ function waitWildfly {
 	status=""
 	while [ "$status" != "running" ];do
 		status=$(/opt/jboss/wildfly/bin/jboss-cli.sh -c --user=admin --password=password --commands="read-attribute server-state")
+		echo $status
 		if [ "$status" != "running" ]; then
 			echo "Waiting for Wildfly..."
 			sleep 1

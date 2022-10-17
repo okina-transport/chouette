@@ -42,11 +42,19 @@ public class StopPlaceParser implements Parser, Constant {
             TariffZonesInFrame_RelStructure tariffZonesStruct = (TariffZonesInFrame_RelStructure) relationshipStruct;
             List<JAXBElement<? extends Zone_VersionStructure>> tariffZones = tariffZonesStruct.getTariffZone_();
 
-            // TODO : Check merge entur : Diff algo entre Mobi-iti et entur. J'ai gardé la version entur a voir si c'est pertinent.
-            for (JAXBElement<? extends Zone_VersionStructure> tariffZone : tariffZones) {
-                Properties properties = new Properties();
-                properties.put(NAME, tariffZone.getValue().getName().getValue());
-                this.tariffZoneProperties.put(tariffZone.getValue().getId(), properties);
+            String zoneStrucId = tariffZonesStruct.getId();
+            Properties properties;
+
+            if (this.tariffZoneProperties.containsKey(zoneStrucId)){
+                properties = this.tariffZoneProperties.get(zoneStrucId);
+            }else{
+                properties = new Properties();
+                this.tariffZoneProperties.put(zoneStrucId, properties);
+            }
+
+
+            for (JAXBElement<? extends Zone_VersionStructure> zone : tariffZones) {
+                properties.put(NAME, zone.getName());
             }
         } else if (relationshipStruct instanceof StopPlacesInFrame_RelStructure) {
             StopPlacesInFrame_RelStructure stopPlacesStruct = (StopPlacesInFrame_RelStructure) relationshipStruct;

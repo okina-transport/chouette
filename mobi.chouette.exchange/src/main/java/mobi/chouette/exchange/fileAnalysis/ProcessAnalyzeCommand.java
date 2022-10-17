@@ -7,32 +7,19 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
-import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.AnalyzeReport;
-import mobi.chouette.exchange.validation.report.DataLocation;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,7 +48,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     public boolean execute(Context context) throws Exception {
         boolean result = ERROR;
 
-        DateTime startingTime = new DateTime();
+        LocalDateTime startingTime = LocalDateTime.now();
         int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
         context.put(CURRENT_LINE_NB, currentLineNb);
 
@@ -89,9 +76,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         checkRouteLinksIfNeeded(context, newValue);
 
 
-        DateTime endingTime = new DateTime();
+        LocalDateTime endingTime = LocalDateTime.now();
 
-        Duration duration = new Duration(endingTime, startingTime);
+        Duration duration = Duration.between(endingTime, startingTime);
         log.info("analysis completed in:" + duration.toString());
         result = SUCCESS;
 

@@ -1,7 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.model.Line;
 import org.rutebanken.netex.model.*;
@@ -22,7 +21,7 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
         NetexProducerUtils.populateIdAndVersionIDFM(neptuneNetwork, netexNetwork);
 
         if (isSet(neptuneNetwork.getVersionDate())) {
-            LocalDateTime changedDateTime = TimeUtil.toLocalDateFromJoda(neptuneNetwork.getVersionDate()).atStartOfDay();
+            LocalDateTime changedDateTime = neptuneNetwork.getVersionDate().atStartOfDay();
             netexNetwork.setChanged(changedDateTime);
         }
 

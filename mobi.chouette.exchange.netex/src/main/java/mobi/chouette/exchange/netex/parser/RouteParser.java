@@ -1,27 +1,22 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netex.Constant;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.util.XmlPullUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j
 public class RouteParser implements Parser, Constant {
@@ -142,7 +137,7 @@ public class RouteParser implements Parser, Constant {
 		Route route = ObjectFactory.getRoute(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		route.setObjectVersion(version != null ? version : 0);
+		route.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("keyList")) {

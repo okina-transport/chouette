@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>5.4-mobi-iti-SNAPSHOT</version>
+		<version>5.3.7-mobi-iti-SNAPSHOT-MIGJAVA11_2</version>
 
 	</parent>
 	<artifactId>mobi.chouette.exchange</artifactId>
@@ -181,6 +181,10 @@
             <groupId>com.tobedevoured</groupId>
             <artifactId>modelcitizen</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
         </dependency>
     </dependencies>
 

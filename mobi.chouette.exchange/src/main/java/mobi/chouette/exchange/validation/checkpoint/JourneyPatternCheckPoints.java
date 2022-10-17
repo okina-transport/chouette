@@ -36,15 +36,13 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 		initCheckPoint(context, JOURNEY_PATTERN_1, SEVERITY.W);
 		if (!sourceFile)
 			initCheckPoint(context, JOURNEY_PATTERN_2, SEVERITY.E);
-		initCheckPoint(context, ROUTE_SECTION_2_1, SEVERITY.W);
-		initCheckPoint(context, ROUTE_SECTION_2_2, SEVERITY.W);
-		initCheckPoint(context, ROUTE_SECTION_2_3, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_1, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_3);
 		initCheckPoint(context, JOURNEY_PATTERN_3, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_4);
-		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.E);
-		prepareCheckPoint(context, JOURNEY_PATTERN_5);
-		initCheckPoint(context, JOURNEY_PATTERN_5, SEVERITY.E);
+		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.W);
+//		prepareCheckPoint(context, JOURNEY_PATTERN_5);
+//		initCheckPoint(context, JOURNEY_PATTERN_5, SEVERITY.E);
 
 		initCheckPoint(context, JOURNEY_PATTERN_RB_1, SEVERITY.W);
 		initCheckPoint(context, JOURNEY_PATTERN_RB_2, SEVERITY.W);
@@ -89,7 +87,7 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 			check3RouteSection1(context, jp, parameters);
 
             // 3-RouteSection-2 : Check if the scheduled stop points on the route section are part of the journey pattern
-			check3RouteSection2(context, jp, parameters);
+			//check3RouteSection2(context, jp, parameters);
 
 			// 3-JourneyPattern-3: Check that Line.TransportMode matches StopArea.TransportMode
 			check3JourneyPattern3(context, jp);
@@ -100,7 +98,7 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 
 			check3JourneyPattern4(context, jp);
 
-			check3JourneyPattern5(context, jp);
+			//check3JourneyPattern5(context, jp);
 
 			// 3-JourneyPattern-RB-1 : check distance between stops
 			check3JourneyPatternRb1(context, jp, parameters);

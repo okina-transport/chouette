@@ -23,7 +23,7 @@ public class ScheduledStopPoint extends NeptuneIdentifiedObject {
 	@GenericGenerator(name = "scheduled_stop_points_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 			parameters = {
 					@Parameter(name = "sequence_name", value = "scheduled_stop_points_id_seq"),
-					@Parameter(name = "increment_size", value = "100")})
+					@Parameter(name = "increment_size", value = "1")})
 	@GeneratedValue(generator = "scheduled_stop_points_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)

@@ -8,7 +8,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.runtime.directive.Stop;
 import org.checkerframework.checker.units.qual.A;
 import org.rutebanken.netex.model.*;

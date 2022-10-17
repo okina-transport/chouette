@@ -7,7 +7,6 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.CleanUpDAO;
 import mobi.chouette.exchange.transfer.Constant;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -16,9 +15,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 @Log4j
 @Stateless(name = PostTransferCleanup.COMMAND)
@@ -56,8 +56,8 @@ public class PostTransferCleanup implements Command, Constant {
 
         TransferExportParameters configuration = (TransferExportParameters) context.get(CONFIGURATION);
 
-        LocalDate startDate = configuration.getStartDate() == null ? LocalDate.now() : new LocalDate(configuration.getStartDate());
-        LocalDate endDate = configuration.getEndDate() == null ? LocalDate.now() : new LocalDate(configuration.getEndDate());
+        LocalDate startDate = configuration.getStartDate() == null ? LocalDate.now() : toLocalDate(configuration.getStartDate());
+        LocalDate endDate = configuration.getEndDate() == null ? LocalDate.now() : toLocalDate(configuration.getEndDate());
 
 
         log.info("Starting post-transfer cleanup");

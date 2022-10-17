@@ -810,16 +810,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 			JourneysInFrame_RelStructure vehicleJourneysStruct = timetableFrame.getVehicleJourneys();
 			context.put(NETEX_LINE_DATA_CONTEXT, vehicleJourneysStruct);
-
-			// TODO : Check merge entur : Ici le serviceJourneyParser de entur est rédéfini. La version Mobi-iti réutilise celui déclaré dans la classe. J'ai gardé la version entur.
-			Parser serviceJourneyParser = ParserFactory.create(ServiceJourneyParser.class.getName());
 			serviceJourneyParser.parse(context);
-
-			Parser datedServiceJourneyParser = ParserFactory.create(DatedServiceJourneyParser.class.getName());
-			datedServiceJourneyParser.parse(context);
-
-			Parser deadRunParser = ParserFactory.create(DeadRunParser.class.getName());
-			deadRunParser.parse(context);
 
 			JourneyInterchangesInFrame_RelStructure journeyInterchangesStruct = timetableFrame.getJourneyInterchanges();
 			if (journeyInterchangesStruct != null) {

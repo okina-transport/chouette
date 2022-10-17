@@ -2,14 +2,14 @@ package mobi.chouette.dao;
 
 import mobi.chouette.core.CoreException;
 import mobi.chouette.core.CoreExceptionCode;
-import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+
+import static mobi.chouette.common.TimeUtil.toDate;
 
 @Stateless
 public class CleanUpDAOImpl implements  CleanUpDAO{
@@ -47,7 +47,7 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
         String fctResult = "";
 
         Query query = em.createNativeQuery("SELECT remove_expired_time_table_dates(cast (:dateParam as date))");
-        query.setParameter("dateParam", startDate.toDate());
+        query.setParameter("dateParam", toDate(startDate));
 
         Object postgresResult =  query.getSingleResult();
 
@@ -64,8 +64,8 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
         String fctResult = "";
 
         Query query = em.createNativeQuery("SELECT remove_unused_periods(cast (:validationStartPeriod as date), cast (:validationEndPeriod as date))");
-        query.setParameter("validationStartPeriod", validationStartDate.toDate());
-        query.setParameter("validationEndPeriod", validationEndDate.toDate());
+        query.setParameter("validationStartPeriod", toDate(validationStartDate));
+        query.setParameter("validationEndPeriod", toDate(validationEndDate));
 
         Object postgresResult =  query.getSingleResult();
 

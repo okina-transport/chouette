@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>5.4-mobi-iti-SNAPSHOT</version>
+		<version>5.3.7-mobi-iti-SNAPSHOT-MIGJAVA11_2</version>
 
 	</parent>
 	<artifactId>mobi.chouette.model</artifactId>
@@ -130,6 +130,9 @@
 		<dependency>
 			<groupId>com.okina</groupId>
 			<artifactId>netex-java-model</artifactId>
+
+
+
 		</dependency>
 
 		<!-- Test dependencies -->

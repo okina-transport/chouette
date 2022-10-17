@@ -7,6 +7,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.TimetableDAO;
+import mobi.chouette.dao.exception.ChouetteStatisticsTimeoutException;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.CalendarDay;
@@ -22,14 +23,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  Class used to check if some calendars in database are used by 2 or more agencies
@@ -166,7 +160,7 @@ public class TimetableCheckCommand extends AbstractImporterCommand implements Co
      * Checks if a timetable is used for 2 or more networks (in database)     *
      *
      */
-    private void checkMultipleUsedTimetables() {
+    private void checkMultipleUsedTimetables() throws ChouetteStatisticsTimeoutException {
         Map<String, Set<String>> multipleUsedTimetables = analyzeReport.getMultipleUsedTimetables();
 
         Collection<LineAndTimetable> timetableAndLines = timetableDAO.getAllTimetableForAllLines();

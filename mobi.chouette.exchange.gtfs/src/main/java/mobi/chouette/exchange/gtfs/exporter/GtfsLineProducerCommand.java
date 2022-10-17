@@ -138,40 +138,33 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		// utiliser la collection
 		if (!collection.getVehicleJourneys().isEmpty()) {
 			for (VehicleJourney vj : collection.getVehicleJourneys()) {
-
 				String tmKey = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
-				if (vj.hasTimetables() && vj.isNeitherCancelledNorReplaced()) {
-					String timeTableServiceId = calendarProducer.key(vj.getTimetables(), prefix, configuration.isKeepOriginalId());
-					if (timeTableServiceId != null) {
-						IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), configuration.getIdSuffix(), configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+				if (tmKey != null) {
+					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
 
-						if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(), idParams)) {
-							hasVj = true;
-							jps.add(vj.getJourneyPattern());
-							// TODO : Check merge entur : Le if du dessous est supprimé dans Entur. Doit-on le garder ?
-							if (!timetables.containsKey(tmKey)) {
-								timetables.put(tmKey, new ArrayList<>(vj.getTimetables()));
-							}
+					if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(),idParams)) {
+						hasVj = true;
+						jps.add(vj.getJourneyPattern());
+						if (!timetables.containsKey(tmKey)) {
+							timetables.put(tmKey, new ArrayList<>(vj.getTimetables()));
 						}
 					}
-
-				} // vj loop
-				for (JourneyPattern jp : jps) {
-					shapeProducer.save(jp, prefix, configuration.isKeepOriginalId());
 				}
-				if (hasVj) {
-					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), configuration.getIdSuffix(), configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
-					routeProducer.save(line, prefix, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams);
-					hasLine = true;
-					if (metadata != null) {
-						metadata.getResources().add(
-								new Metadata.Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
-										NeptuneObjectPresenter.getName(line)));
-					}
+			} // vj loop
+			for (JourneyPattern jp : jps) {
+				shapeProducer.save(jp, prefix, configuration.isKeepOriginalId());
+			}
+			if (hasVj) {
+				IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
+				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseTpegHvt(),idParams);
+				hasLine = true;
+				if (metadata != null) {
+					metadata.getResources().add(
+							new Metadata.Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
+									NeptuneObjectPresenter.getName(line)));
 				}
 			}
 		}
-
 		return hasLine;
 	}
 

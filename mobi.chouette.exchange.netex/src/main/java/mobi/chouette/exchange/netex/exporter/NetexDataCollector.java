@@ -4,12 +4,16 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Line;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class NetexDataCollector extends DataCollector {
-	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-       boolean res =  collect(collection, line, startDate, endDate, false, false);
+	public NetexDataCollector(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
+		super(collection, line, startDate, endDate, false, false, false);
+	}
+
+	public boolean collect() {
+       boolean res =  collect();
 		if (line.getNetwork() == null) {
 			log.error("line " + line.getObjectId() + " : missing network");
 			return false;

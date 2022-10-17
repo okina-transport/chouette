@@ -12,7 +12,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.client.PublicationDeliveryClient;
 import org.rutebanken.netex.client.TokenService;
 import org.rutebanken.netex.model.MultilingualString;

@@ -1,9 +1,7 @@
 package mobi.chouette.exchange.netex.exporter;
 
-import java.io.IOException;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -18,9 +16,11 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.time.LocalDate;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 @Log4j
 public class NetexLineProducerCommand implements Command, Constant {
@@ -58,16 +58,16 @@ public class NetexLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate = null;
 			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
+				startDate = toLocalDate(configuration.getStartDate());
 			}
 
 			LocalDate endDate = null;
 			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
+				endDate = toLocalDate(configuration.getEndDate());
 			}
 
-			NetexDataCollector collector = new NetexDataCollector();
-			boolean cont = (collector.collect(collection, line, startDate, endDate));
+			NetexDataCollector collector = new NetexDataCollector(collection, line, startDate, endDate);
+			boolean cont = collector.collect();
 			reporter.addObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(line), OBJECT_STATE.OK, IO_TYPE.INPUT);
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.JOURNEY_PATTERN, collection.getJourneyPatterns().size());

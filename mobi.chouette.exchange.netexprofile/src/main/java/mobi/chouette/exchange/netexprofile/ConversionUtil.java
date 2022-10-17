@@ -444,26 +444,27 @@ public class ConversionUtil {
 		return null;
 	}
 
-	public static PublicationEnumeration toPublicationEnumeration(PublicationEnum chouetteType) {
-		if (chouetteType == null) {
-			return null;
-		}
-
-		switch (chouetteType) {
-			case Public:
-				return PublicationEnumeration.PUBLIC;
-			case Authorised:
-				return PublicationEnumeration.AUTHORISED;
-			case Confidential:
-				return PublicationEnumeration.CONFIDENTIAL;
-			case Private:
-				return PublicationEnumeration.PRIVATE;
-			case Restricted:
-				return PublicationEnumeration.RESTRICTED;
-			case Test:
-				return PublicationEnumeration.TEST;
-		}
-		return null;
-	}
+	// TODO : Check merge entur : La partie publication n'est pas décrite dans netex-java-model okina
+//	public static PublicationEnumeration toPublicationEnumeration(PublicationEnum chouetteType) {
+//		if (chouetteType == null) {
+//			return null;
+//		}
+//
+//		switch (chouetteType) {
+//			case Public:
+//				return PublicationEnumeration.PUBLIC;
+//			case Authorised:
+//				return PublicationEnumeration.AUTHORISED;
+//			case Confidential:
+//				return PublicationEnumeration.CONFIDENTIAL;
+//			case Private:
+//				return PublicationEnumeration.PRIVATE;
+//			case Restricted:
+//				return PublicationEnumeration.RESTRICTED;
+//			case Test:
+//				return PublicationEnumeration.TEST;
+//		}
+//		return null;
+//	}
 
 }

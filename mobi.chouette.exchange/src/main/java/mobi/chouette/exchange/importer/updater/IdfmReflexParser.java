@@ -40,7 +40,7 @@ public class IdfmReflexParser {
     }
 
 
-    public static HashMap<String, Pair<String, String>> parseReflexResult(InputStream reflexResult) throws SaxonApiException{
+    public static HashMap<String, Pair<String, String>> parseReflexResult(InputStream reflexResult) throws SaxonApiException {
         Processor proc = new Processor(false);
         XdmNode document = proc.newDocumentBuilder().build(new StreamSource(reflexResult));
         XPathCompiler xPathCompiler = proc.newXPathCompiler();

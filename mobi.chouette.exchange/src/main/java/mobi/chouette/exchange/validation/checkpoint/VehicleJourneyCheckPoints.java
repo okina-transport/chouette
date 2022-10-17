@@ -256,7 +256,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
         // 3-VehicleJourney-2 : check speed progression
         TransportModeNameEnum transportMode = getTransportMode(vj);
         long maxSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedMax();
-        long warningSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedWarning();
+        //long warningSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedWarning();
 		long minSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedMin();
         List<VehicleJourneyAtStop> vjasList = vj.getVehicleJourneyAtStops();
         for (int i = 1; i < vjasList.size(); i++) {
@@ -314,7 +314,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
                             ValidationReporter reporter = ValidationReporter.Factory.getInstance();
                             reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_2, null, source,
                                     calculatedSpeed, Integer.toString((int) minSpeed), target1, target2);
-                        } else if (pessimisticSpeed > warningSpeed) {
+                        } else if (pessimisticSpeed > maxSpeed) {
 
                             // trop rapide
                             String calculatedSpeed = Integer.toString((int) pessimisticSpeed);
@@ -324,12 +324,22 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
                             ValidationReporter reporter = ValidationReporter.Factory.getInstance();
                             boolean isFlexible = (vj.getFlexibleService() != null && vj.getFlexibleService()) || (vj.getRoute().getLine().getFlexibleService() != null && vj.getRoute().getLine().getFlexibleService());
                             if (!isFlexible) { // Not applicable to flexible lines.
-                                if (pessimisticSpeed > maxSpeed) {
+//                                if (pessimisticSpeed > maxSpeed) {
+//                                    reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_5, null, source,
+//                                            calculatedSpeed, Long.toString(maxSpeed), target1, target2);
+//                                } else{
+//                                    reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_3, null, source,
+//                                            calculatedSpeed, Long.toString(warningSpeed), target1, target2);
+//                                }
+
+                                if (parameters.getMaxSpeedHardLimitFactor() != null && pessimisticSpeed > maxSpeed * parameters.getMaxSpeedHardLimitFactor() )
+                                {
+                                    int hardLimit = (int) (maxSpeed * parameters.getMaxSpeedHardLimitFactor());
                                     reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_5, null, source,
-                                            calculatedSpeed, Long.toString(maxSpeed), target1, target2);
+                                            calculatedSpeed, Integer.toString(hardLimit), target1, target2);
                                 } else{
                                     reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_3, null, source,
-                                            calculatedSpeed, Long.toString(warningSpeed), target1, target2);
+                                            calculatedSpeed, Integer.toString((int) maxSpeed), target1, target2);
                                 }
                             }
 

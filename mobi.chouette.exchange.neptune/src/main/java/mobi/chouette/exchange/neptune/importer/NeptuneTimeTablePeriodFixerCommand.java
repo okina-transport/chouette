@@ -11,19 +11,15 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.neptune.Constant;
 import mobi.chouette.exchange.neptune.jaxb.JaxbNeptuneFileConverter;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Period;
+import mobi.chouette.model.util.Referential;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
-import mobi.chouette.model.util.Referential;
 import org.trident.schema.trident.ChouettePTNetworkType;
 import org.trident.schema.trident.DayTypeType;
 import org.trident.schema.trident.PeriodType;
 import org.trident.schema.trident.TimetableType;
 
 import javax.naming.InitialContext;
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
@@ -31,12 +27,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -252,7 +244,7 @@ public class NeptuneTimeTablePeriodFixerCommand implements Command, Constant {
         if (timetable.getPeriod().size()>0)
             return;
 
-        DateTime now = new DateTime();
+        LocalDateTime now = LocalDateTime.now();
         int currentYear = now.getYear();
 
         LocalDate startDate = LocalDate.of(currentYear, 1, 1);

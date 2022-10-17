@@ -8,7 +8,7 @@ import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class HubDataCollector extends DataCollector {

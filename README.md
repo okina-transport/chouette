@@ -164,3 +164,11 @@ Users looking for support should file an issue on the GitHub [issue tracking pag
 
 ## Docker Versions (Okina)
 1.2 : Automatically update stop places on stop place registry from iev import
+
+
+### Multi-Platform build
+See https://docs.docker.com/build/building/multi-platform/
+```
+sudo apt-get install -y qemu-user-static
+docker buildx create --use
+```

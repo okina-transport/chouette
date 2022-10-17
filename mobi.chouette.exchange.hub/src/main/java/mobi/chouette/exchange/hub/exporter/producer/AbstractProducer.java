@@ -8,7 +8,6 @@ import mobi.chouette.exchange.hub.model.HubObject;
 import mobi.chouette.exchange.hub.model.exporter.HubExporterInterface;
 import mobi.chouette.model.NeptuneIdentifiedObject;
 
-import org.joda.time.LocalTime;
 
 @Log4j
 public abstract class AbstractProducer {

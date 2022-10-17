@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StopAreaExporter extends ExporterImpl<ConcertoStopArea> implements
-		ConcertoConverter {
+public class StopAreaExporter extends ExporterImpl<ConcertoStopArea> implements ConcertoConverter {
 
 	public enum FIELDS {
 		type, uuid, parent_id, referent_id, date, name, object_id, line_ids, attributes, references, collected_always, collect_children, collect_general_messages

@@ -1,26 +1,19 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netex.Constant;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.text.ParseException;
 
 @Log4j
 public class VehicleJourneyParser implements Parser, Constant {
@@ -57,7 +50,7 @@ public class VehicleJourneyParser implements Parser, Constant {
 		VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		vehicleJourney.setObjectVersion(version != null ? version : 0);
+		vehicleJourney.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals(NAME)) {

@@ -5,6 +5,8 @@ import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.type.ChouetteAreaEnum;
@@ -26,19 +28,31 @@ public class StopAssignmentParser extends NetexParser implements Parser, Constan
 
 			for (JAXBElement<? extends StopAssignment_VersionStructure> stopAssignmentElement : assignmentStruct.getStopAssignment()) {
 				PassengerStopAssignment stopAssignment = (PassengerStopAssignment) stopAssignmentElement.getValue();
-				// TODO : Check merge entur : Grosse différence algo entre Mobi-iti et Entur ici. J'ai gardé la version entur car la version mobi-iti semblait moins optimale. A voir.
-				ScheduledStopPointRefStructure scheduledStopPointRef = stopAssignment.getScheduledStopPointRef().getValue();
+				JAXBElement<? extends ScheduledStopPointRefStructure> scheduledStopPointRef = stopAssignment.getScheduledStopPointRef();
+
+				// TODO à revoir pour changement de profil
+//				ScheduledStopPointRefStructure scheduledStopPointRef = stopAssignment.getScheduledStopPointRef();
+
 				QuayRefStructure quayRef = stopAssignment.getQuayRef().getValue();
-				if(quayRef != null) {
-					mobi.chouette.model.StopArea quay = ObjectFactory.getStopArea(referential, quayRef.getRef());
-					if(quay.getAreaType() == null) {
-						quay.setAreaType(ChouetteAreaEnum.BoardingPosition);
-					}
-					ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointRef.getRef());
-					scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(quay));
-				} else {
-					log.warn("Missing quay ref for stopAssignment " + stopAssignment);
+
+
+				NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+				String generatedId = NetexImportUtil.composeObjectId("Quay",parameters.getObjectIdPrefix(),quayRef.getRef());
+
+				mobi.chouette.model.StopArea quay = ObjectFactory.getStopArea(referential, generatedId);
+				if(quay.getAreaType() == null) {
+					quay.setAreaType(ChouetteAreaEnum.BoardingPosition);
 				}
+
+				String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",scheduledStopPointRef.getValue().getRef());
+				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
+
+				// TODO à revoir pour changement de profil
+//				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointRef.getRef());
+
+				scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(quay));
+
+
 			}
 		}
 	}

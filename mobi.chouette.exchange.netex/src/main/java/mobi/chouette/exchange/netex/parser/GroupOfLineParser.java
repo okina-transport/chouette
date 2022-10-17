@@ -47,7 +47,7 @@ public class GroupOfLineParser implements Parser, Constant {
 		GroupOfLine groupOfLine = ObjectFactory.getGroupOfLine(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		groupOfLine.setObjectVersion(version != null ? version : 0);
+		groupOfLine.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals(NAME)) {

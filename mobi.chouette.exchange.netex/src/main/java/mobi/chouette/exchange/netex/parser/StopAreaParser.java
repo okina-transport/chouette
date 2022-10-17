@@ -1,13 +1,5 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -20,8 +12,15 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 @Log4j
 public class StopAreaParser implements Parser, Constant {
@@ -103,7 +102,7 @@ public class StopAreaParser implements Parser, Constant {
 		stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		stopArea.setObjectVersion(version != null ? version : 0);
+		stopArea.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals(NAME)) {
@@ -155,7 +154,7 @@ public class StopAreaParser implements Parser, Constant {
 		stopArea.setParent(parent);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		stopArea.setObjectVersion(version != null ? version : 0);
+		stopArea.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals(NAME)) {

@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -15,9 +11,12 @@ import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.LocalDate;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class TimetableParser implements Parser, Constant {
@@ -73,7 +72,7 @@ public class TimetableParser implements Parser, Constant {
 
 				Integer version = Integer.valueOf(xpp.getAttributeValue(null,
 						VERSION));
-				timetable.setObjectVersion(version != null ? version : 0);
+				timetable.setObjectVersion(version != null ? version : 0L);
 
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
 					if (xpp.getName().equals(NAME)) {

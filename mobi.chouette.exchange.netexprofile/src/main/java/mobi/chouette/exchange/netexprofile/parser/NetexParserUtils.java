@@ -500,27 +500,6 @@ public class NetexParserUtils extends ParserUtils {
 		return null;
 	}
 
-	// TODO : Check merge entur : La partie Publication n'est pas présente dans le model NETEX-FR Okina. Donc le lien ici ne peut pas fonctionner. A voir la récup du Netex Entur dans le Netex-FR.
-	/*public static PublicationEnum toPublicationEnum(PublicationEnumeration netexType) {
-		if (netexType == null) {
-			return null;
-		}
 
-		switch (netexType) {
-			case PUBLIC:
-				return PublicationEnum.Public;
-			case AUTHORISED:
-				return PublicationEnum.Authorised;
-			case CONFIDENTIAL:
-				return PublicationEnum.Confidential;
-			case PRIVATE:
-				return PublicationEnum.Private;
-			case RESTRICTED:
-				return PublicationEnum.Restricted;
-			case TEST:
-				return PublicationEnum.Test;
-		}
-		return null;
-	}*/
 
 }

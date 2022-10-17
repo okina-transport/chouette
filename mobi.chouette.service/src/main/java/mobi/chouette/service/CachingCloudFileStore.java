@@ -9,8 +9,7 @@ import mobi.chouette.common.file.LocalFileStore;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Link;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
@@ -22,9 +21,9 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.common.PropertyNames.FILE_STORE_IMPLEMENTATION;
+import static mobi.chouette.common.TimeUtil.toLocalDateTime;
 import static mobi.chouette.service.CachingCloudFileStore.BEAN_NAME;
 
 /**
@@ -85,7 +85,7 @@ public class CachingCloudFileStore implements FileStore {
             }
 
             if (cacheHistoryDays == null) {
-                syncedUntil = LocalDateTime.fromDateFields(new Date(0));
+                syncedUntil = LocalDateTime.now();
             } else {
                 syncedUntil = LocalDateTime.now().minusDays(cacheHistoryDays);
             }

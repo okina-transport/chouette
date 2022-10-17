@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.math.BigDecimal;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -14,9 +12,10 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.joda.time.Duration;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.time.Duration;
 
 @Log4j
 public class ConnectionLinkParser implements Parser, Constant {
@@ -54,7 +53,7 @@ public class ConnectionLinkParser implements Parser, Constant {
 				referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		connectionLink.setObjectVersion(version != null ? version : 0);
+		connectionLink.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-    <version>5.4-mobi-iti-SNAPSHOT</version>
+    <version>5.3.7-mobi-iti-SNAPSHOT-MIGJAVA11_2</version>
 	</parent>
 	<artifactId>mobi.chouette.common</artifactId>
 	<packaging>ejb</packaging>
@@ -146,6 +146,12 @@
 			<artifactId>shrinkwrap-resolver-depchain</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>

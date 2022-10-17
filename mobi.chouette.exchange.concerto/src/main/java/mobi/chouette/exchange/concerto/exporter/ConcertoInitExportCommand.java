@@ -12,13 +12,13 @@ import mobi.chouette.exchange.concerto.Constant;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporter;
 import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDateTime;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 @Log4j
 public class ConcertoInitExportCommand implements Command, Constant {

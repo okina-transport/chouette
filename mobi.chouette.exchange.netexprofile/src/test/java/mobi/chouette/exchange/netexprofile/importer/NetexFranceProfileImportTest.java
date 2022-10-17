@@ -7,24 +7,12 @@ import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,15 +26,9 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 
 import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.exchange.netexprofile.Constant.*;
@@ -106,21 +88,21 @@ public class NetexFranceProfileImportTest {
 
         Assert.assertEquals(someCalendar.getIntDayTypes(),new Integer(108));
 
-        Assert.assertEquals(someCalendar.getStartOfPeriod(), new LocalDate(2019,12,30));
-        Assert.assertEquals(someCalendar.getEndOfPeriod(),new LocalDate(2022,12,31));
+        Assert.assertEquals(someCalendar.getStartOfPeriod(), LocalDate.of(2019,12,30));
+        Assert.assertEquals(someCalendar.getEndOfPeriod(), LocalDate.of(2022,12,31));
 
         Assert.assertEquals(someCalendar.getCalendarDays().size(),20);
         CalendarDay someCalendarDay = someCalendar.getCalendarDays().get(0);
         Assert.assertNotNull(someCalendarDay);
 
-        Assert.assertEquals(someCalendarDay.getDate(),new LocalDate(2020,02,21));
+        Assert.assertEquals(someCalendarDay.getDate(), LocalDate.of(2020,02,21));
         Assert.assertEquals(someCalendarDay.getIncluded(),new Boolean(false));
 
         List<Period> periods = someCalendar.getPeriods();
         Assert.assertEquals(periods.size(),1, "some periods were not parsed correctly");
         Period somePeriod = periods.get(0);
-        Assert.assertEquals(somePeriod.getStartDate(), new LocalDate(2020,01,06));
-        Assert.assertEquals(somePeriod.getEndDate(), new LocalDate(2022,07,03));
+        Assert.assertEquals(somePeriod.getStartDate(), LocalDate.of(2020,01,06));
+        Assert.assertEquals(somePeriod.getEndDate(), LocalDate.of(2022,07,03));
 
     }
 
@@ -238,10 +220,10 @@ public class NetexFranceProfileImportTest {
 
         Assert.assertEquals(someVehicleJourney.getTimetables().get(0).getObjectId(),"TESTORGANISATION:Timetable:STILE_19_1-Jan2020-Semaine-02");
         Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().size(),16);
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getArrivalTime(),new LocalTime(5,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getDepartureTime(),new LocalTime(5,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getArrivalTime(),new LocalTime(6,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getDepartureTime(),new LocalTime(6,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getArrivalTime(), LocalTime.of(5,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getDepartureTime(), LocalTime.of(5,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getArrivalTime(), LocalTime.of(6,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getDepartureTime(), LocalTime.of(6,15,0));
     }
 
     private void launchParsing(Context context, String fileName) throws Exception {

@@ -1,6 +1,5 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;
@@ -18,7 +17,10 @@ import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.*;
-import mobi.chouette.model.type.*;
+import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.type.StopAreaImportModeEnum;
+import mobi.chouette.model.type.TransportModeNameEnum;
+import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -33,9 +35,9 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import java.time.Duration;
 import org.testng.Assert;
 import org.testng.Reporter;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import javax.ejb.EJB;
@@ -48,6 +50,7 @@ import javax.transaction.UserTransaction;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Duration;
 import java.util.*;
 
 import static mobi.chouette.exchange.netexprofile.NetexTestUtils.createCodespace;

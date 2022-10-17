@@ -1,14 +1,25 @@
 package mobi.chouette.exchange.netexprofile.jaxb;
 
-import static java.nio.file.StandardOpenOption.APPEND;
-import static java.nio.file.StandardOpenOption.CREATE;
+import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.model.NetexProfileVersion;
+import mobi.chouette.exchange.netexprofile.parser.xml.PublicactionDeliveryVersionAttributeReader;
+import mobi.chouette.exchange.netexprofile.parser.xml.SkippingXMLStreamReaderFactory;
+import net.sf.saxon.s9api.*;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.validation.NeTExValidator;
+import org.rutebanken.netex.validation.NeTExValidator.NetexVersion;
+import org.xml.sax.SAXException;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Writer;
+import javax.xml.bind.*;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.validation.Schema;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,37 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stax.StAXSource;
-import javax.xml.validation.Schema;
-
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.validation.NeTExValidator;
-import org.rutebanken.netex.validation.NeTExValidator.NetexVersion;
-import org.xml.sax.SAXException;
-
-import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.exchange.netexprofile.Constant;
-import mobi.chouette.exchange.netexprofile.model.NetexProfileVersion;
-import mobi.chouette.exchange.netexprofile.parser.xml.PublicactionDeliveryVersionAttributeReader;
-import mobi.chouette.exchange.netexprofile.parser.xml.SkippingXMLStreamReaderFactory;
-
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XdmNode;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 @Log4j
 public class NetexXMLProcessingHelperFactory {
@@ -86,14 +68,14 @@ public class NetexXMLProcessingHelperFactory {
 					return NetexVersion.v1_0_8;
 				case "1.09":
 					return NetexVersion.v1_0_9;
-				case "1.10":
-					return NetexVersion.v1_10;
-				case "1.11":
-					return NetexVersion.v1_11;
-				case "1.12":
-					return NetexVersion.v1_12;
-				case "1.13":
-					return NetexVersion.v1_13;
+//				case "1.10":
+//					return NetexVersion.v1_10;
+//				case "1.11":
+//					return NetexVersion.v1_11;
+//				case "1.12":
+//					return NetexVersion.v1_12;
+//				case "1.13":
+//					return NetexVersion.v1_13;
 				default:
 
 			}

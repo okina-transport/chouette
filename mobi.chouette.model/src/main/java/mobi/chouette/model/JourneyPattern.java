@@ -33,7 +33,7 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 	@GenericGenerator(name = "journey_patterns_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 		parameters = {
 			@Parameter(name = "sequence_name", value = "journey_patterns_id_seq"),
-			@Parameter(name = "increment_size", value = "20") })
+			@Parameter(name = "increment_size", value = "1") })
 	@GeneratedValue(generator = "journey_patterns_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)

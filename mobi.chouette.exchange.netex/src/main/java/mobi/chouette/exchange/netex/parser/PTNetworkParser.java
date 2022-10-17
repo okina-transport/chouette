@@ -32,7 +32,7 @@ public class PTNetworkParser implements Parser, Constant {
 		Network network = ObjectFactory.getPTNetwork(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		network.setObjectVersion(version != null ? version : 0);
+		network.setObjectVersion(version != null ? version : 0L);
 		network.setVersionDate(NetexUtils.getDate(xpp.getAttributeValue(null,
 				"changed")));
 

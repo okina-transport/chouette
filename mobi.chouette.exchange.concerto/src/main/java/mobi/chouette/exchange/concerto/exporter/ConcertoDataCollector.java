@@ -2,20 +2,25 @@ package mobi.chouette.exchange.concerto.exporter;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
+import mobi.chouette.exchange.exporter.ExportableData;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.joda.time.LocalDate;
 
-import java.util.Collection;
+import java.time.LocalDate;
 
 @Log4j
 public class ConcertoDataCollector extends DataCollector {
-	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-		boolean res = collect(collection, line, startDate, endDate, false, false);
+
+	public ConcertoDataCollector(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
+		super(collection, line, startDate, endDate, false, false, false);
+	}
+
+	public boolean collect() {
+		boolean res = collect();
 		if (Boolean.TRUE.equals(line.getFlexibleService())) {
 			log.info("Omitting flexible line from concerto export: " + line.getObjectId());
 			return false;
@@ -24,11 +29,6 @@ public class ConcertoDataCollector extends DataCollector {
 			collectAgencyCompany(line, collection);
 		}
 		return res;
-	}
-
-	public boolean collect(ExportableData collection, Collection<StopArea> stopAreas) {
-		return collect(collection, stopAreas, false, false);
-
 	}
 
 	/**

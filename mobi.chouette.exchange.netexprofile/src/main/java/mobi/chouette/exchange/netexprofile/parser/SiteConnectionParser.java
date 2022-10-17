@@ -1,26 +1,16 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
-import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
-import mobi.chouette.exchange.netexprofile.util.JtsGmlConverter;
 import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.rutebanken.netex.model.RouteLink;
-import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
 import org.rutebanken.netex.model.SiteConnection;
 
 import java.util.List;
@@ -49,7 +39,7 @@ public class SiteConnectionParser extends NetexParser implements Parser, Constan
 			connectionLink.setEndOfLink(toStopArea);
 			connectionLink.setLinkDistance(siteConnection.getDistance());
 			if (siteConnection.getWalkTransferDuration() != null) {
-				connectionLink.setDefaultDuration(TimeUtil.toJodaDuration(siteConnection.getWalkTransferDuration().getDefaultDuration()));
+				connectionLink.setDefaultDuration(siteConnection.getWalkTransferDuration().getDefaultDuration());
 			} else {
 				connectionLink.setDefaultDuration(null);
 			}

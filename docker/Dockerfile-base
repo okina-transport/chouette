@@ -1,81 +1,66 @@
-FROM jboss/wildfly:8.2.1.Final
+# Adapted from https://github.com/jboss-dockerfiles/base/blob/master/Dockerfile
+FROM debian:11-slim
 
-USER jboss
-
-RUN mkdir /opt/jboss/wildfly/customization/
-
-COPY docker/files/postgresql-42.2.6.jar /opt/jboss/wildfly/customization/postgresql-42.2.6.jar
-COPY docker/files/postgis-jdbc-2.3.0.jar /opt/jboss/wildfly/customization/postgis-jdbc-2.3.0.jar
-COPY docker/files/hibernate-spatial-4.3.jar /opt/jboss/wildfly/modules/system/layers/base/org/hibernate/main/hibernate-spatial-4.3.jar
-COPY docker/files/jts-1.13.jar /opt/jboss/wildfly/modules/system/layers/base/org/hibernate/main/jts-1.13.jar
-
-# File where sed expression has been performed:
-COPY docker/files/wildfly/module.xml /opt/jboss/wildfly/modules/system/layers/base/org/hibernate/main/module.xml
-
-# Updated JAXB implementation to work with Netex jaxb classes
-COPY docker/files/jaxb-impl-2.2.11.jar /opt/jboss/wildfly/modules/system/layers/base/com/sun/xml/bind/main/jaxb-impl-2.2.11.jar
-COPY docker/files/jaxb-core-2.2.11.jar /opt/jboss/wildfly/modules/system/layers/base/com/sun/xml/bind/main/jaxb-core-2.2.11.jar
-COPY docker/files/jaxb-xjc-2.2.11.jar /opt/jboss/wildfly/modules/system/layers/base/com/sun/xml/bind/main/jaxb-xjc-2.2.11.jar
-COPY docker/files/wildfly/jaxb_module.xml /opt/jboss/wildfly/modules/system/layers/base/com/sun/xml/bind/main/module.xml
-
-# Update Xerces Impl
-COPY docker/files/xercesImpl-2.11.0.SP6-RB.jar /opt/jboss/wildfly/modules/system/layers/base/org/apache/xerces/main/xercesImpl-2.11.0.SP6-RB.jar
-COPY docker/files/wildfly/xerces_module.xml /opt/jboss/wildfly/modules/system/layers/base/org/apache/xerces/main/module.xml
-
-# Update Jackson Impl
-
-RUN rm /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-databind/main/jackson-databind-2.4.1.jar
-COPY docker/files/jackson-databind-2.10.4.jar /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-databind/main/jackson-databind-2.10.4.jar
-COPY docker/files/wildfly/jackson-databind_module.xml /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-databind/main/module.xml
-
-RUN rm /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-annotations/main/jackson-annotations-2.4.1.jar
-COPY docker/files/jackson-annotations-2.10.4.jar /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-annotations/main/jackson-annotations-2.10.4.jar
-COPY docker/files/wildfly/jackson-annotations_module.xml /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-annotations/main/module.xml
-
-RUN rm /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-core/main/jackson-core-2.4.1.jar
-COPY docker/files/jackson-core-2.10.4.jar /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-core/main/jackson-core-2.10.4.jar
-COPY docker/files/wildfly/jackson-core_module.xml /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/core/jackson-core/main/module.xml
-
-RUN rm /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/main/jackson-module-jaxb-annotations-2.4.1.jar
-COPY docker/files/jackson-module-jaxb-annotations-2.10.4.jar /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/main/jackson-module-jaxb-annotations-2.10.4.jar
-COPY docker/files/wildfly/jackson-jaxb_module.xml /opt/jboss/wildfly/modules/system/layers/base/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/main/module.xml
-
-RUN touch /opt/jboss/wildfly/build.log
-RUN chmod a+w /opt/jboss/wildfly/build.log
-
-
-
-
-# Wildfly container configurations, copy and execute
 COPY docker/files/wildfly/wildfly_db.cli /tmp/
 
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y openjdk-17-jdk curl \
+nmap postgresql-13 && rm -rf /var/lib/apt/lists/*
 
-# Overriding previously installed java version:
-RUN curl -L http://static.okina.fr/jdk-8u144-linux-x64.tar.gz > jdk.tgz
-RUN tar xzf jdk.tgz
-ENV JAVA_HOME /opt/jboss/jdk1.8.0_144/
+# Create a user and group used to launch processes
+# The user ID 1000 is the default for the first "regular" user on Fedora/RHEL,
+# so there is a high chance that this ID will be equal to the current user
+# making it easier to use volumes (no permission issues)
+RUN groupadd -r jboss -g 1000 && useradd -u 1000 -r -g jboss -m -d /opt/jboss -s /sbin/nologin -c "JBoss user" jboss && \
+    chmod 755 /opt/jboss
 
-# Deploying by copying to deployment directory
-#COPY chouette_iev/target/chouette.ear /tmp/chouette.ear # now done in Dockerfile-build
+# Set the working directory to jboss' user home directory
+WORKDIR /opt/jboss
 
-# COPY default properties, override in build image
-COPY chouette_iev/src/main/resources/iev.properties /etc/chouette/iev/iev.properties
+# Set the JAVA_HOME variable to make it clear where Java is located
+ARG TARGETARCH
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-${TARGETARCH}
 
-# Copy standalone customizations
-COPY docker/files/wildfly/standalone.conf /opt/jboss/wildfly/bin
-# From http://stackoverflow.com/questions/20965737/docker-jboss7-war-commit-server-boot-failed-in-an-unrecoverable-manner
-RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
-  && mkdir -p /opt/jboss/data \
-  && chown jboss:jboss /opt/jboss/data
+# Adapted from https://github.com/jboss-dockerfiles/wildfly/blob/26.1.0.Final/Dockerfile
 
-# Running as root, in order to get mounted volume writable:
+# Set the WILDFLY_VERSION env variable
+ENV WILDFLY_VERSION 26.1.3.Final
+ENV WILDFLY_SHA1 b9f52ba41df890e09bb141d72947d2510caf758c
+ENV JBOSS_HOME /opt/jboss/wildfly
+
+# Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
+# Make sure the distribution is available from a well-known place
+RUN cd $HOME \
+    && curl -L -O https://github.com/wildfly/wildfly/releases/download/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
+    && sha1sum wildfly-$WILDFLY_VERSION.tar.gz | grep $WILDFLY_SHA1 \
+    && tar xf wildfly-$WILDFLY_VERSION.tar.gz \
+    && mv $HOME/wildfly-$WILDFLY_VERSION $JBOSS_HOME \
+    && rm wildfly-$WILDFLY_VERSION.tar.gz \
+    && chown -R jboss:0 ${JBOSS_HOME} \
+    && chmod -R g+rw ${JBOSS_HOME}
+
 USER root
 
 RUN /opt/jboss/wildfly/bin/add-user.sh admin password --silent
 
-COPY docker/docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Ensure signals are forwarded to the JVM process correctly for graceful shutdown
+ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
-EXPOSE 8080 9990 8787
+# Expose the ports in which we're interested
+EXPOSE 8080
 
-CMD [ "/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+USER jboss
+# Copy iev.properties
+COPY chouette_iev/src/main/resources/iev.properties /etc/chouette/iev/iev.properties
+
+RUN touch /opt/jboss/wildfly/build.log
+RUN chmod a+w /opt/jboss/wildfly/build.log
+
+# Copy customized Wildfly modules
+COPY target/docker/wildfly /opt/jboss/wildfly/
+# Copy customized Wildfly configuration file
+COPY docker/files/wildfly/standalone.conf /opt/jboss/wildfly/bin
+
+# From http://stackoverflow.com/questions/20965737/docker-jboss7-war-commit-server-boot-failed-in-an-unrecoverable-manner
+RUN rm -rf /opt/jboss/wildfly/standalone/configuration/standalone_xml_history \
+  && mkdir -p /opt/jboss/data \
+  && chown jboss:jboss /opt/jboss/data

@@ -2,6 +2,7 @@ package mobi.chouette.exchange.importer;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -36,6 +37,7 @@ public class GenerateRouteSectionsCommand implements Command, Constant {
 	public static final String COMMAND = "GenerateRouteSectionsCommand";
 
 	@EJB
+	@Getter
 	private RouteSectionGenerator routeSectionGenerator;
 
 	@EJB

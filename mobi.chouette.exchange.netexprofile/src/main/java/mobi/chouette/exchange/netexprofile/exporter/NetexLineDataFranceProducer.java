@@ -93,7 +93,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             Metadata metadata = (Metadata) context.get(METADATA);
             if (metadata != null) {
                 metadata.getResources().add(
-                        metadata.new Resource(fileName, NeptuneObjectPresenter.getName(neptuneLine.getNetwork()), NeptuneObjectPresenter.getName(neptuneLine)));
+                        new Metadata.Resource(fileName, NeptuneObjectPresenter.getName(neptuneLine.getNetwork()), NeptuneObjectPresenter.getName(neptuneLine)));
             }
         }
     }

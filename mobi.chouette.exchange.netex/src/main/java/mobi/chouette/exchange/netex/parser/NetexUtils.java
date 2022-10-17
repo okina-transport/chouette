@@ -11,7 +11,7 @@ import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j
 public class NetexUtils extends ParserUtils {

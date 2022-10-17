@@ -29,7 +29,7 @@ import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -242,7 +242,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             }
 //            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
+       //     commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
 
         } catch (Exception e) {
             log.error(e, e);

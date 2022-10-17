@@ -48,7 +48,7 @@ public class CompanyParser implements Parser, Constant {
 		Company company = ObjectFactory.getCompany(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		company.setObjectVersion(version != null ? version : 0);
+		company.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("PublicCode")) {

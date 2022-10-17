@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.netex.parser;
 
-import java.util.Collection;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -15,8 +13,9 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.util.Collection;
 
 @Log4j
 public class LineParser implements Parser, Constant {
@@ -53,7 +52,7 @@ public class LineParser implements Parser, Constant {
 		Line line = ObjectFactory.getLine(referential, id);
 
 		Integer version = Integer.valueOf(xpp.getAttributeValue(null, VERSION));
-		line.setObjectVersion(version != null ? version : 0);
+		line.setObjectVersion(version != null ? version : 0L);
 
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals(NAME)) {

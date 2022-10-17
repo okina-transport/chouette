@@ -16,7 +16,7 @@ import mobi.chouette.exchange.hub.model.HubPeriode;
 import mobi.chouette.exchange.hub.model.exporter.HubExporterInterface;
 import mobi.chouette.model.Timetable;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 /**
  * convert Timetable to Hub Calendar and CalendarDate

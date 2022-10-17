@@ -2,29 +2,12 @@ package mobi.chouette.exchange.netexprofile.exporter;
 
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.PTDirectionEnum;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.rutebanken.netex.model.DayTypeAssignment_VersionStructure;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
@@ -36,8 +19,9 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.math.BigInteger;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -144,17 +128,17 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getDayTypes().getDayTypeRef().get(0).getValue().getRef(), "TEST:DayType:t1:LOC");
 
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getDepartureTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 0, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getDepartureTime(), LocalTime.of(7, 0, 0));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getVersion(), "any");
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getArrivalTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 0, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(0).getArrivalTime(), LocalTime.of(7, 0, 0));
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(1).getDepartureTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 15, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(1).getDepartureTime(), LocalTime.of(7, 15, 0));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(1).getVersion(), "any");
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(1).getArrivalTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 15, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(1).getArrivalTime(), LocalTime.of(7, 15, 0));
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(2).getDepartureTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 30, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(2).getDepartureTime(), LocalTime.of(7, 30, 0));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(2).getVersion(), "any");
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(2).getArrivalTime(), TimeUtil.toLocalTimeFromJoda(new LocalTime(7, 30, 0)));
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getPassingTimes().getTimetabledPassingTime().get(2).getArrivalTime(), LocalTime.of(7, 30, 0));
 
         Assert.assertEquals(exportableNetexDataResult.getSharedDayTypes().get("TEST:DayType:t1:LOC").getId(), "TEST:DayType:t1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getSharedDayTypes().get("TEST:DayType:t1:LOC").getVersion(), "any");
@@ -296,8 +280,8 @@ public class NetexLineDataFranceProducerTest {
         Timetable timetable = new Timetable();
         timetable.setObjectId("TEST:Timetable:t1");
         Period period = new Period();
-        LocalDate startLocalDate = new LocalDate("2020-01-01");
-        LocalDate endLocalDate = new LocalDate("2020-12-31");
+        LocalDate startLocalDate = LocalDate.parse("2020-01-01");
+        LocalDate endLocalDate = LocalDate.parse("2020-12-31");
         period.setStartDate(startLocalDate);
         period.setEndDate(endLocalDate);
         ArrayList<Period> periods = new ArrayList<>();
@@ -313,21 +297,21 @@ public class NetexLineDataFranceProducerTest {
 
         VehicleJourneyAtStop vehicleJourneyAtStop1 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop1.setObjectId("TEST:TimetablePassingTime:tpt1");
-        LocalTime time1 = new LocalTime(7, 0, 0);
+        LocalTime time1 = LocalTime.of(7, 0, 0);
         vehicleJourneyAtStop1.setDepartureTime(time1);
         vehicleJourneyAtStop1.setArrivalTime(time1);
         vehicleJourneyAtStop1.setStopPoint(stopPoint1);
 
         VehicleJourneyAtStop vehicleJourneyAtStop2 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop2.setObjectId("TEST:TimetablePassingTime:tpt2");
-        LocalTime time2 = new LocalTime(7, 15, 0);
+        LocalTime time2 = LocalTime.of(7, 15, 0);
         vehicleJourneyAtStop2.setDepartureTime(time2);
         vehicleJourneyAtStop2.setArrivalTime(time2);
         vehicleJourneyAtStop2.setStopPoint(stopPoint2);
 
         VehicleJourneyAtStop vehicleJourneyAtStop3 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop3.setObjectId("TEST:TimetablePassingTime:tpt3");
-        LocalTime time3 = new LocalTime(7, 30, 0);
+        LocalTime time3 = LocalTime.of(7, 30, 0);
         vehicleJourneyAtStop3.setDepartureTime(time3);
         vehicleJourneyAtStop3.setArrivalTime(time3);
         vehicleJourneyAtStop3.setStopPoint(stopPoint3);

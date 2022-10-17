@@ -1,9 +1,5 @@
 package mobi.chouette.exchange.netex.exporter;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.exchange.metadata.Metadata;
@@ -12,6 +8,10 @@ import mobi.chouette.exchange.netex.Constant;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.StopArea;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class NetexLineProducer implements Constant {
 
@@ -44,7 +44,7 @@ public class NetexLineProducer implements Constant {
 
 		if (metadata != null) {
 			metadata.getResources().add(
-					metadata.new Resource(fileName, NeptuneObjectPresenter.getName(collection.getLine().getNetwork()),
+					new Metadata.Resource(fileName, NeptuneObjectPresenter.getName(collection.getLine().getNetwork()),
 							NeptuneObjectPresenter.getName(collection.getLine())));
 		}
 

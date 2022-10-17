@@ -6,27 +6,16 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
-
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
-import org.joda.time.LocalDateTime;
-import org.xmlpull.v1.XmlPullParser;
 import mobi.chouette.model.util.Referential;
+import org.xmlpull.v1.XmlPullParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j

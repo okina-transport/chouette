@@ -19,6 +19,8 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 
+import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
+
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
  * <p>
@@ -59,6 +61,7 @@ public class GtfsRouteProducer extends AbstractProducer
        if(c != null && OrganisationTypeEnum.Operator.equals(c.getOrganisationType()) && agencyId.endsWith("o")){
            route.setAgencyId(StringUtils.chop(route.getAgencyId()));
        }
+       route.setAgencyId(route.getAgencyId().replaceAll(COLON_REPLACEMENT_CODE, ":"));
        route.setRouteShortName(null);
        route.setRouteLongName(null);
 

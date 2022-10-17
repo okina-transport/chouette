@@ -116,7 +116,7 @@ public class RouteSectionRepository {
     }
 
 
-    protected boolean isLineStringGoodMatchForQuays(LineString lineString, Coordinate from, Coordinate to) {
+    public boolean isLineStringGoodMatchForQuays(LineString lineString, Coordinate from, Coordinate to) {
 
         if (lineString != null && lineString.getCoordinates() != null && lineString.getCoordinates().length > 0) {
 
