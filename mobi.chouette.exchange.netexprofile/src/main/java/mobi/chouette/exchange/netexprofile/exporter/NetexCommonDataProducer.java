@@ -22,7 +22,6 @@ public class NetexCommonDataProducer extends NetexProducer implements Constant {
         Path outputPath = Paths.get(jobData.getPathName(), OUTPUT);
         ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
-        exportableNetexData.getConnectionLinks().addAll(exportableData.getConnectionLinks());
 
         String fileName = ExportedFilenamer.createNetexFranceCommonFilename(context);
         reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);

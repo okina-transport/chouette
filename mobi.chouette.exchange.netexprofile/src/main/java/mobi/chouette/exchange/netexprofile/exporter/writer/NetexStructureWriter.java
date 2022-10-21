@@ -3,18 +3,16 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.FlexibleLine;
-import org.rutebanken.netex.model.Line;
-import org.rutebanken.netex.model.Line_VersionStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.ScheduledStopPoint;
+import mobi.chouette.model.ConnectionLink;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import java.time.Duration;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.MEMBERS;
@@ -35,6 +33,7 @@ public class NetexStructureWriter extends AbstractNetexWriter {
         writeScheduledStopPointsElement(writer, exportableNetexData, marshaller);
         writePassengerStopAssignmentsElement(writer, exportableNetexData, marshaller);
         writeDestinationDisplaysElement(writer, exportableNetexData, marshaller);
+        writeSiteConnectionElement(writer, exportableNetexData, marshaller);
 
         writer.writeEndElement();
     }
@@ -108,6 +107,95 @@ public class NetexStructureWriter extends AbstractNetexWriter {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    static void writeSiteConnectionElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
+
+        if (exportableNetexData.getConnectionLinks().isEmpty())
+            return ;
+
+        for (ConnectionLink connectionLink : exportableNetexData.getConnectionLinks()) {
+            JAXBElement<? extends SiteConnection_VersionStructure> jaxbElement = null;
+            SiteConnection siteConnection = new SiteConnection();
+
+            SiteConnectionEndStructure fromArea = netexFactory.createSiteConnectionEndStructure();
+            QuayRefStructure fromQuayRef = netexFactory.createQuayRefStructure();
+            StopPlaceRefStructure fromStopPlaceRef = netexFactory.createStopPlaceRefStructure();
+            setTransportMode(fromArea, connectionLink.getStartOfLink());
+            fromStopPlaceRef.withRef(connectionLink.getStartOfLink().getParent().getObjectId());
+            fromArea.setStopPlaceRef(netexFactory.createStopPlaceRef(fromStopPlaceRef));
+            fromQuayRef.withRef(connectionLink.getStartOfLink().getObjectId());
+            fromArea.setQuayRef(netexFactory.createQuayRef(fromQuayRef));
+            siteConnection.withFrom(fromArea);
+
+
+            SiteConnectionEndStructure toArea = netexFactory.createSiteConnectionEndStructure();
+            QuayRefStructure toQuayRef = netexFactory.createQuayRefStructure();
+            StopPlaceRefStructure toStopPlaceRef = netexFactory.createStopPlaceRefStructure();
+            setTransportMode(toArea, connectionLink.getEndOfLink());
+            toStopPlaceRef.withRef(connectionLink.getEndOfLink().getParent().getObjectId());
+            toArea.setStopPlaceRef(netexFactory.createStopPlaceRef(toStopPlaceRef));
+            toQuayRef.withRef(connectionLink.getEndOfLink().getObjectId());
+            toArea.setQuayRef(netexFactory.createQuayRef(toQuayRef));
+            siteConnection.withTo(toArea);
+
+            MultilingualString name = new MultilingualString();
+            name.setLang("fr");
+            name.setValue(connectionLink.getName());
+            siteConnection.withName(name);
+
+            siteConnection.withDistance(connectionLink.getLinkDistance());
+
+
+            TransferDurationStructure transfertDuration = netexFactory.createTransferDurationStructure();
+
+            if (connectionLink.getDefaultDuration() != null ){
+                Duration duration = Duration.parse(connectionLink.getDefaultDuration().toString());
+                transfertDuration.setDefaultDuration(duration);
+                siteConnection.setWalkTransferDuration(transfertDuration);
+            }
+
+
+            siteConnection.setId(connectionLink.getObjectId());
+            siteConnection.setVersion(String.valueOf(connectionLink.getObjectVersion()));
+
+            jaxbElement = netexFactory.createSiteConnection(siteConnection);
+            try {
+                marshaller.marshal(jaxbElement, writer);
+            } catch (JAXBException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    private static void setTransportMode(SiteConnectionEndStructure area, mobi.chouette.model.StopArea link) {
+        switch (link.getParent().getTransportModeName()) {
+            case Tram:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.TRAM);
+                break;
+            case Metro:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.METRO);
+                break;
+            case Rail:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.RAIL);
+                break;
+            case Water:
+            case Ferry:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.WATER);
+                break;
+            case Funicular:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.FUNICULAR);
+            case Cableway:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.CABLEWAY);
+            case TrolleyBus:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.TROLLEY_BUS);
+            case Coach:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.COACH);
+            case Bus:
+            default:
+                area.setTransportMode(AllVehicleModesOfTransportEnumeration.BUS);
         }
     }
 

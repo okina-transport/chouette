@@ -73,6 +73,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         Path outputPath = Paths.get(jobData.getPathName(), OUTPUT);
         ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(EXPORTABLE_NETEX_DATA);
+        exportableNetexData.getConnectionLinks().addAll(exportableData.getConnectionLinks());
         mobi.chouette.model.Line neptuneLine = exportableData.getLine();
 
         deleteSpacesInIdsAndChangeSpecialCharacters(exportableData, parameters.getDefaultCodespacePrefix());
