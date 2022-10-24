@@ -93,7 +93,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 				try {
 					result = (Command) context.lookup(name);
 				} catch (NamingException e1) {
-					log.error(e);
+					log.error(e.getMessage(), e);
 				}
 			}
 			return result;
