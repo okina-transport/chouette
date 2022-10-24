@@ -81,10 +81,13 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     @Override
     public void validate(Context context) throws Exception {
         GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
+        GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
         gtfsValidationReporter.getExceptions().clear();
 
         validateStopTimes(context);
-        validateShapes(context);
+        if(configuration.isImportShapesFile()){
+            validateShapes(context);
+        }
         validateTrips(context);
         validateFrequencies(context);
     }
@@ -418,8 +421,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             int i = 1;
             boolean unsuedId = true;
             for (GtfsRoute bean : importer.getRouteById()) {
-//                String newRouteId = bean.getRouteId().split("-")[0];
-//                bean.setRouteId(newRouteId);
                 if (routeIds.add(bean.getRouteId())) {
                     unsuedId = false;
                     gtfsValidationReporter.reportError(context, new GtfsException(GTFS_ROUTES_FILE, i,
@@ -449,7 +450,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             Index<GtfsFrequency> frequencyParser = null;
             try { // Read and check the header line of the file
-                // "frequenciess.txt"
+                // "frequencies.txt"
                 frequencyParser = importer.getFrequencyByTrip();
             } catch (Exception ex) {
                 if (ex instanceof GtfsException) {
@@ -853,10 +854,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 StopPoint firstStopPoint = route.getStopPoints().get(0);
                 StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
 
-                if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+                if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null &&
+                        lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
                     String first = firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
-                    String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject()
-                            .getName();
+                    String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
                     route.setName(first + " -> " + last);
                 }
             }
@@ -875,7 +876,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 
         // Shape -> routeSections
-        if (gtfsTrip.getShapeId() != null && !gtfsTrip.getShapeId().isEmpty() && importer.getShapeById().containsKey(gtfsTrip.getShapeId())) {
+        if (configuration.isImportShapesFile() &&
+                gtfsTrip.getShapeId() != null &&
+                !gtfsTrip.getShapeId().isEmpty() &&
+                importer.getShapeById().containsKey(gtfsTrip.getShapeId())) {
             List<RouteSection> sections = createRouteSections(referential, journeyPattern, importer.getShapeById().values(gtfsTrip.getShapeId()));
             if (!sections.isEmpty()) {
                 journeyPattern.setRouteSections(sections);

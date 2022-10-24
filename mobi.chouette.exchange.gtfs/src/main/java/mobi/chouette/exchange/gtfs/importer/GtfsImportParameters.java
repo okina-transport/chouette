@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.gtfs.importer;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +27,8 @@ import java.util.Arrays;
 		"splitCharacter",
 		"commercialPointIdPrefixToRemove",
 		"quayIdPrefixToRemove",
-		"linePrefixToRemove"
+		"linePrefixToRemove",
+		"importShapesFile"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -89,6 +88,10 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "line_prefix_to_remove")
 	public String linePrefixToRemove = "";
+
+	@Getter@Setter
+	@XmlElement(name = "import_shapes_file", defaultValue = "true")
+	private boolean importShapesFile = true;
 
 
 	public boolean isValid(Logger log, String[] allowedTypes)
