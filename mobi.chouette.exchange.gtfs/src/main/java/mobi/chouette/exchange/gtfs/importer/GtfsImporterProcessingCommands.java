@@ -87,10 +87,6 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             {
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
-//				if (withDao && !parameters.isNoSave() && parameters.getStopAreaImportMode().shouldCreateMissingStopAreas()) {
-//					Command saveArea = CommandFactory.create(initialContext, StopAreaRegisterCommand.class.getName());
-//					chain.add(saveArea);
-//				}
                 commands.add(chain);
             }
 

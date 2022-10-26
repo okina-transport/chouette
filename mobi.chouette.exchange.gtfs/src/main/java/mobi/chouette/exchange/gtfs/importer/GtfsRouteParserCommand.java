@@ -76,35 +76,6 @@ public class GtfsRouteParserCommand implements Command, Constant {
 				reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY,
 						referential.getSharedCompanies().size());
 			}
-
-//			// StopArea
-//			if (referential.getSharedStopAreas().isEmpty()) {
-//				GtfsStopParser gtfsStopParser = (GtfsStopParser) ParserFactory.create(GtfsStopParser.class.getName());
-//				gtfsStopParser.parse(context);
-//			}
-//
-//			// ConnectionLink
-//			if (importer.hasTransferImporter()) {
-//				if (referential.getSharedConnectionLinks().isEmpty()) {
-//					GtfsTransferParser gtfsTransferParser = (GtfsTransferParser) ParserFactory
-//							.create(GtfsTransferParser.class.getName());
-//					gtfsTransferParser.parse(context);
-//				}
-//			}
-//
-//			if (configuration.getMaxDistanceForCommercial() > 0)
-//			{
-//				CommercialStopGenerator commercialStopGenerator = new CommercialStopGenerator();
-//				commercialStopGenerator.createCommercialStopPoints(context);
-//				configuration.setMaxDistanceForCommercial(0);
-//			}
-//			
-//			if (configuration.getMaxDistanceForConnectionLink() > 0)
-//			{
-//			    ConnectionLinkGenerator connectionLinkGenerator = new ConnectionLinkGenerator();
-//				connectionLinkGenerator.createConnectionLinks(context);
-//				configuration.setMaxDistanceForConnectionLink(0);
-//			}
 			
 			// Timetable
 			if (referential.getSharedTimetables().isEmpty()) {

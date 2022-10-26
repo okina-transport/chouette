@@ -185,8 +185,6 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
     @Override
     public void parse(Context context) throws Exception {
 
-        NetworksNames networksNames = new NetworksNames();
-
         Referential referential = (Referential) context.get(REFERENTIAL);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
@@ -240,8 +238,6 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         NetworksNames networksNames = new NetworksNames();
 
         line.setName(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteLongName()));
-//		if (line.getName() == null)
-//			line.setName(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteShortName()));
 
         line.setNumber(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteShortName()));
 
@@ -250,12 +246,6 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         if (line.getName() == null) {
             line.setName(line.getNumber());
         }
-
-//		if (line.getPublishedName() != null) {
-//			line.setName(line.getPublishedName());
-//		} else {
-//			line.setName(line.getNumber());
-//		}
 
         if(networksNames.getTerritorializedSites(configuration.getObjectIdPrefix())){
             line.setTransportModeName(TransportModeNameEnum.Coach);

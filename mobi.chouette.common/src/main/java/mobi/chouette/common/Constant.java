@@ -70,6 +70,7 @@ public interface Constant {
 	public static final String KEEP_STOP_NAMES = "KeepStopNames";
 	public static final String CLOSE_OLD_CALENDARS = "CloseOldCalendars";
 	public static final String REMOVE_PARENT_STATIONS = "removeParentStations";
+	public static final String IMPORT_SHAPES_FILE = "importShapesFile";
 
 	public static final char SEP = '|';
 	public static final String NULL = "\\N";
