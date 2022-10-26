@@ -29,7 +29,8 @@ import java.util.Arrays;
 		"splitCharacter",
 		"commercialPointIdPrefixToRemove",
 		"quayIdPrefixToRemove",
-		"linePrefixToRemove"
+		"linePrefixToRemove",
+		"removeParentStations"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -89,6 +90,10 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "line_prefix_to_remove")
 	public String linePrefixToRemove = "";
+
+	@Getter@Setter
+	@XmlElement(name = "remove_parent_stations", defaultValue="false")
+	private boolean removeParentStations = false;
 
 
 	public boolean isValid(Logger log, String[] allowedTypes)

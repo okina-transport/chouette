@@ -174,7 +174,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 				// TODO report
 			}
 			stopArea.setAreaType(ChouetteAreaEnum.BoardingPosition);
-			if (gtfsStop.getParentStation() != null) {
+			if (gtfsStop.getParentStation() != null && !configuration.isRemoveParentStations()) {
 				String parentId = AbstractConverter.toStopAreaId(configuration,
 						"StopPlace", gtfsStop.getParentStation());
 				StopArea parent = ObjectFactory.getStopArea(referential, parentId);
