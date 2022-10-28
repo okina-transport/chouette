@@ -352,6 +352,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     private void validateTrips(Context context) throws Exception {
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
         GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
+        GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
         Set<String> routeIds = new HashSet<String>();
 
         // trips.txt
@@ -398,6 +399,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             GtfsException fatalException = null;
             tripParser.setWithValidation(true);
             for (GtfsTrip bean : tripParser) {
+                if(!configuration.isImportShapesFile()){
+                    bean.setShapeId(null);
+                }
                 if (bean.getRouteId() != null)
                     routeIds.add(bean.getRouteId());
                 try {
