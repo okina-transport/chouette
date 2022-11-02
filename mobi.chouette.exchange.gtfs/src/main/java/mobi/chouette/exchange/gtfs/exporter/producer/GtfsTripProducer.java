@@ -18,6 +18,7 @@ import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.*;
 
@@ -121,6 +122,10 @@ public class GtfsTripProducer extends AbstractProducer {
 	
 	private double computeDistance(RouteSection section)
 	{
+		if (section.getDistance() != null && !section.getDistance().equals(BigDecimal.ZERO)) {
+			return section.getDistance().doubleValue();
+		}
+
 		if (isTrue(section.getNoProcessing()) || section.getProcessedGeometry() == null)
 		{
 			double distance = section.getInputGeometry().getLength();
