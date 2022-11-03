@@ -35,6 +35,7 @@ import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
 import org.joda.time.LocalTime;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -153,6 +154,10 @@ public class GtfsTripProducer extends AbstractProducer {
 
 	private double computeDistance(RouteSection section)
 	{
+		if (section.getDistance() != null && !section.getDistance().equals(BigDecimal.ZERO)) {
+			return section.getDistance().doubleValue();
+		}
+
 		if (isTrue(section.getNoProcessing()) || section.getProcessedGeometry() == null)
 		{
 			double distance = section.getInputGeometry().getLength();
