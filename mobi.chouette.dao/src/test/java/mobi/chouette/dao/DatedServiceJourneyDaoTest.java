@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.persistence.hibernate.ContextHolder;

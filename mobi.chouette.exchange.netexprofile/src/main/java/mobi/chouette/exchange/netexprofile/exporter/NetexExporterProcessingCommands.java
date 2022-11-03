@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;

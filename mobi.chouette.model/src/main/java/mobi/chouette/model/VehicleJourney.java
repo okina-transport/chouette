@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.PublicationEnum;
 import mobi.chouette.model.type.ServiceAlterationEnum;

@@ -3,7 +3,7 @@ package mobi.chouette.exchange.neptune.parser;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.Singleton;
 import javax.inject.Named;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 
 import static mobi.chouette.scheduler.LocalReferentialLockManager.BEAN_NAME;
 

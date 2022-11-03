@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.neptune.JsonExtension;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;

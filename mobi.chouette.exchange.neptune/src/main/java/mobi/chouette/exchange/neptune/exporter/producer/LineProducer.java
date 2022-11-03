@@ -18,7 +18,7 @@ import org.trident.schema.trident.LineExtensionType;
 import org.trident.schema.trident.LineExtensionType.AccessibilitySuitabilityDetails;
 import org.trident.schema.trident.TransportModeNameType;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import uk.org.ifopt.acsb.EncumbranceEnumeration;
 import uk.org.ifopt.acsb.MedicalNeedEnumeration;
 import uk.org.ifopt.acsb.MobilityEnumeration;

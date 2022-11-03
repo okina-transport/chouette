@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.ejb.Singleton;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 @Singleton(name = StopPlaceRegistryIdFetcher.BEAN_NAME)
 @Slf4j
 public class StopPlaceRegistryIdFetcher {

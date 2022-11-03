@@ -2,7 +2,7 @@ package mobi.chouette.exchange.importer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.GeometryUtil;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
 import mobi.chouette.exchange.importer.geometry.osrm.OsrmRouteSectionId;

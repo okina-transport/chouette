@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.enterprise.inject.spi.CDI;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopPointDAO;
 import mobi.chouette.model.ScheduledStopPoint;

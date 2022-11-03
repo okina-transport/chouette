@@ -9,7 +9,7 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.gtfs.model.GtfsShape;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.JourneyPattern;

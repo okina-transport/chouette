@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import java.math.BigInteger;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;

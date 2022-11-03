@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.exporter.producer;
 
 import java.math.BigDecimal;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.type.AccessPointTypeEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;

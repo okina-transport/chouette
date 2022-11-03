@@ -2,7 +2,7 @@ package mobi.chouette.exchange.neptune.parser;
 
 import java.time.LocalDateTime;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;

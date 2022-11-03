@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.model.NetexProfileVersion;
 import mobi.chouette.exchange.netexprofile.parser.xml.PublicactionDeliveryVersionAttributeReader;

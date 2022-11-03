@@ -3,7 +3,7 @@ package mobi.chouette.service;
 import java.util.Iterator;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.InputValidator;
 import mobi.chouette.exchange.parameters.AbstractParameter;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;

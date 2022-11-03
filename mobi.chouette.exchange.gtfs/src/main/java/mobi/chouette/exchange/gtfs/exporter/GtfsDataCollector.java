@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Line;

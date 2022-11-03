@@ -7,7 +7,7 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;

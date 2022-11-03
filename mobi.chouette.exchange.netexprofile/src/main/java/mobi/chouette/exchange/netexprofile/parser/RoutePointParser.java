@@ -2,7 +2,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 
 import javax.xml.bind.JAXBElement;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;

@@ -20,7 +20,7 @@ import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.TimetableDAO;

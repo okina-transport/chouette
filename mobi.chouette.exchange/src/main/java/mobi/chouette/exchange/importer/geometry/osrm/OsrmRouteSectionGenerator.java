@@ -13,7 +13,7 @@ import java.util.Objects;
 import javax.ejb.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectReader;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.importer.geometry.PolylineDecoder;
 import mobi.chouette.exchange.importer.geometry.RouteSectionGenerator;
 import mobi.chouette.exchange.importer.geometry.osrm.model.OsrmLeg;

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import javax.ejb.EJB;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 

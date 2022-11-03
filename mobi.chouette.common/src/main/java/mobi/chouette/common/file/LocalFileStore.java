@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import javax.ejb.Stateless;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.FileUtils;
 

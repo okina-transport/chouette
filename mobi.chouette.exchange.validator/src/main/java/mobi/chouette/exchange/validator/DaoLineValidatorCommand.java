@@ -23,7 +23,7 @@ import javax.naming.NamingException;
 import mobi.chouette.common.monitor.JamonUtils;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;

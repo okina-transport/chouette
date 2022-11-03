@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.map.IMap;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 
 import com.hazelcast.config.MapConfig;
 import org.rutebanken.hazelcasthelper.service.HazelCastService;

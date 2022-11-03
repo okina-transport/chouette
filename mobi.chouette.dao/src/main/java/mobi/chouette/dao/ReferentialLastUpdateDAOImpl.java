@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

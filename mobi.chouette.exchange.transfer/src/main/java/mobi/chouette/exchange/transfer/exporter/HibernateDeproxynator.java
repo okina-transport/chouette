@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Embeddable;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.ConnectionLink;

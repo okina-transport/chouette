@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.enterprise.inject.spi.CDI;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.model.ObjectReference;
 import mobi.chouette.model.ScheduledStopPoint;

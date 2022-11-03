@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.dto.ReferentialInfo;
 
 import javax.ejb.Stateless;

@@ -1,6 +1,6 @@
 package mobi.chouette.ws;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.service.StopAreaService;
 import mobi.chouette.common.Color;
 import mobi.chouette.service.JobServiceManager;

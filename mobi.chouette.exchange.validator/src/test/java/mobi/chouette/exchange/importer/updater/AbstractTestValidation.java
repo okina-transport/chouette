@@ -9,7 +9,7 @@ import java.util.Locale;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.CommandFactory;

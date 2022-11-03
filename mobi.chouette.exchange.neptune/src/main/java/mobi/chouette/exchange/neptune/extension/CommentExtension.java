@@ -3,7 +3,7 @@ package mobi.chouette.exchange.neptune.extension;
 import java.net.URL;
 import java.util.TimeZone;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.neptune.JsonExtension;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.GroupOfLine;

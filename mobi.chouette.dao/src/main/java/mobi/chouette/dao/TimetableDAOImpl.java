@@ -1,6 +1,6 @@
 package mobi.chouette.dao;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.dao.exception.ChouetteStatisticsTimeoutException;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Timetable;

@@ -21,7 +21,7 @@ import mobi.chouette.dao.ReferentialLastUpdateDAO;
 import mobi.chouette.model.Block;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;

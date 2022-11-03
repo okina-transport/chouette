@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.file.FileStore;

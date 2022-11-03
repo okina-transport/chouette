@@ -4,7 +4,7 @@ package mobi.chouette.exchange.gtfs.validation;
 import java.util.Set;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.importer.AgencyById;

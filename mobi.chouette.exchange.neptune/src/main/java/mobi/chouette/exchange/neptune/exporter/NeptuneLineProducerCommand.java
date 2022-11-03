@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.naming.InitialContext;
 import javax.xml.bind.MarshalException;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;

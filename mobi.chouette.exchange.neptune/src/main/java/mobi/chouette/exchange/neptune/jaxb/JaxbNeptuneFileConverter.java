@@ -23,7 +23,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 
 import org.trident.schema.trident.ChouettePTNetworkType;
 import org.xml.sax.SAXException;

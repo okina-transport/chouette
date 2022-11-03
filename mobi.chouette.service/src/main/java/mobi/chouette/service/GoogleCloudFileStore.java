@@ -12,7 +12,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Named;
 
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.file.FileStore;
 
