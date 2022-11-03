@@ -26,7 +26,7 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 
 	protected EntityManager em;
 
-	protected Class<T> type;
+	protected final Class<T> type;
 
 	public GenericDAOImpl(Class<T> type) {
 		this.type = type;
@@ -54,20 +54,15 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 		return result;
 	}
 
-	
+
+	@Override
 	public List<T> findAll(final Collection<Long> ids) {
-		if (ids == null || ids.size() == 0){
+		if (ids == null || ids.isEmpty()){
 			return Collections.emptyList();
 		}
-		List<T> result = null;
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<T> criteria = builder.createQuery(type);
-		Root<T> root = criteria.from(type);
-		Predicate predicate = builder.in(root.get("id")).value(ids);
-		criteria.where(predicate);
-		TypedQuery<T> query = em.createQuery(criteria);
-		result = query.getResultList();
-		return result;
+		return em.unwrap(Session.class)
+				.byMultipleIds(type).enableOrderedReturn(false)
+				.multiLoad(ids.stream().toList());
 	}
 
 	
@@ -85,9 +80,8 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 	
 	public T findByObjectId(final String objectId) {
 		Session session = em.unwrap(Session.class);
-		T result = (T) session.bySimpleNaturalId(type).load(objectId);
 
-		return result;
+		return session.bySimpleNaturalId(type).load(objectId);
 	}
 
 
@@ -178,8 +172,7 @@ public abstract class 	GenericDAOImpl<T> implements GenericDAO<T> {
 
 	
 	public int truncate() {
-		String query = new StringBuilder("TRUNCATE TABLE ").append(getTableName())
-				.append(" CASCADE").toString();
+		String query = "TRUNCATE TABLE " + getTableName() + " CASCADE";
 		return em.createNativeQuery(query).executeUpdate();
 	}
 

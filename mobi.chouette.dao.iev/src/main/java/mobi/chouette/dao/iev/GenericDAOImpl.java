@@ -1,6 +1,7 @@
 package mobi.chouette.dao.iev;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Cache;
@@ -26,7 +27,7 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 
 	protected EntityManager em;
 
-	protected Class<T> type;
+	protected final Class<T> type;
 
 	public GenericDAOImpl(Class<T> type) {
 		this.type = type;
@@ -56,15 +57,12 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 
 	@Override
 	public List<T> findAll(final Collection<Long> ids) {
-		List<T> result = null;
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<T> criteria = builder.createQuery(type);
-		Root<T> root = criteria.from(type);
-		Predicate predicate = builder.in(root.get("id")).value(ids);
-		criteria.where(predicate);
-		TypedQuery<T> query = em.createQuery(criteria);
-		result = query.getResultList();
-		return result;
+		if (ids == null || ids.isEmpty()){
+			return Collections.emptyList();
+		}
+		return em.unwrap(Session.class)
+				.byMultipleIds(type).enableOrderedReturn(false)
+				.multiLoad(ids.stream().toList());
 	}
 	
 	@Override
@@ -82,9 +80,8 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T> {
 	@Override
 	public T findByObjectId(final String objectId) {
 		Session session = em.unwrap(Session.class);
-		T result = (T) session.bySimpleNaturalId(type).load(objectId);
 
-		return result;
+		return session.bySimpleNaturalId(type).load(objectId);
 	}
 
 
