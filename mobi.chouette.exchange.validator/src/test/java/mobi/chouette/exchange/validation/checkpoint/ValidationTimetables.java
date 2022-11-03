@@ -21,7 +21,6 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeGroups;
@@ -45,7 +44,6 @@ public class ValidationTimetables extends AbstractTestValidation {
 
 	@BeforeGroups(groups = { "timetable" })
 	public void init() {
-		BasicConfigurator.configure();
 		super.init();
 		long id = 1;
 

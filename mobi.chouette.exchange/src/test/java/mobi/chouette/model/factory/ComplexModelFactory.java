@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +34,7 @@ import mobi.chouette.model.type.DayTypeEnum;
 import com.tobedevoured.modelcitizen.CreateModelException;
 import com.tobedevoured.modelcitizen.ModelFactory;
 import com.tobedevoured.modelcitizen.RegisterBlueprintException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
@@ -47,8 +46,7 @@ import java.time.LocalTime;
  */
 public class ComplexModelFactory
 {
-   private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger
-         .getLogger(ComplexModelFactory.class);
+   private static final Logger logger = LoggerFactory.getLogger(ComplexModelFactory.class);
    @Getter
    @Setter
    private ModelFactory modelFactory;

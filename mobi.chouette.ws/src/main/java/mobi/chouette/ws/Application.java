@@ -10,9 +10,6 @@ import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Application extends javax.ws.rs.core.Application implements
 		ServletContextListener {

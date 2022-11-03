@@ -7,16 +7,13 @@ import mobi.chouette.common.JSONUtil;
 import mobi.chouette.exchange.InputValidator;
 import mobi.chouette.exchange.dummy.importer.DummyImporterInputValidator;
 
-import org.apache.log4j.BasicConfigurator;
 import org.testng.annotations.Test;
 
 public class ParametersTest {
 
 	@Test
 	public void test() throws Exception {
-		
-		BasicConfigurator.configure();
-		
+
 		String filename = "src/test/resources/parameters.json";
 		File f = new File(filename);
 		byte[] bytes = Files.readAllBytes(f.toPath());

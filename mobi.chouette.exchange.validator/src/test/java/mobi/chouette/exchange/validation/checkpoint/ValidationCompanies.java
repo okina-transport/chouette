@@ -20,7 +20,6 @@ import mobi.chouette.model.Company;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -43,7 +42,6 @@ public class ValidationCompanies extends AbstractTestValidation {
 
 	@BeforeGroups(groups = { "company" })
 	public void init() {
-		BasicConfigurator.configure();
 		super.init();
 		long id = 1;
 

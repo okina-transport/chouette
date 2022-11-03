@@ -27,7 +27,6 @@ import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -55,7 +54,6 @@ public abstract class AbstractTests implements Constant, ReportConstant {
 			} catch (NamingException e) {
 				e.printStackTrace();
 			}
-			BasicConfigurator.configure();
 		}
 	}
 

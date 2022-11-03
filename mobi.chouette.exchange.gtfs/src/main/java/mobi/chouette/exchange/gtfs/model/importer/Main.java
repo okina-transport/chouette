@@ -13,13 +13,8 @@ import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.slf4j.Logger;
-
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class Main {
@@ -28,7 +23,6 @@ public class Main {
 	private static final String PATH = "/opt/tmp/RENNES/";
 
 	public static void main(String[] args) {
-		BasicConfigurator.configure();
 		Main main = new Main();
 
 		Monitor monitor = MonitorFactory.start();
