@@ -6,7 +6,6 @@ public interface Constant {
 	public static final boolean SUCCESS = true;
 
 	public static final String INITIAL_CONTEXT = "initial_context";
-	public static final String BASE_URI = "base_uri";
 	public static final String JOB_ID = "job_id";
 	public static final String JOB_DATA = "job_data";
 	public static final String ROOT_PATH = "referentials";
@@ -64,13 +63,10 @@ public interface Constant {
 	public static final String METADATA = "metadata";
 	public static final String LINE = "line";
 	public static final String LINE_ID = "line_id";
-	public static final String EXPORTABLE_OPERATORS = "exportable_operators";
 	public static final String FEED_INFO = "feed_info";
 	public static final String KEEP_STOP_GEOLOCALISATION = "KeepStopGeolocalisation";
 	public static final String KEEP_STOP_NAMES = "KeepStopNames";
 	public static final String CLOSE_OLD_CALENDARS = "CloseOldCalendars";
-	public static final String REMOVE_PARENT_STATIONS = "removeParentStations";
-	public static final String IMPORT_SHAPES_FILE = "importShapesFile";
 
 	public static final char SEP = '|';
 	public static final String NULL = "\\N";
@@ -89,20 +85,19 @@ public interface Constant {
 
 	public static final String MOBIITI_PREFIX = "MOBIITI";
 	public static final String COLON_REPLACEMENT_CODE="##3A##";
-	public static final String SANITIZED_REPLACEMENT_CODE="__3A__";
 
-	public static final String INCOMING_LINE_LIST="incomingLineList";
+	public static final String INCOMING_LINE_LIST = "incomingLineList";
 
-	public static final String TOTAL_NB_OF_LINES="totalNbOfLines";
-	public static final String CURRENT_LINE_NB="currentLineNb";
+	public static final String TOTAL_NB_OF_LINES = "totalNbOfLines";
+	public static final String CURRENT_LINE_NB = "currentLineNb";
 
 	public static final String TIAMAT_ERROR_CODE_CONVERTER = "TiamatErrorCodeConverter";
 
 	public static final String SUPERSPACE_PREFIX = System.getProperty("iev.superspace.prefix");
 
-	public static final String CURRENT_LINE_ID="currentLineId";
-	public static final String CURRENT_SCHEDULED_STOP_POINT="currentScheduledStopPoint";
+	public static final String CURRENT_LINE_ID = "currentLineId";
+	public static final String CURRENT_SCHEDULED_STOP_POINT = "currentScheduledStopPoint";
 
-	public static final String WRONG_ROUTE_SECTIONS="wrongRouteSections";
+	public static final String WRONG_ROUTE_SECTIONS = "wrongRouteSections";
 
 }

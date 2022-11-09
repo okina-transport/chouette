@@ -7,8 +7,6 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.model.Line;
 import org.apache.commons.lang3.StringUtils;
 
-import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
-import static mobi.chouette.common.Constant.SANITIZED_REPLACEMENT_CODE;
 
 public class ExportedFilenamer {
 	private static final String SPACE = " ";
@@ -55,7 +53,7 @@ public class ExportedFilenamer {
 
 		String lineObjectId = line.getObjectId();
 		if (StringUtils.isNotEmpty(lineObjectId) && lineObjectId.split(":").length == 3){
-			String lineId = lineObjectId.split(":")[2].replace(SANITIZED_REPLACEMENT_CODE,"-");
+			String lineId = lineObjectId.split(":")[2];
 			b.append(lineId);
 			b.append(UNDERSCORE);
 		}

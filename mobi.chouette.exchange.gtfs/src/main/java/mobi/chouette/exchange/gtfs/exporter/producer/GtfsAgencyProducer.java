@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
 import static mobi.chouette.common.PropertyNames.GTFS_AGENCY_PHONE_DEFAULTS;
 import static mobi.chouette.common.PropertyNames.GTFS_AGENCY_URL_DEFAULTS;
 
@@ -43,7 +44,9 @@ public class GtfsAgencyProducer extends AbstractProducer
 
    public boolean save(Company neptuneObject, String prefix, TimeZone timeZone, boolean keepOriginalId)
    {
-      agency.setAgencyId(toGtfsId(neptuneObject.getObjectId(),prefix,keepOriginalId));
+      String companyObjectId = toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);
+      companyObjectId = companyObjectId.replaceAll(COLON_REPLACEMENT_CODE, ":");
+      agency.setAgencyId(companyObjectId);
 
       if(OrganisationTypeEnum.Operator.equals(neptuneObject.getOrganisationType()) && agency.getAgencyId().endsWith("o")){
           agency.setAgencyId(StringUtils.chop(agency.getAgencyId()));
@@ -52,11 +55,7 @@ public class GtfsAgencyProducer extends AbstractProducer
       String name = neptuneObject.getName();
       if (name.trim().isEmpty())
       {
-         log.error("no name for " + neptuneObject.getObjectId());
-//         GtfsReportItem item = new GtfsReportItem(
-//               GtfsReportItem.KEY.MISSING_DATA, STATE.ERROR, "Company",
-//               neptuneObject.getObjectId(), "Name");
-//         report.addItem(item);
+         log.error("no name for " + companyObjectId);
          return false;
       }
 
@@ -94,11 +93,6 @@ public class GtfsAgencyProducer extends AbstractProducer
             log.error("malformed replacementUrl " + replacementUrl + " ignoring agency");
             return false;
          }
-
-//         GtfsReportItem item = new GtfsReportItem(
-//               GtfsReportItem.KEY.INVALID_DATA, STATE.ERROR, "Company",
-//               neptuneObject.getName(), urlData, url);
-//         report.addItem(item);
       }
 
       if (neptuneObject.getPhone() != null) {
@@ -169,7 +163,6 @@ public class GtfsAgencyProducer extends AbstractProducer
       if (neptuneObject.getOrganisationalUnit() != null
 			&& neptuneObject.getOrganisationalUnit().startsWith("http"))
 	  {
-		 // urlData = "OrganisationalUnit";
          url = neptuneObject.getOrganisationalUnit();
       } else {
          String hostName = "unknown";

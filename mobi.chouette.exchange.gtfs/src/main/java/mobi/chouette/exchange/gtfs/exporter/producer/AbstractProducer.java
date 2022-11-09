@@ -30,7 +30,7 @@ public abstract class AbstractProducer
          String[] tokens = neptuneId.split(":");
          if (tokens.length == 1)
             return tokens[0];
-         else if (tokens[0].equalsIgnoreCase(prefix) || tokens[0].equalsIgnoreCase("MOSAIC"))
+         else if (tokens[0].equalsIgnoreCase(prefix))
             return tokens[2];
          else
             return tokens[2];

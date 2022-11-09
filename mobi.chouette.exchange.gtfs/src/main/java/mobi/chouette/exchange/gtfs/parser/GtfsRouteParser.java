@@ -209,15 +209,15 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         line.setCompany(operator);
 
         // PTNetwork
-        String ptNetworkId = configuration.getObjectIdPrefix() + ":" + Network.PTNETWORK_KEY + ":"
-                + agencyId;
+        String ptNetworkId = AbstractConverter.composeObjectId(configuration,
+                Network.PTNETWORK_KEY, agencyId);
         Network ptNetwork = ObjectFactory.getPTNetwork(referential, ptNetworkId);
         if (ptNetwork.getCompany() == null) {
             String authorityId = AbstractConverter.composeObjectId(configuration,
                     Company.AUTHORITY_KEY, agencyId);
             Company authority = ObjectFactory.getCompany(referential, authorityId);
             ptNetwork.setCompany(authority);
-            ptNetwork.setName(authority.getName()); // Set
+            ptNetwork.setName(authority.getName());
         }
 
         line.setNetwork(ptNetwork);
