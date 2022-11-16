@@ -78,35 +78,26 @@ public class RestService implements Constant {
 	@Path("/{ref}/{action}{type:(/[^/]+?)?}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response upload(@PathParam("ref") String referential, @PathParam("action") String action,
-						   @PathParam("type") String type, MultipartFormDataInput input) {
+	public Response upload(@PathParam("ref") String referential, @PathParam("action") String action, @PathParam("type") String type, MultipartFormDataInput input) {
 		Map<String, InputStream> inputStreamByName = null;
 		try {
-			log.info(Color.CYAN + "Call upload referential = " + referential + ", action = " + action
-					+ (type == null ? "" : ", type = " + type) + Color.NORMAL);
-
-
+			log.info(Color.CYAN + "Call upload referential = " + referential + ", action = " + action + (type == null ? "" : ", type = " + type) + Color.NORMAL);
 
 			// Convertir les parametres fournis
 			type = parseType(type);
 			inputStreamByName = readParts(input);
 
-
-
-
 			// Relayer le service au JobServiceManager
 			ResponseBuilder builder = Response.accepted();
 			{
-
 				JobService jobService = jobServiceManager.create(referential, action, type, inputStreamByName);
 
 				// Produire la vue
-				builder.location(URI.create(MessageFormat.format("{0}/{1}/scheduled_jobs/{2,number,#}", ROOT_PATH,
-						jobService.getReferential(), jobService.getId())));
+				builder.location(URI.create(MessageFormat.format("{0}/{1}/scheduled_jobs/{2,number,#}", ROOT_PATH, jobService.getReferential(), jobService.getId())));
 			}
 			return builder.build();
 		} catch (RequestServiceException e) {
-			log.info("RequestCode = " + e.getRequestCode() + ", Message = " + e.getMessage());
+			log.info("RequestCode = " + e.getRequestCode() +  ", Message = " + e.getMessage());
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
 			log.error("Code = " + e.getCode() + ", Message = " + e.getMessage());
@@ -295,23 +286,6 @@ public class RestService implements Constant {
 			// @todo OKINA enlever les accents du nom des fichiers
 			filename = removeSpecialChars(filename);
 			result.put(filename, part.getBody(InputStream.class, null));
-		}
-		return result;
-	}
-
-	private Map<String, Long> readLongVarParts(MultipartFormDataInput input) throws Exception {
-
-		Map<String, Long> result = new HashMap<String, Long>();
-		for (InputPart part : input.getParts()) {
-			MultivaluedMap<String, String> headers = part.getHeaders();
-			String header = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
-			String varName = getVarName(header);
-
-			if (varName == null) {
-				throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "missing varName in part");
-			}
-			// protect filename from invalid url chars
-			result.put(varName, part.getBody(Long.class, null));
 		}
 		return result;
 	}
@@ -716,10 +690,6 @@ public class RestService implements Constant {
 
 	private String getFilename(String header) {
 		return getName(header, "filename");
-	}
-
-	private String getVarName(String header){
-		return getName(header, "name");
 	}
 
 	private String getName(String header, String name) {

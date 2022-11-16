@@ -16,6 +16,7 @@
         <version.compiler.plugin>3.2</version.compiler.plugin>
         <version.jaxb2.plugin>1.5</version.jaxb2.plugin>
         <version.jar.plugin>2.5</version.jar.plugin>
+        <version.jts2geojson>0.11.0</version.jts2geojson>
         <version.war.plugin>2.5</version.war.plugin>
         <version.ejb.plugin>2.4</version.ejb.plugin>
         <version.ear.plugin>2.9.1</version.ear.plugin>
@@ -33,7 +34,7 @@
         <!-- NB: Concious choice of using snapshot version. This is to keep in
             sync, and fail fast if incompatibilities -->
         <netex-java-model.version>2.0.4-NETEX-FR</netex-java-model.version>
-        <okina-helpers.version>1.0.24</okina-helpers.version>
+        <okina-helpers.version>1.0.25</okina-helpers.version>
 
         <sonar.projectKey>mobi-iti:chouette</sonar.projectKey>
     </properties>
@@ -571,6 +572,12 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>mobi.chouette.exchange.mapmatching</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Default Dependencies -->
             <dependency>
                 <groupId>org.wildfly</groupId>
@@ -838,6 +845,12 @@
                 <version>9.8.0-3</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.wololo</groupId>
+                <artifactId>jts2geojson</artifactId>
+                <version>${version.jts2geojson}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>
@@ -986,6 +999,7 @@
         <module>mobi.chouette.exchange.validator</module>
         <module>mobi.chouette.exchange.converter</module>
         <module>mobi.chouette.exchange.transfer</module>
+        <module>mobi.chouette.exchange.mapmatching</module>
         <module>mobi.chouette.service</module>
         <module>mobi.chouette.schema.checker</module>
         <module>mobi.chouette.ws</module>

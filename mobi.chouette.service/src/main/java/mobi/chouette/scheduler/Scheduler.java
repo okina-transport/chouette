@@ -60,7 +60,6 @@ public class Scheduler {
 	ManagedExecutorService executor;
 
 	Map<Long, Future<STATUS>> startedFutures = new ConcurrentHashMap<>();
-	// Map<Long,Task> startedTasks = new ConcurrentHashMap<>();
 
 	private Integer maxJobs;
 
@@ -141,7 +140,6 @@ public class Scheduler {
 
 		Map<String, String> properties = new HashMap<String, String>();
 		Task task = new Task(jobService, properties, new TaskListener());
-		// startedTasks.put(jobService.getId(),  task);
 		Future<STATUS> future = executor.submit(task);
 		startedFutures.put(jobService.getId(), future);
 
@@ -243,7 +241,7 @@ public class Scheduler {
 	/**
 	 * cancel task
 	 *
-	 * @param job
+	 * @param jobService
 	 * @return
 	 */
 	public boolean cancel(JobService jobService) {
@@ -311,20 +309,16 @@ public class Scheduler {
 			lockManager.releaseLocks(task.getJob().getRequiredReferentialsLocks());
 			lockManager.releaseJobLock(task.getJob().getId());
 			// launch next task
-			executor.execute(new Runnable() {
+			executor.execute(() -> {
+				ContextHolder.setContext(null);
+				try {
+					InitialContext initialContext = new InitialContext();
+					Scheduler scheduler = (Scheduler) initialContext.lookup("java:app/mobi.chouette.service/"
+							+ BEAN_NAME);
 
-				@Override
-				public void run() {
-					ContextHolder.setContext(null);
-					try {
-						InitialContext initialContext = new InitialContext();
-						Scheduler scheduler = (Scheduler) initialContext.lookup("java:app/mobi.chouette.service/"
-								+ BEAN_NAME);
-
-						scheduler.schedule();
-					} catch (Exception e) {
-						log.error(e.getMessage(), e);
-					}
+					scheduler.schedule();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
 				}
 			});
 		}

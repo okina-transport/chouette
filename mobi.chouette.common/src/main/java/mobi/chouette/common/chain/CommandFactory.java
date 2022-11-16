@@ -8,21 +8,16 @@ import javax.naming.InitialContext;
 
 public abstract class CommandFactory {
 
-	   public static Map<String, CommandFactory> factories = new HashMap<String, CommandFactory>();
+    public static Map<String, CommandFactory> factories = new HashMap<>();
 
-	   protected abstract Command create(InitialContext context) throws IOException;
+    protected abstract Command create(InitialContext context) throws IOException;
 
-	   public static final Command create(InitialContext context, String name)
-	         throws ClassNotFoundException, IOException
-
-	   {
-	      if (!factories.containsKey(name))
-	      {
-	         Class.forName(name);
-			 // log.info("[DSU] create : " + name);
-	         if (!factories.containsKey(name))
-	            throw new ClassNotFoundException(name);
-	      }
-	      return ((CommandFactory) factories.get(name)).create(context);
-	   }
+    public static final Command create(InitialContext context, String name) throws ClassNotFoundException, IOException {
+        if (!factories.containsKey(name)) {
+            Class.forName(name);
+            if (!factories.containsKey(name))
+                throw new ClassNotFoundException(name);
+        }
+        return factories.get(name).create(context);
+    }
 }

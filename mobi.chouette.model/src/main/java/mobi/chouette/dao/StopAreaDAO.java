@@ -3,6 +3,7 @@ package mobi.chouette.dao;
 import java.util.List;
 
 import mobi.chouette.core.CoreException;
+import mobi.chouette.model.SearchAddressFeatures;
 import mobi.chouette.model.StopArea;
 
 public interface StopAreaDAO extends GenericDAO<StopArea> {
@@ -13,4 +14,5 @@ public interface StopAreaDAO extends GenericDAO<StopArea> {
     List<StopArea> findByOriginalIds(List<String> ids);
     boolean isStopAreaUsed(String stopAreaNetexId);
     int deleteEmptyStopPlaces();
+    List<SearchAddressFeatures> findByNamePatternSearchAddressFeatures(String namePattern);
 }

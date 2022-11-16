@@ -58,5 +58,8 @@
   <module>
     <ejb>mobi.chouette.exchange.netexprofile.jar</ejb>
   </module>
+  <module>
+    <ejb>mobi.chouette.exchange.mapmatching.jar</ejb>
+  </module>
   <library-directory>lib</library-directory>
 </application>

@@ -108,4 +108,16 @@ public class RouteSection extends NeptuneIdentifiedObject {
 	@JoinColumn(name = "to_scheduled_stop_point_id")
 	private ScheduledStopPoint toScheduledStopPoint;
 
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "departure_id")
+	private StopArea departure;
+
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "arrival_id")
+	private StopArea arrival;
+
 }

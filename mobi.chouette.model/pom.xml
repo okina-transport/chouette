@@ -144,7 +144,11 @@
          <artifactId>log4j-jboss-logmanager</artifactId>
          <scope>test</scope>
       </dependency>
+        <dependency>
+            <groupId>org.wololo</groupId>
+            <artifactId>jts2geojson</artifactId>
+        </dependency>
 
 
-	</dependencies>
+    </dependencies>
 </project>

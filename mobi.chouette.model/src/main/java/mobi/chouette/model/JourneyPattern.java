@@ -3,6 +3,7 @@ package mobi.chouette.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +23,9 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.ws.rs.DefaultValue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiLineString;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +35,8 @@ import mobi.chouette.model.type.SectionStatusEnum;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.wololo.geojson.GeoJSON;
+import org.wololo.jts2geojson.GeoJSONWriter;
 
 /**
  * Chouette Journey Pattern : pattern for vehicle journeys in a route
@@ -300,5 +306,54 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 		}
 		return false;
 	}
+
+	/**
+	 * GeoJSON attached to the path.
+	 */
+	@Getter
+	private String geojson;
+
+	public void setGeojson(GeoJSON json) {
+		if (json != null) {
+			geojson = json.toString();
+		}
+	}
+
+	@JsonIgnore
+	public GeoJSON getGeoJSONFromRouteSections() {
+		List<com.vividsolutions.jts.geom.LineString> listSections = this.getRouteSections().stream()
+				.map(RouteSection::getProcessedGeometry)
+				.collect(Collectors.toList());
+
+		GeometryFactory geometryFactory = new GeometryFactory();
+		MultiLineString mls = new MultiLineString(GeometryFactory.toLineStringArray(listSections), geometryFactory);
+
+		GeoJSONWriter writer = new GeoJSONWriter();
+		return writer.write(mls);
+	}
+
+	/**
+	 * Positions to generate map-matching with OSRM
+	 */
+	@Getter
+	@Setter
+	@OneToMany(cascade = {CascadeType.ALL})
+	@OrderBy("position ASC")
+	@JoinColumn(name = "journey_pattern_id", referencedColumnName = "id")
+	private List<LatLngMapMatching> latLngMapMatching = new ArrayList<>(0);
+
+
+	/**
+	 * List of trip-related profiles
+	 *
+	 * @param ProfileOSRMJourneyPattern
+	 * New value
+	 * @return list of profiles
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "journeyPattern")
+	@JsonIgnore
+	private List<ProfileOSRMJourneyPattern> profileOSRMJourneyPatterns = new ArrayList<>(0);
 
 }

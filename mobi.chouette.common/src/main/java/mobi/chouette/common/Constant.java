@@ -35,6 +35,7 @@ public interface Constant {
 	public static final String VALIDATION_REPORT = "validation_report";
 	public static final String REPORT_FILE = "action_report.json";
 	public static final String ANALYSIS_REPORT_FILE = "analysis_report.json";
+	public static final String MAP_MATCHING_REPORT_FILE = "map_matching_report.json";
 	public static final String VALIDATION_FILE = "validation_report.json";
 	public static final String CANCEL_ASKED = "cancel_asked";
 	public static final String COMMAND_CANCELLED = "command_cancelled";

@@ -156,11 +156,10 @@ public class JobServiceManager {
 		}
 	}
 
-	private JobService createJob(String referential, String action, String type,
-			Map<String, InputStream> inputStreamsByName) throws ServiceException {
+	private JobService createJob(String referential, String action, String type, Map<String, InputStream> inputStreamsByName) throws ServiceException {
 		JobService jobService = null;
 		try {
-			log.info("Creating job referential="+referential+" ...");
+			log.info("Creating job referential=" + referential + " ...");
 			// Instancier le modèle du service 'upload'
 			jobService = new JobService(rootDirectory, referential, action, type);
 
@@ -179,9 +178,8 @@ public class JobServiceManager {
 			jobService.addLink(MediaType.APPLICATION_JSON, Link.CANCEL_REL);
 
 			jobDAO.update(jobService.getJob());
-			// jobDAO.detach(jobService.getJob());
 
-			log.info("Job id=" + jobService.getJob().getId() + " referential="+referential+" created");
+			log.info("Job id=" + jobService.getJob().getId() + " referential=" + referential + " created");
 			return jobService;
 
 		} catch (RequestServiceException ex) {

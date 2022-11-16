@@ -44,9 +44,6 @@ public abstract class AbstractReport {
 		}
 		
 		return ret.append('"');
-//		return ret
-//				.append(value.replaceAll("[\\\\]", "\\\\\\\\").replaceAll("[\\/]", "\\\\/")
-//						.replaceAll("[\"]", "\\\\\"")).append('"');
 	}
 	
 

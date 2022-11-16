@@ -3,12 +3,17 @@ package mobi.chouette.dao;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.core.CoreExceptionCode;
+import mobi.chouette.model.SearchAddressFeatures;
+import mobi.chouette.model.SearchAddressGeometry;
+import mobi.chouette.model.SearchAddressProperties;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+import org.hibernate.Hibernate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -151,6 +156,60 @@ public class StopAreaDAOImpl extends GenericDAOImpl<StopArea> implements StopAre
         return em.createNativeQuery("DELETE FROM stop_areas s WHERE s.area_type = 'CommercialStopPoint' AND NOT EXISTS " +
                 "           (SELECT 1 FROM stop_areas s2 WHERE s2.parent_id = s.id)").executeUpdate();
 
+    }
+
+    @Override
+    public List<SearchAddressFeatures> findByNamePatternSearchAddressFeatures(String namePattern) {
+        List<SearchAddressFeatures> searchAddressFeatures = new ArrayList<>(0);
+        findByNamePatternWithLazyDepsAllAreaType(namePattern).forEach(stopArea -> {
+            SearchAddressProperties searchAddressProperties = new SearchAddressProperties();
+            searchAddressProperties.setId(String.valueOf(stopArea.getId()));
+            searchAddressProperties.setCity(stopArea.getCityName());
+            searchAddressProperties.setCitycode(stopArea.getCityCode());
+            searchAddressProperties.setX(String.valueOf(stopArea.getLatitude()));
+            searchAddressProperties.setY(String.valueOf(stopArea.getLongitude()));
+            searchAddressProperties.setImportance("1");
+            searchAddressProperties.setLabel(stopArea.getParent() != null ? String.format("[POINT D'ARRÊT] - %s", stopArea.getParent().getName()) : String.format("[POINT D'ARRÊT] - %s", stopArea.getName()));
+            searchAddressProperties.setName(searchAddressProperties.getLabel());
+            SearchAddressFeatures searchAddressFeaturesElement = new SearchAddressFeatures();
+            SearchAddressGeometry searchAddressGeometry = new SearchAddressGeometry();
+            searchAddressGeometry.setCoordinates(new String[]{String.valueOf(stopArea.getLongitude()), String.valueOf(stopArea.getLatitude())});
+            searchAddressFeaturesElement.setGeometry(searchAddressGeometry);
+            searchAddressFeaturesElement.setProperties(searchAddressProperties);
+
+            boolean shouldAdd = searchAddressFeatures.stream().noneMatch(searchAddressFeature -> {
+                SearchAddressProperties currentAdressProperties = searchAddressFeature.getProperties();
+                // Check if any of the used properties are set
+                return (currentAdressProperties.getX() != null
+                        && currentAdressProperties.getY() != null
+                        && currentAdressProperties.getCity() != null
+                        && currentAdressProperties.getLabel() != null)
+                        // Check the equality
+                        && (currentAdressProperties.getX().equals(searchAddressProperties.getX())
+                        && currentAdressProperties.getY().equals(searchAddressProperties.getY())
+                        && currentAdressProperties.getCity().equals(searchAddressProperties.getCity())
+                        && currentAdressProperties.getLabel().equals(searchAddressProperties.getLabel()));
+            });
+
+            if (shouldAdd) {
+                searchAddressFeatures.add(searchAddressFeaturesElement);
+            }
+        });
+        return searchAddressFeatures;
+    }
+
+    public List<StopArea> findByNamePatternWithLazyDepsAllAreaType(String namePattern) {
+        List<StopArea> stopAreasList = em.createQuery("SELECT s FROM StopArea s"
+                + " WHERE upper(s.name) LIKE upper(:namePattern)"
+                + " ORDER BY s.name", StopArea.class)
+                .setParameter("namePattern", "%" + namePattern + "%")
+                .getResultList();
+
+        for (StopArea stopArea : stopAreasList) {
+            Hibernate.initialize(stopArea.getParent());
+        }
+
+        return stopAreasList;
     }
 
 }

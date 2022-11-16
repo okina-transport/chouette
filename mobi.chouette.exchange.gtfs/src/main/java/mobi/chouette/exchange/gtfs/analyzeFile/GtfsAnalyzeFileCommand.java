@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.gtfs.analyzeFile;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
@@ -66,8 +64,7 @@ public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements C
 
         @Override
         protected Command create(InitialContext context) throws IOException {
-            Command result = new GtfsAnalyzeFileCommand();
-            return result;
+            return new GtfsAnalyzeFileCommand();
         }
     }
 

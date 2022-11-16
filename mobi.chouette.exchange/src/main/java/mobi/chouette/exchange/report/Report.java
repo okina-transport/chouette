@@ -10,6 +10,7 @@ public interface Report {
 	void print(PrintStream stream);
 	
 	void setDate(Date date);
+
 	Date getDate();
 	
 }

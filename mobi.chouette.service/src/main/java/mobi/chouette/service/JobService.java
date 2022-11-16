@@ -157,21 +157,16 @@ public class JobService implements JobData, ServiceConstants {
         return Paths.get(getPathName(), fileName);
     }
 
-    private Parameters getParameters() throws ServiceException {
+    private Parameters getParameters() {
         if (jobPersisted()) {
             try {
                 return new Parameters(getParametersAsString(), getCommandInputValidator(getAction(), getType()));
-                // return JSONUtil.fromJSON( getParametersAsString(),
-                // Parameters.class);
             } catch (Exception ex) {
                 try {
                     return new Parameters(getParametersAsString(), inputValidator);
                 } catch (Exception e) {
                     return null;
                 }
-                // throw new
-                // RequestServiceException(RequestExceptionCode.INVALID_PARAMETERS,
-                // ex);
             }
         }
         return null;
@@ -184,7 +179,7 @@ public class JobService implements JobData, ServiceConstants {
         return null;
     }
 
-    public ValidationParameters getValidationParameter() throws ServiceException {
+    public ValidationParameters getValidationParameter() {
         if (jobPersisted()) {
             return getParameters().getValidation();
         }
@@ -292,17 +287,6 @@ public class JobService implements JobData, ServiceConstants {
         return "mobi.chouette.exchange." + (type.isEmpty() ? "" : type + ".") + getAction() + "."
                 + StringUtils.capitalize(type) + StringUtils.capitalize(getAction()) + "Command";
     }
-
-//	private InputValidator getCommandInputValidator() throws Exception {
-//		if (inputValidator == null) {
-//			String type = getType() == null ? "" : getType();
-//			inputValidator = InputValidatorFactory.create("mobi.chouette.exchange."
-//					+ (type.isEmpty() ? "" : type + ".") + getAction() + "." + StringUtils.capitalize(type)
-//					+ StringUtils.capitalize(getAction()) + "InputValidator");
-//		}
-//		return inputValidator;
-//	}
-
 
     public static InputValidator getCommandInputValidator(String actionParam, String typeParam) throws ClassNotFoundException, IOException {
         String type = typeParam == null ? "" : typeParam;

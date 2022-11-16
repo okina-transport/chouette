@@ -123,6 +123,32 @@ public class ProgressionCommand implements Command, Constant, ReportConstant {
 
 	}
 
+	public void saveMapMatchingReport(Context context, boolean force) {
+		if (context.containsKey("testng"))
+			return;
+		Report report = (Report) context.get(MAP_MATCHING_REPORT_FILE);
+		Date date = new Date();
+		Date delay = new Date(date.getTime() - 8000);
+		if (force || report.getDate().before(delay)) {
+			report.setDate(date);
+			Monitor monitor = MonitorFactory.start("ActionReport");
+			JobData jobData = (JobData) context.get(JOB_DATA);
+			Path path = Paths.get(jobData.getPathName(), MAP_MATCHING_REPORT_FILE);
+			// pseudo pretty print
+			try {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				PrintStream stream = new PrintStream(outputStream, false, "UTF-8");
+				report.print(stream);
+				stream.close();
+				FileStoreFactory.getFileStore().writeFile(path, new ByteArrayInputStream(outputStream.toByteArray()));
+			} catch (Exception e) {
+				log.error("failed to save report", e);
+			}
+			monitor.stop();
+		}
+
+	}
+
 
 
 	/**
