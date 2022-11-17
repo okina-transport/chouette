@@ -43,10 +43,11 @@ public class GtfsTransferProducer extends AbstractProducer {
 
 
 	   if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getStandardSeconds() > 1) {
-		   transfer.setMinTransferTime((int) neptuneObject.getDefaultDuration().getStandardSeconds());
-		   transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
+		   	transfer.setMinTransferTime((int) neptuneObject.getDefaultDuration().getStandardSeconds());
+		   	transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
 	   } else {
-		   transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
+	   		transfer.setMinTransferTime(0);
+		   	transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
 	   }
 
 	   try {
