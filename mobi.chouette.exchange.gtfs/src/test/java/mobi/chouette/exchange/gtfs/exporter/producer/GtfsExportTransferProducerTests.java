@@ -84,7 +84,7 @@ public class GtfsExportTransferProducerTests
 
       Assert.assertEquals(gtfsObject.getFromStopId(), "GTFS:StopArea:start", "Start of link must be correctly set");
       Assert.assertEquals(gtfsObject.getToStopId(), "GTFS:StopArea:end", "End of link must be correctly set");
-      Assert.assertNull(gtfsObject.getMinTransferTime(), "transfer time must be null");
+      Assert.assertEquals(gtfsObject.getMinTransferTime().toString(), "0", "transfer time must be null");
       Assert.assertEquals(gtfsObject.getTransferType(), TransferType.Recommended, "transfer type must be RECOMMENDED");
 
    }
