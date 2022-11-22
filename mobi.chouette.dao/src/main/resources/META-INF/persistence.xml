@@ -45,6 +45,8 @@
 		<class>mobi.chouette.model.CategoriesForLines</class>
 		<class>mobi.chouette.model.Codespace</class>
 		<class>mobi.chouette.model.Company</class>
+		<class>mobi.chouette.model.Agency</class>
+		<class>mobi.chouette.model.Attribution</class>
 		<class>mobi.chouette.model.ConnectionLink</class>
 		<class>mobi.chouette.model.ContactStructure</class>
     	<class>mobi.chouette.model.DestinationDisplay</class>
