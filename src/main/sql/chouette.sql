@@ -991,7 +991,9 @@ CREATE TABLE route_sections (
     input_geometry geometry(LineString,4326),
     processed_geometry geometry(LineString,4326),
     distance double precision,
-    no_processing boolean
+    no_processing boolean,
+    departure_id integer,
+    arrival_id integer
 );
 
 

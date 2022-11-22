@@ -1227,7 +1227,9 @@ CREATE TABLE route_sections (
     input_geometry TEXT,
     processed_geometry TEXT,
     distance double precision,
-    no_processing boolean
+    no_processing boolean,
+    departure_id integer,
+    arrival_id integer
 );
 
 
