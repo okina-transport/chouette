@@ -144,11 +144,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <suiteXmlFiles>-->
+<!--                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
+<!--                    </suiteXmlFiles>-->
+<!--                </configuration>-->
             </plugin>
         </plugins>
     </build>
