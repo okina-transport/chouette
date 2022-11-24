@@ -185,7 +185,16 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        List<Command> commands = new ArrayList<>();
+
+        try {
+            commands.add(CommandFactory.create(initialContext, GenerateAttributionsCommand.class.getName()));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
     }
 
     @Override
@@ -203,6 +212,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             if (!CollectionUtils.isEmpty(parameters.getGenerateMissingRouteSectionsForModes())) {
                 commands.add(CommandFactory.create(initialContext, GenerateRouteSectionsCommand.class.getName()));
             }
+            commands.add(CommandFactory.create(initialContext, GenerateAttributionsCommand.class.getName()));
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");

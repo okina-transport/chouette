@@ -15,6 +15,10 @@ public interface ObjectIdTypes {
 	    */
 	   public static final String AREACENTROID_KEY = "AreaCentroid";
 	   /**
+		* default objectId type for attributions
+		*/
+	   public static final String ATTRIBUTION_KEY = "Attribution";
+	   /**
 	    * default objectId type for companies
 	    */
 	   public static final String COMPANY_KEY = "Company";
