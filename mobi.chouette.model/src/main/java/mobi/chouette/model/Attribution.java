@@ -16,6 +16,8 @@ import javax.ws.rs.DefaultValue;
 public class Attribution {
 
     @Id
+    @Getter
+    @Setter
     @SequenceGenerator(name = "attributions_id_seq", sequenceName = "attributions_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attributions_id_seq")
     @Column(name = "id", nullable = false)
@@ -36,8 +38,8 @@ public class Attribution {
     @Getter
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "route_id")
-    private Route route;
+    @JoinColumn(name = "line_id")
+    private Line line;
 
     @Getter
     @Setter
