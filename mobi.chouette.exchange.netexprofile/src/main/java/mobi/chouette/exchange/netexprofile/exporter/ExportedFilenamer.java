@@ -8,6 +8,9 @@ import mobi.chouette.model.Line;
 import org.apache.commons.lang3.StringUtils;
 
 
+import static mobi.chouette.common.Constant.SANITIZED_REPLACEMENT_CODE;
+
+
 public class ExportedFilenamer {
 	private static final String SPACE = " ";
 	private static final String UNDERSCORE = "_";
@@ -53,7 +56,7 @@ public class ExportedFilenamer {
 
 		String lineObjectId = line.getObjectId();
 		if (StringUtils.isNotEmpty(lineObjectId) && lineObjectId.split(":").length == 3){
-			String lineId = lineObjectId.split(":")[2];
+			String lineId = lineObjectId.split(":")[2].replace(SANITIZED_REPLACEMENT_CODE,"-");
 			b.append(lineId);
 			b.append(UNDERSCORE);
 		}
