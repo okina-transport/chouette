@@ -100,32 +100,38 @@ public class AbstractImporterCommand implements Constant {
 				}
 
 			}
-			// post processing
-			List<? extends Command> postProcessingCommands = commands.getPostProcessingCommands(context, true);
-			if (!postProcessingCommands.isEmpty()) {
-				progression.terminate(context, postProcessingCommands.size());
-				for (Command command : postProcessingCommands) {
-					result = command.execute(context);
-					if (!result) {
-						return ERROR;
-					}
-					progression.execute(context);
-				}
-			}
 
-			// Mosaic Commands after import before validation
+			// post processing + Mosaic Commands after import before validation
+
+			List<? extends Command> postProcessingCommands = commands.getPostProcessingCommands(context, true);
 			List<? extends Command> mobiitiPostCommands = commands.getMobiitiCommands(context, true);
-			if (mobiitiPostCommands.isEmpty()) {
-				progression.terminate(context, 0);
-			} else {
-				progression.terminate(context, mobiitiPostCommands.size());
-				for (Command command : mobiitiPostCommands) {
-					result = command.execute(context);
-					if (!result) {
-						return ERROR;
+			final int postProcessingCommandsTotalSize = postProcessingCommands.size() + mobiitiPostCommands.size();
+
+			if (postProcessingCommandsTotalSize > 0) {
+				progression.terminate(context, postProcessingCommandsTotalSize);
+
+				if (!postProcessingCommands.isEmpty()) {
+					for (Command command : postProcessingCommands) {
+						result = command.execute(context);
+						if (!result) {
+							return ERROR;
+						}
+						progression.execute(context);
 					}
-					progression.execute(context);
 				}
+
+				if (!mobiitiPostCommands.isEmpty()) {
+					for (Command command : mobiitiPostCommands) {
+						result = command.execute(context);
+						if (!result) {
+							return ERROR;
+						}
+						progression.execute(context);
+					}
+				}
+			} else {
+				progression.terminate(context, 0);
+
 			}
 
 			if (mode.equals(Mode.line) && !reporter.hasInfo(context, OBJECT_TYPE.LINE)) {
