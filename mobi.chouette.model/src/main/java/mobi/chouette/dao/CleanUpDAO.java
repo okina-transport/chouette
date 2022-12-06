@@ -11,5 +11,6 @@ public interface CleanUpDAO  {
     String lauchCleanUpFunction(String functionName) throws CoreException;
     String removeExpiredTimetableDates(LocalDate startDate);
     String removeUnusedPeriods(LocalDate validationStartDate, LocalDate validationEndDate);
+    String removeExpiredAttributions();
 
     }

@@ -87,6 +87,9 @@ public class PostTransferCleanup implements Command, Constant {
 
         //3rd step : when all timetables are cleaned, removal of empty objects (vehicle journeys, then journeypatterns, route)
 
+        String expiredAttributions = cleanUpDAO.removeExpiredAttributions();
+        log.info("removed expired attributions" + expiredAttributions);
+
         String vjWithNoTimetables = cleanUpDAO.lauchCleanUpFunction(REMOVE_VJ_WITH_NO_TT_FUNCTION_NAME);
         log.info("removed vehicle journeys with no time tables :" + vjWithNoTimetables);
 
