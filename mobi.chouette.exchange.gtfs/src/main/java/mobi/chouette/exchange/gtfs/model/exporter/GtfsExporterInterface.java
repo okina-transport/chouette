@@ -1,16 +1,6 @@
 package mobi.chouette.exchange.gtfs.model.exporter;
 
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
-import mobi.chouette.exchange.gtfs.model.GtfsFeedInfo;
-import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsRoute;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
-import mobi.chouette.exchange.gtfs.model.GtfsStop;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTrip;
+import mobi.chouette.exchange.gtfs.model.*;
 
 public interface GtfsExporterInterface {
 	Exporter<GtfsAgency> getAgencyExporter() throws Exception;
@@ -36,4 +26,6 @@ public interface GtfsExporterInterface {
 	Exporter<GtfsTransfer> getTransferExporter() throws Exception;
 
 	Exporter<GtfsTrip> getTripExporter() throws Exception;
+
+	Exporter<GtfsAttribution> getAttributionExporter() throws Exception;
 }

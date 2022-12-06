@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import mobi.chouette.exchange.gtfs.parameters.AttributionsExportModes;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.parameters.AbstractExportParameter;
 import org.apache.log4j.Logger;
@@ -18,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport"})
+@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode"})
 
 public class GtfsExportParameters  extends AbstractExportParameter {
 		
@@ -70,6 +71,12 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	@Setter
 	@XmlElement(name = "mapping_lines_ids")
 	private boolean mappingLinesIds = false;
+
+	@Getter
+	@Setter
+	@XmlElement(name = "attributions_export_mode")
+	private AttributionsExportModes attributionsExportMode = AttributionsExportModes.NONE;
+
 
 
 	public boolean isValid(Logger log, String[] allowedTypes)

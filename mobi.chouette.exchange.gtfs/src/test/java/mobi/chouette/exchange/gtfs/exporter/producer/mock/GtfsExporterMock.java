@@ -2,17 +2,7 @@ package mobi.chouette.exchange.gtfs.exporter.producer.mock;
 
 import lombok.Getter;
 import mobi.chouette.common.Context;
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
-import mobi.chouette.exchange.gtfs.model.GtfsFeedInfo;
-import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsRoute;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
-import mobi.chouette.exchange.gtfs.model.GtfsStop;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTrip;
+import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.exporter.Exporter;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import org.apache.commons.beanutils.BeanUtils;
@@ -46,6 +36,8 @@ public class GtfsExporterMock implements GtfsExporterInterface
    List<GtfsTransfer> exportedTransfers = new ArrayList<>();
    @Getter 
    List<GtfsTrip> exportedTrips = new ArrayList<>();
+   @Getter
+   List<GtfsAttribution> exportedAttributions = new ArrayList<>();
    
    AgencyExporterMock agencyMock = new AgencyExporterMock();
    CalendarDateExporterMock calendarDateMock = new CalendarDateExporterMock();
@@ -58,6 +50,8 @@ public class GtfsExporterMock implements GtfsExporterInterface
    StopTimeExporterMock stopTimeMock = new StopTimeExporterMock();
    TransferExporterMock transferMock = new TransferExporterMock();
    TripExporterMock tripMock = new TripExporterMock();
+   AttributionExporterMock attributionMock = new AttributionExporterMock();
+
    
    public void reset()
    {
@@ -71,6 +65,7 @@ public class GtfsExporterMock implements GtfsExporterInterface
       exportedStopTimes.clear();
       exportedTransfers.clear();
       exportedTrips.clear();
+      exportedAttributions.clear();
    }
 
    @Override
@@ -143,7 +138,13 @@ public class GtfsExporterMock implements GtfsExporterInterface
    {
       return tripMock;
    }
-   
+
+   @Override
+   public Exporter<GtfsAttribution> getAttributionExporter() throws Exception
+   {
+      return attributionMock;
+   }
+
    private abstract class ExporterMock<T> implements Exporter<T>
    {
 
@@ -337,6 +338,19 @@ public class GtfsExporterMock implements GtfsExporterInterface
          }
          catch (Exception e)
          {
+            e.printStackTrace();
+         }
+      }
+   }
+
+   private class AttributionExporterMock extends ExporterMock<GtfsAttribution>
+   {
+      @Override
+      public void export(GtfsAttribution bean) throws IOException
+      {
+         try {
+            exportedAttributions.add((GtfsAttribution) BeanUtils.cloneBean(bean));
+         } catch (Exception e) {
             e.printStackTrace();
          }
       }
