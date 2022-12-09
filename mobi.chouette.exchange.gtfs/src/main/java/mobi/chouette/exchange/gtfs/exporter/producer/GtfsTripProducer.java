@@ -9,6 +9,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Constant;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
 import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
 import mobi.chouette.exchange.gtfs.model.GtfsShape;
@@ -264,8 +265,7 @@ public class GtfsTripProducer extends AbstractProducer {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
-		String tripId = toGtfsId(vj.getObjectId(), schemaPrefix, keepOriginalId);
-
+		String tripId = toGtfsId(vj.getObjectId(), schemaPrefix, keepOriginalId).replace(Constant.COLON_REPLACEMENT_CODE, ":");
 		trip.setTripId(tripId);
 
 		JourneyPattern jp = vj.getJourneyPattern();

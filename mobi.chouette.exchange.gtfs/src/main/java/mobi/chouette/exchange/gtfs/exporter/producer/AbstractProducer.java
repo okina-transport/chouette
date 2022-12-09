@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.Getter;
+import mobi.chouette.common.Constant;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
@@ -117,7 +118,8 @@ public abstract class AbstractProducer
       }
 
 
-      return sb.toString();
+
+      return sb.toString().replace(Constant.COLON_REPLACEMENT_CODE, ":");
    }
 
 
