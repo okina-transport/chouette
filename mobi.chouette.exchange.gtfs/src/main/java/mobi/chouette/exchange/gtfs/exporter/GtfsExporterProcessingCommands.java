@@ -10,6 +10,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.exporter.CompressCommand;
 import mobi.chouette.exchange.exporter.SaveMetadataCommand;
+import mobi.chouette.exchange.gtfs.parameters.AttributionsExportModes;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 			if (parameters.isMappingLinesIds()) {
 				commands.add(CommandFactory.create(initialContext, MappingLinesIdsCommand.class.getName()));
 			}
+
+
 		} catch (Exception e) {
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
@@ -75,6 +78,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		GtfsExportParameters parameters = (GtfsExportParameters) context.get(CONFIGURATION);
 		List<Command> commands = new ArrayList<>();
 		try {
+			commands.add(CommandFactory.create(initialContext, DaoGtfsAttributonsProducerCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFeedInfoProducerCommand.class.getName()));
 //			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));
 			if (!(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {

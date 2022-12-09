@@ -1,18 +1,7 @@
 package mobi.chouette.exchange.gtfs.model.exporter;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
-import mobi.chouette.exchange.gtfs.model.GtfsFeedInfo;
-import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsObject;
-import mobi.chouette.exchange.gtfs.model.GtfsRoute;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
-import mobi.chouette.exchange.gtfs.model.GtfsStop;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTrip;
+import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
@@ -25,7 +14,7 @@ import java.util.Map;
 @Log4j
 public class GtfsExporter implements GtfsExporterInterface {
 	public static enum EXPORTER {
-		AGENCY, CALENDAR, CALENDAR_DATE, FEED_INFO, FREQUENCY, ROUTE, STOP, STOP_TIME, TRANSFER, TRIP, SHAPE;
+		AGENCY, ATTRIBUTION, CALENDAR, CALENDAR_DATE, FEED_INFO, FREQUENCY, ROUTE, STOP, STOP_TIME, TRANSFER, TRIP, SHAPE;
 	}
 
 	private String _path;
@@ -139,6 +128,10 @@ public class GtfsExporter implements GtfsExporterInterface {
 	public Exporter<GtfsShape> getShapeExporter() throws Exception {
 		return getExporter(EXPORTER.SHAPE.name(), ShapeExporter.FILENAME,
 				ShapeExporter.class);
+	}
+
+	public Exporter<GtfsAttribution> getAttributionExporter() throws Exception {
+		return getExporter(EXPORTER.ATTRIBUTION.name(), AttributionExporter.FILENAME, AttributionExporter.class);
 	}
 
 }

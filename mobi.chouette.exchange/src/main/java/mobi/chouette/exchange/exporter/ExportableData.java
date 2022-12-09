@@ -2,22 +2,7 @@ package mobi.chouette.exchange.exporter;
 
 import lombok.Getter;
 import lombok.Setter;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,6 +103,10 @@ public class ExportableData {
 	@Setter
 	private Set<Interchange> interchanges = new HashSet<>();
 
+	@Getter
+	@Setter
+	private Set<Attribution> attributions = new HashSet<>();
+
 	public void clear()
 	{
 		networks.clear();
@@ -145,5 +134,6 @@ public class ExportableData {
 		interchanges.clear();
 		footnotes.clear();
 		scheduledStopPoints.clear();
+		attributions.clear();
 	}
 }
