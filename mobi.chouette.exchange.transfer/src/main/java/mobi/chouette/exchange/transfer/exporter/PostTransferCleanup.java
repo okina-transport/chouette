@@ -41,6 +41,7 @@ public class PostTransferCleanup implements Command, Constant {
     private static String REMOVE_VJ_WITH_NO_TT_FUNCTION_NAME = "remove_vehicle_journey_with_no_time_tables";
     private static String REMOVE_EMPTY_LINES_FUNCTION_NAME = "remove_empty_lines";
     private static String REORG_PERIODS_FUNCTION_NAME = "reorg_time_table_periods";
+    private static String REMOVE_UNUSED_STOPS = "remove_unused_stops";
 
 
 
@@ -116,6 +117,9 @@ public class PostTransferCleanup implements Command, Constant {
 
         cleanUpDAO.lauchCleanUpFunction(REORG_PERIODS_FUNCTION_NAME);
         log.info("period reorganization completed successfully" );
+
+        String unusedStops = cleanUpDAO.lauchCleanUpFunction(REMOVE_UNUSED_STOPS);
+        log.info("removed unused stops :" + unusedStops);
 
         return true;
 
