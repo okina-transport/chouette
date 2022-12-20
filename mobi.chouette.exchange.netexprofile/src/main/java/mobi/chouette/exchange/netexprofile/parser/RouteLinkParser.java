@@ -16,15 +16,15 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.rutebanken.netex.model.LinkSequenceProjection_VersionStructure;
 import org.rutebanken.netex.model.RouteLink;
 import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
-import org.rutebanken.netex.model.ServiceLink;
-import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
 
-import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Log4j
 public class RouteLinkParser extends NetexParser implements Parser, Constant {
@@ -37,24 +37,46 @@ public class RouteLinkParser extends NetexParser implements Parser, Constant {
 		List<RouteLink> routeLinks = routeLinksInInFrameStruct.getRouteLink();
 		GeometryFactory factory = new GeometryFactory(new PrecisionModel(10), 4326);
 
-		for (RouteLink routeLink : routeLinks) {
+		Map<String, Set<String>> routeSectionUsedInMultipleFiles = (Map<String, Set<String>>) context.get(ROUTE_LINKS_USED_IN_MULTIPLE_FILES);
+		if (routeSectionUsedInMultipleFiles == null) {
+			routeSectionUsedInMultipleFiles = new HashMap<>();
+		}
 
+		context.remove(ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE);
+		context.remove(ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT);
+		List<String> routeSectionUsedMultipleTimesInTheSameFile = new ArrayList<>();
+		List<String> routeSectionUsedSameFromAndToScheduledStopPoint = new ArrayList<>();
+
+
+		for (RouteLink routeLink : routeLinks) {
 			String routeSectionId = NetexImportUtil.composeObjectIdFromNetexId(context,"RouteSection",routeLink.getId());
 			RouteSection routeSection = ObjectFactory.getRouteSection(referential, routeSectionId);
+
+			routeSectionUsedMultipleTimesInTheSameFile.add(routeSection.getObjectId());
+			context.put(ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE, routeSectionUsedMultipleTimesInTheSameFile);
+
+			String fileName = (String) context.get(FILE_NAME);
+			Set<String> filesUsingRouteSection = routeSectionUsedInMultipleFiles.get(routeSection.getObjectId()) != null ? routeSectionUsedInMultipleFiles.get(routeSection.getObjectId()) :  new HashSet<>();
+			filesUsingRouteSection.add(fileName);
+			routeSectionUsedInMultipleFiles.put(routeSection.getObjectId(), filesUsingRouteSection);
+			context.put(ROUTE_LINKS_USED_IN_MULTIPLE_FILES, routeSectionUsedInMultipleFiles);
+
 			routeSection.setObjectVersion(NetexParserUtils.getVersion(routeLink));
 
 			String fromScheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint", routeLink.getFromPointRef().getRef());
-			if (routeSection.getFromScheduledStopPoint() != null && !routeSection.getFromScheduledStopPoint().getObjectId().equals(fromScheduledStopPointId)) {
-				List<String> wrongRouteSections = (List<String>) context.get(WRONG_ROUTE_SECTIONS);
-				if (wrongRouteSections == null) {
-					wrongRouteSections = new ArrayList<>();
-				}
-				wrongRouteSections.add(routeSection.getObjectId());
-				context.put(WRONG_ROUTE_SECTIONS, wrongRouteSections);
-			}
 			routeSection.setFromScheduledStopPoint(ObjectFactory.getScheduledStopPoint(referential, fromScheduledStopPointId));
 			String toScheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint", routeLink.getToPointRef().getRef());
 			routeSection.setToScheduledStopPoint(ObjectFactory.getScheduledStopPoint(referential,toScheduledStopPointId));
+
+
+			if (routeSection.getFromScheduledStopPoint() != null &&
+					routeSection.getToScheduledStopPoint() != null &&
+					routeSection.getFromScheduledStopPoint().getObjectId().equals(routeSection.getToScheduledStopPoint().getObjectId())) {
+				routeSectionUsedSameFromAndToScheduledStopPoint.add(routeSection.getObjectId());
+				context.put(ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT, routeSectionUsedSameFromAndToScheduledStopPoint);
+			}
+
+
 			routeSection.setDistance(routeLink.getDistance());
 
 

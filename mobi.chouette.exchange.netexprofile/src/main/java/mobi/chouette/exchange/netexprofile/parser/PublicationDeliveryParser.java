@@ -1,16 +1,5 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.bind.JAXBElement;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.importer.Parser;
@@ -27,7 +16,6 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
@@ -59,7 +47,6 @@ import org.rutebanken.netex.model.OrganisationsInFrame_RelStructure;
 import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.QuayAssignmentView;
 import org.rutebanken.netex.model.QuayRefStructure;
 import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.ResourceFrame;
@@ -84,6 +71,15 @@ import org.rutebanken.netex.model.TypesOfValueInFrame_RelStructure;
 import org.rutebanken.netex.model.ValidBetween;
 import org.rutebanken.netex.model.ValidityConditions_RelStructure;
 
+
+import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Log4j
 public class PublicationDeliveryParser extends NetexParser implements Parser, Constant {
 
@@ -91,7 +87,6 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 	static final String COMPOSITE_FRAME = "compositeFrame";
 	static final String TIMETABLE_FRAME = "timetableFrame";
 	static final String SERVICE_CALENDAR_FRAME = "serviceCalendarFrame";
-	static final String TIMETABLE_ID = "timetableId";
 	private LineParser lineParser;
 	private OrganisationParser organisationParser;
 	private Parser serviceCalendarParser;
@@ -917,18 +912,36 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		if (stopPlaces.isEmpty() || quays.isEmpty())
 			return;
 
+		List<String> stopPlacesWithoutQuay = new ArrayList<>();
+		List<String> multimodalStopPlaces = new ArrayList<>();
 		for(StopPlace stopPlace : stopPlaces){
-			List<Quay> quayList = quays
+			if(stopPlace.getQuays() != null && stopPlace.getQuays().getQuayRefOrQuay().size() > 0) {
+				List<Quay> quayList = quays
 						.stream()
 						.filter(quay -> stopPlace.getQuays().getQuayRefOrQuay()
 								.stream()
 								.anyMatch(o -> quay.getId().equals(((QuayRefStructure) o.getValue()).getRef())))
 						.collect(Collectors.toList());
 
-			Quays_RelStructure quays_relStructure = new Quays_RelStructure();
-			quays_relStructure.getQuayRefOrQuay().addAll(quayList.stream().map(netexFactory::createQuay).collect(Collectors.toList()));
-			stopPlace.withQuays(quays_relStructure);
+				Quays_RelStructure quays_relStructure = new Quays_RelStructure();
+				quays_relStructure.getQuayRefOrQuay().addAll(quayList.stream().map(netexFactory::createQuay).collect(Collectors.toList()));
+				stopPlace.withQuays(quays_relStructure);
+			}
+			else{
+				if(stopPlace.getPlaceTypes() != null &&
+						stopPlace.getPlaceTypes().getTypeOfPlaceRef().size() > 0 &&
+						stopPlace.getPlaceTypes().getTypeOfPlaceRef().stream()
+								.anyMatch(typeOfPlaceRefStructure -> "multimodalstopplace".equalsIgnoreCase(typeOfPlaceRefStructure.getRef()))){
+					multimodalStopPlaces.add(stopPlace.getId());
+				}
+				else{
+					stopPlacesWithoutQuay.add(stopPlace.getId());
+				}
+			}
 		}
+
+		context.put(STOP_PLACES_WITHOUT_QUAY, stopPlacesWithoutQuay);
+		context.put(MULTIMODAL_STOP_PLACES, multimodalStopPlaces);
 
 		StopPlacesInFrame_RelStructure stopPlacesStruct = new StopPlacesInFrame_RelStructure();
 		stopPlacesStruct.getStopPlace_().addAll(stopPlaces.stream().map(netexFactory::createStopPlace).collect(Collectors.toList()));

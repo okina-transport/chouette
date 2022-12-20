@@ -13,10 +13,8 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.parallel.ParallelExecutionCommand;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
-import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
-import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.netexprofile.importer.DuplicateIdCheckerCommand;
@@ -184,6 +182,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
                     filePath -> filePath.getFileName() != null && !NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
                     .collect(Collectors.toList());
 
+            context.put(TOTAL_NB_OF_LINES, lineFilePaths.size());
 
             // profile validation
             if (parameters.isValidateAgainstProfile()) {
