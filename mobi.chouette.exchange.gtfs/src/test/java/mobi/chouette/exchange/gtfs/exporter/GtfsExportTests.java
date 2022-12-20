@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import mobi.chouette.dao.ConnectionLinkDAO;
+import mobi.chouette.exchange.gtfs.parameters.AttributionsExportModes;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -265,6 +266,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		configuration.setReferencesType("line");
 		configuration.setObjectIdPrefix("CITURA");
 		configuration.setTimeZone("Europe/Paris");
+		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
 		Command command = (Command) CommandFactory.create(initialContext,
 				GtfsExporterCommand.class.getName());
 
@@ -309,7 +311,8 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		configuration.setObjectIdPrefix("CITURA");
 		configuration.setTimeZone("Europe/Paris");
 		configuration.setCommercialPointExport(false);
-		Command command = (Command) CommandFactory.create(initialContext,
+	   configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+	   Command command = (Command) CommandFactory.create(initialContext,
 				GtfsExporterCommand.class.getName());
 
 		try {
@@ -358,6 +361,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		configuration.setReferencesType("line");
 		configuration.setObjectIdPrefix("CITURA");
 		configuration.setTimeZone("Europe/Paris");
+		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
 		Command command = (Command) CommandFactory.create(initialContext,
 				GtfsExporterCommand.class.getName());
 
@@ -401,7 +405,8 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
  		configuration.setObjectIdPrefix("NSB");
  		configuration.setTimeZone("Europe/Paris");
  		configuration.setKeepOriginalId(true);
- 		Command command = (Command) CommandFactory.create(initialContext,
+		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+		Command command = (Command) CommandFactory.create(initialContext,
  				GtfsExporterCommand.class.getName());
 
 
