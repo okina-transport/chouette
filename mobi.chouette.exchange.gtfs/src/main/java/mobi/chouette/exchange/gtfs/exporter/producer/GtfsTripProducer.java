@@ -82,7 +82,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		int departureOffset = 0;
 		int arrivalOffset = 0;
 
-		String tripId = toGtfsId(vj.getObjectId(), prefix, keepOriginalId);
+		String tripId = toGtfsId(vj.getObjectId(), prefix, keepOriginalId).replaceAll(Constant.COLON_REPLACEMENT_CODE, ":");
 		time.setTripId(tripId);
 		float distance = (float) 0.0;
 		List<RouteSection> routeSections = vj.getJourneyPattern().getRouteSections();

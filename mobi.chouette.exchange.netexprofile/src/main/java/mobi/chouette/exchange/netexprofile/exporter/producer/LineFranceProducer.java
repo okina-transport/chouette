@@ -23,6 +23,7 @@ import org.rutebanken.netex.model.PrivateCodeStructure;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GROUP_OF_LINES;
@@ -73,7 +74,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
 
         if (isSet(neptuneLine.getRegistrationNumber())) {
             PrivateCodeStructure privateCodeStruct = netexFactory.createPrivateCodeStructure();
-            privateCodeStruct.setValue(neptuneLine.getRegistrationNumber());
+            privateCodeStruct.setValue(neptuneLine.getRegistrationNumber().replaceAll(COLON_REPLACEMENT_CODE, ":"));
             netexLine.setPrivateCode(privateCodeStruct);
         }
 

@@ -332,12 +332,20 @@ public class NetexProducerUtils {
     public static JAXBElement<? extends LineRefStructure> createLineIDFMRef(Line neptuneLine, ObjectFactory netexFactory) {
         if (Boolean.TRUE.equals(neptuneLine.getFlexibleService())) {
             FlexibleLineRefStructure lineRefStruct = netexFactory.createFlexibleLineRefStructure();
-            lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+            if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR) || neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
+                lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+            } else {
+                lineRefStruct.setRef(neptuneLine.getObjectId());
+            }
             lineRefStruct.setVersionRef("any");
             return netexFactory.createFlexibleLineRef(lineRefStruct);
         }
         LineRefStructure lineRefStruct = netexFactory.createLineRefStructure();
-        lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+        if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR) || neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
+            lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+        } else {
+            lineRefStruct.setRef(neptuneLine.getObjectId());
+        }
         lineRefStruct.setVersionRef("any");
         return netexFactory.createLineRef(lineRefStruct);
     }
@@ -354,7 +362,7 @@ public class NetexProducerUtils {
             destination.setId(source.getObjectId());
         }
 
-        if (!destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC)) {
+        if (!(destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC) || destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR))) {
             destination.setId(destination.getId() + OBJECT_ID_SPLIT_CHAR + LOC);
         }
         destination.setVersion(NETEX_DEFAULT_OBJECT_VERSION);
