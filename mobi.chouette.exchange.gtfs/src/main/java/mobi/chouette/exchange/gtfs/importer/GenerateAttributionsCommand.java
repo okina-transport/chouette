@@ -9,8 +9,8 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AttributionDAO;
+import mobi.chouette.dao.LineDAO;
 import mobi.chouette.model.*;
-import mobi.chouette.model.util.Referential;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -19,6 +19,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.List;
 
 @Stateless(name = GenerateAttributionsCommand.COMMAND)
 @Log4j
@@ -29,6 +30,9 @@ public class GenerateAttributionsCommand implements Command, Constant {
     @EJB
     private AttributionDAO attributionDAO;
 
+    @EJB
+    private LineDAO lineDAO;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean execute(Context context) throws Exception {
@@ -36,7 +40,7 @@ public class GenerateAttributionsCommand implements Command, Constant {
         log.info("Generating attributions for all lines and vehicle journeys");
 
         try {
-            createAttributions(context);
+            createAttributions();
         } catch (Exception e) {
             log.warn("Attribution generation failed with exception : " + e.getMessage(), e);
         } finally {
@@ -45,29 +49,31 @@ public class GenerateAttributionsCommand implements Command, Constant {
         return SUCCESS;
     }
 
-    private void createAttributions(Context context) {
+    private void createAttributions() {
         attributionDAO.deleteAll();
 
-        Referential referential = (Referential) context.get(REFERENTIAL);
-        for (Company c : referential.getCompanies().values()) {
-            for (Line l : c.getLines()) {
-                Attribution lineAttribution = new Attribution();
-                lineAttribution.setLine(l);
-                lineAttribution.setOrganisationName(c.getRegistrationNumber().replaceAll("o+$", ""));
-                lineAttribution.setIsProducer(true);
-                lineAttribution.setIsOperator(true);
-                attributionDAO.insertAttribution(lineAttribution);
+        List<Line> lines = lineDAO.findAll();
+        for (Line l : lines) {
+            Attribution lineAttribution = new Attribution();
+            lineAttribution.setLine(l);
+            if(l.getCompany() != null && l.getCompany().getRegistrationNumber() != null){
+                lineAttribution.setOrganisationName(l.getCompany().getRegistrationNumber().replaceAll("o+$", ""));
+            }
+            lineAttribution.setIsProducer(true);
+            lineAttribution.setIsOperator(true);
+            attributionDAO.insertAttribution(lineAttribution);
 
-                for (Route r : l.getRoutes()) {
-                    for (JourneyPattern jp : r.getJourneyPatterns()) {
-                        for (VehicleJourney vj : jp.getVehicleJourneys()) {
-                            Attribution vehicleJourneyAttribution = new Attribution();
-                            vehicleJourneyAttribution.setVehicleJourney(vj);
-                            vehicleJourneyAttribution.setOrganisationName(c.getRegistrationNumber().replaceAll("o+$", ""));
-                            vehicleJourneyAttribution.setIsProducer(true);
-                            vehicleJourneyAttribution.setIsOperator(true);
-                            attributionDAO.insertAttribution(vehicleJourneyAttribution);
+            for (Route r : l.getRoutes()) {
+                for (JourneyPattern jp : r.getJourneyPatterns()) {
+                    for (VehicleJourney vj : jp.getVehicleJourneys()) {
+                        Attribution vehicleJourneyAttribution = new Attribution();
+                        vehicleJourneyAttribution.setVehicleJourney(vj);
+                        if(l.getCompany() != null && l.getCompany().getRegistrationNumber() != null) {
+                            vehicleJourneyAttribution.setOrganisationName(l.getCompany().getRegistrationNumber().replaceAll("o+$", ""));
                         }
+                        vehicleJourneyAttribution.setIsProducer(true);
+                        vehicleJourneyAttribution.setIsOperator(true);
+                        attributionDAO.insertAttribution(vehicleJourneyAttribution);
                     }
                 }
             }

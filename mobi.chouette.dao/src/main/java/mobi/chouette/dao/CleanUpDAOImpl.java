@@ -75,38 +75,4 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
         return fctResult;
 
     }
-
-    @Override
-    public String removeExpiredAttributions() {
-        String removeLineAttributionsStringQuery = "DELETE FROM attributions a WHERE (" +
-                "SELECT MAX(ttp.period_end) FROM time_table_periods ttp WHERE EXISTS (" +
-                "SELECT ttvj.time_table_id FROM time_tables_vehicle_journeys ttvj WHERE ttp.time_table_id = ttvj.time_table_id AND EXISTS (" +
-                "SELECT vj.id FROM vehicle_journeys vj WHERE ttvj.vehicle_journey_id = vj.id AND EXISTS (" +
-                "SELECT r.id FROM routes r WHERE vj.route_id = r.id AND r.line_id = a.line_id)))) < NOW();";
-
-        String removeVehicleJourneyAttributionsStringQuery = "DELETE FROM attributions a WHERE (" +
-                "SELECT ttp.period_end FROM time_table_periods ttp WHERE EXISTS (" +
-                "SELECT ttvj.time_table_id FROM time_tables_vehicle_journeys ttvj WHERE ttvj.time_table_id = ttp .time_table_id AND ttvj.vehicle_journey_id = a.vehicle_journey_id)) < NOW();";
-
-        Query removeLineAttributionsQuery = em.createNativeQuery(removeLineAttributionsStringQuery);
-        Query removeVehicleJourneyAttributionsQuery = em.createNativeQuery(removeVehicleJourneyAttributionsStringQuery);
-
-        Object removeLineAttributionResult = removeLineAttributionsQuery.executeUpdate();
-        Object removeVehicleJourneyAttributionResult = removeVehicleJourneyAttributionsQuery.executeUpdate();
-
-        String deletionsResult = "";
-
-        if (removeLineAttributionResult instanceof String){
-            deletionsResult += (String) removeLineAttributionResult;
-        }
-
-        if (removeVehicleJourneyAttributionResult instanceof String){
-            if (!deletionsResult.isEmpty()) {
-                deletionsResult += " ";
-            }
-            deletionsResult += (String) removeVehicleJourneyAttributionResult;
-        }
-
-        return deletionsResult;
-    }
 }

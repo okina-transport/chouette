@@ -49,7 +49,7 @@ public class GtfsAttributionsProducerCommand implements Command, Constant {
             String schemaPrefix = configuration.getObjectIdPrefix();
             boolean keepOriginal = configuration.isKeepOriginalId();
 
-            Integer gtfsAttributionsId = 0;
+            Integer gtfsAttributionsId = 1;
             for (Attribution neptuneAttribution : collection.getAttributions()) {
                 attributionProducer.save(neptuneAttribution, gtfsAttributionsId++, schemaPrefix, keepOriginal);
             }
