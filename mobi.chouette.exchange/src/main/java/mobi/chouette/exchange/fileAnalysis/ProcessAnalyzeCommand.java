@@ -24,7 +24,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
@@ -45,7 +45,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private boolean cleanRepository;
     private String currentFileName;
     private Map<String, Set<String>> missingRouteLinks;
-    private Map<String, Set<String>> wrongRouteLinks;
+    private Map<String, Set<String>> wrongRouteLinksUsedInMutipleFiles;
+    private Map<String, Set<String>> wrongRouteLinksUsedMutipleTimesInTheSameFile;
+    private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
 
@@ -72,11 +74,23 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         Referential cache = new Referential();
         context.put(CACHE, cache);
         context.put(OPTIMIZED, Boolean.FALSE);
-        analyzeReport = (AnalyzeReport)context.get(ANALYSIS_REPORT);
+        analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
         currentFileName =  (String) context.get(FILE_NAME);
 
-        missingRouteLinks =analyzeReport.getMissingRouteLinks();
-        wrongRouteLinks = analyzeReport.getWrongRouteLinks();
+        List<String> stopPlacesWithoutQuayList = (List<String>) context.get(STOP_PLACES_WITHOUT_QUAY);
+        if(stopPlacesWithoutQuayList != null && stopPlacesWithoutQuayList.size() > 0){
+            analyzeReport.setStopPlacesWithoutQuay(stopPlacesWithoutQuayList);
+        }
+
+        List<String> multimodalStopPlacesList = (List<String>) context.get(MULTIMODAL_STOP_PLACES);
+        if(multimodalStopPlacesList != null && multimodalStopPlacesList.size() > 0){
+            analyzeReport.setMultimodalStopPlaces(multimodalStopPlacesList);
+        }
+
+        missingRouteLinks = analyzeReport.getMissingRouteLinks();
+        wrongRouteLinksUsedInMutipleFiles = analyzeReport.getWrongRouteLinksUsedInMutipleFiles();
+        wrongRouteLinksUsedMutipleTimesInTheSameFile = analyzeReport.getWrongRouteLinksUsedMutipleTimesInTheSameFile();
+        wrongRouteLinksUsedSameFromAndToScheduledStopPoint = analyzeReport.getWrongRouteLinksUsedSameFromAndToScheduledStopPoint();
 
 
         Referential referential = (Referential) context.get(REFERENTIAL);
@@ -86,7 +100,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
 
-        containsWrongRouteLink(context, referential.getRouteSections().values());
+        containsRouteLinksUsedInMutipleFiles(context);
+        containsRouteLinksUsedMutipleTimesInTheSameFile(context);
+        containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
 
 
@@ -158,21 +174,40 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         return false;
     }
 
-    private void containsWrongRouteLink(Context context, Collection<RouteSection> routeSections) {
 
-        List<String> wrongRouteSections = (List<String>) context.get(WRONG_ROUTE_SECTIONS);
+    private void containsRouteLinksUsedInMutipleFiles(Context context) {
+        Map<String, Set<String>> routeSectionsMultipleFiles = new HashMap<>();
+        Map<String, Set<String>> routeSections = (Map<String, Set<String>>) context.get(ROUTE_LINKS_USED_IN_MULTIPLE_FILES);
+        for(String fileName : routeSections.keySet()){
+            if(routeSections.get(fileName).size() > 1){
+                routeSectionsMultipleFiles.put(fileName, routeSections.get(fileName));
+            }
+        }
+        wrongRouteLinksUsedInMutipleFiles.putAll(routeSectionsMultipleFiles);
+    }
 
-        if (wrongRouteSections != null) {
-            Set<String> routeLinks = null;
-            if (wrongRouteLinks.containsKey(currentFileName)) {
-                routeLinks = wrongRouteLinks.get(currentFileName);
-            } else {
-                routeLinks = new HashSet<>();
+    private void containsRouteLinksUsedMutipleTimesInTheSameFile(Context context) {
+        List<String> routeSectionsUsedMutipleTimesInTheSameFile = (List<String>) context.get(ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE);
+
+        if (routeSectionsUsedMutipleTimesInTheSameFile != null) {
+            Set<String> routeLinks = new HashSet<>();
+            for (String rsId : routeSectionsUsedMutipleTimesInTheSameFile) {
+                boolean isRouteSectionsUsedMutipleTimesInTheSameFile = routeSectionsUsedMutipleTimesInTheSameFile.stream().filter(s -> s.equals(rsId)).count() > 1;
+                if(isRouteSectionsUsedMutipleTimesInTheSameFile){
+                    routeLinks.add(rsId);
+                }
             }
-            for (String rsId : wrongRouteSections) {
-                routeLinks.add(rsId + " exists more than once with different stop points");
-                wrongRouteLinks.put(currentFileName, routeLinks);
-            }
+            if(routeLinks.size() > 0)
+            wrongRouteLinksUsedMutipleTimesInTheSameFile.put(currentFileName, routeLinks);
+        }
+    }
+
+    private void containsRouteLinksUsedSameFromAndToScheduledStopPoint(Context context) {
+        List<String> routeSectionsUsedSameFromAndToScheduledStopPoint = (List<String>) context.get(ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT);
+
+        if (routeSectionsUsedSameFromAndToScheduledStopPoint != null) {
+            Set<String> routeLinks = new HashSet<>(routeSectionsUsedSameFromAndToScheduledStopPoint);
+            wrongRouteLinksUsedSameFromAndToScheduledStopPoint.put(currentFileName, routeLinks);
         }
     }
 
@@ -191,7 +226,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                     if (stopAreaOpt.isPresent()){
                         StopArea stopArea = stopAreaOpt.get();
                         stopAreaList.add(stopArea);
-                        checkQuayTransportMode(stopArea,line);
+                        checkQuayTransportMode(stopArea, line);
                     }
                 }
             }
@@ -327,25 +362,25 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
      * @param line
      *  line on which the quay is used
      */
-    private void checkQuayTransportMode( StopArea quay, Line line){
+    private void checkQuayTransportMode(StopArea quay, Line line){
         TransportModeNameEnum transportMode = line.getTransportModeName();
-        String originalStopId = quay.getOriginalStopId();
+        String stopId = StringUtils.isNotEmpty(quay.getOriginalStopId()) ? quay.getOriginalStopId() : quay.getObjectId().split(":")[2];
         Set<String> lineUse;
         String lineAndTransportString = line.getRegistrationNumber() + "(" + transportMode + ")";
 
-        if (!analyzeReport.getQuayLineUse().containsKey(originalStopId)){
+        if (!analyzeReport.getQuayLineUse().containsKey(stopId)){
             lineUse = new HashSet<>();
-            analyzeReport.getQuayLineUse().put(originalStopId,lineUse);
-        }else{
-            lineUse = analyzeReport.getQuayLineUse().get(originalStopId);
+            analyzeReport.getQuayLineUse().put(stopId, lineUse);
+        } else{
+            lineUse = analyzeReport.getQuayLineUse().get(stopId);
         }
         lineUse.add(lineAndTransportString);
 
-        if (! analyzeReport.getQuayTransportMode().containsKey(originalStopId)){
-            analyzeReport.getQuayTransportMode().put(originalStopId,transportMode);
-        }else if (!analyzeReport.getQuayTransportMode().get(originalStopId).equals(transportMode)){
+        if (!analyzeReport.getQuayTransportMode().containsKey(stopId)){
+            analyzeReport.getQuayTransportMode().put(stopId,transportMode);
+        } else if (!analyzeReport.getQuayTransportMode().get(stopId).equals(transportMode)){
             // Same quay has been detected on 2 lines with different transport mode
-            analyzeReport.getQuayWithDifferentTransportModes().add(originalStopId);
+            analyzeReport.getQuayWithDifferentTransportModes().add(stopId);
         }
     }
 

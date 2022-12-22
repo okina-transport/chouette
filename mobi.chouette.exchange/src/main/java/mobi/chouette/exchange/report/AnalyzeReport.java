@@ -63,9 +63,14 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "newStops")
     private List<StopArea> newStops = new ArrayList<>();
 
+    @XmlElement(name = "stopPlacesWithoutQuay")
+    private List<String> stopPlacesWithoutQuay = new ArrayList<>();
+
+    @XmlElement(name = "multimodalStopPlaces")
+    private List<String> multimodalStopPlaces = new ArrayList<>();
+
     @XmlElement(name = "wrongGeolocStopAreas")
     private List<Pair<StopArea, StopArea>> wrongGeolocStopAreas = new ArrayList<>();
-
 
     @XmlElement(name = "changedNameStopAreas")
     private List<Pair<StopArea, StopArea>> changedNameStopAreas = new ArrayList<>();
@@ -91,8 +96,14 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "missingRouteLinks")
     private Map<String, Set<String>> missingRouteLinks = new HashMap<>();
 
-    @XmlElement(name = "wrongRouteLinks")
-    private Map<String, Set<String>> wrongRouteLinks = new HashMap<>();
+    @XmlElement(name = "wrongRouteLinksUsedInMutipleFiles")
+    private Map<String, Set<String>> wrongRouteLinksUsedInMutipleFiles = new HashMap<>();
+
+    @XmlElement(name = "wrongRouteLinksUsedMutipleTimesInTheSameFile")
+    private Map<String, Set<String>> wrongRouteLinksUsedMutipleTimesInTheSameFile = new HashMap<>();
+
+    @XmlElement(name = "wrongRouteLinksUsedSameFromAndToScheduledStopPoint")
+    private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint = new HashMap<>();
 
     @XmlTransient
     private Date date = new Date(0);
@@ -233,6 +244,15 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             printStringList(out, newStopList, "newStops", "stopName");
         }
 
+        if (!stopPlacesWithoutQuay.isEmpty()) {
+            canLaunchImport = false;
+            printStringList(out, stopPlacesWithoutQuay, "stopPlacesWithoutQuay", "stopId");
+        }
+
+        if (!multimodalStopPlaces.isEmpty()) {
+            printStringList(out, multimodalStopPlaces, "multimodalStopPlaces", "stopId");
+        }
+
         if (!wrongGeolocStopAreas.isEmpty()) {
             canLaunchImport = false;
             printWrongGeolocList(out);
@@ -254,9 +274,19 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             printMissingRouteLink(out);
         }
 
-        if (!wrongRouteLinks.isEmpty()) {
+        if (!wrongRouteLinksUsedInMutipleFiles.isEmpty()) {
             canLaunchImport = false;
-            printWrongRouteLink(out);
+            printWrongRouteLinksUsedInMutipleFiles(out);
+        }
+
+        if (!wrongRouteLinksUsedMutipleTimesInTheSameFile.isEmpty()) {
+            canLaunchImport = false;
+            printWrongRouteLinksUsedMutipleTimesInTheSameFile(out);
+        }
+
+        if (!wrongRouteLinksUsedSameFromAndToScheduledStopPoint.isEmpty()) {
+            canLaunchImport = false;
+            printWrongRouteLinksUsedSameFromAndToScheduledStopPoint(out);
         }
 
         if (!modifiedTimetables.isEmpty()) {
@@ -309,18 +339,66 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
     }
 
-    private void printWrongRouteLink(PrintStream out) {
+    private void printWrongRouteLinksUsedInMutipleFiles(PrintStream out) {
 
         out.print(",\n");
-        out.print("\"wrongRouteLinks\": [\n");
+        out.print("\"wrongRouteLinksUsedInMutipleFiles\": [\n");
 
         String endOfline;
 
         int i = 0;
 
-        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinks.entrySet()) {
+        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedInMutipleFiles.entrySet()) {
 
-            endOfline = i == wrongRouteLinks.size() - 1 ? " }\n" : " },\n";
+            endOfline = i == wrongRouteLinksUsedInMutipleFiles.size() - 1 ? " }\n" : " },\n";
+
+            out.print("{ \"routeLinks\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
+            out.print(" \"fileNames\": [");
+            writeStringSet(out, wrongRouteLinkEntry.getValue());
+            out.print("]" + endOfline);
+            i++;
+        }
+
+        out.println("]");
+
+    }
+
+    private void printWrongRouteLinksUsedMutipleTimesInTheSameFile(PrintStream out) {
+
+        out.print(",\n");
+        out.print("\"wrongRouteLinksUsedMutipleTimesInTheSameFile\": [\n");
+
+        String endOfline;
+
+        int i = 0;
+
+        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedMutipleTimesInTheSameFile.entrySet()) {
+
+            endOfline = i == wrongRouteLinksUsedMutipleTimesInTheSameFile.size() - 1 ? " }\n" : " },\n";
+
+            out.print("{ \"fileName\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
+            out.print(" \"routeLinks\": [");
+            writeStringSet(out, wrongRouteLinkEntry.getValue());
+            out.print("]" + endOfline);
+            i++;
+        }
+
+        out.println("]");
+
+    }
+
+    private void printWrongRouteLinksUsedSameFromAndToScheduledStopPoint(PrintStream out) {
+
+        out.print(",\n");
+        out.print("\"wrongRouteLinksUsedSameFromAndToScheduledStopPoint\": [\n");
+
+        String endOfline;
+
+        int i = 0;
+
+        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedSameFromAndToScheduledStopPoint.entrySet()) {
+
+            endOfline = i == wrongRouteLinksUsedSameFromAndToScheduledStopPoint.size() - 1 ? " }\n" : " },\n";
 
             out.print("{ \"fileName\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
             out.print(" \"routeLinks\": [");

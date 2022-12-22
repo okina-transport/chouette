@@ -101,6 +101,12 @@ public interface Constant {
 	public static final String CURRENT_LINE_ID = "currentLineId";
 	public static final String CURRENT_SCHEDULED_STOP_POINT = "currentScheduledStopPoint";
 
-	public static final String WRONG_ROUTE_SECTIONS = "wrongRouteSections";
+	public static final String ROUTE_LINKS_USED_IN_MULTIPLE_FILES = "routeLinksUsedInMutipleFiles";
+	public static final String ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE = "routeLinksUsedMutipleTimesInTheSameFile";
+	public static final String ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT = "routeLinksUsedSameFromAndToScheduledStopPoint";
+
+	public static final String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
+
+	public static final String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";
 
 }
