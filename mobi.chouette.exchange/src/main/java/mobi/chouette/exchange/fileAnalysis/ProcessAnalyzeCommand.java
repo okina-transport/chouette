@@ -178,12 +178,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private void containsRouteLinksUsedInMutipleFiles(Context context) {
         Map<String, Set<String>> routeSectionsMultipleFiles = new HashMap<>();
         Map<String, Set<String>> routeSections = (Map<String, Set<String>>) context.get(ROUTE_LINKS_USED_IN_MULTIPLE_FILES);
-        for(String fileName : routeSections.keySet()){
-            if(routeSections.get(fileName).size() > 1){
-                routeSectionsMultipleFiles.put(fileName, routeSections.get(fileName));
+        if(routeSections != null){
+            for(String fileName : routeSections.keySet()){
+                if(routeSections.get(fileName).size() > 1){
+                    routeSectionsMultipleFiles.put(fileName, routeSections.get(fileName));
+                }
             }
+            wrongRouteLinksUsedInMutipleFiles.putAll(routeSectionsMultipleFiles);
         }
-        wrongRouteLinksUsedInMutipleFiles.putAll(routeSectionsMultipleFiles);
     }
 
     private void containsRouteLinksUsedMutipleTimesInTheSameFile(Context context) {
