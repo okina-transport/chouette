@@ -4521,6 +4521,116 @@ CREATE TABLE akt.disruption_stop_area (
 ALTER TABLE akt.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_disruption FOREIGN KEY (disruption_id) REFERENCES akt.disruption(id) ON DELETE CASCADE;
 ALTER TABLE akt.disruption_stop_area ADD CONSTRAINT fk_disruption_stop_area_stop FOREIGN KEY (stop_area_id) REFERENCES akt.stop_areas(id) ON DELETE CASCADE;
 
+CREATE TABLE sky.attributions (
+                                            id bigint NOT NULL,
+                                            objectid character varying(255),
+                                            agency_id bigint,
+                                            line_id bigint,
+                                            vehicle_journey_id bigint,
+                                            organisation_name text not null,
+                                            is_producer boolean,
+                                            is_operator boolean,
+                                            is_authority boolean,
+                                            attribution_url text,
+                                            attribution_email text,
+                                            attribution_phone text
+);
+
+ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES sky.agency(id);
+ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES sky.lines(id);
+ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES sky.vehicle_journeys(id);
+
+ALTER TABLE sky.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
+CREATE TABLE rut.attributions (
+                                  id bigint NOT NULL,
+                                  objectid character varying(255),
+                                  agency_id bigint,
+                                  line_id bigint,
+                                  vehicle_journey_id bigint,
+                                  organisation_name text not null,
+                                  is_producer boolean,
+                                  is_operator boolean,
+                                  is_authority boolean,
+                                  attribution_url text,
+                                  attribution_email text,
+                                  attribution_phone text
+);
+
+ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES rut.agency(id);
+ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES rut.lines(id);
+ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES rut.vehicle_journeys(id);
+
+ALTER TABLE rut.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
+
+CREATE TABLE nri.attributions (
+                                  id bigint NOT NULL,
+                                  objectid character varying(255),
+                                  agency_id bigint,
+                                  line_id bigint,
+                                  vehicle_journey_id bigint,
+                                  organisation_name text not null,
+                                  is_producer boolean,
+                                  is_operator boolean,
+                                  is_authority boolean,
+                                  attribution_url text,
+                                  attribution_email text,
+                                  attribution_phone text
+);
+
+ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES nri.agency(id);
+ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES nri.lines(id);
+ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES nri.vehicle_journeys(id);
+
+ALTER TABLE nri.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
+CREATE TABLE tro.attributions (
+                                  id bigint NOT NULL,
+                                  objectid character varying(255),
+                                  agency_id bigint,
+                                  line_id bigint,
+                                  vehicle_journey_id bigint,
+                                  organisation_name text not null,
+                                  is_producer boolean,
+                                  is_operator boolean,
+                                  is_authority boolean,
+                                  attribution_url text,
+                                  attribution_email text,
+                                  attribution_phone text
+);
+
+ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES tro.agency(id);
+ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES tro.lines(id);
+ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES tro.vehicle_journeys(id);
+
+ALTER TABLE tro.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
+CREATE TABLE akt.attributions (
+                                  id bigint NOT NULL,
+                                  objectid character varying(255),
+                                  agency_id bigint,
+                                  line_id bigint,
+                                  vehicle_journey_id bigint,
+                                  organisation_name text not null,
+                                  is_producer boolean,
+                                  is_operator boolean,
+                                  is_authority boolean,
+                                  attribution_url text,
+                                  attribution_email text,
+                                  attribution_phone text
+);
+
+ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES akt.agency(id);
+ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES akt.lines(id);
+ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES akt.vehicle_journeys(id);
+
+ALTER TABLE akt.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
 
 GRANT ALL ON SCHEMA akt TO chouette;
 GRANT ALL ON SCHEMA akt TO PUBLIC;
@@ -4530,8 +4640,6 @@ GRANT ALL ON SCHEMA nri TO PUBLIC;
 
 GRANT ALL ON SCHEMA sky TO chouette;
 GRANT ALL ON SCHEMA sky TO PUBLIC;
-
-
 
 GRANT ALL ON SCHEMA rut TO chouette;
 GRANT ALL ON SCHEMA rut TO PUBLIC;
