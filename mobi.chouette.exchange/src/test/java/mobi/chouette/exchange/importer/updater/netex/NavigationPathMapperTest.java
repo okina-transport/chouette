@@ -49,8 +49,8 @@ public class NavigationPathMapperTest {
         Assert.assertEquals(fromEndStructure.getPlaceRef().getRef(), from.getObjectId());
         Assert.assertEquals(toEndStructure.getPlaceRef().getRef(), to.getObjectId());
 
-        Duration duration = Duration.of(5, ChronoUnit.MINUTES);
-        Assert.assertEquals(duration, pl.getTransferDuration().getDefaultDuration());
+        Duration duration = Duration.of(300, ChronoUnit.SECONDS);
+        Assert.assertEquals(pl.getTransferDuration().getDefaultDuration().toString(), duration.toString() );
 
         // Check navigation path
         Assert.assertNotNull(frame.getNavigationPaths(), "No navigationPaths object");

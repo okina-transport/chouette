@@ -35,7 +35,6 @@ public class LineProducer extends NetexProducer implements NetexEntityProducer<o
 
 	@Override
 	public org.rutebanken.netex.model.Line_VersionStructure produce(Context context, mobi.chouette.model.Line neptuneLine) {
-
 		ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
 
 		org.rutebanken.netex.model.Line_VersionStructure netexLine;

@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.netexprofile.exporter.writer;
 
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import mobi.chouette.model.ConnectionLink;
@@ -173,8 +174,7 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             TransferDurationStructure transfertDuration = netexFactory.createTransferDurationStructure();
 
             if (connectionLink.getDefaultDuration() != null ){
-                Duration duration = Duration.parse(connectionLink.getDefaultDuration().toString());
-                transfertDuration.setDefaultDuration(duration);
+                transfertDuration.setDefaultDuration(TimeUtil.toDurationFromJodaDuration(connectionLink.getDefaultDuration()));
                 siteConnection.setWalkTransferDuration(transfertDuration);
             }
 

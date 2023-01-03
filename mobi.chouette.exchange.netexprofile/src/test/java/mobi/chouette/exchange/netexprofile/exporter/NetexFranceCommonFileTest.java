@@ -42,6 +42,8 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +99,7 @@ public class NetexFranceCommonFileTest {
 
     }
 
-    private void checkGeneratedFile(){
+    private void checkGeneratedFile() throws DatatypeConfigurationException {
 
         PublicationDeliveryStructure lineDeliveryStructure;
         try {
@@ -126,7 +128,8 @@ public class NetexFranceCommonFileTest {
         Assert.assertEquals(firstSiteConnection.getFrom().getStopPlaceRef().getValue().getRef(),"TEST:StopPlace:SP1");
         Assert.assertEquals(firstSiteConnection.getTo().getStopPlaceRef().getValue().getRef(),"TEST:StopPlace:SP2");
         Assert.assertEquals(firstSiteConnection.getDistance(),new BigDecimal(5));
-        java.time.Duration expectedDuration = java.time.Duration.parse(Duration.parse("PT76400S").toString());
+
+        javax.xml.datatype.Duration expectedDuration = DatatypeFactory.newInstance().newDuration("PT76400S");
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);
 
 

@@ -4536,12 +4536,99 @@ CREATE TABLE sky.attributions (
                                             attribution_phone text
 );
 
+
+CREATE TABLE sky.agency (
+                        id bigint NOT NULL,
+                        agency_id character varying(255),
+                        name character varying(255),
+                        url character varying(255),
+                        timezone character varying(255),
+                        lang character varying(255),
+                        phone character varying(255),
+                        fare_url character varying(255),
+                        email character varying(255)
+);
+
+
+CREATE TABLE sky.lines (
+                       id bigint NOT NULL,
+                       network_id bigint,
+                       company_id bigint,
+                       objectid character varying(255) NOT NULL,
+                       object_version integer,
+                       creation_time timestamp without time zone,
+                       creator_id character varying(255),
+                       name character varying(255),
+                       number character varying(255),
+                       published_name character varying(255),
+                       transport_mode_name character varying(255),
+                       transport_submode_name character varying(255),
+                       registration_number character varying(255),
+                       comment character varying(255),
+                       mobility_restricted_suitability boolean,
+                       int_user_needs integer,
+                       flexible_service boolean,
+                       url character varying(255),
+                       color character varying(6),
+                       text_color character varying(6),
+                       stable_id character varying(255),
+                       flexible_line_type character varying,
+                       booking_arrangement_id bigint,
+                       bike character varying(14),
+                       categories_for_line_id bigint DEFAULT 0,
+                       codifligne character varying(255),
+                       tad character varying(14),
+                       pmr character varying(14),
+                       pos integer,
+                       supprime boolean DEFAULT false
+);
+
+CREATE TABLE sky.vehicle_journeys (
+                                               id bigint NOT NULL,
+                                               comment character varying(255),
+                                               creation_time date,
+                                               creator_id character varying(255),
+                                               etat integer,
+                                               facility character varying(255),
+                                               flexible_service boolean,
+                                               mobility_restricted_suitability boolean,
+                                               number bigint,
+                                               objectid character varying(255),
+                                               object_version integer,
+                                               published_journey_identifier character varying(255),
+                                               published_journey_name character varying(255),
+                                               supprime boolean DEFAULT false,
+                                               transport_mode character varying(255),
+                                               vehicle_type_identifier character varying(255),
+                                               company_id bigint,
+                                               journey_pattern_id bigint,
+                                               route_id bigint,
+                                               dtype character varying(31),
+                                               journey_category integer DEFAULT 0 NOT NULL,
+                                               transport_submode_name character varying(255),
+                                               private_code character varying(255),
+                                               service_alteration character varying(255),
+                                               flexible_service_properties_id bigint,
+                                               bikes_allowed boolean
+);
+
+
+ALTER TABLE ONLY sky.vehicle_journeys
+    ADD CONSTRAINT vehicle_journeys_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY sky.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY sky.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
 ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
 ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES sky.agency(id);
 ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES sky.lines(id);
 ALTER TABLE sky.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES sky.vehicle_journeys(id);
 
-ALTER TABLE sky.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
 
 CREATE TABLE rut.attributions (
                                   id bigint NOT NULL,
@@ -4558,12 +4645,100 @@ CREATE TABLE rut.attributions (
                                   attribution_phone text
 );
 
+CREATE TABLE rut.agency (
+                            id bigint NOT NULL,
+                            agency_id character varying(255),
+                            name character varying(255),
+                            url character varying(255),
+                            timezone character varying(255),
+                            lang character varying(255),
+                            phone character varying(255),
+                            fare_url character varying(255),
+                            email character varying(255)
+);
+
+
+CREATE TABLE rut.lines (
+                           id bigint NOT NULL,
+                           network_id bigint,
+                           company_id bigint,
+                           objectid character varying(255) NOT NULL,
+                           object_version integer,
+                           creation_time timestamp without time zone,
+                           creator_id character varying(255),
+                           name character varying(255),
+                           number character varying(255),
+                           published_name character varying(255),
+                           transport_mode_name character varying(255),
+                           transport_submode_name character varying(255),
+                           registration_number character varying(255),
+                           comment character varying(255),
+                           mobility_restricted_suitability boolean,
+                           int_user_needs integer,
+                           flexible_service boolean,
+                           url character varying(255),
+                           color character varying(6),
+                           text_color character varying(6),
+                           stable_id character varying(255),
+                           flexible_line_type character varying,
+                           booking_arrangement_id bigint,
+                           bike character varying(14),
+                           categories_for_line_id bigint DEFAULT 0,
+                           codifligne character varying(255),
+                           tad character varying(14),
+                           pmr character varying(14),
+                           pos integer,
+                           supprime boolean DEFAULT false
+);
+
+
+CREATE TABLE rut.vehicle_journeys (
+                                      id bigint NOT NULL,
+                                      comment character varying(255),
+                                      creation_time date,
+                                      creator_id character varying(255),
+                                      etat integer,
+                                      facility character varying(255),
+                                      flexible_service boolean,
+                                      mobility_restricted_suitability boolean,
+                                      number bigint,
+                                      objectid character varying(255),
+                                      object_version integer,
+                                      published_journey_identifier character varying(255),
+                                      published_journey_name character varying(255),
+                                      supprime boolean DEFAULT false,
+                                      transport_mode character varying(255),
+                                      vehicle_type_identifier character varying(255),
+                                      company_id bigint,
+                                      journey_pattern_id bigint,
+                                      route_id bigint,
+                                      dtype character varying(31),
+                                      journey_category integer DEFAULT 0 NOT NULL,
+                                      transport_submode_name character varying(255),
+                                      private_code character varying(255),
+                                      service_alteration character varying(255),
+                                      flexible_service_properties_id bigint,
+                                      bikes_allowed boolean
+);
+
+
+ALTER TABLE ONLY rut.vehicle_journeys
+    ADD CONSTRAINT vehicle_journeys_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY rut.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY rut.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
 ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
 ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES rut.agency(id);
 ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES rut.lines(id);
 ALTER TABLE rut.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES rut.vehicle_journeys(id);
 
-ALTER TABLE rut.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
 
 
 CREATE TABLE nri.attributions (
@@ -4581,12 +4756,100 @@ CREATE TABLE nri.attributions (
                                   attribution_phone text
 );
 
+CREATE TABLE nri.agency (
+                            id bigint NOT NULL,
+                            agency_id character varying(255),
+                            name character varying(255),
+                            url character varying(255),
+                            timezone character varying(255),
+                            lang character varying(255),
+                            phone character varying(255),
+                            fare_url character varying(255),
+                            email character varying(255)
+);
+
+
+CREATE TABLE nri.lines (
+                           id bigint NOT NULL,
+                           network_id bigint,
+                           company_id bigint,
+                           objectid character varying(255) NOT NULL,
+                           object_version integer,
+                           creation_time timestamp without time zone,
+                           creator_id character varying(255),
+                           name character varying(255),
+                           number character varying(255),
+                           published_name character varying(255),
+                           transport_mode_name character varying(255),
+                           transport_submode_name character varying(255),
+                           registration_number character varying(255),
+                           comment character varying(255),
+                           mobility_restricted_suitability boolean,
+                           int_user_needs integer,
+                           flexible_service boolean,
+                           url character varying(255),
+                           color character varying(6),
+                           text_color character varying(6),
+                           stable_id character varying(255),
+                           flexible_line_type character varying,
+                           booking_arrangement_id bigint,
+                           bike character varying(14),
+                           categories_for_line_id bigint DEFAULT 0,
+                           codifligne character varying(255),
+                           tad character varying(14),
+                           pmr character varying(14),
+                           pos integer,
+                           supprime boolean DEFAULT false
+);
+
+
+CREATE TABLE nri.vehicle_journeys (
+                                      id bigint NOT NULL,
+                                      comment character varying(255),
+                                      creation_time date,
+                                      creator_id character varying(255),
+                                      etat integer,
+                                      facility character varying(255),
+                                      flexible_service boolean,
+                                      mobility_restricted_suitability boolean,
+                                      number bigint,
+                                      objectid character varying(255),
+                                      object_version integer,
+                                      published_journey_identifier character varying(255),
+                                      published_journey_name character varying(255),
+                                      supprime boolean DEFAULT false,
+                                      transport_mode character varying(255),
+                                      vehicle_type_identifier character varying(255),
+                                      company_id bigint,
+                                      journey_pattern_id bigint,
+                                      route_id bigint,
+                                      dtype character varying(31),
+                                      journey_category integer DEFAULT 0 NOT NULL,
+                                      transport_submode_name character varying(255),
+                                      private_code character varying(255),
+                                      service_alteration character varying(255),
+                                      flexible_service_properties_id bigint,
+                                      bikes_allowed boolean
+);
+
+
+ALTER TABLE ONLY nri.vehicle_journeys
+    ADD CONSTRAINT vehicle_journeys_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY nri.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY nri.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
 ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
 ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES nri.agency(id);
 ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES nri.lines(id);
 ALTER TABLE nri.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES nri.vehicle_journeys(id);
 
-ALTER TABLE nri.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
 
 CREATE TABLE tro.attributions (
                                   id bigint NOT NULL,
@@ -4603,12 +4866,100 @@ CREATE TABLE tro.attributions (
                                   attribution_phone text
 );
 
+CREATE TABLE tro.agency (
+                            id bigint NOT NULL,
+                            agency_id character varying(255),
+                            name character varying(255),
+                            url character varying(255),
+                            timezone character varying(255),
+                            lang character varying(255),
+                            phone character varying(255),
+                            fare_url character varying(255),
+                            email character varying(255)
+);
+
+
+CREATE TABLE tro.lines (
+                           id bigint NOT NULL,
+                           network_id bigint,
+                           company_id bigint,
+                           objectid character varying(255) NOT NULL,
+                           object_version integer,
+                           creation_time timestamp without time zone,
+                           creator_id character varying(255),
+                           name character varying(255),
+                           number character varying(255),
+                           published_name character varying(255),
+                           transport_mode_name character varying(255),
+                           transport_submode_name character varying(255),
+                           registration_number character varying(255),
+                           comment character varying(255),
+                           mobility_restricted_suitability boolean,
+                           int_user_needs integer,
+                           flexible_service boolean,
+                           url character varying(255),
+                           color character varying(6),
+                           text_color character varying(6),
+                           stable_id character varying(255),
+                           flexible_line_type character varying,
+                           booking_arrangement_id bigint,
+                           bike character varying(14),
+                           categories_for_line_id bigint DEFAULT 0,
+                           codifligne character varying(255),
+                           tad character varying(14),
+                           pmr character varying(14),
+                           pos integer,
+                           supprime boolean DEFAULT false
+);
+
+
+CREATE TABLE tro.vehicle_journeys (
+                                      id bigint NOT NULL,
+                                      comment character varying(255),
+                                      creation_time date,
+                                      creator_id character varying(255),
+                                      etat integer,
+                                      facility character varying(255),
+                                      flexible_service boolean,
+                                      mobility_restricted_suitability boolean,
+                                      number bigint,
+                                      objectid character varying(255),
+                                      object_version integer,
+                                      published_journey_identifier character varying(255),
+                                      published_journey_name character varying(255),
+                                      supprime boolean DEFAULT false,
+                                      transport_mode character varying(255),
+                                      vehicle_type_identifier character varying(255),
+                                      company_id bigint,
+                                      journey_pattern_id bigint,
+                                      route_id bigint,
+                                      dtype character varying(31),
+                                      journey_category integer DEFAULT 0 NOT NULL,
+                                      transport_submode_name character varying(255),
+                                      private_code character varying(255),
+                                      service_alteration character varying(255),
+                                      flexible_service_properties_id bigint,
+                                      bikes_allowed boolean
+);
+
+
+ALTER TABLE ONLY tro.vehicle_journeys
+    ADD CONSTRAINT vehicle_journeys_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY tro.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY tro.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
 ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
 ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES tro.agency(id);
 ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES tro.lines(id);
 ALTER TABLE tro.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES tro.vehicle_journeys(id);
 
-ALTER TABLE tro.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
 
 CREATE TABLE akt.attributions (
                                   id bigint NOT NULL,
@@ -4625,12 +4976,142 @@ CREATE TABLE akt.attributions (
                                   attribution_phone text
 );
 
+CREATE TABLE akt.agency (
+                            id bigint NOT NULL,
+                            agency_id character varying(255),
+                            name character varying(255),
+                            url character varying(255),
+                            timezone character varying(255),
+                            lang character varying(255),
+                            phone character varying(255),
+                            fare_url character varying(255),
+                            email character varying(255)
+);
+
+
+CREATE TABLE akt.lines (
+                           id bigint NOT NULL,
+                           network_id bigint,
+                           company_id bigint,
+                           objectid character varying(255) NOT NULL,
+                           object_version integer,
+                           creation_time timestamp without time zone,
+                           creator_id character varying(255),
+                           name character varying(255),
+                           number character varying(255),
+                           published_name character varying(255),
+                           transport_mode_name character varying(255),
+                           transport_submode_name character varying(255),
+                           registration_number character varying(255),
+                           comment character varying(255),
+                           mobility_restricted_suitability boolean,
+                           int_user_needs integer,
+                           flexible_service boolean,
+                           url character varying(255),
+                           color character varying(6),
+                           text_color character varying(6),
+                           stable_id character varying(255),
+                           flexible_line_type character varying,
+                           booking_arrangement_id bigint,
+                           bike character varying(14),
+                           categories_for_line_id bigint DEFAULT 0,
+                           codifligne character varying(255),
+                           tad character varying(14),
+                           pmr character varying(14),
+                           pos integer,
+                           supprime boolean DEFAULT false
+);
+
+
+
+CREATE TABLE akt.vehicle_journeys (
+                                      id bigint NOT NULL,
+                                      comment character varying(255),
+                                      creation_time date,
+                                      creator_id character varying(255),
+                                      etat integer,
+                                      facility character varying(255),
+                                      flexible_service boolean,
+                                      mobility_restricted_suitability boolean,
+                                      number bigint,
+                                      objectid character varying(255),
+                                      object_version integer,
+                                      published_journey_identifier character varying(255),
+                                      published_journey_name character varying(255),
+                                      supprime boolean DEFAULT false,
+                                      transport_mode character varying(255),
+                                      vehicle_type_identifier character varying(255),
+                                      company_id bigint,
+                                      journey_pattern_id bigint,
+                                      route_id bigint,
+                                      dtype character varying(31),
+                                      journey_category integer DEFAULT 0 NOT NULL,
+                                      transport_submode_name character varying(255),
+                                      private_code character varying(255),
+                                      service_alteration character varying(255),
+                                      flexible_service_properties_id bigint,
+                                      bikes_allowed boolean
+);
+
+ALTER TABLE ONLY akt.vehicle_journeys
+    ADD CONSTRAINT vehicle_journeys_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY akt.lines
+    ADD CONSTRAINT lines_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY akt.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
 ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
 ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES akt.agency(id);
 ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES akt.lines(id);
 ALTER TABLE akt.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES akt.vehicle_journeys(id);
 
-ALTER TABLE akt.export_template ADD COLUMN IF NOT EXISTS generate_attribution VARCHAR(255);
+
+
+CREATE TABLE chouette_gui.attributions (
+                                           id bigint NOT NULL,
+                                           objectid character varying(255),
+                                           agency_id bigint,
+                                           line_id bigint,
+                                           vehicle_journey_id bigint,
+                                           organisation_name text not null,
+                                           is_producer boolean,
+                                           is_operator boolean,
+                                           is_authority boolean,
+                                           attribution_url text,
+                                           attribution_email text,
+                                           attribution_phone text
+);
+
+CREATE TABLE chouette_gui.agency (
+                            id bigint NOT NULL,
+                            agency_id character varying(255),
+                            name character varying(255),
+                            url character varying(255),
+                            timezone character varying(255),
+                            lang character varying(255),
+                            phone character varying(255),
+                            fare_url character varying(255),
+                            email character varying(255)
+);
+
+
+
+
+ALTER TABLE ONLY chouette_gui.agency
+    ADD CONSTRAINT agency_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE chouette_gui.attributions  ADD CONSTRAINT attributions_pkey PRIMARY KEY (id);
+ALTER TABLE chouette_gui.attributions  ADD CONSTRAINT attributions_agency_fkey FOREIGN KEY (agency_id) REFERENCES chouette_gui.agency(id);
+ALTER TABLE chouette_gui.attributions  ADD CONSTRAINT attributions_line_fkey FOREIGN KEY (line_id) REFERENCES chouette_gui.lines(id);
+ALTER TABLE chouette_gui.attributions  ADD CONSTRAINT attributions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id);
+
+
 
 GRANT ALL ON SCHEMA akt TO chouette;
 GRANT ALL ON SCHEMA akt TO PUBLIC;
