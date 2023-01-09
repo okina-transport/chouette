@@ -8,6 +8,7 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
 import java.util.Collection;
@@ -106,9 +107,36 @@ public class GtfsDataCollector extends DataCollector {
 			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks);
 			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks);
 			for (StopArea sa : stopArea.getContainedStopAreas()) {
-				collectStopAreas(collection, sa, skipNoCoordinates, followLinks);
+
+				if (isStopAreaUsed(collection, sa)){
+					collectStopAreas(collection, sa, skipNoCoordinates, followLinks);
+				}
 			}
 		}
+	}
+
+
+	/**
+	 * Check if a stop area is really used by exported lines
+	 * (to avoid exporting stops that are never used)
+	 * @param collection
+	 * 		data collection that must be exported
+	 * @param stopArea
+	 * 		the stopArea to check
+	 * @return
+	 * 		true : the stopArea is used and must be exported
+	 * 		false : the stopArea is never used
+	 */
+	private boolean isStopAreaUsed(mobi.chouette.exchange.exporter.ExportableData collection, StopArea stopArea){
+
+		if (StringUtils.isEmpty(stopArea.getObjectId())){
+			log.warn("Found a stopArea without objectId. Will be exported by default:" + stopArea.getId());
+			return true;
+		}
+
+		return collection.getScheduledStopPoints().stream()
+												  .anyMatch(scheduledStopPoint -> stopArea.getObjectId().equals(scheduledStopPoint.getContainedInStopAreaRef()));
+
 	}
 
 

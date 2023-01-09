@@ -10,6 +10,9 @@ import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
 public class TimeUtilTest {
 
     @Test
@@ -57,8 +60,9 @@ public class TimeUtilTest {
     }
 
     @Test
-    public void javaDurationToJodaDurationTest(){
-        Assert.assertEquals(TimeUtil.toJodaDuration(java.time.Duration.ofMinutes(60)), org.joda.time.Duration.standardMinutes(60));
+    public void javaDurationToJodaDurationTest() throws DatatypeConfigurationException {
+        javax.xml.datatype.Duration dur = DatatypeFactory.newInstance().newDuration("PT3600S");
+        Assert.assertEquals(TimeUtil.toJodaDuration(dur), org.joda.time.Duration.standardMinutes(60));
     }
 
     @Test

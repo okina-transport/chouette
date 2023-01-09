@@ -10,8 +10,9 @@ import org.rutebanken.netex.model.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import java.math.BigInteger;
-import java.time.Duration;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -56,7 +57,29 @@ public class NavigationPathMapper {
                 .withAllowedUse(PathDirectionEnumeration.TWO_WAY);
 
 
-        pl.setTransferDuration(new TransferDurationStructure().withDefaultDuration(Duration.ofMillis(link.getDefaultDuration().getMillis())));
+        long seconds = link.getDefaultDuration().getMillis() / 1000;
+
+        try {
+            int nbMin = (int) (seconds / 60);
+            String durationStr = "PT";
+
+            if (nbMin > 0){
+                durationStr = durationStr + nbMin + "M";
+                seconds = seconds - (nbMin * 60);
+            }
+
+            if (seconds > 0){
+                durationStr = durationStr + seconds + "S";
+            }
+
+            javax.xml.datatype.Duration duration = DatatypeFactory.newInstance().newDuration(durationStr);
+
+            pl.setTransferDuration(new TransferDurationStructure().withDefaultDuration(duration));
+
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
+
         if (link.getComment() != null) {
             pl.setDescription(new MultilingualString().withLang("no").withValue(link.getComment()));
         }
@@ -106,7 +129,7 @@ public class NavigationPathMapper {
         StopArea from = referential.getSharedStopAreas().get(e.getFrom().getPlaceRef().getValue());
         StopArea to = referential.getSharedStopAreas().get(e.getTo().getPlaceRef().getValue());
 
-        Duration duration = e.getTransferDuration().getDefaultDuration();
+
 
         connectionLink.setStartOfLink(from);
         connectionLink.setEndOfLink(to);

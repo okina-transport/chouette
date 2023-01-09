@@ -1,15 +1,20 @@
 package mobi.chouette.common;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
 import org.joda.time.Seconds;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
 public class TimeUtil {
+
+    private static final Logger logger = Logger.getLogger(TimeUtil.class);
 
     public static Duration subtract(LocalTime thisDeparture, LocalTime firstDeparture) {
         int seconds;
@@ -37,18 +42,29 @@ public class TimeUtil {
         return new org.joda.time.LocalTime(localTime.getHour(), localTime.getMinute(), localTime.getSecond());
     }
 
-    public static org.joda.time.Duration toJodaDuration(java.time.Duration duration) {
+    public static org.joda.time.Duration toJodaDuration(javax.xml.datatype.Duration duration) {
         if (duration == null) {
             return null;
         }
-        return org.joda.time.Duration.millis(duration.toMillis());
+
+
+        Duration result = org.joda.time.Duration.parse(duration.toString());
+        return org.joda.time.Duration.millis(duration.getSeconds() * 1000);
     }
 
-    public static java.time.Duration toDurationFromJodaDuration(Duration jodaDuration) {
+    public static javax.xml.datatype.Duration toDurationFromJodaDuration(Duration jodaDuration) {
         if (jodaDuration == null) {
             return null;
         }
-        return java.time.Duration.ofMillis(jodaDuration.getMillis());
+
+        try {
+            return DatatypeFactory.newInstance().newDuration(jodaDuration.toString());
+
+        } catch (DatatypeConfigurationException e) {
+            logger.error("can t convert duration");
+            return null;
+        }
+
     }
 
     public static org.joda.time.LocalDate toJodaLocalDate(LocalDate localDate) {

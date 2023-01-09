@@ -33,7 +33,7 @@
 
         <!-- NB: Concious choice of using snapshot version. This is to keep in
             sync, and fail fast if incompatibilities -->
-        <netex-java-model.version>2.0.4-NETEX-FR</netex-java-model.version>
+        <netex-java-model.version>2.0.5-NETEX-FR</netex-java-model.version>
         <okina-helpers.version>1.0.24</okina-helpers.version>
 
         <sonar.projectKey>mobi-iti:chouette</sonar.projectKey>
