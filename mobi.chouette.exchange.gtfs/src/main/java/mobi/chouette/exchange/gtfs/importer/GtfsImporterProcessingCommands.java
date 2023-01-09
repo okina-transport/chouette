@@ -24,6 +24,7 @@ import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Log4j
@@ -218,7 +219,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
         // Ignore les commandes Mobiiti selon paramètre
-        if (Boolean.parseBoolean(System.getProperty(CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND, "false"))) {
+        if (Optional.ofNullable(System.getenv(CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND)).map(Boolean::parseBoolean).orElse(false)) {
             return new ArrayList<>();
         }
 
