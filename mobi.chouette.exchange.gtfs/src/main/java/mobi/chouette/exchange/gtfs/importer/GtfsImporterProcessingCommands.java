@@ -13,18 +13,7 @@ import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
-import mobi.chouette.exchange.importer.CleanLineInCacheCommand;
-import mobi.chouette.exchange.importer.CleanRepositoryCommand;
-import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
-import mobi.chouette.exchange.importer.CopyCommand;
-import mobi.chouette.exchange.importer.DeleteLineWithoutOfferCommand;
-import mobi.chouette.exchange.importer.GenerateRouteSectionsCommand;
-import mobi.chouette.exchange.importer.LineRegisterCommand;
-import mobi.chouette.exchange.importer.MergeTripIdCommand;
-import mobi.chouette.exchange.importer.RouteMergerCommand;
-import mobi.chouette.exchange.importer.StopAreaRegisterCommand;
-import mobi.chouette.exchange.importer.UncompressCommand;
-import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
+import mobi.chouette.exchange.importer.*;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ImportedLineValidatorCommand;
 import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
@@ -39,6 +28,8 @@ import java.util.List;
 @Data
 @Log4j
 public class GtfsImporterProcessingCommands implements ProcessingCommands, Constant {
+
+    private static final String CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND = "CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND";
 
     public static class DefaultFactory extends ProcessingCommandsFactory {
 
@@ -226,6 +217,11 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
     @Override
     public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+        // Ignore les commandes Mobiiti selon paramètre
+        if (Boolean.parseBoolean(System.getProperty(CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND, "false"))) {
+            return new ArrayList<>();
+        }
+
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
         GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
 
