@@ -35,3 +35,4 @@ $$ LANGUAGE plpgsql VOLATILE;
 
 drop schema if exists chouette_gui_transfer CASCADE;
 select clone_schema('chouette_gui','chouette_gui_transfer');
+insert into chouette_gui_transfer.referential_last_update(id, last_update_timestamp) values(1, current_timestamp);
