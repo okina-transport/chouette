@@ -19,7 +19,7 @@ public class ReferentialLastUpdate {
 
     @Id
     @Column(name = "id")
-    protected Long id;
+    protected long id;
 
     @Getter
     @Setter
