@@ -1,3 +1,4 @@
+env: prd
 gcpProjectId: ent-chouette-prd
 gcpDatabaseInstance: ent-chouette-prd:europe-west1:chouette-db-pg13=tcp:5432
 gcpBucketName: ror-chouette-gcp2-production
