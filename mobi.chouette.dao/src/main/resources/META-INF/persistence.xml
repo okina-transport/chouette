@@ -21,12 +21,14 @@
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 
-			<property name="hibernate.jdbc.batch_size" value="100" />
+			<!-- PostgreSQL maximum batch size is 128-->
+			<property name="hibernate.jdbc.batch_size" value="128" />
 			<property name="hibernate.jdbc.batch_versioned_data" value="true" />
 			<property name="hibernate.order_inserts" value="true" />
 			<property name="hibernate.order_updates" value="true" />
 
 			<property name="hibernate.batch_fetch_style" value="padded" />
+			<property name="hibernate.query.in_clause_parameter_padding" value="true" />
 			<property name="hibernate.default_batch_fetch_size" value="100" />
 
 			<property name="hibernate.connection.datasource" value="java:jboss/datasources/chouette" />
@@ -109,6 +111,7 @@
 			<property name="hibernate.order_updates" value="true" />
 
 			<property name="hibernate.batch_fetch_style" value="padded" />
+			<property name="hibernate.query.in_clause_parameter_padding" value="true" />
 			<property name="hibernate.default_batch_fetch_size" value="2000" />
 
 			<property name="hibernate.multiTenancy" value="SCHEMA" />
