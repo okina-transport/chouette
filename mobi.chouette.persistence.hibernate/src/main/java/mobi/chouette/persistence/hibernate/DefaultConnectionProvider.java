@@ -33,8 +33,7 @@ public class DefaultConnectionProvider implements
 		final Connection connection = getAnyConnection();
 		try {
 			if (identifier != null && !identifier.isEmpty()) {
-				connection.createStatement().execute(
-						"SET SCHEMA '" + identifier + "'");
+				connection.setSchema(identifier);
 			}
 		} catch (SQLException e) {
 			throw new HibernateException(
