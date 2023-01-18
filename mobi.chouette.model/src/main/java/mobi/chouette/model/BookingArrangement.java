@@ -1,5 +1,6 @@
 package mobi.chouette.model;
 
+import java.sql.Time;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -78,8 +79,7 @@ public class BookingArrangement extends NeptuneObject {
     @Getter
     @Setter
     @Column(name = "minimum_booking_period")
-    @Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
-    private Duration minimumBookingPeriod;
+    private Time minimumBookingPeriod;
 
 
     @Getter
