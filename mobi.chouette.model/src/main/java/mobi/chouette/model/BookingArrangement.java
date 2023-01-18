@@ -74,7 +74,7 @@ public class BookingArrangement extends NeptuneObject {
     @Getter
     @Setter
     @Column(name = "latest_booking_time")
-    private LocalTime latestBookingTime;
+    private Time latestBookingTime;
 
     @Getter
     @Setter
