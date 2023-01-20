@@ -9,7 +9,7 @@ import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
+
 import javax.inject.Named;
 
 import lombok.extern.log4j.Log4j;
@@ -19,7 +19,6 @@ import mobi.chouette.common.file.FileStore;
 import com.google.cloud.storage.Storage;
 import org.rutebanken.helper.gcp.BlobStoreHelper;
 
-import static mobi.chouette.service.GoogleCloudFileStore.BEAN_NAME;
 
 /**
  * Store permanent files in Google Cloud Storage.
@@ -52,7 +51,12 @@ public class GoogleCloudFileStore implements FileStore {
 
 		log.info("Initializing blob store service. ContainerName: " + containerName + ", credentialPath: " + credentialPath + ", projectId: " + projectId);
 
-		storage = BlobStoreHelper.getStorage(credentialPath, projectId);
+		if (credentialPath == null || credentialPath.isEmpty()) {
+			// Use default gcp credentials
+			storage = BlobStoreHelper.getStorage(projectId);
+		} else {
+			storage = BlobStoreHelper.getStorage(credentialPath, projectId);
+		}
 	}
 
 
@@ -63,7 +67,7 @@ public class GoogleCloudFileStore implements FileStore {
 
 	@Override
 	public void writeFile(Path filePath, InputStream content) {
-		BlobStoreHelper.uploadBlobWithRetry(storage, containerName, toGCSPath(filePath), content, false);
+		BlobStoreHelper.createOrReplace(storage, containerName, toGCSPath(filePath), content, false);
 	}
 
 	@Override

@@ -102,7 +102,7 @@ public abstract class IndexImpl<T> extends AbstractIndex<T> {
 			}
 		} finally {
 			file.close();
-			//log.info(Color.BLUE + monitor.stop() + Color.NORMAL);
+			//JamonUtils.logBlue(log, monitor);
 		}
 	}
 	
@@ -395,8 +395,8 @@ public abstract class IndexImpl<T> extends AbstractIndex<T> {
 	
 	public Integer getIndex(String key) {
 		if (_fields.get(key) == null)
-			return new Integer(-1);
-		return new Integer(_fields.get(key).intValue()+1);
+			return -1;
+		return _fields.get(key).intValue() + 1;
 	}
 
 	protected String getField(GtfsIterator reader, String key, String value) {

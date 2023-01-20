@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "chouette.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+        {{- include "common.labels" . | indent 4 }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: chouette
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9990"
+        prometheus.io/scrape: "true"
+      labels:
+        {{- include "common.labels" . | indent 8 }}
+    spec:
+      containers:
+        - name: chouette-sql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.29.0-alpine
+          command:
+            - /cloud_sql_proxy
+            - -instances={{ .Values.gcpDatabaseInstance}}
+            - -term_timeout=30s
+            - -log_debug_stdout
+            - -verbose=false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 40Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+        - name: chouette
+          image: {{ .Values.image.identifier }}
+          imagePullPolicy: Always
+          env:
+            - name: JAVA_OPTS
+              value: -server -Xms2048m -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+                -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:ActiveProcessorCount={{ .Values.resources.cpuRequest }}
+                --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+                -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true
+                -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Dconfig.location=/etc/application-config/application.properties
+                -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/data/ -Dlogback.configurationFile=/etc/application-config/logback.xml
+            - name: LANG
+              value: en_US.UTF-8
+            - name: TZ
+              value: Europe/Oslo
+            - name: CHOUETTE_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-db-username
+                  name: ror-chouette-secret
+            - name: CHOUETTE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-db-password
+                  name: ror-chouette-secret
+            - name: CHOUETTE_IEV_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-iev-db-username
+                  name: ror-chouette-secret
+            - name: CHOUETTE_IEV_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-iev-db-password
+                  name: ror-chouette-secret
+            - name: IEV_REFERENTIAL_ADMIN_INITIAL_ENCRYPTED_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-admin-initial-encrypted-password
+                  name: ror-chouette-secret
+            - name: IEV_REFERENTIAL_USER_INITIAL_ENCRYPTED_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: chouette-user-initial-encrypted-password
+                  name: ror-chouette-secret
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - /opt/jboss/wildfly/bin/jboss-cli.sh -c --command=:shutdown
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 5005
+              name: debug
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: chouette_iev/health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: chouette_iev/health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: {{ .Values.resources.cpuLimit }}
+              memory: {{ .Values.resources.memLimit }}
+            requests:
+              cpu: {{ .Values.resources.cpuRequest }}
+              memory: {{ .Values.resources.memRequest }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
+              name: chouette-config
+              subPath: standalone.xml
+            - mountPath: /etc/application-config/application.properties
+              name: chouette-config
+              readOnly: true
+              subPath: application.properties
+            - mountPath: /etc/application-config/logback.xml
+              name: chouette-config
+              readOnly: true
+              subPath: logback.xml
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      serviceAccountName: application
+      terminationGracePeriodSeconds: 60
+      topologySpreadConstraints:
+        - maxSkew: 3
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: chouette
+        - maxSkew: 5
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: chouette
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: chouette-config
+          name: chouette-config

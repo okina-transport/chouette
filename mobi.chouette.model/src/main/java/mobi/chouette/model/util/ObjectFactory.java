@@ -2,10 +2,13 @@ package mobi.chouette.model.util;
 
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.Branding;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DatedServiceJourney;
+import mobi.chouette.model.DeadRun;
+import mobi.chouette.model.DeadRunAtStop;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
@@ -86,6 +89,19 @@ public class ObjectFactory {
 			referential.getVehicleJourneyAtStops().put(objectId, result);
 		}
 		
+		return result;
+	}
+
+	public static DeadRunAtStop getDeadRunAtStop(Referential referential,
+												 String objectId) {
+		DeadRunAtStop result = referential.getDeadRunAtStops().get(objectId);
+		if (result == null) {
+			result = new DeadRunAtStop();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getDeadRunAtStops().put(objectId, result);
+		}
+
 		return result;
 	}
 
@@ -316,6 +332,18 @@ public class ObjectFactory {
 		}
 		return result;
 	}
+
+	public static DeadRun getDeadRun(Referential referential,
+											String objectId) {
+		DeadRun result = referential.getDeadRuns().get(objectId);
+		if (result == null) {
+			result = new DeadRun();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getDeadRuns().put(objectId, result);
+		}
+		return result;
+	}
 	
 	public static Timeband getTimeband(Referential referential, String objectId) {
 		Timeband timeband = referential.getTimebands().get(objectId);
@@ -374,4 +402,20 @@ public class ObjectFactory {
 
 		return interchange;
 	}
+
+	public static Block getBlock(Referential referential,
+										   String objectId) {
+		Block result = referential.getSharedBlocks().get(objectId);
+		if (result == null) {
+			result = new Block();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getSharedBlocks().put(objectId, result);
+		}
+		if (!referential.getBlocks().containsKey(objectId)) {
+			referential.getBlocks().put(objectId, result);
+		}
+		return result;
+	}
+
 }

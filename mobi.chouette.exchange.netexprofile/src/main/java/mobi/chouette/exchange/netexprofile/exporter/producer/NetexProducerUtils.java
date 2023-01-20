@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.rutebanken.netex.model.FlexibleLineRefStructure;
@@ -71,9 +72,7 @@ public class NetexProducerUtils {
 	@SuppressWarnings("unchecked")
 	public static List<DayOfWeekEnumeration> toDayOfWeekEnumeration(List<DayTypeEnum> dayTypeEnums) {
 		EnumSet actualDaysOfWeek = EnumSet.noneOf(DayTypeEnum.class);
-		for (DayTypeEnum dayTypeEnum : dayTypeEnums) {
-			actualDaysOfWeek.add(dayTypeEnum);
-		}
+		actualDaysOfWeek.addAll(dayTypeEnums);
 
 		if (actualDaysOfWeek.isEmpty()) {
 			return Collections.EMPTY_LIST;
@@ -129,7 +128,8 @@ public class NetexProducerUtils {
 	public static String translateObjectId(String original, String newType) {
 		String[] splittedParts = original.split(":");
 		if(splittedParts.length == 3) {
-			return original.replaceAll(splittedParts[1], newType);
+			// StringUtils.replace() is faster than String.replaceAll() for non-regexp replacement
+			return StringUtils.replace(original,splittedParts[1], newType);
 		} else {
 			log.warn("Could not transform identifier "+original+" to type "+newType+" as it does not conform to id standard (XXX:Type:YYY)");
 			return original;

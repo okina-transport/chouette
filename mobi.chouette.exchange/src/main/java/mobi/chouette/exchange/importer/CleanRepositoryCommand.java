@@ -11,15 +11,14 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.*;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import mobi.chouette.model.FootNoteAlternativeText;
 
 @Log4j
 @Stateless(name = CleanRepositoryCommand.COMMAND)
@@ -70,8 +69,16 @@ public class CleanRepositoryCommand implements Command {
 	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
 
 	@EJB
+	private DeadRunDAO deadRunDAO;
+
+	@EJB
+	private DeadRunAtStopDAO deadRunAtStopDAO;
+
+	@EJB
 	private DatedServiceJourneyDAO datedServiceJourneyDAO;
 
+	@EJB
+	private BlockDAO blockDAO;
 
 	@EJB
 	private DestinationDisplayDAO destinationDisplayDAO;
@@ -101,7 +108,7 @@ public class CleanRepositoryCommand implements Command {
 	private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
 
 	@EJB
-	private ReferentialDAO referentialDAO;
+	private ReferentialLastUpdateDAO referentialLastUpdateDAO;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -130,21 +137,24 @@ public class CleanRepositoryCommand implements Command {
 			timebandDAO.truncate();
 			vehicleJourneyDAO.truncate();
 			vehicleJourneyAtStopDAO.truncate();
+			deadRunDAO.truncate();
+			deadRunAtStopDAO.truncate();
 			datedServiceJourneyDAO.truncate();
+			blockDAO.truncate();
 			destinationDisplayDAO.truncate();
 			interchangeDAO.truncate();
 			routePointDAO.truncate();
 			flexibleServicePropertiesDAO.truncate();
 			bookingArrangementDAO.truncate();
 			contactStructureDAO.truncate();
-			referentialDAO.setLastUpdateTimestamp(LocalDateTime.now());
+			referentialLastUpdateDAO.setLastUpdateTimestamp(LocalDateTime.now());
 
 			result = SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
 			throw e;
 		}
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		JamonUtils.logMagenta(log, monitor);
 		return result;
 	}
 

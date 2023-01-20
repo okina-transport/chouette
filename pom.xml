@@ -9,49 +9,60 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<wildfly.version>8.2.1.Final</wildfly.version>
-		<version.wildfly.maven.plugin>1.0.2.Final</version.wildfly.maven.plugin>
-		<version.compiler.plugin>3.2</version.compiler.plugin>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+
+		<wildfly.version>26.1.2.Final</wildfly.version>
+		<wildfly.core.version>18.1.2.Final</wildfly.core.version>
+
+		<slf4j.version>1.7.36</slf4j.version>
+		<logback.version>1.2.11</logback.version>
+		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
+
+		<version.wildfly.maven.plugin>3.0.2.Final</version.wildfly.maven.plugin>
+		<version.compiler.plugin>3.10.0</version.compiler.plugin>
 		<version.jaxb2.plugin>1.5</version.jaxb2.plugin>
-		<version.jar.plugin>2.5</version.jar.plugin>
-		<version.war.plugin>2.5</version.war.plugin>
-		<version.ejb.plugin>2.4</version.ejb.plugin>
-		<version.ear.plugin>2.9.1</version.ear.plugin>
-		<shrinkwrap.bom-version>2.1.1</shrinkwrap.bom-version>
-		<postgresql.version>42.2.18</postgresql.version>
-		<postgis.version>2.4.0</postgis.version>
-		<hibernate-spatial.version>4.3</hibernate-spatial.version>
-		<jts.version>1.13</jts.version>
-		<arquillian-version>1.1.11.Final</arquillian-version>
-		<jaxb-version>2.2.11</jaxb-version>
-		<lombok-version>1.16.8</lombok-version>
-		<lombok-maven-plugin-version>1.16.8.0</lombok-maven-plugin-version>
-		<prometheus.agent.version>0.12.0</prometheus.agent.version>
-		<guava.version>30.0-jre</guava.version>
+		<version.jar.plugin>3.2.2</version.jar.plugin>
+		<version.war.plugin>3.3.2</version.war.plugin>
+		<version.ejb.plugin>3.1.0</version.ejb.plugin>
+		<version.ear.plugin>3.2.0</version.ear.plugin>
+		<version.resources.plugin>3.2.0</version.resources.plugin>
+		<version.dependency.plugin>3.2.0</version.dependency.plugin>
+		<version.source.plugin>3.2.1</version.source.plugin>
+		<version.javadoc.plugin>3.3.2</version.javadoc.plugin>
+		<version.site.plugin>3.11.0</version.site.plugin>
+		<version.surefire.plugin>2.22.2</version.surefire.plugin>
+		<version.assembly.plugin>3.3.0</version.assembly.plugin>
+		<version.build.helper.plugin>3.3.0</version.build.helper.plugin>
+		<version.clean.plugin>3.1.0</version.clean.plugin>
+		<version.install.plugin>2.5.2</version.install.plugin>
+		<version.processor.plugin>2.2.4</version.processor.plugin>
+
+		<postgresql.version>42.5.1</postgresql.version>
+		<postgis.version>2021.1.0</postgis.version>
+		<hibernate.version>5.3.28.Final</hibernate.version>
+		<jts.version>1.14.0</jts.version>
+		<geolatte-geom.version>1.3.0</geolatte-geom.version>
+		<geotools.version>19.4</geotools.version>
+
+		<dom4j.version>2.1.3</dom4j.version>
+		<jettison.version>1.5.3</jettison.version>
+
+		<lombok-version>1.18.24</lombok-version>
+		<lombok-maven-plugin-version>1.18.20.0</lombok-maven-plugin-version>
+		<guava.version>31.1-jre</guava.version>
+		<commons-lang3.version>3.12.0</commons-lang3.version>
+		<zt-zip.version>1.15</zt-zip.version>
 
 		<project.rootDir>${project.basedir}</project.rootDir>
 
- 	    <netex-java-model.version>1.0.11</netex-java-model.version>
-		<rutebanken.helpers.version>1.0.29</rutebanken.helpers.version>
+ 	    <netex-java-model.version>1.0.13</netex-java-model.version>
+		<entur.helpers.version>1.86</entur.helpers.version>
+		<owasp-dependency-check-plugin.version>7.4.4</owasp-dependency-check-plugin.version>
 
-		<owasp-dependency-check-plugin.version>6.0.1</owasp-dependency-check-plugin.version>
+		<wildfly-arquillian-container-embedded.version>3.0.1.Final</wildfly-arquillian-container-embedded.version>
 
 	</properties>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>chouette-snapshot-repository</id>
-			<name>Chouette Snapshot Repository</name>
-			<url>scp://chouette.marseille.cityway.fr/var/lib/tomcat6/webapps/maven-snapshot</url>
-		</snapshotRepository>
-		<repository>
-			<id>chouette-repository</id>
-			<name>Chouette Repository</name>
-			<url>scp://chouette.marseille.cityway.fr/var/lib/tomcat6/webapps/maven</url>
-		</repository>
-		<downloadUrl>http://maven.chouette.mobi</downloadUrl>
-	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>jboss</id>
@@ -62,20 +73,8 @@
 		</repository>
 		<repository>
 			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>https://download.osgeo.org/webdav/geotools/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<!--Adding explicitly Maven Central so that Shrinkwrap can download artifacts
-		  (in the version of Shrinkwrap used by Chouette, the URL for Maven Central is hardcoded to http://. not https://)
-		  -->
-		<repository>
-			<id>maven-central-https</id>
-			<name>Maven Central HTTPS</name>
-			<url>https://repo1.maven.org/maven2/</url>
+			<name>OSGeo Release Repository</name>
+			<url>https://repo.osgeo.org/repository/release/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -93,12 +92,12 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.1.10</version>
+				<version>2.2.6</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.3</version>
+				<version>${version.site.plugin}</version>
 				<dependencies>
 					<dependency><!-- add support for ssh/scp -->
 						<groupId>org.apache.maven.wagon</groupId>
@@ -149,7 +148,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.8</version>
+				<version>${version.dependency.plugin}</version>
 				<executions>
 					<execution>
 						<id>unpack</id>
@@ -197,67 +196,55 @@
 									</outputDirectory>
 								</artifactItem>
 								<artifactItem>
+									<groupId>net.postgis</groupId>
+									<artifactId>postgis-geometry</artifactId>
+									<version>${postgis.version}</version>
+									<outputDirectory>
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/org/postgres/main
+									</outputDirectory>
+								</artifactItem>
+								<artifactItem>
 									<groupId>org.hibernate</groupId>
 									<artifactId>hibernate-spatial</artifactId>
-									<version>${hibernate-spatial.version}</version>
+									<version>${hibernate.version}</version>
+									<outputDirectory>
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
+									</outputDirectory>
+								</artifactItem>
+
+								<artifactItem>
+									<groupId>org.hibernate</groupId>
+									<artifactId>hibernate-core</artifactId>
+									<version>${hibernate.version}</version>
+									<outputDirectory>
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
+									</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.hibernate</groupId>
+									<artifactId>hibernate-envers</artifactId>
+									<version>${hibernate.version}</version>
 									<outputDirectory>
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
 								</artifactItem>
 								<artifactItem>
 									<groupId>com.vividsolutions</groupId>
-									<artifactId>jts</artifactId>
+									<artifactId>jts-core</artifactId>
 									<version>${jts.version}</version>
 									<outputDirectory>
 										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-impl</artifactId>
-									<version>${jaxb-version}</version>
+									<groupId>org.geolatte</groupId>
+									<artifactId>geolatte-geom</artifactId>
+									<version>${geolatte-geom.version}</version>
 									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
+										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/org/hibernate/main
 									</outputDirectory>
 								</artifactItem>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-core</artifactId>
-									<version>${jaxb-version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
-									</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>com.sun.xml.bind</groupId>
-									<artifactId>jaxb-xjc</artifactId>
-									<version>${jaxb-version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/wildfly-customized-dependencies/modules/system/layers/base/com/sun/xml/bind/main
-									</outputDirectory>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
 
-					<execution>
-						<id>copy-prometheus-agent</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<verbose>true</verbose>
-							<artifactItems>
-								<artifactItem>
-									<groupId>io.prometheus.jmx</groupId>
-									<artifactId>jmx_prometheus_javaagent</artifactId>
-									<version>${prometheus.agent.version}</version>
-									<outputDirectory>
-										${project.rootDir}/target/docker/wildfly/prometheus
-									</outputDirectory>
-									<destFileName>jmx_prometheus_javaagent.jar</destFileName>
-								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>
@@ -266,7 +253,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+				<version>${version.resources.plugin}</version>
 				<executions>
 					<!-- WildFly test configuration files copy -->
 					<execution>
@@ -319,9 +306,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
+				<version>${version.surefire.plugin}</version>
 				<configuration>
-					<argLine>-Djboss.socket.binding.port-offset=300</argLine>
+					<argLine>-Djboss.socket.binding.port-offset=300 --add-modules=java.se --add-opens=java.base/java.util=ALL-UNNAMED</argLine>
 					<runOrder>alphabetical</runOrder>
 					<!-- Fork every test because it will launch a separate AS instance -->
 					<forkCount>1</forkCount>
@@ -357,15 +344,6 @@
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
 				<version>${lombok-maven-plugin-version}</version>
-				<dependencies>
-					<dependency>
-						<groupId>sun.jdk</groupId>
-						<artifactId>tools</artifactId>
-						<version>1.6</version>
-						<scope>system</scope>
-						<systemPath>${java.home}/../lib/tools.jar</systemPath>
-					</dependency>
-				</dependencies>
 				<executions>
 					<execution>
 						<id>delombok</id>
@@ -385,7 +363,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
+				<version>${version.source.plugin}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -398,7 +376,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8</version>
+				<version>${version.javadoc.plugin}</version>
 				<configuration>
 					<quiet>false</quiet>
 					<sourcepath>target/generated-sources/delombok</sourcepath>
@@ -437,6 +415,38 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${version.assembly.plugin}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${version.build.helper.plugin}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>${version.clean.plugin}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>${version.install.plugin}</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.bsc.maven</groupId>
+					<artifactId>maven-processor-plugin</artifactId>
+					<version>${version.processor.plugin}</version>
+				</plugin>
+
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
@@ -561,7 +571,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.8</version>
+				<version>${version.surefire.plugin}</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -618,16 +628,6 @@
 				<artifactId>mobi.chouette.exchange.netexprofile</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-		<!-- 	<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.kml</artifactId>
-				<version>${project.version}</version>
-			</dependency> -->
-		<!-- 	<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.hub</artifactId>
-				<version>${project.version}</version>
-			</dependency> -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>mobi.chouette.exchange.regtopp</artifactId>
@@ -648,12 +648,7 @@
 				<artifactId>mobi.chouette.exchange.stopplace</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-<!-- 			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>mobi.chouette.exchange.converter</artifactId>
-				<version>${project.version}</version>
-			</dependency>
- -->			<dependency>
+			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>mobi.chouette.service</artifactId>
 				<version>${project.version}</version>
@@ -664,8 +659,14 @@
 				<version>${project.version}</version>
 			</dependency>
 
-
-			<!-- Default Dependencies -->
+			<!-- Jakarta EE -->
+			<dependency>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-jakartaee8-with-tools</artifactId>
+				<version>${wildfly.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.wildfly</groupId>
 				<artifactId>wildfly-spec-api</artifactId>
@@ -674,67 +675,57 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-7.0</artifactId>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-microprofile</artifactId>
+				<version>${wildfly.version}</version>
 				<type>pom</type>
-				<version>1.0.2.Final</version>
-				<scope>provided</scope>
+				<scope>import</scope>
 			</dependency>
 
-      <dependency>
-  			<groupId>org.entur</groupId>
-  			<artifactId>netex-java-model</artifactId>
-  			<version>${netex-java-model.version}</version>
-  		</dependency>
+			<!-- Default Dependencies -->
+			<dependency>
+				<groupId>org.codehaus.jettison</groupId>
+				<artifactId>jettison</artifactId>
+				<version>${jettison.version}</version>
+			</dependency>
 
 			<dependency>
-				<groupId>org.entur.helpers</groupId>
+				<groupId>org.entur</groupId>
+				<artifactId>netex-java-model</artifactId>
+				<version>${netex-java-model.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.entur.ror.helpers</groupId>
 				<artifactId>calendar-helper</artifactId>
-				<version>${rutebanken.helpers.version}</version>
+				<version>${entur.helpers.version}</version>
 			</dependency>
 
 
 			<dependency>
-				<groupId>org.entur.helpers</groupId>
-				<artifactId>hazelcast-helper</artifactId>
-				<version>${rutebanken.helpers.version}</version>
-			</dependency>
-			<!--kubernetes-client version that is compatible with jackson 2.4.1 provided by JBoss-->
-			<dependency>
-				<groupId>io.fabric8</groupId>
-				<artifactId>kubernetes-client</artifactId>
-				<version>2.2.7</version>
-				<scope>runtime</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-cache-core</artifactId>
-				<version>3.0.9.Final</version>
+				<groupId>org.entur.ror.helpers</groupId>
+				<artifactId>hazelcast4-helper</artifactId>
+				<version>${entur.helpers.version}</version>
 			</dependency>
 
 			<!-- Test Dependencies -->
 			<dependency>
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
-				<version>6.8.21</version>
+				<version>6.14.3</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.beust</groupId>
+				<artifactId>jcommander</artifactId>
+				<version>1.82</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.easymock</groupId>
 				<artifactId>easymock</artifactId>
-				<version>3.3.1</version>
+				<version>5.1.0</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.wildfly</groupId>
-				<artifactId>wildfly-arquillian-container-embedded</artifactId>
-				<version>${wildfly.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wildfly</groupId>
-				<artifactId>wildfly-embedded</artifactId>
-				<version>${wildfly.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -748,8 +739,14 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>${hibernate.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-spatial</artifactId>
-				<version>${hibernate-spatial.version}</version>
+				<version>${hibernate.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -758,46 +755,50 @@
 				<version>0.6.0</version>
 				<scope>test</scope>
 			</dependency>
-			<!-- postgres intergration in arquillian -->
-			<!-- shrinkwrap BOM -->
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-bom</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
-				<scope>test</scope>
-			</dependency>
-			<!-- shrinkwrap dependency chain -->
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-depchain</artifactId>
-				<version>${shrinkwrap.bom-version}</version>
-				<type>pom</type>
-				<scope>test</scope>
-			</dependency>
 
-			<!-- arquillian itself -->
 			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${arquillian-version}</version>
-				<scope>import</scope>
-				<type>pom</type>
+				<groupId>org.wildfly.arquillian</groupId>
+				<artifactId>wildfly-arquillian-container-embedded</artifactId>
+				<version>${wildfly-arquillian-container-embedded.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.wildfly.core</groupId>
+				<artifactId>wildfly-embedded</artifactId>
+				<version>${wildfly.core.version}</version>
+			</dependency>
 
 			<!-- Other Dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>1.7.13</version>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.logstash.logback</groupId>
+				<artifactId>logstash-logback-encoder</artifactId>
+				<version>${logstash-logback-encoder.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
@@ -806,24 +807,20 @@
 			<dependency>
 				<groupId>com.jamonapi</groupId>
 				<artifactId>jamon</artifactId>
-				<version>2.76</version>
+				<version>2.82</version>
 			</dependency>
 
 			<!-- Utilities Dependencies -->
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>2.9.9</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jadira.usertype</groupId>
-                <artifactId>usertype.core</artifactId>
-                <version>3.1.0.GA</version>
-            </dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>zt-zip</artifactId>
+				<version>${zt-zip.version}</version>
+				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>commons-pool</groupId>
@@ -833,27 +830,27 @@
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
-				<version>3.2.1</version> <!-- 4.0.0 not found -->
+				<version>3.2.2</version> <!-- 4.0.0 not found -->
 			</dependency>
 			<dependency>
-				<groupId>commons-lang</groupId>
-				<artifactId>commons-lang</artifactId>
-				<version>2.6</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.9.2</version>
+				<version>1.9.4</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
+				<version>2.11.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.9</version>
+				<version>1.21</version>
 			</dependency>
 
 			<dependency>
@@ -864,37 +861,33 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-jts-wrapper</artifactId>
-				<version>10.5</version>
+				<version>${geotools.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-epsg-wkt</artifactId>
-				<version>10.5</version>
+				<version>${geotools.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-epsg-hsql</artifactId>
-				<version>10.5</version>
-			</dependency>
-			<dependency>
-	            <groupId>javax.xml.bind</groupId>
-	            <artifactId>jaxb-api</artifactId>
-				<version>${jaxb-version}</version>
-			</dependency>
-			<dependency>
- 				<groupId>com.sun.xml.bind</groupId>
- 	            <artifactId>jaxb-impl</artifactId>
-				<version>${jaxb-version}</version>
-			</dependency>
-			<dependency>
- 				<groupId>com.sun.xml.bind</groupId>
- 	            <artifactId>jaxb-core</artifactId>
-				<version>${jaxb-version}</version>
+				<version>${geotools.version}</version>
 			</dependency>
 
 		</dependencies>
 
 	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -1004,22 +997,14 @@
 		<module>mobi.chouette.dao.iev</module>
 		<module>mobi.chouette.exchange</module>
  		<module>mobi.chouette.exchange.neptune</module>
- 		<module>mobi.chouette.exchange.netex</module>
 		<module>mobi.chouette.exchange.netexprofile</module>
-<!-- 		<module>mobi.chouette.exchange.kml</module> -->
-<!-- 		<module>mobi.chouette.exchange.hub</module> -->
 		<module>mobi.chouette.exchange.gtfs</module>
-<!-- 		<module>mobi.chouette.exchange.geojson</module> -->
-<!--         <module>mobi.chouette.exchange.sig</module> -->
-		<module>mobi.chouette.exchange.regtopp</module>
 		<module>mobi.chouette.exchange.stopplace</module>
 		<module>mobi.chouette.exchange.validator</module>
-<!-- 		<module>mobi.chouette.exchange.converter</module> -->
 		<module>mobi.chouette.exchange.transfer</module>
 		<module>mobi.chouette.service</module>
 		<module>mobi.chouette.schema.checker</module>
 		<module>mobi.chouette.ws</module>
-<!-- 		<module>mobi.chouette.command</module> -->
 		<module>chouette_iev</module>
 	</modules>
 

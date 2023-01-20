@@ -50,9 +50,11 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.*;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+
+import static mobi.chouette.exchange.netexprofile.Constant.DATE_TIME_FORMATTER;
 
 @Path("/referentials")
 @Log4j
@@ -106,13 +108,13 @@ public class RestService implements Constant {
 			}
 			return builder.build();
 		} catch (RequestServiceException e) {
-			log.info("RequestCode = " + e.getRequestCode() + ", Message = " + e.getMessage());
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Code = " + e.getCode() + ", Message = " + e.getMessage());
+			log.error("Service failed with code = " + e.getCode() , e);
 			throw toWebApplicationException(e);
 		} catch (WebApplicationException e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			throw e;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -267,7 +269,7 @@ public class RestService implements Constant {
 				// Build response
 				InputStream content = FileStoreFactory.getFileStore().getFileContent(Paths.get(jobService.getPathName(), filename));
 				if (content == null){
-					throw new RequestServiceException(RequestExceptionCode.UNKNOWN_FILE, "");
+					throw new RequestServiceException(RequestExceptionCode.UNKNOWN_FILE, "The requested file does not exist: " + filename);
 				}
 				builder = Response.ok(content);
 				builder.header(HttpHeaders.CONTENT_DISPOSITION,
@@ -292,10 +294,10 @@ public class RestService implements Constant {
 			return result;
 
 		} catch (RequestServiceException e) {
-			log.info("RequestCode = " + e.getRequestCode() + ", Message = " + e.getMessage());
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
 			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Code = " + e.getCode() + ", Message = " + e.getMessage());
+			log.error("Service failed with code = " + e.getCode() , e);
 			throw toWebApplicationException(e);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -336,11 +338,33 @@ public class RestService implements Constant {
 			// builder.cacheControl(cc);
 
 			return builder.build();
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage(),ex);
-			throw toWebApplicationException(ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Code = " + e.getCode() + ", Message = " + e.getMessage());
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// jobs listing
+	@GET
+	@Path("/{ref}/last_update_date")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response lastUpdateDate(@PathParam("ref") String referential) {
+
+		try {
+			log.info(Color.CYAN + "Call last update date for " + referential + Color.NORMAL);
+			String lastUpdateDate = DATE_TIME_FORMATTER.format(referentialService.getLastUpdateTimestamp(referential));
+			log.info(Color.CYAN + "Last update date for " + referential + " is "  + lastUpdateDate + Color.NORMAL);
+			ResponseBuilder builder = Response.ok(lastUpdateDate);
+			builder.header(api_version_key, api_version);
+			return builder.build();
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -392,11 +416,11 @@ public class RestService implements Constant {
 			result = builder.build();
 			return result;
 
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
 		} catch (ServiceException e) {
-			log.error("Code = " + e.getCode() + ", Message = " + e.getMessage());
+			log.error("Service failed with code = " + e.getCode() , e);
 			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
@@ -429,12 +453,12 @@ public class RestService implements Constant {
 			builder.header(api_version_key, api_version);
 
 			return result;
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
@@ -471,12 +495,12 @@ public class RestService implements Constant {
 			builder.header(api_version_key, api_version);
 			return builder.build();
 
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
@@ -506,12 +530,12 @@ public class RestService implements Constant {
 
 			return result;
 
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
@@ -525,8 +549,13 @@ public class RestService implements Constant {
 	public Response create(ReferentialInfo referentialInfo) {
 		log.info("Creating referential " + referentialInfo.getDataspaceName());
 		try {
-			referentialService.createReferential(referentialInfo);
-			return Response.ok().header(api_version_key, api_version).build();
+			boolean created = referentialService.createReferential(referentialInfo);
+			if (created) {
+				return Response.ok().header(api_version_key, api_version).build();
+			} else {
+				return Response.status(Status.CONFLICT).header(api_version_key, api_version).build();
+			}
+
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
@@ -542,9 +571,9 @@ public class RestService implements Constant {
 		try {
 			referentialService.updateReferential(referentialInfo);
 			return Response.ok().header(api_version_key, api_version).build();
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
@@ -561,9 +590,9 @@ public class RestService implements Constant {
 			referentialService.deleteReferential(referentialInfo);
 			jobServiceManager.drop(referentialInfo.getSchemaName());
 			return Response.ok().header(api_version_key, api_version).build();
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
@@ -589,14 +618,14 @@ public class RestService implements Constant {
 			result = builder.build();
 
 			return result;
-		} catch (RequestServiceException ex) {
-			log.info("RequestCode = " + ex.getRequestCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
-		} catch (ServiceException ex) {
-			log.error("Code = " + ex.getCode() + ", Message = " + ex.getMessage());
-			throw toWebApplicationException(ex);
-		} catch (Exception ex) {
-			log.error(ex.getMessage(), ex);
+		} catch (RequestServiceException e) {
+			log.warn("Request Service failed with code = " + e.getRequestCode() , e);
+			throw toWebApplicationException(e);
+		} catch (ServiceException e) {
+			log.error("Service failed with code = " + e.getCode() , e);
+			throw toWebApplicationException(e);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		}
 	}

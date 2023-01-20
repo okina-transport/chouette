@@ -7,12 +7,12 @@ import java.nio.file.Paths;
 import javax.naming.InitialContext;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.metadata.DublinCoreFileWriter;
 import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.TextFileWriter;
@@ -20,7 +20,8 @@ import mobi.chouette.exchange.parameters.AbstractExportParameter;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 @Log4j
 public class SaveMetadataCommand implements Command, Constant {
@@ -47,7 +48,7 @@ public class SaveMetadataCommand implements Command, Constant {
 			if (metadata == null)
 				return SUCCESS;
 			// force time window if asked
-			metadata.getTemporalCoverage().force(new LocalDate(parameters.getStartDate()), new LocalDate(parameters.getEndDate()));
+			metadata.getTemporalCoverage().force(toLocalDate(parameters.getStartDate()), toLocalDate(parameters.getEndDate()));
 			metadata.setCreator(creator);
 			metadata.setPublisher(publisher);
 			String path = jobData.getPathName();
@@ -61,7 +62,7 @@ public class SaveMetadataCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

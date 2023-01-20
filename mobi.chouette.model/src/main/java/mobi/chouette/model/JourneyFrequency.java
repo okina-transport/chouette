@@ -18,8 +18,8 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
+import java.time.Duration;
+import java.time.LocalTime;
 
 /**
  * Models the frequencies for journeys in timesheet category.
@@ -38,7 +38,7 @@ public class JourneyFrequency extends NeptuneObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "journey_frequencies_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "journey_frequencies_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "journey_frequencies_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })
 	@GeneratedValue(generator = "journey_frequencies_id_seq")
@@ -106,7 +106,7 @@ public class JourneyFrequency extends NeptuneObject {
 	@Getter
 	@Setter
 	@Column(name = "scheduled_headway_interval", nullable = false)
-	@Type(type = "mobi.chouette.jadira.PersistentDurationAsSqlTime")
+	@Type(type = "mobi.chouette.type.PersistentDurationAsSqlTime")
 	private Duration scheduledHeadwayInterval;
 
 	/**

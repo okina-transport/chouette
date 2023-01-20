@@ -18,7 +18,6 @@
          <plugin>
             <groupId>org.bsc.maven</groupId>
             <artifactId>maven-processor-plugin</artifactId>
-            <version>2.2.4</version>
             <executions>
                <execution>
                   <id>process</id>
@@ -32,25 +31,34 @@
                <dependency>
                   <groupId>org.hibernate</groupId>
                   <artifactId>hibernate-jpamodelgen</artifactId>
-                  <version>4.3.7.Final</version>
+                  <version>${hibernate.version}</version>
                </dependency>
             </dependencies>
          </plugin>
       </plugins>
    </build>
+
    <dependencies>
 
-      <!-- Default Dependencies -->
+      <!-- Modules -->
       <dependency>
-         <groupId>org.projectlombok</groupId>
-         <artifactId>lombok</artifactId>
+         <groupId>${project.groupId}</groupId>
+         <artifactId>mobi.chouette.common</artifactId>
+         <type>ejb</type>
+         <version>${project.version}</version>
+      </dependency>
+
+      <!-- Jakarta EE -->
+      <dependency>
+         <groupId>jakarta.persistence</groupId>
+         <artifactId>jakarta.persistence-api</artifactId>
          <scope>provided</scope>
       </dependency>
 
-      <!-- Others Dependencies -->
+      <!-- Other dependencies -->
       <dependency>
-         <groupId>org.jboss.resteasy</groupId>
-         <artifactId>jaxrs-api</artifactId>
+         <groupId>org.projectlombok</groupId>
+         <artifactId>lombok</artifactId>
          <scope>provided</scope>
       </dependency>
       <dependency>
@@ -59,13 +67,15 @@
          <scope>provided</scope>
       </dependency>
       <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-entitymanager</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
          <groupId>org.geotools</groupId>
          <artifactId>gt-jts-wrapper</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+
       </dependency>
       <dependency>
          <groupId>org.geotools</groupId>
@@ -76,31 +86,18 @@
          <artifactId>gt-epsg-hsql</artifactId>
       </dependency>
 
-      <dependency>
-         <groupId>joda-time</groupId>
-         <artifactId>joda-time</artifactId>
-      </dependency>
-
-      <!-- Modules -->
-      <dependency>
-         <groupId>${project.groupId}</groupId>
-         <artifactId>mobi.chouette.common</artifactId>
-         <type>ejb</type>
-         <version>${project.version}</version>
-      </dependency>
-
-      <!-- tests -->
+      <!-- Test dependencies -->
       <dependency>
          <groupId>org.testng</groupId>
          <artifactId>testng</artifactId>
          <scope>test</scope>
       </dependency>
-            <dependency>
+      <dependency>
          <groupId>org.jboss.logmanager</groupId>
-         <artifactId>log4j-jboss-logmanager</artifactId>
+         <artifactId>jboss-logmanager</artifactId>
          <scope>test</scope>
       </dependency>
 
-
    </dependencies>
+
 </project>

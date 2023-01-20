@@ -25,7 +25,7 @@ import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 /**
  * Chouette VehicleJourneyAtStop : passing time on stops
@@ -39,16 +39,16 @@ import org.joda.time.LocalTime;
 		"vehicle_journey_id", "stop_point_id" }, name = "index_vehicle_journey_at_stops_on_stop_point_id"))
 @NoArgsConstructor
 @ToString(callSuper=true, exclude = { "vehicleJourney" })
-public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
+public class VehicleJourneyAtStop extends NeptuneIdentifiedObject implements JourneyAtStop{
 
 	private static final long serialVersionUID = 194243517715939830L;
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "vehicle_journey_at_stops_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
+	@GenericGenerator(name = "vehicle_journey_at_stops_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
 		parameters = {
 			@Parameter(name = "sequence_name", value = "vehicle_journey_at_stops_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
+			@Parameter(name = "increment_size", value = "1000") })
 	@GeneratedValue(generator = "vehicle_journey_at_stops_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
@@ -212,7 +212,7 @@ public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JoinColumn(name = "stop_point_id")
 	private StopPoint stopPoint;
 	

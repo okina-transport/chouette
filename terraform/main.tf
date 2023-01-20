@@ -1,28 +1,30 @@
 # Contains main description of bulk of terraform?
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.13.2"
 }
 
 provider "google" {
-  version = "~> 2.19"
+  version = "~> 4.32.0"
 }
 provider "kubernetes" {
   load_config_file = var.load_config_file
+  version = "~> 1.13.4"
 }
 
 # Create bucket
 resource "google_storage_bucket" "storage_bucket" {
   name               = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
-  location           = var.location
-  project            = var.gcp_gcs_project
+  location           = var.bucket_location
+  project            = var.gcp_resources_project
   storage_class      = var.bucket_storage_class
-  labels             = var.labels
+  labels             = merge(var.labels, {offsite_enabled = "false"})
+  uniform_bucket_level_access = true
+
 
   lifecycle_rule {
 
     condition {
       age = var.bucket_retention_period
-      is_live = true
       with_state = "ANY"
     }
     action {
@@ -40,7 +42,7 @@ resource "google_service_account" "chouette_service_account" {
 
 # add service account as member to the cloudsql client
 resource "google_project_iam_member" "cloudsql_iam_member" {
-  project = var.gcp_cloudsql_project
+  project = var.gcp_resources_project
   role    = var.service_account_cloudsql_role
   member = "serviceAccount:${google_service_account.chouette_service_account.email}"
 }
@@ -82,4 +84,65 @@ resource "kubernetes_secret" "ror-chouette-secret" {
     "chouette-admin-initial-encrypted-password"     = var.ror-chouette-admin-initial-encrypted-password
     "chouette-user-initial-encrypted-password"     = var.ror-chouette-user-initial-encrypted-password
   }
+}
+
+resource "google_sql_database_instance" "db_instance" {
+  name = "chouette-db-pg13"
+  database_version = "POSTGRES_13"
+  project = var.gcp_resources_project
+  region = var.db_region
+
+  settings {
+    location_preference {
+      zone = var.db_zone
+    }
+    tier = var.db_tier
+    user_labels = var.labels
+    availability_type = var.db_availability
+    backup_configuration {
+      enabled = true
+      // 01:00 UTC
+      start_time = "01:00"
+    }
+    maintenance_window {
+      // Sunday
+      day = 7
+      // 02:00 UTC
+      hour = 2
+    }
+    ip_configuration {
+      require_ssl = true
+    }
+    database_flags {
+      name = "work_mem"
+      value = "30000"
+    }
+    database_flags {
+      name = "log_min_duration_statement"
+      value = "200"
+    }
+    insights_config {
+      query_insights_enabled = true
+      query_string_length = 4500
+    }
+  }
+}
+
+resource "google_sql_database" "db-chouette" {
+  name = "chouette"
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+}
+
+resource "google_sql_database" "db-iev" {
+  name = "iev"
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+}
+
+resource "google_sql_user" "db-user" {
+  name = var.ror-chouette-db-username
+  project = var.gcp_resources_project
+  instance = google_sql_database_instance.db_instance.name
+  password = var.ror-chouette-db-password
 }

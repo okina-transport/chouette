@@ -49,7 +49,6 @@ import mobi.chouette.model.NeptuneLocalizedObject;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -59,8 +58,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.testng.Arquillian;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
+import java.time.LocalTime;
+import org.threeten.extra.Seconds;
 import org.testng.Assert;
 
 @Log4j
@@ -275,7 +274,7 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 	{
 		if (first == null || last == null)
 			return Long.MIN_VALUE; // TODO
-		long diff = Seconds.secondsBetween(first, last).getSeconds();
+		long diff = Seconds.between(first, last).getAmount();
 		if (diff < 0)
 			diff += 86400L; // step upon midnight : add one day in seconds
 		return diff;
@@ -424,20 +423,20 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
         ret.setCheckStopParent(0);        
         ret.setCheckConnectionLinkOnPhysical(0);
         
-        ret.setModeCoach(new TransportModeParameters(1, 500, 10000, 90, 40, 20, 20));
-        ret.setModeAir(new TransportModeParameters(1, 200, 10000, 800, 700, 60, 1000));
-        ret.setModeWater(new TransportModeParameters(1, 200, 10000, 40, 5, 60, 20));
-        ret.setModeBus(new TransportModeParameters(1, 100, 40000, 1000, 5, 2000, 20));
-        ret.setModeFerry(new TransportModeParameters(1, 200, 10000, 40, 5, 60, 100));
-        ret.setModeWalk(new TransportModeParameters(1, 1, 10000, 6, 1, 10, 20));
-        ret.setModeMetro(new TransportModeParameters(1, 300 ,20000, 500, 25, 2000, 100));
-        ret.setModeTaxi(new TransportModeParameters(1, 500, 300000, 130, 20, 60, 20));
-        ret.setModeRail(new TransportModeParameters(1, 2000, 500000, 300, 20, 60, 100));
-        ret.setModeTram(new TransportModeParameters(1, 300,2000,50,20,30, 20));
-        ret.setModeTrolleyBus(new TransportModeParameters(1,  300,2000,50,20,30, 20));
-        ret.setModePrivateVehicle(new TransportModeParameters(1, 500, 300000, 130, 20, 60, 20));
-        ret.setModeBicycle(new TransportModeParameters(1, 300, 30000, 40, 10, 10, 20));
-        ret.setModeOther(new TransportModeParameters(1, 300, 30000, 40, 10, 10, 20));
+        ret.setModeCoach(new TransportModeParameters(1, 500, 10000, 90, 80,40, 20, 10, 20));
+        ret.setModeAir(new TransportModeParameters(1, 200, 10000, 10000, 900, 700, 60, 500, 1000));
+        ret.setModeWater(new TransportModeParameters(1, 200, 10000, 40, 30, 5, 60, 10, 20));
+        ret.setModeBus(new TransportModeParameters(1, 100, 40000, 1000, 900,5, 2000, 10, 20));
+        ret.setModeFerry(new TransportModeParameters(1, 200, 10000, 40, 30, 5, 60, 20, 100));
+        ret.setModeWalk(new TransportModeParameters(1, 1, 10000, 6, 5, 1, 10, 10, 20));
+        ret.setModeMetro(new TransportModeParameters(1, 300 ,20000, 500, 400, 25, 2000, 20, 100));
+        ret.setModeTaxi(new TransportModeParameters(1, 500, 300000, 130, 110, 20, 60, 10, 20));
+        ret.setModeRail(new TransportModeParameters(1, 2000, 500000, 300, 200, 20, 60, 20, 100));
+        ret.setModeTram(new TransportModeParameters(1, 300,2000,50,40, 20,30, 10, 20));
+        ret.setModeTrolleyBus(new TransportModeParameters(1,  300,2000,50,240, 0,30, 10, 20));
+        ret.setModePrivateVehicle(new TransportModeParameters(1, 500, 300000, 130, 110, 20, 60, 10, 20));
+        ret.setModeBicycle(new TransportModeParameters(1, 300, 30000, 40, 30, 10, 10, 10, 20));
+        ret.setModeOther(new TransportModeParameters(1, 300, 30000, 40, 30, 10, 10, 10, 20));
 
         return ret;
 	}

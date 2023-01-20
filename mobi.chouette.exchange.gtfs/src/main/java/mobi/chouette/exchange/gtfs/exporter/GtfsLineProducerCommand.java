@@ -18,10 +18,11 @@ import java.util.Set;
 import javax.naming.InitialContext;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsRouteProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsServiceProducer;
@@ -43,7 +44,7 @@ import mobi.chouette.model.util.NamingUtil;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 /**
  *
@@ -79,12 +80,12 @@ public class GtfsLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate = null;
 			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
+				startDate = TimeUtil.toLocalDate(configuration.getStartDate());
 			}
 
 			LocalDate endDate = null;
 			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
+				endDate = TimeUtil.toLocalDate(configuration.getEndDate());
 			}
 
 			GtfsDataCollector collector = new GtfsDataCollector(collection, line, startDate, endDate);
@@ -113,7 +114,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;
@@ -142,7 +143,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		if (!collection.getVehicleJourneys().isEmpty()) {
 			for (VehicleJourney vj : collection.getVehicleJourneys()) {
 
-				if (vj.hasTimetables()) {
+				if (vj.hasTimetables() && vj.isNeitherCancelledNorReplaced()) {
 					String timeTableServiceId = calendarProducer.key(vj.getTimetables(), sharedPrefix, configuration.isKeepOriginalId());
 					if (timeTableServiceId != null) {
 						if (tripProducer.save(vj, timeTableServiceId, prefix, sharedPrefix, configuration.isKeepOriginalId())) {
@@ -154,7 +155,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 						}
 					}
 				} else if(vj.hasDatedServiceJourneys()
-				   && vj.getDatedServiceJourneys().stream().anyMatch(DatedServiceJourney::isActive)) {
+				   && vj.getDatedServiceJourneys().stream().anyMatch(DatedServiceJourney::isNeitherCancelledNorReplaced)) {
 					if (tripProducer.save(vj, vj.getObjectId(), prefix, sharedPrefix, configuration.isKeepOriginalId())) {
 						hasVj = true;
 						jps.add(vj.getJourneyPattern());
@@ -170,8 +171,8 @@ public class GtfsLineProducerCommand implements Command, Constant {
 				hasLine = true;
 				if (metadata != null) {
 					metadata.getResources().add(
-							metadata.new Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
-									NeptuneObjectPresenter.getName(line)));
+                            new Metadata.Resource(NeptuneObjectPresenter.getName(line.getNetwork()),
+                                    NeptuneObjectPresenter.getName(line)));
 				}
 			}
 		}

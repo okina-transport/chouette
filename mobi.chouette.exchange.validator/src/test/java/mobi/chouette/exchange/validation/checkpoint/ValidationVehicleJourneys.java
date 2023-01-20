@@ -39,7 +39,7 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -115,7 +115,8 @@ public class ValidationVehicleJourneys extends AbstractTestValidation {
 				.addClass(DummyChecker.class)
 				.addClass(JobDataTest.class)
 				.addClass(AbstractTestValidation.class)
-				.addClass(ValidationVehicleJourneys.class);
+				.addClass(ValidationVehicleJourneys.class)
+				.addClass(ValidationDatedServiceJourneys.class);
 		
 		result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
 				.addAsLibraries(jars.toArray(new File[0]))

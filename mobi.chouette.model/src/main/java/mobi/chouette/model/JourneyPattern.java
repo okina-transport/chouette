@@ -27,7 +27,7 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.SectionStatusEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -47,7 +47,7 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "journey_patterns_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
+	@GenericGenerator(name = "journey_patterns_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
 		parameters = {
 			@Parameter(name = "sequence_name", value = "journey_patterns_id_seq"),
 			@Parameter(name = "increment_size", value = "20") })
@@ -230,6 +230,19 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 			0);
 
 	/**
+	 * dead runs
+	 *
+	 * @param deadRuns
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "journeyPattern", cascade = { CascadeType.PERSIST})
+	private List<DeadRun> deadRuns = new ArrayList<DeadRun>(
+			0);
+
+	/**
 	 * route sections
 	 *
 	 * @param routeSections
@@ -302,4 +315,7 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 		return getStopPoints().size() >= 2;
 	}
 
+	public boolean hasOnlyDeadRuns() {
+		return vehicleJourneys.isEmpty() && !deadRuns.isEmpty();
+	}
 }

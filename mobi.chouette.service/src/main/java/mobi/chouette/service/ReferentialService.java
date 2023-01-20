@@ -1,16 +1,18 @@
 package mobi.chouette.service;
 
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.dao.ReferentialDAO;
+import mobi.chouette.dao.ReferentialLastUpdateDAO;
 import mobi.chouette.model.dto.ReferentialInfo;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *
@@ -25,6 +27,9 @@ public class ReferentialService {
 
     @EJB
     ReferentialDAO referentialDAO;
+
+    @EJB
+    ReferentialLastUpdateDAO referentialLastUpdateDAO;
 
     private String defaultReferentialAdminUserName;
     private String defaultReferentialAdminEmailFormat;
@@ -63,11 +68,16 @@ public class ReferentialService {
 
     }
 
-    public void createReferential(ReferentialInfo referentialInfo) throws ServiceException {
+    public boolean createReferential(ReferentialInfo referentialInfo) throws ServiceException {
 
         log.info("Creating referential for: " + referentialInfo);
 
         String schemaName = referentialInfo.getSchemaName();
+
+        if (referentialDAO.hasReferential(schemaName)) {
+            log.warn("The referential already exists: " + schemaName + ". Ignoring creation request");
+            return false;
+        }
 
         if (referentialInfo.getAdminUserName() == null) {
             referentialInfo.setAdminUserName(defaultReferentialAdminUserName);
@@ -104,6 +114,10 @@ public class ReferentialService {
             referentialDAO.createReferential(referentialInfo);
         }
 
+        log.info("Created referential for: " + referentialInfo);
+
+        return true;
+
     }
 
     public void updateReferential(ReferentialInfo referentialInfo) throws ServiceException {
@@ -128,6 +142,8 @@ public class ReferentialService {
         if (!updated) {
             throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Cannot update referential: internal error: " + referentialInfo);
         }
+
+        log.info("Updated referential for: " + referentialInfo);
     }
 
 
@@ -148,9 +164,20 @@ public class ReferentialService {
         }
 
         referentialDAO.deleteReferential(referentialInfo);
+
+        log.info("Deleted referential for: " + referentialInfo);
     }
 
     public List<String> getReferentialCodes() {
         return referentialDAO.getReferentials();
+    }
+
+    public LocalDateTime getLastUpdateTimestamp(String referential) throws ServiceException {
+
+        if (!referentialDAO.getReferentials().contains(referential)) {
+            throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, "Cannot retrieve last update timestamp: referential not found: " + referential);
+        }
+        ContextHolder.setContext(referential);
+        return referentialLastUpdateDAO.getLastUpdateTimestamp();
     }
 }

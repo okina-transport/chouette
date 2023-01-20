@@ -2,6 +2,8 @@ package mobi.chouette.exchange.netexprofile.importer;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,10 +16,10 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
@@ -25,6 +27,7 @@ import mobi.chouette.exchange.report.ActionReporter.Factory;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -56,6 +59,7 @@ public class NetexprofileLineDeleteCommand implements Command {
 			if (existingLine != null) {
 				log.info("Delete existing line before import: " + existingLine.getObjectId() + " "+existingLine.getName());
 				clearRouteSectionReferences(existingLine);
+				clearBlockReferences(existingLine);
 				lineDAO.delete(existingLine);
 				lineDAO.flush();
 			}
@@ -73,7 +77,7 @@ public class NetexprofileLineDeleteCommand implements Command {
 					log.error(e.getMessage());
 					e = e.getCause();
 				}
-				if (e instanceof SQLException) {
+				if (e instanceof SQLException && ((SQLException) e).getNextException()!= null) {
 					e = ((SQLException) e).getNextException();
 					actionReporter.addErrorToObjectReport(context, newLine.getObjectId(), OBJECT_TYPE.LINE, ERROR_CODE.WRITE_ERROR,  e.getMessage());
 
@@ -85,7 +89,7 @@ public class NetexprofileLineDeleteCommand implements Command {
 			}
 			throw ex;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 	}
@@ -103,6 +107,18 @@ public class NetexprofileLineDeleteCommand implements Command {
 				journeyPattern.getRouteSections().clear();
 			}
 		}
+	}
+
+	private void clearBlockReferences(Line existingLine) {
+		existingLine.getRoutes().stream()
+				.flatMap(r -> r.getJourneyPatterns().stream())
+				.flatMap(jp -> jp.getVehicleJourneys().stream())
+				.forEach(vj ->
+						{
+							// removing from a separate collection to prevent ConcurrentModificationException
+							Collection<Block> toRemove =  new ArrayList<>(vj.getBlocks());
+							toRemove.forEach(b -> b.removeVehicleJourney(vj));
+						});
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {

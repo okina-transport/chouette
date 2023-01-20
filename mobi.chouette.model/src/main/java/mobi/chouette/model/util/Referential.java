@@ -9,10 +9,13 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.Block;
 import mobi.chouette.model.Branding;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.DatedServiceJourney;
+import mobi.chouette.model.DeadRun;
+import mobi.chouette.model.DeadRunAtStop;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.FootNoteAlternativeText;
 import mobi.chouette.model.Footnote;
@@ -141,6 +144,10 @@ public class Referential implements java.io.Serializable {
 
 	@Getter
 	@Setter
+	private Map<String, DeadRun> deadRuns = new HashMap<String, DeadRun>();
+
+	@Getter
+	@Setter
 	private Map<String, AccessLink> accessLinks = new HashMap<String, AccessLink>();
 
 	@Getter
@@ -201,6 +208,13 @@ public class Referential implements java.io.Serializable {
 	@Setter
 	private Map<String, DatedServiceJourney> datedServiceJourneys = new HashMap<>();
 
+	@Getter
+	@Setter
+	private Map<String, Block> sharedBlocks = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Block> blocks = new HashMap<>();
 
 	@Getter
 	@Setter
@@ -210,6 +224,10 @@ public class Referential implements java.io.Serializable {
 	@Getter
 	@Setter
 	private Map<String, VehicleJourneyAtStop> vehicleJourneyAtStops = new HashMap<String, VehicleJourneyAtStop>();
+
+	@Getter
+	@Setter
+	private Map<String, DeadRunAtStop> deadRunAtStops = new HashMap<>();
 
 	public void clear(boolean cascade) {
 		if (cascade) {
@@ -243,11 +261,9 @@ public class Referential implements java.io.Serializable {
 				vj.getFootnotes().clear();
 				vj.getDatedServiceJourneys().clear();
 			}
-			for (Timetable timetable : timetables.values()) {
-				timetable.getVehicleJourneys().clear();
-			}
-			for (Timetable timetable : sharedTimetables.values()) {
-				timetable.getVehicleJourneys().clear();
+			for (DeadRun dr : deadRuns.values()) {
+				dr.getDeadRunAtStops().clear();
+				dr.getTimetables().clear();
 			}
 			for (Timeband timeband : sharedTimebands.values()) {
 				timeband.getJourneyFrequencies().clear();
@@ -260,9 +276,6 @@ public class Referential implements java.io.Serializable {
 			}
 			for (StopArea area : sharedStopAreas.values()) {
 				area.getContainedScheduledStopPoints().clear();
-			}
-			for (DestinationDisplay display : sharedDestinationDisplays.values()) {
-				display.getVias().clear();
 			}
 		}
 		accessLinks.clear();
@@ -287,6 +300,7 @@ public class Referential implements java.io.Serializable {
 		footnotes.clear();
 		vehicleJourneyAtStops.clear();
 		brandings.clear();
+		blocks.clear();
 	}
 
 	public void dispose() {
@@ -308,6 +322,7 @@ public class Referential implements java.io.Serializable {
 		sharedBrandings.clear();
 		sharedRoutePoints.clear();
 		sharedRouteSections.clear();
+		sharedBlocks.clear();
 	}
 
 }

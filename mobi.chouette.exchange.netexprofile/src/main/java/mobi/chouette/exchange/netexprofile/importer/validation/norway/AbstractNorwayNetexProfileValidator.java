@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
 
 import mobi.chouette.common.Context;
@@ -33,8 +33,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String PROFILE_NORWAY_NETWORKTIMETABLE_109_13 = "1.09:NO-NeTEx-networktimetable:1.3";
 	public static final String PROFILE_NORWAY_NETWORKTIMETABLE_110_13 = "1.10:NO-NeTEx-networktimetable:1.3";
 	public static final String PROFILE_NORWAY_NETWORKTIMETABLE_111_13 = "1.11:NO-NeTEx-networktimetable:1.3";
+	public static final String PROFILE_NORWAY_NETWORKTIMETABLE_112_13 = "1.12:NO-NeTEx-networktimetable:1.3";
+	public static final String PROFILE_NORWAY_NETWORKTIMETABLE_113_13 = "1.13:NO-NeTEx-networktimetable:1.3";
 
-	public static final String EXPORT_PROFILE_ID = PROFILE_NORWAY_NETWORKTIMETABLE_111_13; // Update when new profile version is implemented
+	public static final String EXPORT_PROFILE_ID = PROFILE_NORWAY_NETWORKTIMETABLE_113_13; // Update when new profile version is implemented
 	
 	public static final String NSR_XMLNSURL = "http://www.rutebanken.org/ns/nsr";
 	public static final String NSR_XMLNS = "NSR";
@@ -45,6 +47,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG = "1-NETEXPROFILE-Notice-Alternative-Text-Lang";
 	public static final String _1_NETEX_NOTICE_ALTERNATIVE_TEXT_DUPLICATE_LANG = "1-NETEXPROFILE-Notice-Alternative-Text-Duplicate-Lang";
 
+	public static final String _1_NETEX_NOTICE_ASSIGNMENTS_DUPLICATE = "1-NETEXPROFILE-NoticeAssignment-Duplicate";
+
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_CUSTOMER_SERVICE_CONTACT_DETAILS = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-CustomerServiceContactDetails";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_CUSTOMER_SERVICE_CONTACT_DETAILS_URL = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-CustomerServiceContactDetails-Url";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_CONTACT_DETAILS = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-ContactDetails";
@@ -53,7 +57,7 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_NAME = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-Name";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_COMPANY_NUMBER = "1-NETEXPROFILE-ResourceFrame-Organisations-Operator-CompanyNumber";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-ContactDetails";
-	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL_OR_PHONE_OR_EMAIL = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-ContactDetails-UrlOrPhoneOrEmail";
+	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-ContactDetails-Url";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_LEGAL_NAME = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-LegalName";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_NAME = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-Name";
 	public static final String _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_COMPANY_NUMBER = "1-NETEXPROFILE-ResourceFrame-Organisations-Authority-CompanyNumber";
@@ -95,6 +99,7 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_SERVICE_FRAME_ROUTE_LINEREF = "1-NETEXPROFILE-ServiceFrame_Route_LineRef";
 	public static final String _1_NETEX_SERVICE_FRAME_ROUTE_DIRECTIONREF = "1-NETEXPROFILE-ServiceFrame_Route_DirectionRef";
 	public static final String _1_NETEX_SERVICE_FRAME_ROUTE_POINTSINSEQUENCE = "1-NETEXPROFILE-ServiceFrame_Route_PointsInSequence";
+	public static final String _1_NETEX_SERVICE_FRAME_ROUTE_POINTSINSEQUENCE_DUPLICATE_ORDER = "1-NETEXPROFILE-ServiceFrame_Route_PointsInSequence_Duplicate_Order";
 	public static final String _1_NETEX_SERVICE_FRAME_DESTINATION_DISPLAY_FRONTTEXT = "1-NETEXPROFILE-ServiceFrame-DestinationDisplay-FrontText";
 	public static final String _1_NETEX_SERVICE_FRAME_DESTINATION_DISPLAY_VIA_DESTINATIONDISPLAYREF = "1-NETEXPROFILE-ServiceFrame-DestinationDisplay-Via-DestinationDisplayRef";
 	public static final String _1_NETEX_SERVICE_FRAME_STOP_WITHOUT_BOARDING_OR_ALIGHTING = "1-NETEXPROFILE-ServiceFrame-StopPointInJourneyPattern-NoBoardingNoAlighting";
@@ -105,6 +110,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_SERVICE_FRAME_STOP_POINT_ILLEGAL_BUYWHEN = "1-NETEXPROFILE-ServiceFrame_StopPointInJourneyPattern_IllegalBuyWhen";
 	public static final String _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_SCHEDULEDSTOPPOINTREF = "1-NETEXPROFILE-ServiceFrame-PassengerStopAssignment-ScheduledStopPointRef";
 	public static final String _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_QUAYREF = "1-NETEXPROFILE-ServiceFrame-PassengerStopAssignment-QuayRef";
+	public static final String _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_DUPLICATE = "1-NETEXPROFILE-ServiceFrame-PassengerStopAssignment-Duplicate";
+
 
 	public static final String _1_NETEX_SERVICE_FRAME_SERVICE_LINK_TOPOINTREF = "1-NETEXPROFILE-ServiceFrame-ServiceLink-ToPointRef";
 	public static final String _1_NETEX_SERVICE_FRAME_SERVICE_LINK_FROMPOINTREF = "1-NETEXPROFILE-ServiceFrame-ServiceLink-FromPointRef";
@@ -131,6 +138,9 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_MULTIPLE_SERVICEJOURNEYREF = "1-NETEXPROFILE-TimetableFrame-DatedServiceJourney-Multiple-ServiceJourneyRef";
 	public static final String _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION = "1-NETEXPROFILE-TimetableFrame_DatedServiceJourney_DuplicateWithDifferentVersion" ;
 
+	public static final String _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_PASSING_TIMES = "1-NETEXPROFILE-TimetableFrame_DeadRun_TimetabledPassingTime";
+	public static final String _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_JOURNEYPATTERN_REF = "1-NETEXPROFILE-TimetableFrame_DeadRun_JourneyPatternRef";
+	public static final String _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_DAYTYPE_REF = "1-NETEXPROFILE-TimetableFrame-DeadRun-DayTypeRef";
 
 
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_BOOKINGCONTACT = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_BookingContact";
@@ -143,6 +153,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ILLEGAL_BOOKINGACCESS = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_IllegalBookingAccess";
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ILLEGAL_BUYWHEN = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_IllegalBuyWhen";
 	public static final String _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ILLEGAL_FLEXIBLESERVICETYPE = "1-NETEXPROFILE-TimetableFrame_FlexibleServiceProperties_IllegalFlexibleServiceType";
+
+	public static final String _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_PLANNED_AND_ADVERTISED = "1-NETEXPROFILE-TimetableFrame_Interchange_PlannedAndAdvertised";
+	public static final String _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_GUARANTEED_AND_MAX_WAIT_TIME_ZERO = "1-NETEXPROFILE-TimetableFrame_Interchange_GuaranteedAndMaxWaitTimeZero";
+	public static final String _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_MAX_WAIT_TIME_TOO_LONG = "1-NETEXPROFILE-TimetableFrame_Interchange_MaxWaitTimeTooLong";
 
 	public static final String _1_NETEX_COMPOSITE_FRAME_VALIDITYCONDTITIONS = "1-NETEXPROFILE-CompositeFrame_ValidityConditions";
 	public static final String _1_NETEX_VALIDITYCONDITIONS_ON_FRAMES_INSIDE_COMPOSITEFRAME = "1-NETEXPROFILE-ValidityConditionsOnFramesInsideCompositeFrame";
@@ -235,6 +249,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ILLEGAL_BUYWHEN, "E");
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_FLEXIBLE_SERVICE_PROPERTIES_ILLEGAL_FLEXIBLESERVICETYPE, "E");
 
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_PLANNED_AND_ADVERTISED, "W");
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_GUARANTEED_AND_MAX_WAIT_TIME_ZERO, "W");
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_INTERCHANGE_MAX_WAIT_TIME_TOO_LONG, "W");
+
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_LINE_PUBLIC_CODE, "W");
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_VEHICLEJOURNEY_OPERATORREF_OR_LINE_OPREATORREF, "E");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_LINE_TRANSPORTMODE, "E");
@@ -245,6 +263,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_ROUTE_LINEREF, "E");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_ROUTE_DIRECTIONREF, "W");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_ROUTE_POINTSINSEQUENCE, "E");
+		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_ROUTE_POINTSINSEQUENCE_DUPLICATE_ORDER, "W");
+
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_TIMING_POINTS, "W");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_JOURNEY_PATTERN, "E");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_JOURNEY_PATTERN_ROUTE_REF, "E");
@@ -257,6 +277,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_SCHEDULEDSTOPPOINTREF, "E");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_QUAYREF, "E");
+		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_DUPLICATE, "W");
+
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_INVALID_TRANSPORTMODE, "E");
 		addCheckpoints(context, _1_NETEX_SERVICE_FRAME_INVALID_TRANSPORTSUBMODE, "E");
 
@@ -286,6 +308,10 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_MULTIPLE_SERVICEJOURNEYREF, "E");
 		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DATED_SERVICE_JOURNEY_DUPLICATE_WITH_DIFFERENT_VERSION, "W");
 
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_JOURNEYPATTERN_REF, "E");
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_DAYTYPE_REF, "E");
+		addCheckpoints(context, _1_NETEX_TIMETABLE_FRAME_DEAD_RUN_PASSING_TIMES, "I");
+
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_COMPANY_NUMBER, "I");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_NAME, "E");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_OPERATOR_LEGAL_NAME, "I");
@@ -296,8 +322,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_COMPANY_NUMBER, "I");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_NAME, "E");
 		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_LEGAL_NAME, "I");
-		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS, "W");
-		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL_OR_PHONE_OR_EMAIL, "W");
+		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS, "E");
+		addCheckpoints(context, _1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL, "E");
 
 		addCheckpoints(context, _1_NETEX_SERVICE_CALENDAR_FRAME_DAYTYPE_NOT_ASSIGNED, "W");
 		addCheckpoints(context, _1_NETEX_SERVICE_CALENDAR_FRAME_EMPTY_SERVICE_CALENDAR, "W");
@@ -321,6 +347,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		addCheckpoints(context, _1_NETEX_NOTICE_ALTERNATIVE_TEXT_TEXT, "E");
 		addCheckpoints(context, _1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG, "E");
 		addCheckpoints(context, _1_NETEX_NOTICE_ALTERNATIVE_TEXT_DUPLICATE_LANG, "E");
+
+		addCheckpoints(context, _1_NETEX_NOTICE_ASSIGNMENTS_DUPLICATE, "W");
 	}
 
 	private void addCheckpoints(Context context, String checkpointName, String error) {
@@ -356,8 +384,8 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 					_1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_LEGAL_NAME);
 			validateElementNotPresent(context, xpath, subLevel, "organisations/Authority[not(ContactDetails)]",
 					_1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS);
-			validateElementNotPresent(context, xpath, subLevel, "organisations/Authority/ContactDetails[(not(Email) or normalize-space(Email) = '') and (not(Phone) or normalize-space(Phone) = '') and (not(Url) or normalize-space(Url) = '')]",
-					_1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL_OR_PHONE_OR_EMAIL);
+			validateElementNotPresent(context, xpath, subLevel, "organisations/Authority/ContactDetails[not(Url) or not(starts-with(Url, 'http://') or (starts-with(Url, 'https://')) )]",
+					_1_NETEXPROFILE_RESOURCE_FRAME_ORGANISATIONS_AUTHORITY_CONTACT_DETAILS_URL);
 		}
 	}
 
@@ -386,7 +414,7 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 	public Collection<String> getSupportedProfiles() {
 		return Arrays.asList(new String[] { PROFILE_NORWAY_NETWORKTIMETABLE_104_10,PROFILE_NORWAY_NETWORKTIMETABLE_104_11,
 				PROFILE_NORWAY_NETWORKTIMETABLE_107_11, PROFILE_NORWAY_NETWORKTIMETABLE_108_11,  PROFILE_NORWAY_NETWORKTIMETABLE_108_12,
-				PROFILE_NORWAY_NETWORKTIMETABLE_108_13, PROFILE_NORWAY_NETWORKTIMETABLE_109_13, PROFILE_NORWAY_NETWORKTIMETABLE_110_13, PROFILE_NORWAY_NETWORKTIMETABLE_111_13});
+				PROFILE_NORWAY_NETWORKTIMETABLE_108_13, PROFILE_NORWAY_NETWORKTIMETABLE_109_13, PROFILE_NORWAY_NETWORKTIMETABLE_110_13, PROFILE_NORWAY_NETWORKTIMETABLE_111_13, PROFILE_NORWAY_NETWORKTIMETABLE_112_13, PROFILE_NORWAY_NETWORKTIMETABLE_113_13});
 	}
 
 	protected void verifyReferencesToCorrectEntityTypes(Context context, List<IdVersion> localRefs) {
@@ -500,17 +528,20 @@ public abstract class AbstractNorwayNetexProfileValidator extends AbstractNetexP
 		validateElementNotPresent(context, xpath, subLevel, "Network/groupsOfLines/GroupOfLines[not(Name)  or normalize-space(Name) = '']", _1_NETEX_SERVICE_FRAME_NETWORK_GROUPOFLINE_NAME);
 		validateElementNotPresent(context, xpath, subLevel, "groupsOfLines", _1_NETEX_SERVICE_FRAME_GROUPOFLINES_OUTSIDE_NETWORK);
 		validateElementNotPresent(context, xpath, subLevel, "timingPoints", _1_NETEX_SERVICE_FRAME_TIMING_POINTS);
+
 		validateElementNotPresent(context, xpath, subLevel, "stopAssignments/PassengerStopAssignment[not(ScheduledStopPointRef)]", _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_SCHEDULEDSTOPPOINTREF);
 		validateElementNotPresent(context, xpath, subLevel, "stopAssignments/PassengerStopAssignment[not(QuayRef)]", _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_QUAYREF);
+		validateElementNotPresent(context, xpath, subLevel, "stopAssignments/PassengerStopAssignment[QuayRef/@ref = following-sibling::PassengerStopAssignment/QuayRef/@ref]", _1_NETEX_SERVICE_FRAME_PASSENGER_STOP_ASSIGNMENT_DUPLICATE);
+
 
 		validateElementNotPresent(context, xpath, subLevel, "serviceLinks/ServiceLink[not(FromPointRef)]", _1_NETEX_SERVICE_FRAME_SERVICE_LINK_FROMPOINTREF);
 		validateElementNotPresent(context, xpath, subLevel, "serviceLinks/ServiceLink[not(ToPointRef)]", _1_NETEX_SERVICE_FRAME_SERVICE_LINK_TOPOINTREF);
-		validateElementNotPresent(context, xpath, subLevel, "serviceLinks/ServiceLink/projections/LinkSequenceProjection/g:LineString/g:posList[@count>0 and not(normalize-space(text()))]", _1_NETEX_SERVICE_FRAME_SERVICE_LINK_MISSING_POSITION_COORDINATES);
+		validateElementNotPresent(context, xpath, subLevel, "serviceLinks/ServiceLink/projections/LinkSequenceProjection/g:LineString/g:posList[not(normalize-space(text()))]", _1_NETEX_SERVICE_FRAME_SERVICE_LINK_MISSING_POSITION_COORDINATES);
 	}
 
 	protected void validateNotices(Context context, XPathCompiler xpath, XdmNode subLevel) throws XPathExpressionException, SaxonApiException {
-		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice[not(Text)]", _1_NETEX_NOTICE_TEXT);
-		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice/alternativeTexts/AlternativeText[not(Text) or normalize-space(Text) = '']",
+		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice[not(Text) or normalize-space(Text/text()) = '']", _1_NETEX_NOTICE_TEXT);
+		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice/alternativeTexts/AlternativeText[not(Text) or normalize-space(Text/text()) = '']",
 				_1_NETEX_NOTICE_ALTERNATIVE_TEXT_TEXT);
 		validateElementNotPresent(context, xpath, subLevel, "//notices/Notice/alternativeTexts/AlternativeText/Text[not(@lang)]",
 				_1_NETEX_NOTICE_ALTERNATIVE_TEXT_LANG);

@@ -17,7 +17,6 @@ import javax.naming.InitialContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
 import mobi.chouette.common.chain.Command;
@@ -25,6 +24,7 @@ import mobi.chouette.common.chain.CommandFactory;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 
 @Log4j
 public class ParallelExecutionCommand implements Command {
@@ -94,14 +94,14 @@ public class ParallelExecutionCommand implements Command {
 			result = ERROR;
 		} finally {
 			executor.shutdown();
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 
 		return result;
 	}
 
-	private class CommandTask implements Callable<Boolean> {
+	private static class CommandTask implements Callable<Boolean> {
 
 		private Command command;
 

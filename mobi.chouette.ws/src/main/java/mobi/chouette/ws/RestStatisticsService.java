@@ -1,6 +1,5 @@
 package mobi.chouette.ws;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +23,8 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.model.statistics.LineStatistics;
 import mobi.chouette.service.ReferentialService;
+import mobi.chouette.service.RequestExceptionCode;
+import mobi.chouette.service.RequestServiceException;
 import mobi.chouette.service.TransitDataStatisticsService;
 
 @Log4j
@@ -48,17 +49,20 @@ public class RestStatisticsService implements Constant {
 	public Response lineStats(@PathParam("ref") String referential, @QueryParam("startDate") Date startDate, @QueryParam("days") int days,
 							  @QueryParam("minDaysValidityCategory") String minDaysValidityCategories[]) {
 		try {
-			log.info(Color.CYAN + "Call lineStats referential = " + referential + Color.NORMAL);
-
-
+			log.info(Color.CYAN + "Calculating line statistics for referential " + referential + Color.NORMAL);
 			Map<Integer, String> minDaysValidityCategoryMap = parseCategoryMap(minDaysValidityCategories);
-
-			LineStatistics lineStatistics = statisticsService.getLineStatisticsByLineNumber(referential, startDate, days,
-					minDaysValidityCategoryMap);
-			ResponseBuilder builder = Response.ok(lineStatistics);
-			builder.header(api_version_key, api_version);
-			return builder.build();
-
+			try {
+				LineStatistics lineStatistics = statisticsService.getLineStatisticsByLineNumber(referential, startDate, days, minDaysValidityCategoryMap);
+				log.info(Color.CYAN + "Calculated lineStats for referential " + referential + Color.NORMAL);
+				return Response.ok(lineStatistics).header(api_version_key, api_version).build();
+			} catch (RequestServiceException e) {
+				if (e.getRequestExceptionCode() == RequestExceptionCode.REFERENTIAL_BUSY) {
+					log.warn(Color.CYAN + "Statistic Query timeout for referential: " + referential + ". An import process is probably in progress.", e);
+					return Response.status(423).header(api_version_key, api_version).entity("The referential is busy, cannot update statistics.").build();
+				} else {
+					throw e;
+				}
+			}
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 			throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Status.INTERNAL_SERVER_ERROR);
@@ -71,7 +75,7 @@ public class RestStatisticsService implements Constant {
 	public Response lineStats(@QueryParam("startDate") Date startDate, @QueryParam("days") int days,
 							  @QueryParam("minDaysValidityCategory") String minDaysValidityCategories[], @QueryParam("referentials") String referentials) {
 		try {
-			log.info(Color.CYAN + "Call lineStats for referentials:" + referentials + Color.NORMAL);
+			log.info(Color.CYAN + "Calculating line statistics for referentials " + referentials + Color.NORMAL);
 
 			Map<Integer, String> minDaysValidityCategoryMap = parseCategoryMap(minDaysValidityCategories);
 
@@ -81,14 +85,24 @@ public class RestStatisticsService implements Constant {
 
 			for (String referential : referentials.split(",")) {
 				if (availableReferentials.contains(referential)) {
-					lineStatsPerReferential.put(referential, statisticsService.getLineStatisticsByLineNumber(referential, startDate, days,
-							minDaysValidityCategoryMap));
+					try {
+						LineStatistics lineStatisticsByLineNumber = statisticsService.getLineStatisticsByLineNumber(referential, startDate, days,
+								minDaysValidityCategoryMap);
+						lineStatsPerReferential.put(referential, lineStatisticsByLineNumber);
+					} catch (RequestServiceException e) {
+						if (e.getRequestExceptionCode() == RequestExceptionCode.REFERENTIAL_BUSY) {
+							log.warn(Color.CYAN + "Statistic Query timeout for referential: " + referential + ". A data import is probably in progress. Ignoring request for line statistics for this referential", e);
+						} else {
+							throw e;
+						}
+					}
 				} else {
 					log.warn(Color.CYAN + "Ignoring request for lineStats for unknown referential: " + referential);
 				}
 			}
 			ResponseBuilder builder = Response.ok(lineStatsPerReferential);
 			builder.header(api_version_key, api_version);
+			log.info(Color.CYAN + "Calculated line statistics for referentials " + referentials + Color.NORMAL);
 			return builder.build();
 
 		} catch (Exception ex) {

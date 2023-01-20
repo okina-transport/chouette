@@ -20,8 +20,8 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/path: /
-        prometheus.io/port: "9001"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9990"
         prometheus.io/scrape: "true"
         scheduler.alpha.kubernetes.io/affinity: |
           {
@@ -40,22 +40,17 @@ spec:
     spec:
       containers:
         - name: chouette-sql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.17-alpine
+          image: gcr.io/cloudsql-docker/gce-proxy:1.29.0-alpine
           command:
             - /cloud_sql_proxy
             - -instances={{ .Values.gcpDatabaseInstance}}
             - -credential_file=/etc/chouette-service-account/credentials.json
+            - -term_timeout=30s
             - -log_debug_stdout
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - sleep 28
+            - -verbose=false
           resources:
             requests:
-              cpu: 50m
+              cpu: 100m
               memory: 40Mi
           volumeMounts:
             - mountPath: /etc/chouette-service-account
@@ -65,10 +60,12 @@ spec:
           imagePullPolicy: Always
           env:
             - name: JAVA_OPTS
-              value: -server -Xms2048m -Xmx{{ .Values.resources.xmx }} -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
-                -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true
+              value: -server -Xms2048m -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+                -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:ActiveProcessorCount={{ .Values.resources.cpuRequest }}
+                --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+                -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true
                 -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Dconfig.location=/etc/application-config/application.properties
-                -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/data/
+                -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/data/ -Dlogback.configurationFile=/etc/application-config/logback.xml
             - name: LANG
               value: en_US.UTF-8
             - name: TZ
@@ -154,6 +151,10 @@ spec:
               name: chouette-config
               readOnly: true
               subPath: application.properties
+            - mountPath: /etc/application-config/logback.xml
+              name: chouette-config
+              readOnly: true
+              subPath: logback.xml
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

@@ -20,11 +20,11 @@ import javax.xml.validation.Validator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.report.ActionReporter.FILE_ERROR_CODE;
@@ -62,6 +62,8 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 		if (schema == null) {
 			SchemaFactory factory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 			schema = factory.newSchema(getClass().getResource(SCHEMA_FILE));
 			context.put(SCHEMA, schema);
 		}
@@ -106,7 +108,7 @@ public class NeptuneSAXParserCommand implements Command, Constant {
 
 		} finally {
 			if (reader != null ) reader.close();
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

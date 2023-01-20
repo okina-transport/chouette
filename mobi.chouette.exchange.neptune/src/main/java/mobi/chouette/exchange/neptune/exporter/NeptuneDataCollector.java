@@ -4,12 +4,12 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.exporter.DataCollector;
 import mobi.chouette.model.Line;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 @Log4j
 public class NeptuneDataCollector extends DataCollector {
 	public NeptuneDataCollector(mobi.chouette.exchange.exporter.ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-		super(collection, line, startDate, endDate, false, false);
+		super(collection, line, startDate, endDate, false, false, true);
 	}
 
 	public boolean collect() {

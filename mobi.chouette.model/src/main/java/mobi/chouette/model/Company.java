@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -38,7 +38,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "companies_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
+	@GenericGenerator(name = "companies_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", 
 		parameters = {
 			@Parameter(name = "sequence_name", value = "companies_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })

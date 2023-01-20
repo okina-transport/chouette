@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
+import mobi.chouette.common.monitor.JamonUtils;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 
 import com.jamonapi.Monitor;
@@ -18,7 +19,6 @@ import com.jamonapi.MonitorFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -73,13 +73,15 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			}
 
 			NetexXMLProcessingHelperFactory importer = (NetexXMLProcessingHelperFactory) context.get(IMPORTER);
-			
 
-			XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip);
+			if(parameters.isValidateAgainstProfile()) {
+				XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip);
+				context.put(NETEX_DATA_DOM, netexDom);
+			}
+
 			PublicationDeliveryStructure netexJava = importer.unmarshal(file,elementsToSkip);
 
 			context.put(NETEX_DATA_JAVA, netexJava);
-			context.put(NETEX_DATA_DOM, netexDom);
 
 			if (lineFile) {
 				context.put(NETEX_WITH_COMMON_DATA, Boolean.FALSE);
@@ -112,7 +114,7 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			log.error("Netex referential initialization failed ", e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 	}

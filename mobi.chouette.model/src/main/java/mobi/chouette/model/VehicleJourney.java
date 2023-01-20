@@ -6,13 +6,14 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.type.JourneyCategoryEnum;
+import mobi.chouette.model.type.PublicationEnum;
 import mobi.chouette.model.type.ServiceAlterationEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -61,7 +62,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "vehicle_journeys_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "vehicle_journeys_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "vehicle_journeys_id_seq"),
 			@Parameter(name = "increment_size", value = "100") })
 	@GeneratedValue(generator = "vehicle_journeys_id_seq")
@@ -88,6 +89,20 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	public void setComment(String value) {
 		comment = StringUtils.abbreviate(value, 255);
 	}
+
+
+	/**
+	 * Transport mode when different from line transport mode
+	 *
+	 * @param transportMode
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Enumerated(EnumType.STRING)
+	@Column(name = "publication")
+	private PublicationEnum publication;
 
 	/**
 	 * Transport mode when different from line transport mode
@@ -332,6 +347,14 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 			0);
 
 	/**
+	 * Blocks referencing this .
+	 */
+
+	@Getter
+	@ManyToMany(mappedBy = "vehicleJourneys")
+	private List<Block> blocks = new ArrayList<>();
+
+	/**
 	 * company reference<br/>
 	 * if different from line company
 	 * 
@@ -391,10 +414,9 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vehicle_journey_id", updatable = false)
+	@OneToMany(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<VehicleJourneyAtStop>(0);
-	
+
 	/**
 	 * To distinguish the timesheets journeys and the frequencies ones. Defaults to Timesheet.
 	 * 
@@ -460,7 +482,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 			includedDates.removeAll(excludedDates);
 			return new TreeSet<>(includedDates);
 		} else if (hasDatedServiceJourneys()) {
-			return getDatedServiceJourneys().stream().filter(DatedServiceJourney::isActive).map(DatedServiceJourney::getOperatingDay).collect(Collectors.toCollection(TreeSet::new));
+			return getDatedServiceJourneys().stream().filter(DatedServiceJourney::isNeitherCancelledNorReplaced).map(DatedServiceJourney::getOperatingDay).collect(Collectors.toCollection(TreeSet::new));
 		} else {
 			return new TreeSet<>();
 		}
@@ -551,15 +573,16 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * Retrieve the list of active dated service journeys on the period, taking into account the day offset at first stop and last stop.
+	 * Retrieve the list of active dated service journeys on the period.
+	 * Only the operating day is taken into account, not the actual calendar day implied by the day offset at first stop and last stop.
+	 * This ensures that references to other dated service journeys through {@link DatedServiceJourney#getOriginalDatedServiceJourneys()}
+	 * are not broken during the filtering process, even if the referenced DatedServiceJourneys start/end on a different calendar date.
 	 * @param startDate the start date of the period (inclusive).
 	 * @param endDate the end date of the period (exclusive).
-	 * @return the list of dated service journeys active on the period, taking into account the day offset at first stop and last stop.
+	 * @return the list of dated service journeys active on the period.
 	 */
 	public List<DatedServiceJourney> getActiveDatedServiceJourneysOnPeriod(LocalDate startDate, LocalDate endDate) {
-		final LocalDate effectiveStartDate = getEffectiveStartDate(startDate);
-		final LocalDate effectiveEndDate = getEffectiveEndDate(endDate);
-		return getDatedServiceJourneys().stream().filter(dsj->dsj.isValidOnPeriod(effectiveStartDate, effectiveEndDate )).collect(Collectors.toList());
+		return getDatedServiceJourneys().stream().filter(dsj->dsj.isValidOnPeriod(startDate, endDate )).collect(Collectors.toList());
 	}
 
 	private boolean hasActiveDatedServiceJourneysOnPeriod(LocalDate startDate, LocalDate endDate) {
@@ -568,5 +591,20 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	public boolean isActiveOnPeriod(LocalDate startDate, LocalDate endDate) {
 		return hasActiveTimetablesOnPeriod(startDate, endDate) || hasActiveDatedServiceJourneysOnPeriod(startDate, endDate);
+	}
+
+	public boolean isNeitherCancelledNorReplaced() {
+		ServiceAlterationEnum serviceAlterationEnum = getServiceAlteration();
+		return ServiceAlterationEnum.Cancellation != serviceAlterationEnum && ServiceAlterationEnum.Replaced != serviceAlterationEnum;
+	}
+
+	public boolean isPublic() {
+		return publication == PublicationEnum.Public || publication == null;
+	}
+
+	public void addTimetable(Timetable timetable) {
+		if (timetable != null && !timetables.contains(timetable)) {
+			timetables.add(timetable);
+		}
 	}
 }

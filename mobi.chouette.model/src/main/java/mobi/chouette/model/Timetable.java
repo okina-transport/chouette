@@ -27,12 +27,12 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 /**
  * Chouette Timetable
@@ -44,16 +44,17 @@ import org.joda.time.LocalDate;
 @Table(name = "time_tables")
 @Cacheable
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = { "vehicleJourneys" })
+@ToString(callSuper = true)
 public class Timetable extends NeptuneIdentifiedObject {
 	private static final long serialVersionUID = -1598554061982685113L;
 	public static final long ONE_DAY = 3600000 * 24;
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "time_tables_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "time_tables_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "time_tables_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
+			@Parameter(name = "increment_size", value = "100")
+	})
 	@GeneratedValue(generator = "time_tables_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
@@ -220,9 +221,10 @@ public class Timetable extends NeptuneIdentifiedObject {
 	@OrderColumn(name = "position", nullable = false)
 	private List<Period> periods = new ArrayList<Period>(0);
 
+
 	/**
-	 * list of vehicleJourneys
-	 * 
+	 * list of deadRuns
+	 *
 	 * @param vehicleJourneys
 	 *            New value
 	 * @return The actual value
@@ -230,7 +232,19 @@ public class Timetable extends NeptuneIdentifiedObject {
 	@Getter
 	@Setter
 	@ManyToMany(mappedBy = "timetables", fetch = FetchType.LAZY)
-	private List<VehicleJourney> vehicleJourneys = new ArrayList<VehicleJourney>(0);
+	private List<DeadRun> deadRuns = new ArrayList<DeadRun>(0);
+
+	/**
+	 * list of blocks
+	 *
+	 * @param vehicleJourneys
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ManyToMany(mappedBy = "timetables", fetch = FetchType.LAZY)
+	private List<Block> blocks = new ArrayList<>(0);
 
 	/**
 	 * add a day if not already present
@@ -286,28 +300,45 @@ public class Timetable extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * add a vehicle journey if not already present
-	 * 
-	 * @param vehicleJourney
+	 * add a dead run if not already present
+	 *
+	 * @param deadRun
 	 */
-	public void addVehicleJourney(VehicleJourney vehicleJourney) {
-		if (!getVehicleJourneys().contains(vehicleJourney)) {
-			getVehicleJourneys().add(vehicleJourney);
+	public void addDeadRun(DeadRun deadRun) {
+		if (!getDeadRuns().contains(deadRun)) {
+			getDeadRuns().add(deadRun);
 		}
-		if (!vehicleJourney.getTimetables().contains(this)) {
-			vehicleJourney.getTimetables().add(this);
+		if (!deadRun.getTimetables().contains(this)) {
+			deadRun.getTimetables().add(this);
 		}
 	}
 
 	/**
-	 * remove a vehicle journey
-	 * 
-	 * @param vehicleJourney
+	 * remove a dead run
+	 *
+	 * @param deadRun
 	 */
-	public void removeVehicleJourney(VehicleJourney vehicleJourney) {
-		getVehicleJourneys().remove(vehicleJourney);
-		vehicleJourney.getTimetables().remove(this);
+	public void removeDeadRun(DeadRun deadRun) {
+		getDeadRuns().remove(deadRun);
+		deadRun.getTimetables().remove(this);
 	}
+
+
+	/**
+	 * add a block if not already present
+	 *
+	 * @param block
+	 */
+	public void addBlock(Block block) {
+		if (!getBlocks().contains(block)) {
+			getBlocks().add(block);
+		}
+		if (!block.getTimetables().contains(this)) {
+			block.getTimetables().add(this);
+		}
+	}
+
+
 
 	/**
 	 * build a bitwise dayType mask for filtering
@@ -423,12 +454,12 @@ public class Timetable extends NeptuneIdentifiedObject {
 			return true;
 		}
 		if (startDate == null) {
-			return isActiveBefore(new LocalDate(endDate));
+			return isActiveBefore(endDate);
 		} else {
 			if (endDate == null) {
-				return isActiveAfter(new LocalDate(startDate));
+				return isActiveAfter(startDate);
 			} else {
-				return isActiveBetween(new LocalDate(startDate), new LocalDate(endDate));
+				return isActiveBetween(startDate, endDate);
 			}
 		}
 	}
@@ -449,7 +480,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 		}
 		if (getIntDayTypes() != null && getIntDayTypes().intValue() != 0 && getPeriods() != null) {
 
-			int aDayOfWeek = aDay.getDayOfWeek() - 1; // zero on monday
+			int aDayOfWeek = aDay.getDayOfWeek().getValue() - 1; // zero on monday
 			int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
 			if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {
 				// check if day is in a period
@@ -590,7 +621,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 
 			while (!date.isAfter(period.getEndDate())) {
 
-				int aDayOfWeek = date.getDayOfWeek() - 1; // zero on
+				int aDayOfWeek = date.getDayOfWeek().getValue() - 1; // zero on
 				// monday
 				int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
 				if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {

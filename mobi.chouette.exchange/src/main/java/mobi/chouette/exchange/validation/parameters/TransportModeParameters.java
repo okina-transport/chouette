@@ -17,8 +17,10 @@ import lombok.NoArgsConstructor;
 		"interStopAreaDistanceMin",
 		"interStopAreaDistanceMax",
 		"speedMax",
+		"speedWarning",
 		"speedMin",
 		"interStopDurationVariationMax",
+		"routeSectionStopAreaDistanceWarning",
 		"routeSectionStopAreaDistanceMax"
 		})
 public class TransportModeParameters {
@@ -34,12 +36,18 @@ public class TransportModeParameters {
 	@XmlElement(name = "speed_max")
 	private Integer speedMax;
 
+	@XmlElement(name = "speed_warning")
+	private Integer speedWarning;
+
 	@XmlElement(name = "speed_min")
 	private Integer speedMin;
 
 	@XmlElement(name = "inter_stop_duration_variation_max")
 	private Integer interStopDurationVariationMax;
 	
+	@XmlElement(name = "route_section_stop_area_distance_warning")
+	private double routeSectionStopAreaDistanceWarning;
+
 	@XmlElement(name = "route_section_stop_area_distance_max")
 	private double routeSectionStopAreaDistanceMax;
 

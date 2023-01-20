@@ -6,28 +6,28 @@ import java.util.TreeSet;
 
 import mobi.chouette.model.type.DayTypeEnum;
 
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class VehicleJourneyTest {
 
-	LocalDate mar1Sunday = new LocalDate(2020, 3, 1);
-	LocalDate mar2Monday = new LocalDate(2020, 3, 2);
-	LocalDate mar3Tuesday = new LocalDate(2020, 3, 3);
-	LocalDate mar4Wednesday = new LocalDate(2020, 3, 4);
-	LocalDate mar5Thursday = new LocalDate(2020, 3, 5);
-	LocalDate mar6Friday = new LocalDate(2020, 3, 6);
-	LocalDate mar7Saturday = new LocalDate(2020, 3, 7);
+	LocalDate mar1Sunday = LocalDate.of(2020, 3, 1);
+	LocalDate mar2Monday = LocalDate.of(2020, 3, 2);
+	LocalDate mar3Tuesday = LocalDate.of(2020, 3, 3);
+	LocalDate mar4Wednesday = LocalDate.of(2020, 3, 4);
+	LocalDate mar5Thursday = LocalDate.of(2020, 3, 5);
+	LocalDate mar6Friday = LocalDate.of(2020, 3, 6);
+	LocalDate mar7Saturday = LocalDate.of(2020, 3, 7);
 
-	private final LocalDate firstOfJuly2020 = new LocalDate(2020, 7, 1);
-	private final LocalDate tenthOfJuly2020 = new LocalDate(2020, 7, 10);
-	private final LocalDate fifteenthOfJuly2020 = new LocalDate(2020, 7, 15);
-	private final LocalDate fifteenthOfAugust2020 = new LocalDate(2020, 8, 15);
-	private final LocalDate seventeenthOfAugust = new LocalDate(2020, 8, 17);
-	private final LocalDate thirtiethOfAugust2020 = new LocalDate(2020, 8, 30);
+	private final LocalDate firstOfJuly2020 = LocalDate.of(2020, 7, 1);
+	private final LocalDate tenthOfJuly2020 = LocalDate.of(2020, 7, 10);
+	private final LocalDate fifteenthOfJuly2020 = LocalDate.of(2020, 7, 15);
+	private final LocalDate fifteenthOfAugust2020 = LocalDate.of(2020, 8, 15);
+	private final LocalDate seventeenthOfAugust = LocalDate.of(2020, 8, 17);
+	private final LocalDate thirtiethOfAugust2020 = LocalDate.of(2020, 8, 30);
 
 
 	@Test
@@ -60,15 +60,15 @@ public class VehicleJourneyTest {
 				.withDayTypes(DayTypeEnum.Monday)
 				.build();
 
-		vehicleJourney.getTimetables().add(timetable);
+		vehicleJourney.addTimetable(timetable);
 
 		VehicleJourneyAtStop departureVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		departureVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		departureVehicleJourneyAtStop.setDepartureTime(new LocalTime(8,30,0));
+		departureVehicleJourneyAtStop.setDepartureTime(LocalTime.of(8,30,0));
 
 		VehicleJourneyAtStop arrivalVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		arrivalVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		arrivalVehicleJourneyAtStop.setArrivalTime(new LocalTime(9,30,0));
+		arrivalVehicleJourneyAtStop.setArrivalTime(LocalTime.of(9,30,0));
 
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
 		Assert.assertTrue(vehicleJourney.hasTimetables(), "The vehicle journey should have at least one timetable");
@@ -92,15 +92,15 @@ public class VehicleJourneyTest {
 				.withDayTypes(DayTypeEnum.Monday)
 				.build();
 
-		vehicleJourney.getTimetables().add(timetable);
+		vehicleJourney.addTimetable(timetable);
 
 		VehicleJourneyAtStop departureVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		departureVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		departureVehicleJourneyAtStop.setDepartureTime(new LocalTime(8,30,0));
+		departureVehicleJourneyAtStop.setDepartureTime(LocalTime.of(8,30,0));
 
 		VehicleJourneyAtStop arrivalVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		arrivalVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		arrivalVehicleJourneyAtStop.setArrivalTime(new LocalTime(7,30,0));
+		arrivalVehicleJourneyAtStop.setArrivalTime(LocalTime.of(7,30,0));
 		arrivalVehicleJourneyAtStop.setArrivalDayOffset(11);
 
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
@@ -125,16 +125,16 @@ public class VehicleJourneyTest {
 				.withDayTypes(DayTypeEnum.Monday)
 				.build();
 
-		vehicleJourney.getTimetables().add(timetable);
+		vehicleJourney.addTimetable(timetable);
 
 		VehicleJourneyAtStop departureVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		departureVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		departureVehicleJourneyAtStop.setDepartureTime(new LocalTime(8,30,0));
+		departureVehicleJourneyAtStop.setDepartureTime(LocalTime.of(8,30,0));
 		departureVehicleJourneyAtStop.setDepartureDayOffset(-11);
 
 		VehicleJourneyAtStop arrivalVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		arrivalVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		arrivalVehicleJourneyAtStop.setArrivalTime(new LocalTime(7,30,0));
+		arrivalVehicleJourneyAtStop.setArrivalTime(LocalTime.of(7,30,0));
 
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
 		Assert.assertTrue(vehicleJourney.hasTimetables(), "The vehicle journey should have at least one timetable");
@@ -158,16 +158,16 @@ public class VehicleJourneyTest {
 				.withDayTypes(DayTypeEnum.Monday, DayTypeEnum.Tuesday, DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday, DayTypeEnum.Saturday, DayTypeEnum.Sunday)
 				.build();
 
-		vehicleJourney.getTimetables().add(timetable);
+		vehicleJourney.addTimetable(timetable);
 
 		VehicleJourneyAtStop departureVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		departureVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		departureVehicleJourneyAtStop.setDepartureTime(new LocalTime(8,30,0));
+		departureVehicleJourneyAtStop.setDepartureTime(LocalTime.of(8,30,0));
 		departureVehicleJourneyAtStop.setDepartureDayOffset(1);
 
 		VehicleJourneyAtStop arrivalVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		arrivalVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		arrivalVehicleJourneyAtStop.setArrivalTime(new LocalTime(9,30,0));
+		arrivalVehicleJourneyAtStop.setArrivalTime(LocalTime.of(9,30,0));
 		departureVehicleJourneyAtStop.setArrivalDayOffset(1);
 
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");
@@ -193,16 +193,16 @@ public class VehicleJourneyTest {
 				.withDayTypes(DayTypeEnum.Monday, DayTypeEnum.Tuesday, DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday, DayTypeEnum.Saturday, DayTypeEnum.Sunday)
 				.build();
 
-		vehicleJourney.getTimetables().add(timetable);
+		vehicleJourney.addTimetable(timetable);
 
 		VehicleJourneyAtStop departureVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		departureVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		departureVehicleJourneyAtStop.setDepartureTime(new LocalTime(8,30,0));
+		departureVehicleJourneyAtStop.setDepartureTime(LocalTime.of(8,30,0));
 		departureVehicleJourneyAtStop.setDepartureDayOffset(-1);
 
 		VehicleJourneyAtStop arrivalVehicleJourneyAtStop = new VehicleJourneyAtStop();
 		arrivalVehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
-		arrivalVehicleJourneyAtStop.setArrivalTime(new LocalTime(9,30,0));
+		arrivalVehicleJourneyAtStop.setArrivalTime(LocalTime.of(9,30,0));
 		arrivalVehicleJourneyAtStop.setArrivalDayOffset(-1);
 
 		Assert.assertTrue(vehicleJourney.hasStops(), "The vehicle journey should have at least 2 stops");

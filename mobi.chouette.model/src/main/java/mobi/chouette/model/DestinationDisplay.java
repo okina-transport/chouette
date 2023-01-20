@@ -15,7 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -39,7 +39,7 @@ public class DestinationDisplay extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "destination_displays_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "destination_displays_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "destination_displays_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "destination_displays_id_seq")

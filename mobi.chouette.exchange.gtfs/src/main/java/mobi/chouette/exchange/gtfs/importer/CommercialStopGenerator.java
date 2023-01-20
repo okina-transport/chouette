@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.gtfs.importer;
 
 import java.math.BigDecimal;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +40,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		}
 		double distanceMax = configuration.getMaxDistanceForCommercial();
 		boolean ignoreLastWord = configuration.isIgnoreLastWord();
-		int ignoreEndCharacters = configuration.getMaxDistanceForCommercial();
+		int ignoreEndCharacters = configuration.getIgnoreEndChars();
 
 		Map<String, StopArea> areaMap = new HashMap<String, StopArea>();
 

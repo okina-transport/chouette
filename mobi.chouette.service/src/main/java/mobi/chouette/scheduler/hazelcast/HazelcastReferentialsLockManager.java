@@ -2,9 +2,9 @@ package mobi.chouette.scheduler.hazelcast;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,15 +14,14 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Named;
 
+import com.hazelcast.cluster.MembershipEvent;
+import com.hazelcast.cluster.MembershipListener;
+import com.hazelcast.map.IMap;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.scheduler.ReferentialLockManager;
 
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.MemberAttributeEvent;
-import com.hazelcast.core.MembershipEvent;
-import com.hazelcast.core.MembershipListener;
 import org.rutebanken.hazelcasthelper.service.KubernetesService;
 
 import static mobi.chouette.scheduler.hazelcast.HazelcastReferentialsLockManager.BEAN_NAME;
@@ -48,7 +47,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 	@PostConstruct
 	public void init() {
 		if (BEAN_NAME.equals(System.getProperty(contenerChecker.getContext() + PropertyNames.REFERENTIAL_LOCK_MANAGER_IMPLEMENTATION))) {
-			hazelcastService = new ChouetteHazelcastService(new KubernetesService(getKubernetesNamespace(), isKubernetesEnabled()), Arrays.asList(new CleanUpAfterRemovedMembersListener()));
+			hazelcastService = new ChouetteHazelcastService(new KubernetesService(getKubernetesNamespace(), isKubernetesEnabled()), List.of(new CleanUpAfterRemovedMembersListener()));
 			locks = hazelcastService.getLocksMap();
 			jobsLocks = hazelcastService.getJobLocksMap();
 			log.info("Initialized hazelcast: " + hazelcastService.information());
@@ -84,7 +83,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 			if (acquired) {
 				log.debug("Acquired lock: " + key);
 			} else {
-				log.info("Failed to acquire lock: " + key);
+				log.debug("Failed to acquire lock: " + key);
 
 			}
 			return acquired;
@@ -193,7 +192,7 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 
 		@Override
 		public void memberRemoved(MembershipEvent membershipEvent) {
-			String memberUUID = membershipEvent.getMember().getUuid();
+			String memberUUID = membershipEvent.getMember().getUuid().toString();
 			cleanUpLocksForMember(locks, memberUUID);
 			cleanUpLocksForMember(jobsLocks, memberUUID);
 			log.info("Cleaned up all locks for removed member: " + memberUUID);
@@ -204,9 +203,5 @@ public class HazelcastReferentialsLockManager implements ReferentialLockManager 
 
 		}
 
-		@Override
-		public void memberAttributeChanged(MemberAttributeEvent memberAttributeEvent) {
-
-		}
 	}
 }

@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,12 +15,12 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.importer.updater.LineOptimiser;
@@ -45,9 +46,9 @@ import mobi.chouette.model.util.Referential;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.jboss.ejb3.annotation.TransactionTimeout;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -75,6 +76,7 @@ public class LineRegisterCommand implements Command {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@TransactionTimeout(value = 30, unit = TimeUnit.MINUTES)
 	public boolean execute(Context context) throws Exception {
 
 		boolean result = ERROR;
@@ -150,7 +152,7 @@ public class LineRegisterCommand implements Command {
 						log.error(e.getMessage());
 						e = e.getCause();
 					}
-					if (e instanceof SQLException) {
+					if (e instanceof SQLException && ((SQLException) e).getNextException()!= null) {
 						e = ((SQLException) e).getNextException();
 						reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.LINE, ERROR_CODE.WRITE_ERROR,  e.getMessage());
 						reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, e.getMessage());
@@ -165,7 +167,7 @@ public class LineRegisterCommand implements Command {
 				}
 				throw ex;
 			} finally {
-				log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+				JamonUtils.logMagenta(log, monitor);
 				
 	//			monitor = MonitorFactory.getTimeMonitor("LineOptimiser");
 	//			if (monitor != null)
@@ -206,7 +208,7 @@ public class LineRegisterCommand implements Command {
 			}
 		} else {
 			log.info("skipping obsolete line : " + newValue.getObjectId());
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 		return result;
 	}
@@ -241,15 +243,15 @@ public class LineRegisterCommand implements Command {
 		// VehicleJourneyAtStop newValue)
 		
 
-		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 		
 		buffer.write(vehicleJourneyAtStop.getObjectId().replace('|', '_'));
 		buffer.append(SEP);
 		buffer.write(vehicleJourneyAtStop.getObjectVersion().toString());
 		buffer.append(SEP);
 		if(vehicleJourneyAtStop.getCreationTime() != null) {
-			buffer.write(dateTimeFormat.print(vehicleJourneyAtStop.getCreationTime()));
+			buffer.write(dateTimeFormat.format(vehicleJourneyAtStop.getCreationTime()));
 		} else {
 			buffer.write(NULL);
 		}
@@ -265,12 +267,12 @@ public class LineRegisterCommand implements Command {
 		buffer.write(stopPoint.getId().toString());
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getArrivalTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getArrivalTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getArrivalTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getDepartureTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getDepartureTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getDepartureTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);

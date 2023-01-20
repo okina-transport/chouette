@@ -5,14 +5,16 @@ import java.io.IOException;
 import javax.naming.InitialContext;
 import javax.xml.bind.MarshalException;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
+
+import mobi.chouette.common.TimeUtil;
+import mobi.chouette.common.monitor.JamonUtils;
 import org.xml.sax.SAXParseException;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -37,7 +39,7 @@ public class NetexLineProducerCommand implements Command, Constant {
         try {
 
             Line line = (Line) context.get(LINE);
-            log.info("processing line " + NamingUtil.getName(line));
+            log.info("Processing NeTEx export for line " + line.getObjectId() + " (" + NamingUtil.getName(line) + ')');
             NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
             
             
@@ -66,15 +68,15 @@ public class NetexLineProducerCommand implements Command, Constant {
 
             LocalDate startDate = null;
             if (configuration.getStartDate() != null) {
-                startDate = new LocalDate(configuration.getStartDate());
+                startDate = TimeUtil.toLocalDate(configuration.getStartDate());
             }
 
             LocalDate endDate = null;
             if (configuration.getEndDate() != null) {
-                endDate = new LocalDate(configuration.getEndDate());
+                endDate = TimeUtil.toLocalDate(configuration.getEndDate());
             }
 
-            NetexDataCollector collector = new NetexDataCollector(collection, line, startDate, endDate);
+            NetexDataCollector collector = new NetexDataCollector(collection, line, startDate, endDate, !configuration.isExportBlocks());
             boolean cont = collector.collect();
 
             reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
@@ -123,7 +125,7 @@ public class NetexLineProducerCommand implements Command, Constant {
                 result = ERROR;
             }
         } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+            JamonUtils.logMagenta(log, monitor);
         }
 
         return result;

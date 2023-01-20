@@ -20,10 +20,8 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.util.ObjectIdTypes;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 /**
  * Abstract object used for all Identified Chouette Object
@@ -69,7 +67,7 @@ public abstract class NeptuneIdentifiedObject extends NeptuneObject implements
 	@Getter
 	@Setter
 	@Column(name = "object_version")
-	protected Integer objectVersion = 1;
+	protected Long objectVersion = 1L;
 
 	/**
 	 * creation time
@@ -81,7 +79,6 @@ public abstract class NeptuneIdentifiedObject extends NeptuneObject implements
 	@Getter
 	@Setter
 	@Column(name = "creation_time")
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	protected LocalDateTime creationTime = LocalDateTime.now();
 
 	/**

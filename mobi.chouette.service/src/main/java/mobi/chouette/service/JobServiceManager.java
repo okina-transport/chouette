@@ -35,6 +35,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.file.FileServiceException;
 import mobi.chouette.common.file.FileStore;
 import mobi.chouette.common.file.FileStoreFactory;
@@ -46,15 +47,14 @@ import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job.STATUS;
 import mobi.chouette.model.iev.Link;
 import mobi.chouette.model.iev.Stat;
-import mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator;
 import mobi.chouette.scheduler.Scheduler;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import org.apache.commons.lang3.ObjectUtils;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Singleton(name = JobServiceManager.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
@@ -161,10 +161,8 @@ public class JobServiceManager {
 	public List<Stat> getMontlyStats() throws ServiceException {
 		try {
 			return statDAO.getCurrentYearStats();
-
 		} catch (Exception ex) {
-			log.info("fail to read stats ",ex);
-			throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, ex);
+			throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Failed to read stats", ex);
 		}
 	}
 
@@ -197,29 +195,33 @@ public class JobServiceManager {
 			return jobService;
 
 		} catch (RequestServiceException ex) {
-			log.warn("fail to create job ",ex);
 			deleteBadCreatedJob(jobService);
-			throw ex;
+			throw new RequestServiceException(ex.getRequestExceptionCode(), "Failed to create job ",ex);
 		} catch (Exception ex) {
-			log.warn("fail to create job " + ex.getMessage() + " " + ex.getClass().getName(),ex);
 			deleteBadCreatedJob(jobService);
-			throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, ex);
+			throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Failed to create job", ex);
 		}
 	}
 
 	private void deleteBadCreatedJob(JobService jobService) {
-		if (jobService == null || jobService.getJob().getId() == null)
+		if (jobService == null || jobService.getJob() == null || jobService.getJob().getId() == null)
 			return;
 		try {
 			// remove path if exists
-			if (jobService.getPath() != null) FileStoreFactory.getFileStore().deleteFolder(jobService.getPath());
-		} catch (RuntimeException ex1) {
-			log.error("fail to delete directory " + jobService.getPath(), ex1);
+			if (jobService.getPath() != null) {
+				FileStoreFactory.getFileStore().deleteFolder(jobService.getPath());
+			}
+		} catch (Exception e) {
+			log.error("Failed to delete directory " + jobService.getPath(), e);
 		}
-		Job job = jobService.getJob();
-		if (job != null && job.getId() != null) {
-			log.info("deleting bad job " + job.getId());
-			jobDAO.deleteById(job.getId());
+		try {
+			Job job = jobService.getJob();
+			if (job != null && job.getId() != null) {
+				log.info("deleting bad job " + job.getId());
+				jobDAO.deleteById(job.getId());
+			}
+		} catch (Exception e) {
+			log.error("Failed to delete job " + jobService.getJob().getId(), e);
 		}
 
 	}
@@ -242,7 +244,7 @@ public class JobServiceManager {
 
 		boolean result = checker.validateContener(referential);
 		if (!result) {
-			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "referential");
+			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "Unknown referential " + referential);
 		}
 
 		referentials.add(referential);
@@ -385,9 +387,6 @@ public class JobServiceManager {
 
 		// remove referential from known ones
 		referentials.remove(referential);
-
-		// remove sequences data for this tenant
-		ChouetteIdentifierGenerator.deleteTenant(referential);
 
 	}
 
@@ -533,7 +532,7 @@ public class JobServiceManager {
 				// filter on update time if given, otherwise don't return
 				// deleted jobs
 				boolean versionZeroCondition = (version == 0) && job.getStatus().ordinal() < STATUS.DELETED.ordinal();
-				boolean versionNonZeroCondition = (version > 0) && version < job.getUpdated().toDate().getTime();
+				boolean versionNonZeroCondition = (version > 0) && version < TimeUtil.toEpochMilliseconds(job.getUpdated());
 
 				return versionZeroCondition || versionNonZeroCondition;
 			}

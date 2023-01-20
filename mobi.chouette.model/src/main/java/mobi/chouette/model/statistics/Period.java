@@ -1,27 +1,40 @@
 package mobi.chouette.model.statistics;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import lombok.Getter;
+import mobi.chouette.model.util.DateAdapter;
 
 @XmlRootElement(name = "period")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "from", "to" })
 @Getter
 public class Period implements Comparable<Period> {
-	// Use sql date for reliable serialization of date only (Should have been java.time/joda LocalDate)
+	// Use sql date for reliable serialization of date only (Should have been java.time.LocalDate)
+
+
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private java.sql.Date from;
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private java.sql.Date to;
 
 	public Period(Date from, Date to) {
 		super();
 		this.from = from == null ? null : new java.sql.Date(from.getTime());
 		this.to = to == null ? null : new java.sql.Date(to.getTime());
+	}
+
+	public Period(LocalDate from, LocalDate to) {
+		super();
+		this.from = from == null ? null : java.sql.Date.valueOf(from);
+		this.to = to == null ? null : java.sql.Date.valueOf(to);
 	}
 
 	public boolean isEmpty() {

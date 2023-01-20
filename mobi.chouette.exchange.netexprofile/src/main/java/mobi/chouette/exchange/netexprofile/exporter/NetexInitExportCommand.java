@@ -19,14 +19,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import mobi.chouette.dao.ReferentialDAO;
-import org.joda.time.LocalDateTime;
+import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.dao.ReferentialLastUpdateDAO;
+import java.time.LocalDateTime;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
@@ -52,7 +52,7 @@ public class NetexInitExportCommand implements Command, Constant {
 	private CodespaceDAO codespaceDAO;
 
 	@EJB
-	private ReferentialDAO referentialDAO;
+	private ReferentialLastUpdateDAO referentialLastUpdateDAO;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -100,7 +100,7 @@ public class NetexInitExportCommand implements Command, Constant {
 			NetexXMLProcessingHelperFactory netexXMLFactory = new NetexXMLProcessingHelperFactory();
 			context.put(MARSHALLER, netexXMLFactory.createFragmentMarshaller());
 
-			java.time.LocalDateTime lastUpdate = referentialDAO.getLastUpdateTimestamp();
+			java.time.LocalDateTime lastUpdate = referentialLastUpdateDAO.getLastUpdateTimestamp();
 			context.put(REFERENTIAL_LAST_UPDATE_TIMESTAMP, lastUpdate);
 
 			daoContext.setRollbackOnly();
@@ -111,7 +111,7 @@ public class NetexInitExportCommand implements Command, Constant {
 			log.error(e, e);
 			throw e;
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;

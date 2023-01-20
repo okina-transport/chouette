@@ -32,7 +32,6 @@ import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
-import org.rutebanken.netex.model.FlexibleServicePropertiesInFrame_RelStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.Journey_VersionStructure;
 import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
@@ -55,7 +54,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
 			if (! (journeyStruct instanceof ServiceJourney)) {
-				log.debug("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+				if(log.isTraceEnabled()) {
+					log.trace("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
+				}
 				continue;
 			}
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
@@ -75,11 +76,13 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				for (JAXBElement<? extends DayTypeRefStructure> dayType : dayTypes.getDayTypeRef()) {
 					String timetableId = dayType.getValue().getRef();
 					Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
-					timetable.addVehicleJourney(vehicleJourney);
+					vehicleJourney.addTimetable(timetable);
 				}
 			}
 
 			vehicleJourney.setObjectVersion(NetexParserUtils.getVersion(serviceJourney));
+
+			vehicleJourney.setPublication(NetexParserUtils.toPublicationEnum(serviceJourney.getPublication()));
 
 			vehicleJourney.setPublishedJourneyIdentifier(serviceJourney.getPublicCode());
 
@@ -159,8 +162,8 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexFSP.getBookWhen()));
 				bookingArrangement.setBuyWhen(netexFSP.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
 				bookingArrangement.setBookingMethods(netexFSP.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexFSP.getLatestBookingTime()));
-				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexFSP.getMinimumBookingPeriod()));
+				bookingArrangement.setLatestBookingTime(netexFSP.getLatestBookingTime());
+				bookingArrangement.setMinimumBookingPeriod(netexFSP.getMinimumBookingPeriod());
 
 				bookingArrangement.setBookingContact(contactStructureParser.parse(netexFSP.getBookingContact()));
 

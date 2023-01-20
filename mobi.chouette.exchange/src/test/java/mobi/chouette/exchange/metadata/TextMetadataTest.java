@@ -12,9 +12,10 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
+import mobi.chouette.common.TimeUtil;
 import org.apache.commons.io.FileUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeGroups;
@@ -57,11 +58,11 @@ public class TextMetadataTest
       end.set(2015,Calendar.MARCH,31,13,00);
       Metadata data = new Metadata();
       data.setCreator("the creator");
-      data.setDate(LocalDateTime.fromCalendarFields(date));
+      data.setDate(TimeUtil.toLocalDateTime(date));
       data.setPublisher("the publisher");
       data.setFormat("the format");
       data.getSpatialCoverage().update(3.45678, 45.78965);
-      data.getTemporalCoverage().update(LocalDate.fromCalendarFields(start), LocalDate.fromCalendarFields(end));
+      data.getTemporalCoverage().update(TimeUtil.toLocalDate(start), TimeUtil.toLocalDate(end));
       data.setTitle("the title");
       data.setRelation(new URL("http://the.relation.com"));
       return data;
@@ -91,10 +92,10 @@ public class TextMetadataTest
    {
       Metadata data = initMetadata();
       data.setDescription("the description");
-      data.getResources().add(data.new Resource(null, "ligne 1"));
-      data.getResources().add(data.new Resource("réseau 1", "ligne 2"));
-      data.getResources().add(data.new Resource("fichier1.xml", "réseau 2", "ligne 3"));
-      data.getResources().add(data.new Resource("fichier2.xml", null, "ligne 4"));
+      data.getResources().add(new Metadata.Resource(null, "ligne 1"));
+      data.getResources().add(new Metadata.Resource("réseau 1", "ligne 2"));
+      data.getResources().add(new Metadata.Resource("fichier1.xml", "réseau 2", "ligne 3"));
+      data.getResources().add(new Metadata.Resource("fichier2.xml", null, "ligne 4"));
 
       fileWriter.writePlainFile(data, Paths.get(d.toURI()));
       

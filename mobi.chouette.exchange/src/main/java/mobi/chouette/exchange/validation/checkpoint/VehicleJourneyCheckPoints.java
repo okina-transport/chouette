@@ -1,12 +1,5 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -16,16 +9,24 @@ import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.JourneyFrequency;
 import mobi.chouette.model.StopArea;
+import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timeband;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
+import java.time.LocalTime;
+import org.threeten.extra.Seconds;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * check a group of coherent vehicle journeys (i.e. on the same journey pattern)
@@ -48,6 +49,7 @@ import org.joda.time.Seconds;
 @Log4j
 public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney> implements Validator<VehicleJourney> {
 
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 	private static Comparator<VehicleJourneyAtStop> VEHICLE_JOURNEY_AT_STOP_SORTER = new Comparator<VehicleJourneyAtStop>() {
 
 		@Override
@@ -155,12 +157,19 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 			check3VehicleJourney8(context, vj, beans);
 
 			// 4-VehicleJourney-1 : (optionnal) check columns constraints
-			if (test4_1)
+			if (test4_1) {
 				check4Generic1(context, vj, L4_VEHICLE_JOURNEY_1, parameters, log);
+			}
 
 			// 4-VehicleJourney-2 : (optionnal) check transport modes
-			if (test4_2)
+			if (test4_2) {
 				check4VehicleJourney2(context, vj, parameters);
+			}
+
+			// 4-VehicleJourney-3 : check transport modes consistency with stops
+			initCheckPoint(context, L4_VEHICLE_JOURNEY_3, SEVERITY.E);
+			prepareCheckPoint(context, L4_VEHICLE_JOURNEY_3);
+			check4VehicleJourney3(context, vj);
 
 		}
 
@@ -187,7 +196,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 		if (first == null || last == null)
 			return Long.MIN_VALUE; // TODO
 
-		return Seconds.secondsBetween(first, last).getSeconds() + (lastTimeOffset - firstTimeOffset) * DateTimeConstants.SECONDS_PER_DAY;
+		return Seconds.between(first, last).getAmount() + (lastTimeOffset - firstTimeOffset) * TimeUnit.DAYS.toSeconds(1);
 	}
 
 	private void check3VehicleJourney1(Context context, VehicleJourney vj, ValidationParameters parameters) {
@@ -259,6 +268,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 		// 3-VehicleJourney-2 : check speed progression
 		TransportModeNameEnum transportMode = getTransportMode(vj);
 		long maxSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedMax();
+		long warningSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedWarning();
 		long minSpeed = getModeParameters(parameters, transportMode.toString(), log).getSpeedMin();
 		List<VehicleJourneyAtStop> vjasList = vj.getVehicleJourneyAtStops();
 		for (int i = 1; i < vjasList.size(); i++) {
@@ -276,7 +286,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 
 				ValidationReporter reporter = ValidationReporter.Factory.getInstance();
 				reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_4, null, source,
-                        vjas0.getDepartureTime().toString("HH:mm"), null, target1, target2);
+						DATE_TIME_FORMATTER.format(vjas0.getDepartureTime()), null, target1, target2);
 
 			} else {
 			
@@ -300,7 +310,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 					} else {
 
 						// Times are often with minute resolution. Assume max error (120 sec) when comparing with min and max allowed speed.
-						boolean minuteResolution = vjas0.getDepartureTime().getSecondOfMinute() == 0 && vjas1.getArrivalTime().getSecondOfMinute() == 00;
+						boolean minuteResolution = vjas0.getDepartureTime().getSecond() == 0 && vjas1.getArrivalTime().getSecond() == 00;
 						double minPossibleDiffTime = minuteResolution ? Math.max(diffTime - 120, 1) : diffTime;
 						double maxPossibleDiffTime = minuteResolution ? diffTime + 120 : diffTime;
 						double optimisticSpeed = distance / minPossibleDiffTime * 36 / 10; // (km/h)
@@ -316,7 +326,7 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 							ValidationReporter reporter = ValidationReporter.Factory.getInstance();
 							reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_2, null, source,
 	                                calculatedSpeed, Integer.toString((int) minSpeed), target1, target2);
-						} else if (pessimisticSpeed > maxSpeed) {
+						} else if (pessimisticSpeed > warningSpeed) {
 
 							// trop rapide
 							String calculatedSpeed = Integer.toString((int) pessimisticSpeed );
@@ -324,13 +334,12 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 							DataLocation target1 = buildLocation(context, vjas0.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
 							DataLocation target2 = buildLocation(context, vjas1.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject());
 							ValidationReporter reporter = ValidationReporter.Factory.getInstance();
-							if (parameters.getMaxSpeedHardLimitFactor()!=null && pessimisticSpeed > maxSpeed * parameters.getMaxSpeedHardLimitFactor() ) {
-								int hardLimit=(int)(maxSpeed * parameters.getMaxSpeedHardLimitFactor());
+							if (pessimisticSpeed > maxSpeed) {
 								reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_5, null, source,
-										calculatedSpeed, Integer.toString(hardLimit), target1, target2);
+										calculatedSpeed, Long.toString(maxSpeed), target1, target2);
 							} else {
 								reporter.addCheckPointReportError(context, VEHICLE_JOURNEY_2_3, null, source,
-										calculatedSpeed, Integer.toString((int) maxSpeed), target1, target2);
+										calculatedSpeed, Long.toString(warningSpeed), target1, target2);
 							}
 
 						}
@@ -730,4 +739,69 @@ public class VehicleJourneyCheckPoints extends AbstractValidation<VehicleJourney
 		}
 	}
 
-}
+
+
+	public void check4VehicleJourney3(Context context, VehicleJourney vj) {
+
+		TransportModeNameEnum vehicleJourneyTransportMode = getTransportMode(vj);
+		TransportSubModeNameEnum vehicleJourneyTransportSubMode = getTransportSubMode(vj);
+
+		for (StopPoint sp : vj.getJourneyPattern().getStopPoints()) {
+
+			if (sp.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+				StopArea sa = sp.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
+				TransportModeNameEnum stopMode = sa.getTransportModeName();
+				TransportSubModeNameEnum stopSubMode = sa.getTransportSubMode();
+
+				// Recurse to parent(s) if necessary
+				while (stopMode == null && sa.getParent() != null) {
+					sa = sa.getParent();
+					stopMode = sa.getTransportModeName();
+					stopSubMode = sa.getTransportSubMode();
+				}
+
+				boolean valid = validCombination(vehicleJourneyTransportMode, vehicleJourneyTransportSubMode, stopMode, stopSubMode);
+
+				if (!valid) {
+					DataLocation location = buildLocation(context, vj);
+					DataLocation targetLocation = buildLocation(context, sa);
+
+					String referenceValue = stopMode + (stopSubMode != null ? "/" + stopSubMode : "");
+					String errorValue = vehicleJourneyTransportMode + (vehicleJourneyTransportSubMode != null ? "/" + vehicleJourneyTransportSubMode : "");
+
+					ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+					reporter.addCheckPointReportError(context, L4_VEHICLE_JOURNEY_3, location, errorValue,
+							referenceValue, targetLocation);
+				}
+			}
+		}
+	}
+
+
+	private boolean validCombination(TransportModeNameEnum vehicleJourneyTransportMode, TransportSubModeNameEnum vehicleJourneyTransportSubMode, TransportModeNameEnum stopMode,
+									 TransportSubModeNameEnum stopSubMode) {
+		if (vehicleJourneyTransportMode == null || stopMode == null) {
+			return true;
+		} else if ((TransportModeNameEnum.Coach == vehicleJourneyTransportMode && TransportModeNameEnum.Bus == stopMode) ||
+				(TransportModeNameEnum.Bus == vehicleJourneyTransportMode && TransportModeNameEnum.Coach == stopMode)) {
+			// Coach and bus are interchangeable
+			return true;
+		} else if (vehicleJourneyTransportMode != stopMode) {
+			return false;
+		} else if (TransportSubModeNameEnum.RailReplacementBus == stopSubMode && vehicleJourneyTransportSubMode != null && TransportSubModeNameEnum.RailReplacementBus != vehicleJourneyTransportSubMode) {
+			// Only rail replacement bus service can visit rail replacement bus stops
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+	private TransportSubModeNameEnum getTransportSubMode(VehicleJourney vj) {
+		if (vj.getTransportSubMode() != null) {
+			return vj.getTransportSubMode();
+		} else return vj.getJourneyPattern().getRoute().getLine().getTransportSubModeName();
+	}
+
+
+	}

@@ -1,15 +1,21 @@
 package mobi.chouette.dao;
 
+import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.dto.ReferentialInfo;
 
 import javax.ejb.Stateless;
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import java.util.List;
 
-@Stateless(name="ReferentialDAO")
+@Stateless(name = "ReferentialDAO")
+@Log4j
 public class ReferentialDAOImpl implements ReferentialDAO {
+
+    private static final String SQL_SELECT_REFERENTIAL = "SELECT * FROM PUBLIC.REFERENTIALS WHERE slug=:dest_schema";
 
     private static final String SQL_SELECT_SLUG = "SELECT SLUG FROM PUBLIC.REFERENTIALS";
 
@@ -22,11 +28,15 @@ public class ReferentialDAOImpl implements ReferentialDAO {
 
     private static final String SQL_DELETE_USERS = "DELETE FROM public.users WHERE email=:email";
 
-    private static final String SQL_SELECT_LAST_UPDATE_TIMESTAMP = "SELECT last_update_timestamp FROM referential_last_update";
-    private static final String SQL_UPDATE_LAST_UPDATE_TIMESTAMP = "UPDATE referential_last_update SET last_update_timestamp=:last_update_timestamp";
-
     @PersistenceContext(unitName = "public")
     private EntityManager em;
+
+    @Override
+    public boolean hasReferential(String referentialName) {
+        Query query = em.createNativeQuery(SQL_SELECT_REFERENTIAL);
+        query.setParameter("dest_schema", referentialName);
+        return !query.getResultList().isEmpty();
+    }
 
     @Override
     public List<String> getReferentials() {
@@ -37,7 +47,7 @@ public class ReferentialDAOImpl implements ReferentialDAO {
     @Override
     public void createReferential(ReferentialInfo referentialInfo) {
 
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery("create_provider_schema");
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery("public.create_provider_schema");
 
         procedureQuery.registerStoredProcedureParameter("dest_schema", String.class, ParameterMode.IN);
         procedureQuery.registerStoredProcedureParameter("dataspace_name", String.class, ParameterMode.IN);
@@ -79,7 +89,7 @@ public class ReferentialDAOImpl implements ReferentialDAO {
     @Override
     public void createMigratedReferential(ReferentialInfo referentialInfo) {
 
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery("create_rutebanken_schema");
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery("public.create_rutebanken_schema");
 
         procedureQuery.registerStoredProcedureParameter("dest_schema", String.class, ParameterMode.IN);
         procedureQuery.registerStoredProcedureParameter("dataspace_name", String.class, ParameterMode.IN);
@@ -152,22 +162,6 @@ public class ReferentialDAOImpl implements ReferentialDAO {
 
         int nbModifiedRow = deleteReferentialQuery.executeUpdate();
         return nbModifiedRow != 0;
-    }
-
-    @Override
-    public LocalDateTime getLastUpdateTimestamp() {
-
-        Query lastUpdateQuery = em.createNativeQuery(SQL_SELECT_LAST_UPDATE_TIMESTAMP);
-        Timestamp timestamp = (Timestamp) lastUpdateQuery.getSingleResult();
-        return  timestamp.toLocalDateTime();
-
-    }
-
-    @Override
-    public void setLastUpdateTimestamp(LocalDateTime lastUpdateTimestamp) {
-        Query updateLastUpdateQuery = em.createNativeQuery(SQL_UPDATE_LAST_UPDATE_TIMESTAMP);
-        updateLastUpdateQuery.setParameter("last_update_timestamp",Timestamp.valueOf(lastUpdateTimestamp));
-        updateLastUpdateQuery.executeUpdate();
     }
 
 }

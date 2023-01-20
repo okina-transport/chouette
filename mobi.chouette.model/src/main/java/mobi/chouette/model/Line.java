@@ -41,10 +41,12 @@ import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectIdTypes;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
+
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 /**
  * Chouette Line : a group of Routes which is generally known to the public by a
@@ -63,7 +65,7 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "lines_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+	@GenericGenerator(name = "lines_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
 			@Parameter(name = "sequence_name", value = "lines_id_seq"),
 			@Parameter(name = "increment_size", value = "10") })
 	@GeneratedValue(generator = "lines_id_seq")
@@ -495,11 +497,15 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	/**
 	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
-	 * @param startDate
-	 * @param endDate
-	 * @return true if there is at least one active route.
+	 * @param startDate the start of the filtering period
+	 * @param endDate the end of the filtering period
+	 * @param onlyPublicData  filter out data marked with publication=restricted. #see {@link VehicleJourney#isPublic()}
+	 * @return true if there is at least one active route left after filtering.
 	 */
-	public boolean filter(LocalDate startDate, LocalDate endDate) {
+	public boolean filter(LocalDate startDate, LocalDate endDate, boolean onlyPublicData) {
+		if(log.isDebugEnabled()) {
+			log.debug("Filtering line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
+		}
 		for (Iterator<Route> routeI = getRoutes().iterator(); routeI.hasNext(); ) {
 			Route route = routeI.next();
 			// filter out Routes with less than 2 stops
@@ -527,30 +533,63 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 					List<Timetable> activeTimetablesOnPeriod = vehicleJourney.getActiveTimetablesOnPeriod(startDate, endDate);
 					vehicleJourney.getTimetables().removeIf(timetable -> !activeTimetablesOnPeriod.contains(timetable));
 					List<DatedServiceJourney> activeDatedServiceJourneyOnPeriod = vehicleJourney.getActiveDatedServiceJourneysOnPeriod(startDate, endDate);
-					vehicleJourney.getDatedServiceJourneys().removeIf(dsj -> !activeDatedServiceJourneyOnPeriod.contains(dsj));
+						vehicleJourney.getDatedServiceJourneys().removeIf(dsj -> !activeDatedServiceJourneyOnPeriod.contains(dsj));
 					// filter out Vehicle Journey without timetables nor dated service journey
 					if(!vehicleJourney.hasTimetables() && !vehicleJourney.hasDatedServiceJourneys()) {
-						log.info("Removing VJ with no valid timetables nor valid dated service journeys: "+ vehicleJourney.getObjectId());
+						if (log.isTraceEnabled()) {
+							log.trace("Removing VJ with no valid timetables nor valid dated service journeys: " + vehicleJourney.getObjectId());
+						}
+						vjI.remove();
+						continue;
+					}
+					if(onlyPublicData && !vehicleJourney.isPublic()) {
+						if (log.isTraceEnabled()) {
+							log.trace("Removing vj with restricted publication since only public data are retained: " + vehicleJourney.getObjectId());
+						}
 						vjI.remove();
 					}
 				}
-				if(jp.getVehicleJourneys().isEmpty()) {
-					log.info("Removing JP with no valid service journey: " + jp.getObjectId());
+				if(jp.getVehicleJourneys().isEmpty() && jp.getDeadRuns().isEmpty()) {
+					if(log.isDebugEnabled()) {
+						log.debug("Removing JP with no valid service journey nor DeadRun: " + jp.getObjectId());
+					}
 					jpI.remove();
 				}
 			}
 			if(route.getJourneyPatterns().isEmpty()) {
-				log.info("Removing route with no valid journey pattern: " + route.getObjectId());
+				if(log.isDebugEnabled()) {
+					log.debug("Removing route with no valid journey pattern: " + route.getObjectId());
+				}
 				routeI.remove();
-
 			}
+		}
+		if(log.isDebugEnabled()) {
+			log.debug("Filtered line " + getObjectId() +  " for validity interval " + startDate + " to " + endDate);
 		}
 		return !getRoutes().isEmpty();
 	}
 
+	/**
+	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
+	 * By default elements with restricted publication are kept.
+	 * @param startDate start of the filtering period
+	 * @param endDate end of the filtering period
+	 * @return true if there is at least one active route left after filtering.
+	 */
+	public boolean filter(LocalDate startDate, LocalDate endDate) {
+		return filter(startDate, endDate, false);
+	}
+
+	/**
+	 * Recursively remove routes, journey patterns, vehicle journeys and timetables that are not active on the period.
+	 * By default elements with restricted publication are kept.
+	 * @param startDate start of the filtering period
+	 * @param endDate end of the filtering period
+	 * @return true if there is at least one active route left after filtering.
+	 */
 	public boolean filter(Date startDate, Date endDate) {
-		LocalDate localStartDate = startDate == null ? null : new LocalDate((startDate));
-		LocalDate localEndDate = endDate == null ? null : new LocalDate((endDate));
+		LocalDate localStartDate = startDate == null ? null : toLocalDate(startDate);
+		LocalDate localEndDate = endDate == null ? null : toLocalDate(endDate);
 		return filter(localStartDate,localEndDate);
 	}
 }

@@ -8,12 +8,12 @@ image:
 
 service:
   http:
-    externalPort: 8080
+    externalPort: 80
     internalPort: 8080
 
 resources:
-  cpuLimit: "4"
-  memLimit: 10000Mi
-  cpuRequest: "4"
-  memRequest: 9000Mi
-  xmx: 7g
+  cpuLimit: "3"
+  memLimit: 18000Mi
+  cpuRequest: "2"
+  memRequest: 17000Mi
+  xmx: 15g

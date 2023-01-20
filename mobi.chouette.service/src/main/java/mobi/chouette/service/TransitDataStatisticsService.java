@@ -1,5 +1,6 @@
 package mobi.chouette.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,8 +21,10 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.TimetableDAO;
+import mobi.chouette.dao.exception.ChouetteStatisticsTimeoutException;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.statistics.Line;
 import mobi.chouette.model.statistics.LineAndTimetable;
@@ -32,15 +35,14 @@ import mobi.chouette.model.statistics.Timetable;
 import mobi.chouette.model.statistics.ValidityCategory;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.time.DateUtils;
-import org.joda.time.DateMidnight;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import java.time.LocalDate;
 import org.rutebanken.helper.calendar.CalendarPattern;
 import org.rutebanken.helper.calendar.CalendarPatternAnalyzer;
 
 import static javax.ejb.ConcurrencyManagementType.BEAN;
+import static mobi.chouette.common.TimeUtil.toLocalDate;
 
 @ConcurrencyManagement(BEAN)
 @Singleton(name = TransitDataStatisticsService.BEAN_NAME)
@@ -57,7 +59,9 @@ public class TransitDataStatisticsService {
 
 	/**
 	 * Returns a list of Lines grouped by Line "number". Create merged timetable
-	 * periods. Not supporting frequency based yet
+	 * periods. Not supporting frequency based yet.
+	 * The transaction attribute is set to NEVER so that temporary modifications in Line objects
+	 * (creation of a line number if missing, ... ) are not persisted to the database
 	 *
 	 * @param referential
 	 * @param startDate
@@ -67,10 +71,10 @@ public class TransitDataStatisticsService {
 	 *            organize lineNumbers into validity categories. First category
 	 *            is from 0 to lowest key value. Corresponding value in map is
 	 *            used as categegory name,
-	 * @return
-	 * @throws ServiceException
+	 * @return the line statistics
+	 * @throws RequestServiceException if the statistics cannot be calculated
 	 */
-	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public LineStatistics getLineStatisticsByLineNumber(String referential, Date startDate, int days,
 			Map<Integer, String> minDaysValidityCategories) throws ServiceException {
 
@@ -81,17 +85,21 @@ public class TransitDataStatisticsService {
 				+ " using startDate="
 				+ startDate
 				+ " and minDaysValidityCategories="
-				+ ToStringBuilder.reflectionToString(minDaysValidityCategories));
+				+ minDaysValidityCategories);
 
 		// Defaulting to today if not given
 		if (startDate == null) {
-			startDate = new DateMidnight().toDate();
+			startDate = TimeUtil.toDate(LocalDate.now().atStartOfDay());
 		}
 
 		Map<String, PublicLine> publicLines = new HashMap<String, PublicLine>();
 
 		// Convert Chouette internal model to the statistics model used
-		convertChouetteModelToStatisticsModel(startDate, publicLines);
+		try {
+			convertChouetteModelToStatisticsModel(startDate, publicLines);
+		} catch (ChouetteStatisticsTimeoutException e) {
+			throw new RequestServiceException(RequestExceptionCode.REFERENTIAL_BUSY, "Query timeout while calculating statistics for referential " + referential, e );
+		}
 
 		// If Line->Timetable->Period is empty, remove Line but keep publicLine
 		filterLinesWithEmptyTimetablePeriods(publicLines);
@@ -145,7 +153,7 @@ public class TransitDataStatisticsService {
 			}
 		}
 
-		LocalDate startDateLocal = new LocalDate(startDate);
+		LocalDate startDateLocal = toLocalDate(startDate);
 
 		for (PublicLine pl : lineStats.getPublicLines()) {
 			boolean foundCategory = false;
@@ -184,8 +192,8 @@ public class TransitDataStatisticsService {
 
 	private boolean isValidAtLeastNumberOfDays(PublicLine pl, LocalDate startDateLocal, Integer numDays) {
 		if (pl.getEffectivePeriods().size() > 0) {
-			Date limitDate = startDateLocal.plusDays(numDays).toDate();
-			return pl.getEffectivePeriods().stream().anyMatch(p -> !p.getFrom().after(startDateLocal.toDate()) && !p.getTo().before(limitDate));
+			Date limitDate = TimeUtil.toDate(startDateLocal.plusDays(numDays));
+			return pl.getEffectivePeriods().stream().anyMatch(p -> !p.getFrom().after(TimeUtil.toDate(startDateLocal)) && !p.getTo().before(limitDate));
 		}
 
 		return false;
@@ -206,7 +214,7 @@ public class TransitDataStatisticsService {
 		}
 	}
 
-	protected void convertChouetteModelToStatisticsModel(Date startDate, Map<String, PublicLine> publicLines) {
+	protected void convertChouetteModelToStatisticsModel(Date startDate, Map<String, PublicLine> publicLines) throws ChouetteStatisticsTimeoutException {
 		// Load list of lineIds with corresponding Timetables
 		long now = System.currentTimeMillis();
 		Collection<LineAndTimetable> allTimetableForAllLines = timetableDAO.getAllTimetableForAllLines();
@@ -266,14 +274,14 @@ public class TransitDataStatisticsService {
 				line.getTimetables().add(timetable);
 
 				if (t.getStartOfPeriod() != null && t.getEndOfPeriod() != null) {
-					timetable.getPeriods().add(new Period(t.getStartOfPeriod().toDate(), t.getEndOfPeriod().toDate()));
+					timetable.getPeriods().add(new Period(t.getStartOfPeriod(), t.getEndOfPeriod()));
 					foundStartEndDateOfTimetable = true;
 				} else {
 
 					if (t.getPeriods() != null && t.getPeriods().size() > 0) {
 						// Use periods
 						for (mobi.chouette.model.Period p : t.getPeriods()) {
-							Period period = new Period(p.getStartDate().toDate(), p.getEndDate().toDate());
+							Period period = new Period(p.getStartDate(), p.getEndDate());
 							if (!period.isEmpty() && !period.getTo().before(startDate)) {
 								// log.info("Adding normal period " + p);
 								timetable.getPeriods().add(period);
@@ -283,8 +291,8 @@ public class TransitDataStatisticsService {
 
 					if (t.getCalendarDays() != null) {
 						for (CalendarDay day : t.getCalendarDays()) {
-							if (day.getIncluded() && !startDate.after(day.getDate().toDate())) {
-								timetable.getPeriods().add(new Period(day.getDate().toDate(), day.getDate().toDate()));
+							if (day.getIncluded() && !startDate.after(TimeUtil.toDate(day.getDate()))) {
+								timetable.getPeriods().add(new Period(day.getDate(), day.getDate()));
 								calendarDaysForLine.add(day);
 								timetableForCalendarDays = timetable;
 							}
@@ -294,7 +302,7 @@ public class TransitDataStatisticsService {
 					if (timetable.getPeriods().isEmpty()) {
 						// Use timetable from/to as period
 						t.computeLimitOfPeriods();
-						Period period = new Period(t.getStartOfPeriod().toDate(), t.getEndOfPeriod().toDate());
+						Period period = new Period(t.getStartOfPeriod(), t.getEndOfPeriod());
 
 						// TODO could be separate days here as well that should
 						// be
@@ -303,7 +311,9 @@ public class TransitDataStatisticsService {
 							// log.info("Adding timetable period " + period);
 							timetable.getPeriods().add(period);
 						} else {
-							log.debug("No from/to in timetable objectId=" + t.getObjectId() + " id=" + t.getId());
+							if(log.isTraceEnabled()) {
+								log.trace("No from/to in timetable objectId=" + t.getObjectId() + " id=" + t.getId());
+							}
 						}
 
 					}
@@ -327,14 +337,12 @@ public class TransitDataStatisticsService {
 	private Period calculatePeriodFromCalendarDaysPattern(Collection<CalendarDay> calendarDays) {
 
 		Set<java.time.LocalDate> includedDays = calendarDays.stream().filter(CalendarDay::getIncluded)
-				.map(c -> java.time.LocalDate.of(c.getDate().getYear(),c.getDate().getMonthOfYear(),c.getDate().getDayOfMonth())).collect(Collectors.toSet());
+				.map(c -> java.time.LocalDate.of(c.getDate().getYear(),c.getDate().getMonthValue(),c.getDate().getDayOfMonth())).collect(Collectors.toSet());
 
 		CalendarPattern pattern = new CalendarPatternAnalyzer().computeCalendarPattern(includedDays);
 
 		if (pattern != null) {
-			Date from = java.sql.Date.valueOf(pattern.from);
-			Date to = java.sql.Date.valueOf(pattern.to);
-			return new Period(from, to);
+			return new Period(pattern.from, pattern.to);
 		}
 		return null;
 	}

@@ -21,10 +21,10 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.common.monitor.JamonUtils;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsAgencyProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsServiceProducer;
@@ -43,7 +43,6 @@ import mobi.chouette.model.DatedServiceJourney;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
-import mobi.chouette.model.type.ServiceAlterationEnum;
 
 /**
  *
@@ -86,7 +85,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			JamonUtils.logMagenta(log, monitor);
 		}
 
 		return result;
@@ -168,7 +167,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 
 		for (DatedServiceJourney datedServiceJourney : datedServiceJourneys) {
 			// replaced and cancelled services are excluded from the GTFS export.
-			if (datedServiceJourney.isActive()) {
+			if (datedServiceJourney.isNeitherCancelledNorReplaced()) {
 				CalendarDay calendarDay = new CalendarDay();
 				calendarDay.setDate(datedServiceJourney.getOperatingDay());
 				calendarDay.setIncluded(true);
@@ -182,8 +181,12 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 	 * Interchange relations are not enforced in db. Make sure they are valid before exporting.
 	 */
 	private boolean isInterchangeValid(Interchange interchange) {
-		return interchange.getConsumerVehicleJourney() != null && interchange.getFeederVehicleJourney() != null
-				&& interchange.getConsumerStopPoint() != null && interchange.getFeederStopPoint() != null;
+		return interchange.getConsumerVehicleJourney() != null
+				&& interchange.getFeederVehicleJourney() != null
+				&& interchange.getConsumerStopPoint() != null
+				&& interchange.getFeederStopPoint() != null
+				&& interchange.getConsumerVehicleJourney().isNeitherCancelledNorReplaced()
+				&& interchange.getFeederVehicleJourney().isNeitherCancelledNorReplaced();
 	}
 
 

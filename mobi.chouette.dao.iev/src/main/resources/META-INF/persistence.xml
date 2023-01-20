@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1"
+<persistence version="2.2"
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
 
    <persistence-unit name="iev" transaction-type="JTA">
 
@@ -12,22 +12,41 @@
       <class>mobi.chouette.model.iev.Stat</class>
 
       <exclude-unlisted-classes>true</exclude-unlisted-classes>
+      <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
       <validation-mode>NONE</validation-mode>
 
       <properties>
          <property name="hibernate.show_sql" value="false" />
-         <property name="hibernate.format_sql" value="true" />
+         <property name="hibernate.format_sql" value="false" />
+
          <property name="hibernate.jdbc.batch_size" value="100" />
+
+         <property name="hibernate.batch_fetch_style" value="padded" />
          <property name="hibernate.default_batch_fetch_size" value="100" />
+
          <property name="hibernate.connection.datasource" value="java:jboss/datasources/iev" />
-         <property name="hibernate.cache.use_second_level_cache"
-            value="true" />
+         <property name="hibernate.connection.handling_mode" value="delayed_acquisition_and_release_after_transaction"/>
+
+
+         <property name="hibernate.cache.use_second_level_cache" value="true" />
          <property name="hibernate.cache.use_query_cache" value="true" />
+
          <property name="javax.persistence.validation.mode" value="none" />
          <property name="hibernate.hbm2ddl.auto" value="update" />
          <property name="hibernate.default_schema" value="public" />
-         <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
-         <property name="jadira.usertype.autoRegisterUserTypes" value="true" />
+         <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect" />
+
+         <!-- Force legacy options to maintain existing application behavior -->
+         <property name="hibernate.allow_update_outside_transaction" value="true"/>
+         <!--Disable JPA compliance options to maintain existing application behavior: these options are set to 'true' by Wildfly -->
+         <property name="hibernate.jpa.compliance.transaction" value="false"/>
+         <property name="hibernate.jpa.compliance.query" value="false"/>
+         <property name="hibernate.jpa.compliance.list" value="false"/>
+         <property name="hibernate.jpa.compliance.closed" value="false"/>
+         <property name="hibernate.jpa.compliance.proxy" value="false"/>
+         <property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
+         <property name="hibernate.jpa.compliance.caching" value="false"/>
+
       </properties>
    </persistence-unit>
 

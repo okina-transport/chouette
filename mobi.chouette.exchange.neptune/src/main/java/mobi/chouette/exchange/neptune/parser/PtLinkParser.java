@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
 import java.math.BigDecimal;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
@@ -46,7 +46,7 @@ public class PtLinkParser implements Parser, Constant {
 				ptLink = factory.getPTLink(objectId);
 				ptLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				ptLink.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

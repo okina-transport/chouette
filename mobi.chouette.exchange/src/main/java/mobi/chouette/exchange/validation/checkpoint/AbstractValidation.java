@@ -40,9 +40,9 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
-import org.joda.time.Duration;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
+import java.time.Duration;
+import java.time.LocalTime;
+import org.threeten.extra.Seconds;
 
 /**
  * @author michel
@@ -87,17 +87,21 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected static final String ROUTE_6 = "3-Route-6";
 	protected static final String ROUTE_7 = "3-Route-7";
 	protected static final String ROUTE_8 = "3-Route-8";
+	protected static final String ROUTE_10 = "3-Route-10";
 	protected static final String ROUTE_RB_2 = "3-Route-rutebanken-2";
 	protected static final String ROUTE_RB_3 = "3-Route-rutebanken-3";
 	protected static final String ROUTE_RB_4 = "3-Route-rutebanken-4";
 	protected static final String ROUTE_SECTION_1 = "3-RouteSection-1";
 	protected static final String ROUTE_SECTION_2_1 = "3-RouteSection-2-1";
+	protected static final String ROUTE_SECTION_2_11 = "3-RouteSection-2-11";
 	protected static final String ROUTE_SECTION_2_2 = "3-RouteSection-2-2";
+	protected static final String ROUTE_SECTION_2_22 = "3-RouteSection-2-22";
 	protected static final String ROUTE_SECTION_2_3 = "3-RouteSection-2-3";
 	protected static final String JOURNEY_PATTERN_1 = "3-JourneyPattern-1";
 	protected static final String JOURNEY_PATTERN_2 = "3-JourneyPattern-2";
 	protected static final String JOURNEY_PATTERN_3 = "3-JourneyPattern-3";
 	protected static final String JOURNEY_PATTERN_4 = "3-JourneyPattern-4";
+	protected static final String JOURNEY_PATTERN_5 = "3-JourneyPattern-5";
 	protected static final String JOURNEY_PATTERN_RB_1 = "3-JourneyPattern-rutebanken-1";
 	protected static final String JOURNEY_PATTERN_RB_2 = "3-JourneyPattern-rutebanken-2";
 	protected static final String JOURNEY_PATTERN_RB_3 = "3-JourneyPattern-rutebanken-3";
@@ -114,6 +118,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected static final String VEHICLE_JOURNEY_6 = "3-VehicleJourney-6";
 	protected static final String VEHICLE_JOURNEY_7 = "3-VehicleJourney-7";
 	protected static final String VEHICLE_JOURNEY_8 = "3-VehicleJourney-8";
+	protected static final String DATED_SERVICE_JOURNEY_1 = "3-DatedServiceJourney-1";
 	protected static final String FACILITY_1 = "3-Facility-1";
 	protected static final String FACILITY_2 = "3-Facility-2";
 	protected static final String INTERCHANGE_1 = "3-Interchange-1";
@@ -141,6 +146,8 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected static final String L4_CONNECTION_LINK_1 = "4-ConnectionLink-1";
 	protected static final String L4_CONNECTION_LINK_2 = "4-ConnectionLink-2";
 	protected static final String L4_TIME_TABLE_1 = "4-Timetable-1";
+	protected static final String L4_TIME_TABLE_2= "4-Timetable-2";
+
 	protected static final String L4_LINE_1 = "4-Line-1";
 	protected static final String L4_LINE_2 = "4-Line-2";
 	protected static final String L4_LINE_3 = "4-Line-3";
@@ -149,6 +156,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected static final String L4_JOURNEY_PATTERN_1 = "4-JourneyPattern-1";
 	protected static final String L4_VEHICLE_JOURNEY_1 = "4-VehicleJourney-1";
 	protected static final String L4_VEHICLE_JOURNEY_2 = "4-VehicleJourney-2";
+	protected static final String L4_VEHICLE_JOURNEY_3 = "4-VehicleJourney-3";
 	protected static final String L4_INTERCHANGE_1 = "4-Interchange-1";
 
 	// parameter keys
@@ -184,7 +192,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected static final String MIN_SIZE = "min_size";
 	protected static final String MAX_SIZE = "max_size";
 
-	protected static final TransportModeParameters modeDefault = new TransportModeParameters(1, 300, 30000, 40, 10, 10, 20);
+	protected static final TransportModeParameters modeDefault = new TransportModeParameters(1, 300, 30000, 50, 40,10, 10, 20, 100);
 
 	protected static final String DEFAULT_ENVELOPPE = "[[-5.2,42.25],[-5.2,51.1],[8.23,51.1],[8.23,42.25],[-5.2,42.25]]";
 	private GeometryFactory geometryFactory;
@@ -315,7 +323,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	}
 
 	protected static String toCamelCase(String underscore) {
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		boolean underChar = false;
 		for (char c : underscore.toCharArray()) {
 			if (c == '_') {
@@ -400,7 +408,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 	protected void checkLinkSpeed(Context context, NeptuneIdentifiedObject object, Duration duration, double distance,
 								  int maxDefaultSpeed, String testCode, String resultCode) {
 		if (duration != null) {
-			long time = duration.getStandardSeconds(); // in seconds
+			long time = duration.getSeconds(); // in seconds
 
 			if (time > 0) {
 				int speed = (int) (distance / (double) time * 36 / 10 + 0.5); // (km/h)
@@ -426,7 +434,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 		List<String> columnNames = ValidationParametersUtil.getFields(object);
 		String objectKey = toUnderscore(object.getClass().getSimpleName());
 		if (columnNames == null || columnNames.isEmpty()) {
-			log.info("no columns parameters for " + object.getClass().getSimpleName());
+			log.debug("no columns parameters for " + object.getClass().getSimpleName());
 			return;
 		}
 
@@ -452,7 +460,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 					if (objVal instanceof LocalTime) {
 						// use value in seconds
 						LocalTime t = (LocalTime) objVal;
-						value = Long.toString(Seconds.secondsBetween(new LocalTime(0, 0, 0), t).getSeconds());
+						value = Long.toString(Seconds.between(LocalTime.of(0, 0, 0), t).getAmount());
 					} else {
 						value = objVal.toString();
 					}

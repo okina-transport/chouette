@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.StopPlace;
 
 import lombok.extern.log4j.Log4j;
@@ -63,38 +63,7 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 	@Override
 	public Set<IdVersion> validateReferenceIds(Context context, Set<IdVersion> externalIds) {
 
-		if (lastUpdated < System.currentTimeMillis() - timeToLiveMs) {
-			int remainingUpdateRetries = 10;
-
-			boolean result = false;
-
-			while (!result && remainingUpdateRetries-- > 0) {
-				// Fetch data and populate caches
-				log.info("Cache is old, refreshing quay and stopplace cache");
-				boolean stopPlaceOk = populateStopPlaceCache();
-				boolean quayOK = populateQuayCache();
-
-				if (quayOK && stopPlaceOk) {
-					lastUpdated = System.currentTimeMillis();
-					result = true;
-				} else {
-					log.error("Error updating caches, retries left = " + remainingUpdateRetries);
-					result = false;
-
-					// TODO dodgy
-					try {
-						Thread.sleep(10 * 1000);
-					} catch (InterruptedException e) {
-						// Swallow
-					}
-				}
-			}
-
-			if (result == false) {
-				throw new RuntimeException("Could not update quay cache - cannot validate");
-			}
-
-		}
+		ensureCacheIsValid();
 
 		if (log.isDebugEnabled()) {
 			log.debug("About to validate external " + externalIds.size() + " ids");
@@ -112,9 +81,48 @@ public class StopPlaceRegistryIdValidator implements ExternalReferenceValidator 
 		}
 
 		if (log.isDebugEnabled()) {
-			log.info("Found " + validIds.size() + " ids valid");
+			log.debug("Found " + validIds.size() + " valid ids out of " + idsToCheck.size() + " external ids to check");
 		}
 		return validIds;
+	}
+
+	private synchronized void ensureCacheIsValid() {
+		if (lastUpdated < System.currentTimeMillis() - timeToLiveMs) {
+			refreshCache();
+		}
+	}
+
+	private void refreshCache() {
+
+		int remainingUpdateRetries = 10;
+
+		boolean result = false;
+
+		while (!result && remainingUpdateRetries-- > 0) {
+			// Fetch data and populate caches
+			log.info("Cache is old, refreshing quay and stopplace cache");
+			boolean stopPlaceOk = populateStopPlaceCache();
+			boolean quayOK = populateQuayCache();
+
+			if (quayOK && stopPlaceOk) {
+				lastUpdated = System.currentTimeMillis();
+				result = true;
+			} else {
+				log.error("Error updating caches, retries left = " + remainingUpdateRetries);
+				result = false;
+
+				// TODO dodgy
+				try {
+					Thread.sleep(10 * 1000);
+				} catch (InterruptedException e) {
+					// Swallow
+				}
+			}
+		}
+
+		if (result == false) {
+			throw new RuntimeException("Could not update quay cache - cannot validate");
+		}
 	}
 
 	public static class DefaultExternalReferenceValidatorFactory extends ExternalReferenceValidatorFactory {

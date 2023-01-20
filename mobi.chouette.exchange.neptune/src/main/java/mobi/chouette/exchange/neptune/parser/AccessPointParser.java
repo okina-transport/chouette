@@ -18,8 +18,8 @@ import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -48,7 +48,7 @@ public class AccessPointParser implements Parser, Constant {
 						objectId);
 				accessPoint.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				accessPoint.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());

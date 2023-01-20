@@ -7,7 +7,7 @@ import lombok.ToString;
 import mobi.chouette.model.type.ServiceAlterationEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,7 +36,7 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
 
     @Getter
     @Setter
-    @GenericGenerator(name = "dated_service_journeys_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
+    @GenericGenerator(name = "dated_service_journeys_id_seq", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {
             @Parameter(name = "sequence_name", value = "dated_service_journeys_id_seq"),
             @Parameter(name = "increment_size", value = "100")})
     @GeneratedValue(generator = "dated_service_journeys_id_seq")
@@ -120,7 +120,7 @@ public class DatedServiceJourney extends NeptuneIdentifiedObject {
     /**
      * Return true if the DatedServiceJourney is neither cancelled nor replaced
      */
-    public boolean isActive() {
+    public boolean isNeitherCancelledNorReplaced() {
         ServiceAlterationEnum serviceAlterationEnum = getServiceAlteration();
         return ServiceAlterationEnum.Cancellation != serviceAlterationEnum && ServiceAlterationEnum.Replaced != serviceAlterationEnum;
     }

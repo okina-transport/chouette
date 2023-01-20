@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -22,6 +21,7 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
@@ -29,8 +29,6 @@ import mobi.chouette.model.util.NeptuneUtil;
 
 @Log4j
 public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern> implements Validator<JourneyPattern> {
-	@Setter
-	private VehicleJourneyCheckPoints vehicleJourneyCheckPoints;
 
 	@Override
 	public void validate(Context context, JourneyPattern target) {
@@ -47,13 +45,17 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 		initCheckPoint(context, JOURNEY_PATTERN_1, SEVERITY.W);
 		if (!sourceFile)
 			initCheckPoint(context, JOURNEY_PATTERN_2, SEVERITY.E);
-		initCheckPoint(context, ROUTE_SECTION_2_1, SEVERITY.W);
-		initCheckPoint(context, ROUTE_SECTION_2_2, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_2_1, SEVERITY.E);
+		initCheckPoint(context, ROUTE_SECTION_2_11, SEVERITY.W);
+		initCheckPoint(context, ROUTE_SECTION_2_2, SEVERITY.E);
+		initCheckPoint(context, ROUTE_SECTION_2_22, SEVERITY.W);
 		initCheckPoint(context, ROUTE_SECTION_2_3, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_3);
 		initCheckPoint(context, JOURNEY_PATTERN_3, SEVERITY.W);
 		prepareCheckPoint(context, JOURNEY_PATTERN_4);
-		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.W);
+		initCheckPoint(context, JOURNEY_PATTERN_4, SEVERITY.E);
+		prepareCheckPoint(context, JOURNEY_PATTERN_5);
+		initCheckPoint(context, JOURNEY_PATTERN_5, SEVERITY.E);
 
 		initCheckPoint(context, JOURNEY_PATTERN_RB_1, SEVERITY.W);
 		initCheckPoint(context, JOURNEY_PATTERN_RB_2, SEVERITY.W);
@@ -100,6 +102,8 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 				check4Generic1(context, jp, L4_JOURNEY_PATTERN_1, parameters, log);
 
 			check3JourneyPattern4(context, jp);
+
+			check3JourneyPattern5(context, jp);
 
 			// 3-JourneyPattern-RB-1 : check distance between stops
 			check3JourneyPatternRb1(context, jp, parameters);
@@ -176,12 +180,26 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 		}
 	}
 
+	// 3-JourneyPattern-5 : Check that last stop on journey pattern does not allow boarding
+	private void check3JourneyPattern5(Context context, JourneyPattern jp) {
+		if (jp.getDepartureStopPoint() == null) {
+			return;
+		}
+		if (!AlightingPossibilityEnum.forbidden.equals(jp.getDepartureStopPoint().getForAlighting())) {
+			DataLocation location = buildLocation(context, jp);
+			ValidationReporter reporter = ValidationReporter.Factory.getInstance();
+			reporter.addCheckPointReportError(context, JOURNEY_PATTERN_5, location);
+		}
+	}
+
 	// 3-RouteSection-1 : Check if route section distance doesn't exceed gap as
 	// parameter
 	private void check3RouteSection1(Context context, JourneyPattern jp, ValidationParameters parameters) {
 
 		prepareCheckPoint(context, ROUTE_SECTION_2_1);
+		prepareCheckPoint(context, ROUTE_SECTION_2_11);
 		prepareCheckPoint(context, ROUTE_SECTION_2_2);
+		prepareCheckPoint(context, ROUTE_SECTION_2_22);
 
 		String modeKey = jp.getRoute().getLine().getTransportModeName().toString();
 		TransportModeParameters mode = getModeParameters(parameters, modeKey, log);
@@ -194,8 +212,9 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 				mode = modeDefault;
 			}
 		}
+		double distanceWarning = mode.getRouteSectionStopAreaDistanceWarning();
 		double distanceMax = mode.getRouteSectionStopAreaDistanceMax();
-		if (distanceMax <= 0) {
+		if (distanceWarning <= 0) {
 			// No use unless max distance has been specified
 			return;
 		}
@@ -234,13 +253,19 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 				distance = quickDistanceFromCoordinates(fromStopArea.getLatitude().doubleValue(), plotFirstLat,
 						fromStopArea.getLongitude().doubleValue(), plotFirstLong);
 				// If route section distance doesn't exceed gap as parameter
-				if (distance > distanceMax) {
+				if (distance > distanceWarning) {
 					DataLocation location = buildLocation(context, rs);
 					DataLocation targetLocation = buildLocation(context, fromStopArea);
-
 					ValidationReporter reporter = ValidationReporter.Factory.getInstance();
-					reporter.addCheckPointReportError(context, ROUTE_SECTION_2_1, location, String.valueOf(distance),
-							String.valueOf(distanceMax), targetLocation);
+
+					if(distance > distanceMax) {
+						reporter.addCheckPointReportError(context, ROUTE_SECTION_2_1, location, String.valueOf(distance),
+								String.valueOf(distanceMax), targetLocation);
+					} else {
+						reporter.addCheckPointReportError(context, ROUTE_SECTION_2_11, location, String.valueOf(distance),
+								String.valueOf(distanceWarning), targetLocation);
+					}
+
 				}
 			}
 
@@ -254,13 +279,18 @@ public class JourneyPatternCheckPoints extends AbstractValidation<JourneyPattern
 				distance = quickDistanceFromCoordinates(toStopArea.getLatitude().doubleValue(), plotLastLat,
 						toStopArea.getLongitude().doubleValue(), plotLastLong);
 				// If route section distance doesn't exceed gap as parameter
-				if (distance > distanceMax) {
+				if (distance > distanceWarning) {
 					DataLocation location = buildLocation(context, rs);
 					DataLocation targetLocation = buildLocation(context, toStopArea);
-
 					ValidationReporter reporter = ValidationReporter.Factory.getInstance();
-					reporter.addCheckPointReportError(context, ROUTE_SECTION_2_2, location, String.valueOf(distance),
-							String.valueOf(distanceMax), targetLocation);
+
+					if(distance > distanceMax) {
+						reporter.addCheckPointReportError(context, ROUTE_SECTION_2_2, location, String.valueOf(distance),
+								String.valueOf(distanceMax), targetLocation);
+					} else {
+						reporter.addCheckPointReportError(context, ROUTE_SECTION_2_22, location, String.valueOf(distance),
+								String.valueOf(distanceWarning), targetLocation);
+					}
 				}
 			}
 		}

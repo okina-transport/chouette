@@ -15,13 +15,15 @@ import mobi.chouette.model.type.BookingMethodEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.FlexibleLineTypeEnum;
 import mobi.chouette.model.type.FlexibleServiceTypeEnum;
+import mobi.chouette.model.type.PublicationEnum;
 import mobi.chouette.model.type.PurchaseMomentEnum;
 import mobi.chouette.model.type.PurchaseWhenEnum;
 import mobi.chouette.model.type.ServiceAlterationEnum;
+import mobi.chouette.model.type.TimingPointStatusEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.AirSubmodeEnumeration;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
@@ -33,16 +35,17 @@ import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
 import org.rutebanken.netex.model.FlexibleServiceEnumeration;
 import org.rutebanken.netex.model.MetroSubmodeEnumeration;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.PublicationEnumeration;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.rutebanken.netex.model.RailSubmodeEnumeration;
 import org.rutebanken.netex.model.ServiceAlterationEnumeration;
 import org.rutebanken.netex.model.TelecabinSubmodeEnumeration;
+import org.rutebanken.netex.model.TimingPointStatusEnumeration;
 import org.rutebanken.netex.model.TramSubmodeEnumeration;
 import org.rutebanken.netex.model.TransportSubmodeStructure;
 import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 
-import static mobi.chouette.common.TimeUtil.toLocalTimeFromJoda;
 
 @Log4j
 public class ConversionUtil {
@@ -312,9 +315,9 @@ public class ConversionUtil {
 
 	}
 
-	public static OffsetTime toOffsetTimeUtc(org.joda.time.LocalTime time) {
+	public static OffsetTime toOffsetTimeUtc(java.time.LocalTime time) {
 		return time == null ? null
-				: toLocalTimeFromJoda(time).atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
+				: time.atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
 	}
 
 	public static final ZoneId LOCAL_ZONE_ID = ZoneId.of("Europe/Oslo");
@@ -457,6 +460,42 @@ public class ConversionUtil {
 				return PurchaseMomentEnumeration.ON_CHECK_OUT;
 			case other:
 				return PurchaseMomentEnumeration.OTHER;
+		}
+		return null;
+	}
+
+	public static TimingPointStatusEnumeration toTimingPointStatus(TimingPointStatusEnum chouetteType) {
+		if (chouetteType == null) {
+			return null;
+		}
+
+		switch (chouetteType) {
+			case notTimingPoint:
+				return TimingPointStatusEnumeration.NOT_TIMING_POINT;
+			case timingPoint:
+				return TimingPointStatusEnumeration.TIMING_POINT;
+			case secondaryTimingPoint:
+				return TimingPointStatusEnumeration.SECONDARY_TIMING_POINT;
+		}
+		return null;
+	}
+
+	public static PublicationEnumeration toPublicationEnumeration(PublicationEnum chouetteType) {
+		if (chouetteType == null || chouetteType == PublicationEnum.Public) {
+			return null;
+		}
+
+		switch (chouetteType) {
+			case Authorised:
+				return PublicationEnumeration.AUTHORISED;
+			case Confidential:
+				return PublicationEnumeration.CONFIDENTIAL;
+			case Private:
+				return PublicationEnumeration.PRIVATE;
+			case Restricted:
+				return PublicationEnumeration.RESTRICTED;
+			case Test:
+				return PublicationEnumeration.TEST;
 		}
 		return null;
 	}

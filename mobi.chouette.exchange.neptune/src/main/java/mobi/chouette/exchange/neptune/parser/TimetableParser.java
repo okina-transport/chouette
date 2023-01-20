@@ -17,8 +17,8 @@ import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -48,7 +48,7 @@ public class TimetableParser implements Parser, Constant {
 				timetable = ObjectFactory.getTimetable(referential, objectId);
 				timetable.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
-				Integer version = ParserUtils.getInt(xpp.nextText());
+				Long version = ParserUtils.getLong(xpp.nextText());
 				timetable.setObjectVersion(version);
 			} else if (xpp.getName().equals("creationTime")) {
 				LocalDateTime creationTime = ParserUtils.getLocalDateTime(xpp.nextText());
@@ -85,7 +85,7 @@ public class TimetableParser implements Parser, Constant {
 				String vehicleJourneyId = ParserUtils.getText(xpp.nextText());
 				VehicleJourney vehicleJourney = ObjectFactory
 						.getVehicleJourney(referential, vehicleJourneyId);
-				timetable.addVehicleJourney(vehicleJourney);
+				vehicleJourney.addTimetable(timetable);
 				validator.addVehicleJourneyId(context, objectId, vehicleJourneyId);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);
