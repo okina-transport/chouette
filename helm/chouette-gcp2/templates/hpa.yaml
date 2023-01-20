@@ -1,4 +1,4 @@
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "chouette.name" . }}
@@ -10,11 +10,15 @@ spec:
   maxReplicas: {{ .Values.horizontalPodAutoscaler.maxReplicas}}
   metrics:
     - external:
-        metricName: pubsub.googleapis.com|subscription|num_undelivered_messages
-        metricSelector:
-          matchLabels:
-            resource.labels.subscription_id: chouette_poll_status_queue
-        targetAverageValue: "2"
+        metric:
+          name: pubsub.googleapis.com|subscription|num_undelivered_messages
+          selector:
+            matchLabels:
+              resource.labels.subscription_id: chouette_poll_status_queue
+              resource.labels.project_id: entur-ror-dev
+        target:
+          type: AverageValue
+          averageValue: 1
       type: External
   scaleTargetRef:
     apiVersion: apps/v1
