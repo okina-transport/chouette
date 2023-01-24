@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import lombok.extern.log4j.Log4j;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.engine.config.spi.ConfigurationService;
@@ -16,6 +17,7 @@ import org.hibernate.service.spi.ServiceRegistryAwareService;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.service.spi.Stoppable;
 
+@Log4j
 public class DefaultConnectionProvider implements
 		MultiTenantConnectionProvider, ServiceRegistryAwareService, Stoppable {
 
@@ -33,8 +35,10 @@ public class DefaultConnectionProvider implements
 		final Connection connection = getAnyConnection();
 		try {
 			if (identifier != null && !identifier.isEmpty()) {
-				connection.createStatement().execute(
-						"SET SCHEMA '" + identifier + "'");
+				if(log.isTraceEnabled()) {
+					log.trace("Changing connection schema from " + connection.getSchema() + " to " + identifier);
+				}
+				connection.setSchema(identifier);
 			}
 		} catch (SQLException e) {
 			throw new HibernateException(
