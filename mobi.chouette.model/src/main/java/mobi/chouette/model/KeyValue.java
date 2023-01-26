@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * Reusable Key-value structure.
  *
@@ -19,7 +21,7 @@ import lombok.ToString;
 @Table(name = "key_values")
 @NoArgsConstructor
 @Cacheable
-public class KeyValue {
+public class KeyValue implements Serializable {
 
 	/**
 	 * key

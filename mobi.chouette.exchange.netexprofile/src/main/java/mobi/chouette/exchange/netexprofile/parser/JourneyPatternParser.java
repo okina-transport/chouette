@@ -6,7 +6,6 @@ import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
@@ -32,6 +31,8 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 
 
 	private ContactStructureParser contactStructureParser = new ContactStructureParser();
+
+	private KeyValueParser keyValueParser = new KeyValueParser();
 
 	@Override
 	public void parse(Context context) throws Exception {
@@ -66,6 +67,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 			parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
 			chouetteJourneyPattern.setFilled(true);
 			initRouteSections(referential, chouetteJourneyPattern);
+			chouetteJourneyPattern.setKeyValues(keyValueParser.parse(netexJourneyPattern.getKeyList()));
 		}
 	}
 

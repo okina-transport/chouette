@@ -14,7 +14,9 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -564,6 +566,19 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Setter
 	@Column(name = "city_code")
 	private String cityCode;
+
+	/**
+	 * keyvalues
+	 *
+	 * @param keyvalue
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "stop_areas_key_values", joinColumns = @JoinColumn(name = "stop_area_id"))
+	private List<KeyValue> keyValues = new ArrayList<>(0);
 
 
 	/**
