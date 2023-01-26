@@ -93,6 +93,7 @@
 		<class>mobi.chouette.model.DeadRun</class>
 		<class>mobi.chouette.model.DeadRunAtStop</class>
 		<class>mobi.chouette.model.Interchange</class>
+		<class>mobi.chouette.model.ReferentialLastUpdate</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
@@ -121,7 +122,7 @@
 			<property name="hibernate.cache.use_second_level_cache" value="true" />
 			<property name="hibernate.cache.use_query_cache" value="true" />
 
-            <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
+			<property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect" />
 			<property name="javax.persistence.validation.mode" value="none" />
 			<property name="hibernate.session_factory.interceptor" value="mobi.chouette.dao.interceptor.RelationsToStopAreaInterceptor"/>
 

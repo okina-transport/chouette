@@ -8608,7 +8608,6 @@ ALTER TABLE ONLY chouette_gui.time_tables_vehicle_journeys
 
 -- SCRIPT CUSTOMIZATION ENTUR
 insert into public.referentials (id,name,slug) values (1,'Test referential','chouette_gui');
-insert into public.referential_last_update(last_update_timestamp) values(current_timestamp);
-insert into chouette_gui.referential_last_update(last_update_timestamp) values(current_timestamp);
+insert into chouette_gui.referential_last_update(id, last_update_timestamp) values(1, current_timestamp);
 -- END SCRIPT CUSTOMIZATION ENTUR
 
