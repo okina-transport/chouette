@@ -35,6 +35,8 @@ public class StopPlaceParser implements Parser, Constant {
 
     private Map<String, Properties> tariffZoneProperties;
 
+    private KeyValueParser keyValueParser = new KeyValueParser();
+
     @Override
     public void parse(Context context) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
@@ -150,11 +152,6 @@ public class StopPlaceParser implements Parser, Constant {
             parentZoneMap.put(stopArea.getObjectId(), parentZoneRefStruct.getRef());
         }
 
-//        SiteRefStructure siteRefStructure = stopPlace.getParentSiteRef();
-//        if (siteRefStructure != null) {
-//            parentSiteMap.put(stopArea.getObjectId(), siteRefStructure.getRef());
-//        }
-
         PostalAddress postalAddress = stopPlace.getPostalAddress();
         if (postalAddress != null) {
             if (postalAddress.getPostCode() != null) {
@@ -179,6 +176,7 @@ public class StopPlaceParser implements Parser, Constant {
         }
 
         stopArea.setFilled(true);
+        stopArea.setKeyValues(keyValueParser.parse(stopPlace.getKeyList()));
     }
 
     StopAreaTypeEnum mapStopAreaType(StopTypeEnumeration netexType) {
@@ -212,10 +210,6 @@ public class StopPlaceParser implements Parser, Constant {
             return mapTransportSubMode(netexStop.getBusSubmode().value());
         } else if (netexStop.getAirSubmode() != null) {
             return mapTransportSubMode(netexStop.getAirSubmode().value());
-//        } else if (netexStop.getTaxiSubmode() != null) {
-//            return mapTransportSubMode(netexStop.getTaxiSubmode().value());
-//        } else if (netexStop.getSelfDriveSubmode() != null) {
-//            return mapTransportSubMode(netexStop.getSelfDriveSubmode().value());
         } else if (netexStop.getCoachSubmode() != null) {
             return mapTransportSubMode(netexStop.getCoachSubmode().value());
         } else if (netexStop.getFunicularSubmode() != null) {
@@ -249,8 +243,6 @@ public class StopPlaceParser implements Parser, Constant {
                 return TransportModeNameEnum.Bus;
             case RAIL:
                 return TransportModeNameEnum.Rail;
-//            case TAXI:
-//                return TransportModeNameEnum.Taxi;
             case TRAM:
                 return TransportModeNameEnum.Tram;
             case COACH:
@@ -335,6 +327,8 @@ public class StopPlaceParser implements Parser, Constant {
         boardingPosition.setTransportSubMode(parentStopArea.getTransportSubMode());
 
         boardingPosition.setFilled(true);
+
+        boardingPosition.setKeyValues(keyValueParser.parse(quay.getKeyList()));
     }
 
     private void parseCentroid(LocationStructure locationStruct, StopArea stopArea) throws Exception {

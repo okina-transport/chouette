@@ -64,6 +64,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
     public static final String MERGED_ID = "merged-id";
 
+    public static final String EXTERNAL_REF = "external-ref";
+
     public static final String BEAN_NAME = "NeTExStopPlaceRegisterUpdater";
 
     public static final String IMPORTED_ID_VALUE_SEPARATOR = ",";
@@ -182,7 +184,8 @@ public class NeTExStopPlaceRegisterUpdater {
         List<StopArea> boardingPositionsWithoutParents = referential.getStopAreas().values().stream()
                 .filter(stopArea -> fullStopAreaNotCached.test(stopArea))
                 .filter(stopArea -> stopArea.getAreaType() == ChouetteAreaEnum.BoardingPosition)
-                .filter(stopArea -> stopArea.getParent() == null).filter(stopArea -> stopArea.getObjectId() != null)
+                .filter(stopArea -> stopArea.getParent() == null)
+                .filter(stopArea -> stopArea.getObjectId() != null)
                 .collect(Collectors.toList());
 
         List<StopArea> createdParents = new ArrayList<StopArea>();
@@ -208,14 +211,12 @@ public class NeTExStopPlaceRegisterUpdater {
         SiteFrame siteFrame = new SiteFrame();
         siteFrame.setVersion(VERSION);
 
-//		List<NavigationPath> navigationPaths = findAndMapConnectionLinks(referential, correlationId, siteFrame, m);
-
         List<StopPlace> stopPlacesToDelete = new ArrayList<>();
 
         if (!stopPlaces.isEmpty()) {
 
             // Only keep uniqueIds to avoid duplicate processing
-            Set<String> uniqueIds = stopPlaces.stream().map(s -> s.getId()).collect(Collectors.toSet());
+            Set<String> uniqueIds = stopPlaces.stream().map(EntityStructure::getId).collect(Collectors.toSet());
             stopPlaces = stopPlaces.stream().filter(s -> uniqueIds.remove(s.getId())).collect(Collectors.toList());
 
             // Find transport mode for stop place

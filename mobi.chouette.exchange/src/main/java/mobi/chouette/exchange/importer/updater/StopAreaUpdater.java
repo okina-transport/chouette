@@ -4,7 +4,6 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
-import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
 import mobi.chouette.dao.AccessLinkDAO;
@@ -130,6 +129,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setLongLatType(newValue.getLongLatType());
 				oldValue.setUrl(newValue.getUrl());
 				oldValue.setOriginalStopId(newValue.getOriginalStopId());
+				oldValue.setKeyValues(newValue.getKeyValues());
 			}
 			if(oldValue.getLongitude() == null) {
 				oldValue.setLongitude(newValue.getLongitude());
@@ -223,6 +223,9 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				}
 				if (newValue.getOriginalStopId() != null && !newValue.getOriginalStopId().equals(oldValue.getOriginalStopId())) {
 					oldValue.setOriginalStopId(newValue.getOriginalStopId());
+				}
+				if (newValue.getKeyValues() != null && !newValue.getKeyValues().equals(oldValue.getKeyValues())) {
+					oldValue.setKeyValues(newValue.getKeyValues());
 				}
 			}
 				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {

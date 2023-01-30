@@ -86,6 +86,12 @@ public class ChouetteRouteParser implements Parser, Constant {
 					if (xpp.getName().equals("wayBack")) {
 						String value = ParserUtils.getText(xpp.nextText()).toLowerCase().startsWith("a") ? "A" : "R";
 						route.setWayBack(value);
+						if(route.getWayBack().equals("A") && route.getDirection() == null){
+							route.setDirection(PTDirectionEnum.A);
+						}
+						if(route.getWayBack().equals("R") && route.getDirection() == null){
+							route.setDirection(PTDirectionEnum.R);
+						}
 					} else {
 						XPPUtil.skipSubTree(log, xpp);
 					}

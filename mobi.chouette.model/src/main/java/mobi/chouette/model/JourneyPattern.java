@@ -6,7 +6,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -355,5 +357,18 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 	@OneToMany(mappedBy = "journeyPattern")
 	@JsonIgnore
 	private List<ProfileOSRMJourneyPattern> profileOSRMJourneyPatterns = new ArrayList<>(0);
+
+	/**
+	 * keyvalues
+	 *
+	 * @param keyvalue
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "journey_patterns_key_values", joinColumns = @JoinColumn(name = "journey_pattern_id"))
+	private List<KeyValue> keyValues = new ArrayList<>(0);
 
 }

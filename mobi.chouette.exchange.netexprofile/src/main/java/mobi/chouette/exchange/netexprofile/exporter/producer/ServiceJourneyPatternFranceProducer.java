@@ -29,6 +29,8 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
     private static List<DropOffTypeEnum> requestDropOffTypes = Arrays.asList(DropOffTypeEnum.AgencyCall, DropOffTypeEnum.DriverCall);
     private static List<PickUpTypeEnum> requestPickUpTypes = Arrays.asList(PickUpTypeEnum.AgencyCall, PickUpTypeEnum.DriverCall);
+    private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
+
 
     public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();
@@ -105,6 +107,8 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         netexServiceJourneyPattern.setPointsInSequence(pointsInJourneyPattern_relStructure);
 
         netexServiceJourneyPattern.setServiceJourneyPatternType(ServiceJourneyPatternTypeEnumeration.PASSENGER);
+
+        netexServiceJourneyPattern.setKeyList(keyListStructureProducer.produce(journeyPattern.getKeyValues()));
 
         return netexServiceJourneyPattern;
     }
