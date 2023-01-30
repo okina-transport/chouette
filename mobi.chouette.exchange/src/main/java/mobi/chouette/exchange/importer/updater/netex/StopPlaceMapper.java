@@ -2,15 +2,12 @@ package mobi.chouette.exchange.importer.updater.netex;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.importer.updater.NeTExIdfmStopPlaceRegisterUpdater;
-import mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater;
-import mobi.chouette.model.MappingHastusZdep;
+import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.runtime.directive.Stop;
-import org.checkerframework.checker.units.qual.A;
 import org.rutebanken.netex.model.*;
 
 import java.util.ArrayList;
@@ -19,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
 
 /**
  * Map from chouette model to NeTEx
@@ -67,21 +65,20 @@ public class StopPlaceMapper {
         mapCompassBearing(stopArea, quay);
         mapComment(stopArea, quay);
         mapMobilityRestrictedSuitable(stopArea, quay);
+        addExternalRefInfo(stopArea, quay);
 
         return quay;
     }
 
-    public void mapMobilityRestrictedSuitable(StopArea stopArea, Quay quay){
+    public void mapMobilityRestrictedSuitable(StopArea stopArea, Quay quay) {
         AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
         AccessibilityLimitations_RelStructure accessibilityLimitations_relStructure = new AccessibilityLimitations_RelStructure();
         AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
-        if(stopArea.getMobilityRestrictedSuitable() == null){
+        if (stopArea.getMobilityRestrictedSuitable() == null) {
             accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
-        }
-        else if (!stopArea.getMobilityRestrictedSuitable()){
+        } else if (!stopArea.getMobilityRestrictedSuitable()) {
             accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
-        }
-        else {
+        } else {
             accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
         }
         accessibilityLimitation.setVersion(VERSION);
@@ -115,6 +112,7 @@ public class StopPlaceMapper {
         setVersion(stopArea, stopPlace);
         mapCentroid(stopArea, stopPlace);
         mapName(stopArea, stopPlace);
+        addExternalRefInfo(stopArea, stopPlace);
         return stopPlace;
     }
 
@@ -207,6 +205,16 @@ public class StopPlaceMapper {
                     .withValue(importedId)));
         }
         return stopPlace;
+    }
+
+    public void addExternalRefInfo(StopArea stopArea, Zone_VersionStructure zone) {
+        for (KeyValue keyValue : stopArea.getKeyValues()) {
+            if(StringUtils.equals(keyValue.getKey(), EXTERNAL_REF) && StringUtils.isNotEmpty(keyValue.getValue())){
+                zone.setKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
+                        .withKey(EXTERNAL_REF)
+                        .withValue(keyValue.getValue())));
+            }
+        }
     }
 
     public StopPlace addImportedIdfmInfo(StopPlace stopPlace, Referential referential) {

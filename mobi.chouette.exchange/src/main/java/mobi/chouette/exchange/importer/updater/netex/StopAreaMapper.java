@@ -2,6 +2,7 @@ package mobi.chouette.exchange.importer.updater.netex;
 
 import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil;
+import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -9,7 +10,6 @@ import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.LocationStructure;
@@ -20,11 +20,12 @@ import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 
 import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static mobi.chouette.common.Constant.IMPORTED_ID;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
 
 /**
  * Map from NeTEx to chouette model
@@ -113,6 +114,7 @@ public class StopAreaMapper {
         mapOriginalStopId(quay,boardingPosition);
         boardingPosition.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(quay.getTransportMode().value()));
         boardingPosition.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
+        mapKeyValuesExternalRef(quay, boardingPosition);
         return boardingPosition;
     }
 
@@ -156,7 +158,8 @@ public class StopAreaMapper {
         stopArea.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
         mapCentroidToChouette(stopPlace, stopArea);
         mapName(stopPlace, stopArea);
-        mapOriginalStopId(stopPlace,stopArea);
+        mapOriginalStopId(stopPlace, stopArea);
+        mapKeyValuesExternalRef(stopPlace, stopArea);
         return stopArea;
     }
 
@@ -200,6 +203,19 @@ public class StopAreaMapper {
     private void mapQuayRegistrationNumber(Quay quay, StopArea boardingPosition){
         if(StringUtils.isNotBlank(quay.getPublicCode())){
             boardingPosition.setRegistrationNumber(quay.getPublicCode());
+        }
+    }
+
+    public void mapKeyValuesExternalRef(Zone_VersionStructure srcZone, StopArea createdStopArea) {
+        for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
+            if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), EXTERNAL_REF) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                KeyValue keyValue = new KeyValue();
+                keyValue.setKey(EXTERNAL_REF);
+                keyValue.setValue(keyValueStructure.getValue());
+                List<KeyValue> keyValues = new ArrayList<>();
+                keyValues.add(keyValue);
+                createdStopArea.setKeyValues(keyValues);
+            }
         }
     }
 }

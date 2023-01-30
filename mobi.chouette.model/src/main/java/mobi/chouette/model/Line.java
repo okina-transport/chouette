@@ -16,7 +16,6 @@ import mobi.chouette.model.type.TadEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.type.UserNeedEnum;
-import mobi.chouette.model.type.WheelchairAccessEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
