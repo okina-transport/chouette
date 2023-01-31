@@ -43,15 +43,7 @@ import mobi.chouette.model.Timeband;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-import mobi.chouette.model.type.DropOffTypeEnum;
-import mobi.chouette.model.type.JourneyCategoryEnum;
-import mobi.chouette.model.type.PTDirectionEnum;
-import mobi.chouette.model.type.PickUpTypeEnum;
-import mobi.chouette.model.type.SectionStatusEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
+import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
@@ -949,6 +941,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         List<LineSegment> segments = new ArrayList<>();
         Coordinate previous = null;
         String shapeId = null;
+        TransportModeNameEnum transportmodeName = journeyPattern.getRoute().getLine().getTransportModeName();
+
         for (GtfsShape gtfsShape : gtfsShapes) {
             if (gtfsShape.getShapePtLon() == null || gtfsShape.getShapePtLat() == null) {
                 log.error("line " + gtfsShape.getId() + " missing coordinates for shape " + gtfsShape.getShapeId());
@@ -1042,7 +1036,14 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     section.setToScheduledStopPoint(stop.getScheduledStopPoint());
                     inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude()
                             .doubleValue());
-                    section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[coords.size()])));
+
+                    if (TransportModeNameEnum.Air.equals(transportmodeName)){
+                        // No trace calculated for airplanes. Only a straight line between start and destination
+                        section.setProcessedGeometry(factory.createLineString(inputCoords));
+                    }else{
+                        section.setProcessedGeometry(factory.createLineString(coords.toArray(new Coordinate[coords.size()])));
+                    }
+
                     section.setInputGeometry(factory.createLineString(inputCoords));
                     section.setNoProcessing(false);
                     try {
