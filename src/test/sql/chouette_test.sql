@@ -2926,7 +2926,7 @@ ALTER TABLE ONLY chouette_gui.lines_key_values
     ADD CONSTRAINT lines_key_values_line_fkey FOREIGN KEY (line_id) REFERENCES chouette_gui.lines(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY chouette_gui.journey_patterns_key_values
-    ADD CONSTRAINT chouette_gui.journey_patterns_key_values_journey_pattern_fkey FOREIGN KEY (journey_pattern_id) REFERENCES chouette_gui.journey_patterns(id) ON DELETE CASCADE;
+    ADD CONSTRAINT journey_patterns_key_values_journey_pattern_fkey FOREIGN KEY (journey_pattern_id) REFERENCES chouette_gui.journey_patterns(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys_key_values
     ADD CONSTRAINT vehicle_journeys_key_values_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id) ON DELETE CASCADE;
