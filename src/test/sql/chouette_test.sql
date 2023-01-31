@@ -563,6 +563,15 @@ CREATE TABLE lines_key_values (
 
 ALTER TABLE chouette_gui.lines_key_values OWNER TO chouette;
 
+CREATE TABLE journey_patterns_key_values (
+    journey_pattern_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE chouette_gui.journey_patterns_key_values OWNER TO chouette;
+
 
 CREATE TABLE vehicle_journeys_key_values (
     vehicle_journey_id bigint NOT NULL,
@@ -574,6 +583,14 @@ CREATE TABLE vehicle_journeys_key_values (
 
 ALTER TABLE chouette_gui.vehicle_journeys_key_values OWNER TO chouette;
 
+CREATE TABLE stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE chouette_gui.stop_areas_key_values OWNER TO chouette;
 
 
 CREATE TABLE brandings (
@@ -2908,8 +2925,14 @@ ALTER TABLE ONLY chouette_gui.booking_arrangements_booking_methods
 ALTER TABLE ONLY chouette_gui.lines_key_values
     ADD CONSTRAINT lines_key_values_line_fkey FOREIGN KEY (line_id) REFERENCES chouette_gui.lines(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY chouette_gui.journey_patterns_key_values
+    ADD CONSTRAINT chouette_gui.journey_patterns_key_values_journey_pattern_fkey FOREIGN KEY (journey_pattern_id) REFERENCES chouette_gui.journey_patterns(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY chouette_gui.vehicle_journeys_key_values
     ADD CONSTRAINT vehicle_journeys_key_values_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY chouette_gui.stop_areas_key_values
+    ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES chouette_gui.stop_areas(id) ON DELETE CASCADE;
 
 
 ALTER TABLE ONLY chouette_gui.companies
