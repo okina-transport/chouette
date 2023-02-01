@@ -115,6 +115,12 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 		Map<String,String> areaCentroidMap =  (Map<String,String>) context.get(AREA_CENTROID_MAP);
 
 		for (Map.Entry<String, String> entry : areaCentroidMap.entrySet()){
+
+			if (entry == null){
+				log.warn("Empty entry in areaCentroidMap");
+				continue;
+			}
+
 			if(entry.getKey().equals(entry.getValue())){
 				ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
 				Optional<String> fileLocation = fileLocations.keySet().stream().filter(s -> s.contains("StopArea:" + entry.getKey())).findFirst();
