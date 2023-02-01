@@ -5163,6 +5163,118 @@ CREATE SEQUENCE admin.client_id_sequence
     CACHE 1;
 
 
+CREATE TABLE journey_patterns_key_values (
+    journey_pattern_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE chouette_gui.journey_patterns_key_values OWNER TO chouette;
+
+
+--CREATE TABLE stop_areas_key_values (
+--    stop_area_id bigint NOT NULL,
+--    type_of_key character varying,
+--    key character varying,
+--    value character varying
+--);
+
+CREATE TABLE public.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE public.stop_areas_key_values OWNER TO chouette;
+
+
+--ALTER TABLE chouette_gui.stop_areas OWNER TO chouette;
+
+ALTER TABLE ONLY chouette_gui.stop_areas
+    ADD CONSTRAINT stop_areas_pkey PRIMARY KEY (id);
+
+CREATE TABLE chouette_gui.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE chouette_gui.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY public.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES public.stop_areas(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY chouette_gui.journey_patterns_key_values
+ADD CONSTRAINT journey_patterns_key_values_journey_pattern_fkey FOREIGN KEY (journey_pattern_id) REFERENCES chouette_gui.journey_patterns(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY chouette_gui.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES chouette_gui.stop_areas(id) ON DELETE CASCADE;
+
+
+CREATE TABLE tro.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE tro.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY tro.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES tro.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE sky.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE sky.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY sky.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES sky.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE rut.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE rut.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY rut.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES rut.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE nri.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE nri.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY nri.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES nri.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE akt.stop_areas_key_values (
+    stop_area_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying
+);
+
+ALTER TABLE akt.stop_areas_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY akt.stop_areas_key_values
+ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES akt.stop_areas(id) ON DELETE CASCADE;
+
+
 -- TOC entry 4251 (class 0 OID 0)
 -- Dependencies: 8
 -- Name: chouette_gui; Type: ACL; Schema: -; Owner: postgres

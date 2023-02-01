@@ -207,14 +207,16 @@ public class StopAreaMapper {
     }
 
     public void mapKeyValuesExternalRef(Zone_VersionStructure srcZone, StopArea createdStopArea) {
-        for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
-            if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), EXTERNAL_REF) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
-                KeyValue keyValue = new KeyValue();
-                keyValue.setKey(EXTERNAL_REF);
-                keyValue.setValue(keyValueStructure.getValue());
-                List<KeyValue> keyValues = new ArrayList<>();
-                keyValues.add(keyValue);
-                createdStopArea.setKeyValues(keyValues);
+        if(srcZone.getKeyList() != null){
+            for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
+                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), EXTERNAL_REF) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                    KeyValue keyValue = new KeyValue();
+                    keyValue.setKey(EXTERNAL_REF);
+                    keyValue.setValue(keyValueStructure.getValue());
+                    List<KeyValue> keyValues = new ArrayList<>();
+                    keyValues.add(keyValue);
+                    createdStopArea.setKeyValues(keyValues);
+                }
             }
         }
     }
