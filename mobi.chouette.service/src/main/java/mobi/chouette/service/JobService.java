@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -94,7 +95,7 @@ public class JobService implements JobData, ServiceConstants {
 			Parameters parameters = new Parameters(getParametersAsString(), validator);
 
 			FileStore fileStore = FileStoreFactory.getFileStore();
-			fileStore.writeFile(filePath(PARAMETERS_FILE), IOUtils.toInputStream(getParametersAsString() + "+n", "UTF-8"));
+			fileStore.writeFile(filePath(PARAMETERS_FILE), IOUtils.toInputStream(getParametersAsString() + '\n', StandardCharsets.UTF_8));
 
 			addLink(MediaType.APPLICATION_JSON, Link.PARAMETERS_REL);
 
