@@ -43,7 +43,7 @@ spec:
             - name: TZ
               value: Europe/Oslo
             - name: CHOUETTE_DATABASE_INSTANCE
-              value: {{ .Values.gcpProjectId }}:europe-west1:chouette-db-pg13
+              value: {{ .Values.gcpDatabaseInstance }}
             - name: CHOUETTE_DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
