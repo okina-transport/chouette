@@ -116,7 +116,7 @@ public class StopAreaValidator extends AbstractValidator implements Validator<St
 
 		for (Map.Entry<String, String> entry : areaCentroidMap.entrySet()){
 
-			if (entry == null){
+			if (entry == null || entry.getKey() == null){
 				log.warn("Empty entry in areaCentroidMap");
 				continue;
 			}
