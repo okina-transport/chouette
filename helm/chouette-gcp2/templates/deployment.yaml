@@ -27,26 +27,6 @@ spec:
         {{- include "common.labels" . | indent 8 }}
     spec:
       containers:
-        - name: chouette-sql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.29.0-alpine
-          command:
-            - /cloud_sql_proxy
-            - -instances={{ .Values.gcpDatabaseInstance}}
-            - -term_timeout=30s
-            - -log_debug_stdout
-            - -verbose=false
-          resources:
-            requests:
-              cpu: 100m
-              memory: 40Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
         - name: chouette
           image: {{ .Values.image.identifier }}
           imagePullPolicy: Always
@@ -62,6 +42,8 @@ spec:
               value: en_US.UTF-8
             - name: TZ
               value: Europe/Oslo
+            - name: CHOUETTE_DATABASE_INSTANCE
+              value: {{ .Values.gcpProjectId }}:europe-west1:chouette-db-pg13
             - name: CHOUETTE_DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:

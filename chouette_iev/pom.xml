@@ -60,7 +60,8 @@
                </gitDescribe>
             </configuration>
          </plugin>
-			<plugin>
+
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
 				<version>${version.ear.plugin}</version>
