@@ -164,16 +164,12 @@ data:
             <subsystem xmlns="urn:jboss:domain:datasources:7.0">
                 <datasources>
                     <datasource jndi-name="java:jboss/datasources/iev" pool-name="iev" enabled="true" statistics-enabled="true">
-                        <connection-url>jdbc:postgresql://localhost:5432/iev?ApplicationName=JBOSS-IEV&amp;reWriteBatchedInserts=true</connection-url>
+                        <connection-url>jdbc:postgresql:///iev?cloudSqlInstance=${env.CHOUETTE_DATABASE_INSTANCE}&amp;socketFactory=com.google.cloud.sql.postgres.SocketFactory&amp;user=${env.CHOUETTE_IEV_DATABASE_USERNAME}&amp;password=${env.CHOUETTE_IEV_DATABASE_PASSWORD}&amp;ApplicationName=JBOSS-IEV&amp;reWriteBatchedInserts=true</connection-url>
                         <driver>postgresql</driver>
                         <pool>
                             <min-pool-size>5</min-pool-size>
                             <max-pool-size>20</max-pool-size>
                         </pool>
-                        <security>
-                            <user-name>${env.CHOUETTE_IEV_DATABASE_USERNAME}</user-name>
-                            <password>${env.CHOUETTE_IEV_DATABASE_PASSWORD}</password>
-                        </security>
                         <validation>
                             <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker" />
                             <validate-on-match>false</validate-on-match>
@@ -186,17 +182,13 @@ data:
                         </statement>
                     </datasource>
                     <datasource jndi-name="java:jboss/datasources/chouette" pool-name="chouette" enabled="true" statistics-enabled="true">
-                        <connection-url>jdbc:postgresql_postGIS://localhost:5432/chouette?preparedStatementCacheQueries=1024&amp;preparedStatementCacheSizeMiB=15&amp;ApplicationName=JBOSS-CHOUETTE&amp;reWriteBatchedInserts=true</connection-url>
+                        <connection-url>jdbc:postgresql_postGIS:///chouette?cloudSqlInstance=${env.CHOUETTE_DATABASE_INSTANCE}&amp;socketFactory=com.google.cloud.sql.postgres.SocketFactory&amp;user=${env.CHOUETTE_DATABASE_USERNAME}&amp;password=${env.CHOUETTE_DATABASE_PASSWORD}&amp;preparedStatementCacheQueries=1024&amp;preparedStatementCacheSizeMiB=15&amp;ApplicationName=JBOSS-CHOUETTE&amp;reWriteBatchedInserts=true</connection-url>
                         <driver-class>mobi.chouette.ChouettePostGisDriverWrapper</driver-class>
                         <driver>postgresql</driver>
                         <pool>
                             <min-pool-size>5</min-pool-size>
                             <max-pool-size>20</max-pool-size>
                         </pool>
-                        <security>
-                            <user-name>${env.CHOUETTE_DATABASE_USERNAME}</user-name>
-                            <password>${env.CHOUETTE_DATABASE_PASSWORD}</password>
-                        </security>
                         <validation>
                             <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker" />
                             <validate-on-match>false</validate-on-match>

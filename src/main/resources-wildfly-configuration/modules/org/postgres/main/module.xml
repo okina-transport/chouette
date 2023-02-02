@@ -6,6 +6,7 @@
 <resource-root path="postgis-jdbc-${postgis.version}.jar"/>
 <resource-root path="postgis-geometry-${postgis.version}.jar"/>
 <resource-root path="mobi.chouette.jdbc-${project.version}.jar"/>
+<resource-root path="mobi.chouette.googlecloudsql-${project.version}-jar-with-dependencies.jar"/>
 </resources>
 <dependencies>
 <module name="javax.api"/>

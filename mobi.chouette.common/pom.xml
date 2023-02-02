@@ -25,6 +25,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>mobi.chouette</groupId>
+			<artifactId>mobi.chouette.googlecloudsql</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!--Jakarta EE -->
 		<dependency>
 			<groupId>org.jboss.spec.javax.xml.bind</groupId>

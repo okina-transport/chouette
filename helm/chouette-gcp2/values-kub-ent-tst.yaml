@@ -1,6 +1,6 @@
 env: tst
 gcpProjectId: ent-chouette-tst
-gcpDatabaseInstance: ent-chouette-tst:europe-west1:chouette-db-pg13=tcp:5432
+gcpDatabaseInstance: ent-chouette-tst:europe-west1:chouette-db-pg13
 gcpBucketName: ror-chouette-gcp2-test
 tiamatUrl: http://tiamat.tst.entur.internal
 osrmRailUrl: http://osrm-rail.tst.entur.internal
