@@ -24,6 +24,17 @@ import mobi.chouette.model.util.Referential;
 @Log4j
 public class ValidationDataCollector {
 
+	private final boolean checkAccessPoint;
+	private final boolean checkAccessLink;
+	private final boolean checkConnectionLink;
+
+	public ValidationDataCollector(boolean checkAccessPoint, boolean checkAccessLink, boolean checkConnectionLink) {
+		this.checkAccessPoint = checkAccessPoint;
+		this.checkAccessLink = checkAccessLink;
+		this.checkConnectionLink = checkConnectionLink;
+
+	}
+
 	public void collect(ValidationData collection, Line line) {
 		collect(collection, line, new Referential());
 	}
@@ -96,10 +107,16 @@ public class ValidationDataCollector {
 		updateId(stopArea, cache.getStopAreas());
 		collection.getStopAreaIds().add(stopArea.getObjectId());
 		collection.getStopAreas().add(stopArea);
-		addAllConnectionLinks(collection, stopArea.getConnectionStartLinks(), cache);
-		addAllConnectionLinks(collection, stopArea.getConnectionEndLinks(), cache);
-		addAllAccessPoints(collection, stopArea.getAccessPoints(), cache);
-		addAllAccessLinks(collection, stopArea.getAccessLinks(), cache);
+		if(checkConnectionLink) {
+			addAllConnectionLinks(collection, stopArea.getConnectionStartLinks(), cache);
+			addAllConnectionLinks(collection, stopArea.getConnectionEndLinks(), cache);
+		}
+		if(checkAccessPoint) {
+			addAllAccessPoints(collection, stopArea.getAccessPoints(), cache);
+		}
+		if(checkAccessLink) {
+			addAllAccessLinks(collection, stopArea.getAccessLinks(), cache);
+		}
 		if (stopArea.getParent() != null)
 			collectStopAreas(collection, stopArea.getParent(), cache);
 	}

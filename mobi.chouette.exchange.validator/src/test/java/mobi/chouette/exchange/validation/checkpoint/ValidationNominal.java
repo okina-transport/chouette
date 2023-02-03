@@ -113,7 +113,6 @@ public class ValidationNominal extends AbstractTestValidation {
 		Reporter.log(report.toString(), true);
 		Assert.assertFalse(report.getCheckPoints().isEmpty(), "report must have items");
 		boolean bStopArea1 = false;
-		boolean bAccessPoint1 = false;
 		boolean bLine2 = false;
 		boolean bRoute7 = false;
 		List<String> unchecked = new ArrayList<>();
@@ -141,8 +140,6 @@ public class ValidationNominal extends AbstractTestValidation {
 		for (CheckPointReport checkPoint : report.getCheckPoints()) {
 			if (checkPoint.getName().equals("3-StopArea-1"))
 				bStopArea1 = true;
-			if (checkPoint.getName().equals("3-AccessPoint-1"))
-				bAccessPoint1 = true;
 			if (checkPoint.getName().equals("3-Line-2"))
 				bLine2 = true;
 			if (checkPoint.getName().equals("3-Route-7"))
@@ -162,7 +159,6 @@ public class ValidationNominal extends AbstractTestValidation {
 
 		}
 		Assert.assertTrue(bStopArea1, "3-StopArea-1 test must not be skipped");
-		Assert.assertTrue(bAccessPoint1, "3-AccessPoint-1 test must not be skipped");
 		Assert.assertTrue(bLine2, "3-Line-2 test must not be skipped");
 		Assert.assertTrue(bRoute7, "3-Route-7 test must not be skipped");
 
