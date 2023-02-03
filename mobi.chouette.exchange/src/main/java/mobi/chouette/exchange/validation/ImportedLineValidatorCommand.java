@@ -18,6 +18,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.common.monitor.JamonUtils;
+import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.Referential;
 
@@ -55,7 +56,13 @@ public class ImportedLineValidatorCommand implements Command, Constant {
 
 			Line line = referential.getLines().values().iterator().next();
 
-			ValidationDataCollector collector = new ValidationDataCollector();
+
+			ValidationParameters parameters = (ValidationParameters) context.get(VALIDATION);
+
+			boolean checkAccessPoint = parameters.getCheckAccessPoint() == 1;
+			boolean checkAccessLink = parameters.getCheckAccessLink() == 1;
+			boolean checkConnectionLink = parameters.getCheckConnectionLink() == 1 || parameters.getCheckConnectionLinkOnPhysical() == 1;
+			ValidationDataCollector collector = new ValidationDataCollector(checkAccessPoint, checkAccessLink, checkConnectionLink);
 			collector.collect(data, line, cache);
 
 			lineValidatorCommand.execute(context);
