@@ -82,6 +82,9 @@ public class LineRegisterCommand implements Command {
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
+		if (!context.containsKey(OPTIMIZED)) {
+			context.put(OPTIMIZED, Boolean.TRUE);
+		}
 		Referential cache = new Referential();
 		context.put(CACHE, cache);
 
