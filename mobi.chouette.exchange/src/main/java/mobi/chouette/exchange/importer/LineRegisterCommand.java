@@ -82,10 +82,6 @@ public class LineRegisterCommand implements Command {
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
-		if (!context.containsKey(OPTIMIZED)) {
-			context.put(OPTIMIZED, Boolean.TRUE);
-		}
-		Boolean optimized = (Boolean) context.get(OPTIMIZED);
 		Referential cache = new Referential();
 		context.put(CACHE, cache);
 
@@ -118,28 +114,11 @@ public class LineRegisterCommand implements Command {
 				Line oldValue = cache.getLines().get(newValue.getObjectId());
 				lineUpdater.update(context, oldValue, newValue);
 				lineDAO.create(oldValue);
-				lineDAO.flush(); // to prevent SQL error outside method
-	
-				if (optimized) {
-					Monitor wMonitor = MonitorFactory.start("prepareCopy");
-					StringWriter buffer = new StringWriter(1024);
-					final List<String> list = new ArrayList<String>(referential.getVehicleJourneys().keySet());
-					for (VehicleJourney item : referential.getVehicleJourneys().values()) {
-						VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(item.getObjectId());
-	
-						List<VehicleJourneyAtStop> vehicleJourneyAtStops = item.getVehicleJourneyAtStops();
-						for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
-	
-							StopPoint stopPoint = cache.getStopPoints().get(
-									vehicleJourneyAtStop.getStopPoint().getObjectId());
-	
-							write(buffer, vehicleJourney, stopPoint, vehicleJourneyAtStop);
-						}
-					}
-					vehicleJourneyDAO.deleteChildren(list);
-					context.put(BUFFER, buffer.toString());
-					wMonitor.stop();
-				}
+				// flush now to prevent SQL errors outside the method
+				lineDAO.flush();
+				// empty the persistence context to prevent a second dirty-checking at transaction commit time
+				lineDAO.clear();
+
 				result = SUCCESS;
 			} catch (Exception ex) {
 				log.error(ex.getMessage());
