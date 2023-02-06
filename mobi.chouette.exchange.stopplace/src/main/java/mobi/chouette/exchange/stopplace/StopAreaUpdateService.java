@@ -20,14 +20,13 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.core.CoreException;
-import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.importer.updater.StopAreaUpdater;
 import mobi.chouette.exchange.importer.updater.Updater;
 import mobi.chouette.exchange.netexprofile.importer.util.StopPlaceRegistryIdFetcher;
 import mobi.chouette.model.StopArea;
-import org.hibernate.Hibernate;
+import mobi.chouette.model.type.ChouetteAreaEnum;
 
 @Singleton(name = StopAreaUpdateService.BEAN_NAME)
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
@@ -144,20 +143,25 @@ public class StopAreaUpdateService {
 
 	/**
 	 * Checks if one of the stop Areas is ued in the schema
-	 * @param stopAreas
+	 * @param objectid
 	 * @return
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public boolean isAStopAreaUsed(List<String> stopAreas){
-
-		for (String stopArea : stopAreas) {
-			boolean stopAreaCheck = stopAreaDAO.isStopAreaUsed(stopArea);
-			if (stopAreaCheck){
-				return true;
+	public void isAStopAreaUsed(String objectid){
+		StopArea stopArea = stopAreaDAO.findByObjectId(objectid);
+		if(stopArea != null && stopArea.getAreaType().equals(ChouetteAreaEnum.CommercialStopPoint)) {
+			for (StopArea childStopArea : stopArea.getContainedStopAreas()) {
+				if(stopAreaDAO.isStopAreaUsed(childStopArea.getObjectId())){
+					throw new IllegalArgumentException("One of the stop area is still in use : " + childStopArea.getObjectId());
+				}
+			}
+		}
+		else{
+			if(stopAreaDAO.isStopAreaUsed(objectid)){
+				throw new IllegalArgumentException("One of the stop area is still in use : " + objectid);
 			}
 		}
 
-		return false;
 	}
 
 

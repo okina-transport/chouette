@@ -82,12 +82,18 @@ public class RestNetexStopPlaceService {
         }
     }
 
-    @POST
-    @Path("/deleteStopAreas")
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response deleteStopAreas(InputStream inputStream) throws CoreException {
-        stopAreaService.deleteStopAreas(inputStream);
-        return Response.ok().build();
+    @DELETE
+    @Path("/deleteStopAreas/{objectId}")
+    public Response deleteStopAreas(@PathParam("objectId") String objectId) {
+        try {
+            stopAreaService.deleteStopAreas(objectId);
+            Response.ResponseBuilder builder = Response.ok();
+            builder.header(api_version_key, api_version);
+            return builder.build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException("INTERNAL_ERROR: " + ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

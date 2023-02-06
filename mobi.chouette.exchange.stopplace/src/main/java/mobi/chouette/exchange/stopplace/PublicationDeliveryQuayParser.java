@@ -53,7 +53,7 @@ public class PublicationDeliveryQuayParser {
         }
     }
 
-    private void convertToStopAreas(PublicationDeliveryStructure incomingPublicationDelivery) throws Exception {
+    private void convertToStopAreas(PublicationDeliveryStructure incomingPublicationDelivery) {
 
         Context context = new Context();
         Referential referential = new Referential();

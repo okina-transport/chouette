@@ -610,14 +610,14 @@ public class StopAreaServiceTest extends Arquillian {
 
 	}
 
-	//work in local but doesn't work while testing the whole project
-	public void testDeleteStopAreasWS() throws FileNotFoundException, CoreException {
+	@Test
+	public void testDeleteStopAreasWS() {
 
 		cleanAllschemas();
 		createStopAreaInAllSchema("MOBIITI:Quay:1");
 		checkStopAreaExistence("MOBIITI:Quay:1");
 		System.setProperty("iev.superspace.prefix", "mobiiti");
-		stopAreaService.deleteStopAreas(new FileInputStream("src/test/data/deleteStopArea1.xml"));
+		stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
 
 		checkStopAreaAbsence("MOBIITI:Quay:1");
 	}
@@ -627,8 +627,8 @@ public class StopAreaServiceTest extends Arquillian {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	//work in local but doesn't work while testing the whole project
-	public void testErrorIfStopAreaInUse() throws FileNotFoundException, CoreException {
+	@Test
+	public void testErrorIfStopAreaInUse() {
 
 		cleanAllschemas();
 		createStopAreaInAllSchema("MOBIITI:Quay:1");
@@ -643,7 +643,7 @@ public class StopAreaServiceTest extends Arquillian {
 		String message="";
 
 		try{
-			stopAreaService.deleteStopAreas(new FileInputStream("src/test/data/deleteStopArea1.xml"));
+			stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
 		}catch (Exception e){
 			isExceptionRaised = true;
 			message = e.getMessage();
