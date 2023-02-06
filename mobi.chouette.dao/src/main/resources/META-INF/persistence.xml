@@ -20,6 +20,8 @@
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.generate_statistics" value="false"/>
+
 
 			<!-- PostgreSQL maximum batch size is 128-->
 			<property name="hibernate.jdbc.batch_size" value="128" />
@@ -104,6 +106,7 @@
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.generate_statistics" value="false"/>
 
 			<!-- PostgreSQL maximum batch size is 128-->
 			<property name="hibernate.jdbc.batch_size" value="128" />
