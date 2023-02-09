@@ -1,6 +1,4 @@
-ARG CHOUETTE_BASE_VERSION
-
-FROM $CHOUETTE_BASE_VERSION
+FROM registry.okina.fr/oki/chouette-base:1.1
 
 RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     yum -y install postgresql14
