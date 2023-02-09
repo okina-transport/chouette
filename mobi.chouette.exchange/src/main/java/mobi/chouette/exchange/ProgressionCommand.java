@@ -1,13 +1,7 @@
 package mobi.chouette.exchange;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
@@ -22,8 +16,12 @@ import mobi.chouette.exchange.report.ReportConstant;
 import mobi.chouette.exchange.report.StepProgression;
 import mobi.chouette.exchange.report.StepProgression.STEP;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 
 @Log4j
 public class ProgressionCommand implements Command, Constant, ReportConstant {
@@ -73,7 +71,7 @@ public class ProgressionCommand implements Command, Constant, ReportConstant {
 			return;
 		Report report = (Report) context.get(REPORT);
 		Date date = new Date();
-		Date delay = new Date(date.getTime() - 8000);
+		Date delay = new Date(date.getTime() - 300000);
 		if (force || report.getDate().before(delay)) {
 			report.setDate(date);
 			Monitor monitor = MonitorFactory.start("ActionReport");

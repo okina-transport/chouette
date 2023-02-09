@@ -63,7 +63,7 @@ public class DaoGtfsLineProducerCommand implements Command, Constant
 			context.put(LINE, line);
 
 			// TODO MHI : pb perf sur l'écriture.
-			// result = export.execute(context);
+			result = export.execute(context);
 
 
 			//daoContext.setRollbackOnly();
