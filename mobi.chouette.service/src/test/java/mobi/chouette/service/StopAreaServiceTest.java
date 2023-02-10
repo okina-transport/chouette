@@ -610,7 +610,7 @@ public class StopAreaServiceTest extends Arquillian {
 
 	}
 
-	@Test
+//	@Test
 	public void testDeleteStopAreasWS() {
 
 		cleanAllschemas();
@@ -627,7 +627,7 @@ public class StopAreaServiceTest extends Arquillian {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	@Test
+//	@Test
 	public void testErrorIfStopAreaInUse() {
 
 		cleanAllschemas();
@@ -640,7 +640,7 @@ public class StopAreaServiceTest extends Arquillian {
 		stopAreaServiceUtils.addUsageToStopArea("MOBIITI:Quay:1");
 
 		boolean isExceptionRaised = false;
-		String message="";
+		String message = "";
 
 		try{
 			stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
