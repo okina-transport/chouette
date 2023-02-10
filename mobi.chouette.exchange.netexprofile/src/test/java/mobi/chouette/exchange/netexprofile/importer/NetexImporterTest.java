@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import mobi.chouette.common.Context;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -49,9 +50,10 @@ public class NetexImporterTest {
 
 	@Test
 	public void testXPathWithoutSkip() throws FileNotFoundException, SaxonApiException, IOException, SAXException, XMLStreamException, JAXBException {
-		
+
+		Context context = new Context();
 		HashSet<QName> elementsToSkip = new HashSet<>();
-		XdmNode node = importer.parseFileToXdmNode(file, elementsToSkip);
+		XdmNode node = importer.parseFileToXdmNode(file, elementsToSkip,context);
 		XPathCompiler xPathCompiler = importer.getXPathCompiler();
 		XPathSelector load = xPathCompiler.compile("/PublicationDelivery/dataObjects/CompositeFrame").load();
 		load.setContextItem(node);
@@ -62,10 +64,11 @@ public class NetexImporterTest {
 
 	@Test
 	public void testXPathWithSkip() throws FileNotFoundException, SaxonApiException, IOException, SAXException, XMLStreamException, JAXBException {
-		
+
+		Context context = new Context();
 		HashSet<QName> elementsToSkip = new HashSet<>();
 		elementsToSkip.add(new QName(Constant.NETEX_NAMESPACE, "CompositeFrame"));
-		XdmNode node = importer.parseFileToXdmNode(file, elementsToSkip);
+		XdmNode node = importer.parseFileToXdmNode(file, elementsToSkip, context);
 		XPathCompiler xPathCompiler = importer.getXPathCompiler();
 		XPathSelector load = xPathCompiler.compile("/PublicationDelivery/dataObjects/CompositeFrame").load();
 		load.setContextItem(node);

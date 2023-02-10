@@ -16,10 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -305,6 +302,15 @@ public class FileUtil {
 			e.printStackTrace();
 		}
 
+	}
+
+
+	public static Path getTmpPath(Path originalPath){
+		String tmpFilePathStr = originalPath.toString().replace("/opt/jboss/data/referentials", "/tmp/data");
+		Path tmpPath = Paths.get(tmpFilePathStr);
+		File tmpFile = tmpPath.toFile();
+		tmpFile.getParentFile().mkdirs();
+		return tmpPath;
 	}
 
 }

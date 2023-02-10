@@ -1,12 +1,15 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.xml.bind.Marshaller;
 
 import mobi.chouette.common.Context;
+import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
@@ -30,7 +33,10 @@ public class NetexCommonDataProducer extends NetexProducer implements Constant {
 
         Marshaller marshaller = (Marshaller) context.get(MARSHALLER);
         NetexFileWriter writer = new NetexFileWriter();
-        writer.writeXmlFile(context, filePath, exportableData, exportableNetexData, NetexFragmentMode.COMMON, marshaller);
+
+        Path tmpPath = FileUtil.getTmpPath(filePath);
+        writer.writeXmlFile(context, tmpPath, exportableData, exportableNetexData, NetexFragmentMode.COMMON, marshaller);
+        Files.copy(tmpPath, filePath, StandardCopyOption.REPLACE_EXISTING);
 
     }
 

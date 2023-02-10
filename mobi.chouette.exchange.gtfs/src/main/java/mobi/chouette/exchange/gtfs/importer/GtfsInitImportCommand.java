@@ -10,6 +10,7 @@ import javax.naming.InitialContext;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -43,6 +44,11 @@ public class GtfsInitImportCommand implements Command, Constant {
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new GtfsErrorCodeConverter());
 			if (importer == null) {
 				Path path = Paths.get(jobData.getPathName(), INPUT);
+				if ("exporter".equals(jobData.getAction())){
+					//After export, files are moved to tmp directory before validation to avoid .nfs files creation
+					path = FileUtil.getTmpPath(path);
+				}
+
 				FactoryParameters factoryParameters = new FactoryParameters();
 				factoryParameters.setSplitCharacter(parameters.getSplitCharacter());
 				factoryParameters.setLinePrefixToRemove(parameters.getLinePrefixToRemove());

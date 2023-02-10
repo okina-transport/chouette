@@ -48,7 +48,7 @@ public class NorwayLineNetexProfileValidatorTest {
 		context.put(Constant.NETEX_VALID_CODESPACES, validCodespaces);
 
 		File file = new File("src/test/data/WF739-201608311015.xml");
-		XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>());
+		XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>(),context);
 		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>());
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);
@@ -97,7 +97,7 @@ public class NorwayLineNetexProfileValidatorTest {
 		context.put(Constant.NETEX_VALID_CODESPACES, validCodespaces);
 
 		File file = new File("src/test/data/norway_line_commonfile/_avinor_common_elements.xml");
-		XdmNode commonDom = importer.parseFileToXdmNode(file, new HashSet<>());
+		XdmNode commonDom = importer.parseFileToXdmNode(file, new HashSet<>(), context);
 		PublicationDeliveryStructure commonStructure = importer.unmarshal(file, new HashSet<>());
 		context.put(Constant.NETEX_DATA_JAVA, commonStructure);
 		context.put(Constant.NETEX_DATA_DOM, commonDom);
@@ -122,7 +122,7 @@ public class NorwayLineNetexProfileValidatorTest {
 		duplicateChecker.execute(context);
 
 		File lineFile = new File("src/test/data/norway_line_commonfile/Norwegian-DY121-Stavanger-Bergen.xml");
-		XdmNode lineDom = importer.parseFileToXdmNode(lineFile, new HashSet<>());
+		XdmNode lineDom = importer.parseFileToXdmNode(lineFile, new HashSet<>(),context);
 		PublicationDeliveryStructure lineStructure = importer.unmarshal(lineFile, new HashSet<>());
 		context.put(Constant.NETEX_DATA_JAVA, lineStructure);
 		context.put(Constant.NETEX_DATA_DOM, lineDom);
@@ -158,7 +158,7 @@ public class NorwayLineNetexProfileValidatorTest {
 		context.put(Constant.NETEX_VALID_CODESPACES, validCodespaces);
 
 		File lineFile = new File("src/test/data/Profile_Error_SingleLineFileCompositeFrame.xml");
-		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>());
+		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>(),context);
 		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>());
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);
@@ -392,7 +392,7 @@ public class NorwayLineNetexProfileValidatorTest {
 				NETEX_VALID_CODESPACES, validCodespaces);
 
 		File lineFile = new File(fileName);
-		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>());
+		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>(),context);
 		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>());
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);

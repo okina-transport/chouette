@@ -206,6 +206,8 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 				Monitor monitor = MonitorFactory.start("SchemaValidation");
 				log.info("Schema validating "+fileName);
 				validator.validate(xmlSource);
+
+
 				log.info("Schema validation finished "+fileName+ " "+monitor.stop());
 
 			} catch (SAXException e) {

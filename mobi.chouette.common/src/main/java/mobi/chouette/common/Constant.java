@@ -108,5 +108,6 @@ public interface Constant {
 	public static final String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
 
 	public static final String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";
+	public static final String STREAM_TO_CLOSE = "streamToClose";
 
 }

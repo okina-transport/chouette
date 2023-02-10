@@ -2,12 +2,15 @@ package mobi.chouette.exchange.gtfs.exporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.naming.InitialContext;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -20,6 +23,8 @@ import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
+import org.apache.commons.io.FileUtils;
 
 @Log4j
 public class GtfsValidateExportCommand implements Command, Constant {
@@ -53,9 +58,9 @@ public class GtfsValidateExportCommand implements Command, Constant {
 			String path = jobData.getPathName();
 			File output = new File(path, OUTPUT);
 			File input = new File(path, INPUT);
-			if (!output.renameTo(input))
-				log.error("rename failed");
-			output = new File(path, OUTPUT);
+
+			Path inputPath = FileUtil.getTmpPath(input.toPath());
+			FileUtils.copyDirectory(output, inputPath.toFile());
 			// run gtfs validation preparation
 			InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 			try {
@@ -67,12 +72,13 @@ public class GtfsValidateExportCommand implements Command, Constant {
 				// run gtfs validate command
 				c = CommandFactory.create(initialContext, GtfsValidationCommand.class.getName());
 				c.execute(validateContext);
+
+				FileUtils.deleteDirectory(inputPath.toFile());
+
 			} catch (Exception ex) {
 				log.error("problem in validation" + ex);
 				throw ex;
 			} finally {
-				// rename folder to output before dispose
-				input.renameTo(output);
 				// terminate validation
 				Command c = CommandFactory.create(initialContext, GtfsDisposeImportCommand.class.getName());
 				c.execute(validateContext);

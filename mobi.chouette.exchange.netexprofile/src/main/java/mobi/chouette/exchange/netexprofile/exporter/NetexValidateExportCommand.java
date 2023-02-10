@@ -1,7 +1,10 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.InitialContext;
 
@@ -36,6 +39,9 @@ public class NetexValidateExportCommand implements Command, Constant {
         try {
             Context validateExportContext = new Context();
             validateExportContext.putAll(context);
+
+            validateExportContext.put(STREAM_TO_CLOSE, new ArrayList<>());
+
 
             NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
             
@@ -80,6 +86,10 @@ public class NetexValidateExportCommand implements Command, Constant {
                 throw ex;
             }
             context.put(VALIDATION_REPORT, validateExportContext.get(VALIDATION_REPORT));
+
+            closeOpenSteams(validateExportContext);
+
+
         } catch (Exception e) {
             log.error(e, e);
             throw e;
@@ -88,6 +98,20 @@ public class NetexValidateExportCommand implements Command, Constant {
         }
 
         return result;
+    }
+
+    private void closeOpenSteams(Context context){
+        List<BufferedInputStream> streamsToClose = (List<BufferedInputStream>)context.get(STREAM_TO_CLOSE);
+
+        if (streamsToClose != null){
+            for (BufferedInputStream bufferedInputStream : streamsToClose) {
+                try {
+                    bufferedInputStream.close();
+                } catch (IOException e) {
+                    log.error("Error while closing stream", e);
+                }
+            }
+        }
     }
 
     public static class DefaultCommandFactory extends CommandFactory {

@@ -40,7 +40,7 @@ public class FranceCalendarNetexProfileValidatorTest {
         context.put(Constant.NETEX_VALID_CODESPACES, validCodespaces);
 
         File file = new File("src/test/data/idfm/calendriers.xml");
-        XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>());
+        XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>(),context);
         PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>());
 
         context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);

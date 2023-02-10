@@ -2,6 +2,7 @@ package mobi.chouette.exchange.netexprofile.jaxb;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
+import static mobi.chouette.common.Constant.STREAM_TO_CLOSE;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,9 +13,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -28,6 +27,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.validation.Schema;
 
+import mobi.chouette.common.Context;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.rutebanken.netex.validation.NeTExValidator.NetexVersion;
@@ -99,24 +99,47 @@ public class NetexXMLProcessingHelperFactory {
 		return netexJaxBContext;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	public PublicationDeliveryStructure unmarshal(File file, Set<QName> elementsToSkip) throws JAXBException, XMLStreamException, IOException, SAXException {
+		return unmarshal(file,elementsToSkip, new Context());
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public PublicationDeliveryStructure unmarshal(File file, Set<QName> elementsToSkip, Context context) throws JAXBException, XMLStreamException, IOException, SAXException {
 		JAXBContext netexJaxBContext = getNetexJaxBContext();
 		Unmarshaller createUnmarshaller = netexJaxBContext.createUnmarshaller();
+
+
+		List<BufferedInputStream> streamsToClose = (List<BufferedInputStream>)context.get(STREAM_TO_CLOSE);
+		BufferedInputStream bufferedStream = new BufferedInputStream(new FileInputStream(file));
+		streamsToClose.add(bufferedStream);
+
+
 		JAXBElement<PublicationDeliveryStructure> commonDeliveryStructure = (JAXBElement<PublicationDeliveryStructure>) createUnmarshaller
-				.unmarshal(SkippingXMLStreamReaderFactory.newXMLStreamReader(new BufferedInputStream(new FileInputStream(file)), elementsToSkip));
+				.unmarshal(SkippingXMLStreamReaderFactory.newXMLStreamReader(bufferedStream, elementsToSkip));
 		return commonDeliveryStructure.getValue();
 	}
 
-	public XdmNode parseFileToXdmNode(File file, Set<QName> elementsToSkip)
+	public XdmNode parseFileToXdmNode(File file, Set<QName> elementsToSkip, Context context)
 			throws SaxonApiException, FileNotFoundException, IOException, SAXException, XMLStreamException {
 
 		DocumentBuilder builder = processor.newDocumentBuilder();
 		builder.setLineNumbering(true);
 		builder.setWhitespaceStrippingPolicy(WhitespaceStrippingPolicy.ALL);
 
+
+		BufferedInputStream bufferedStream = new BufferedInputStream(new FileInputStream(file));
 		XdmNode dom = builder
-				.build(new StAXSource(SkippingXMLStreamReaderFactory.newXMLStreamReader(new BufferedInputStream(new FileInputStream(file)), elementsToSkip)));
+				.build(new StAXSource(SkippingXMLStreamReaderFactory.newXMLStreamReader(bufferedStream, elementsToSkip)));
+
+		List<BufferedInputStream> streamsToClose = (List<BufferedInputStream>)context.get(STREAM_TO_CLOSE);
+		if (streamsToClose == null){
+			streamsToClose = new ArrayList<>();
+			context.put(STREAM_TO_CLOSE, streamsToClose);
+		}
+		streamsToClose.add(bufferedStream);
+
 		return dom;
 	}
 

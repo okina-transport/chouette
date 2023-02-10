@@ -60,6 +60,12 @@ public class GtfsValidationCommand implements Command, Constant {
 		JobData jobData = (JobData) context.get(JOB_DATA);
 		// check ignored files
 		Path path = Paths.get(jobData.getPathName(), INPUT);
+
+		if ("exporter".equals(jobData.getAction())){
+			// on exports, files are copied to tmp directory before validation, to avoid .nfs file creations
+			path = FileUtil.getTmpPath(path);
+		}
+
 		List<Path> list = FileUtil.listFiles(path, "*");
 		
 		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);

@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
 import mobi.chouette.common.Context;
+import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
@@ -33,8 +34,10 @@ import org.rutebanken.netex.model.*;
 import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,7 +90,13 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
         Marshaller marshaller = (Marshaller) context.get(MARSHALLER);
         NetexFileWriter writer = new NetexFileWriter();
-        writer.writeXmlFile(context, filePath, exportableData, exportableNetexData, NetexFragmentMode.LINE, marshaller);
+
+
+        Path tmpPath = FileUtil.getTmpPath(filePath);
+
+        writer.writeXmlFile(context, tmpPath, exportableData, exportableNetexData, NetexFragmentMode.LINE, marshaller);
+
+        Files.copy(tmpPath, filePath, StandardCopyOption.REPLACE_EXISTING);
 
         if (parameters.isAddMetadata()) {
             Metadata metadata = (Metadata) context.get(METADATA);

@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.importer;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -81,11 +82,11 @@ public class NetexInitReferentialCommand implements Command, Constant {
 			NetexXMLProcessingHelperFactory importer = (NetexXMLProcessingHelperFactory) context.get(IMPORTER);
 			
 
-			XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip);
-			PublicationDeliveryStructure netexJava = importer.unmarshal(file,elementsToSkip);
+			//XdmNode netexDom = importer.parseFileToXdmNode(file, elementsToSkip, context);
+			PublicationDeliveryStructure netexJava = importer.unmarshal(file,elementsToSkip, context);
 
 			context.put(NETEX_DATA_JAVA, netexJava);
-			context.put(NETEX_DATA_DOM, netexDom);
+			//context.put(NETEX_DATA_DOM, netexDom);
 
 			List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 			if (incomingLineList == null){
