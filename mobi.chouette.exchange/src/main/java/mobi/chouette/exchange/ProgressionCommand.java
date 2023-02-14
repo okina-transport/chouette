@@ -76,7 +76,7 @@ public class ProgressionCommand implements Command, Constant, ReportConstant {
 			return;
 		Report report = (Report) context.get(REPORT);
 		Date date = new Date();
-		Date delay = new Date(date.getTime() - 8000);
+		Date delay = new Date(date.getTime() - 300000);
 		if (force || report.getDate().before(delay)) {
 			report.setDate(date);
 			Monitor monitor = MonitorFactory.start("ActionReport");
