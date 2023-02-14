@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-deployment-structure>
     <deployment>
+        <dependencies>
+            <module name="org.jboss.ironjacamar.jdbcadapters" />
+        </dependencies>
         <exclusions>
             <module name="com.sun.xml.bind" />
         </exclusions>
