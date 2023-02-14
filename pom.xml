@@ -59,7 +59,7 @@
 
  	    <netex-java-model.version>1.0.14</netex-java-model.version>
 		<entur.helpers.version>1.88</entur.helpers.version>
-		<owasp-dependency-check-plugin.version>8.0.2</owasp-dependency-check-plugin.version>
+		<owasp-dependency-check-plugin.version>8.1.0</owasp-dependency-check-plugin.version>
 
 		<wildfly-arquillian-container-embedded.version>3.0.1.Final</wildfly-arquillian-container-embedded.version>
 
@@ -406,9 +406,11 @@
 				<artifactId>dependency-check-maven</artifactId>
 				<version>${owasp-dependency-check-plugin.version}</version>
 				<configuration>
+					<failBuildOnCVSS>7</failBuildOnCVSS>
 					<failOnError>false</failOnError>
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<suppressionFiles>
+						<suppressionFile>dependencycheck-suppression.xml</suppressionFile>
 					</suppressionFiles>
 				</configuration>
 			</plugin>

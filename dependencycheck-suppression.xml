@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress>
+        <!-- HSQLDB is used only internally by Geotools to run a static EPSG database -->
+        <cve>CVE-2022-41853</cve>
+        <!-- false positive -->
+        <cve>CVE-2022-36437</cve>
+    </suppress>
+</suppressions>
+
+
+
