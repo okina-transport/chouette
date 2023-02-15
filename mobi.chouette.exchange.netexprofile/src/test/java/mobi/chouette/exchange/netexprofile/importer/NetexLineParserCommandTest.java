@@ -131,6 +131,7 @@ public class NetexLineParserCommandTest extends Arquillian implements Constant, 
 
 		Referential referential = new Referential();
 		context.put(Constant.REFERENTIAL,referential);
+		context.put(STREAM_TO_CLOSE, new ArrayList<>());
 		
 		return context;
 	}

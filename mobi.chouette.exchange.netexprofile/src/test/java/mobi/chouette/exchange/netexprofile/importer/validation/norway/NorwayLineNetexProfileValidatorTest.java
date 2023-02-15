@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.common.Constant.STREAM_TO_CLOSE;
 import static mobi.chouette.exchange.netexprofile.NetexTestUtils.createCodespace;
 import static mobi.chouette.exchange.validation.report.ValidationReporter.RESULT.*;
 
@@ -49,7 +50,7 @@ public class NorwayLineNetexProfileValidatorTest {
 
 		File file = new File("src/test/data/WF739-201608311015.xml");
 		XdmNode dom = importer.parseFileToXdmNode(file, new HashSet<>(),context);
-		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>());
+		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>(),context);
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);
 		context.put(Constant.NETEX_DATA_DOM, dom);
@@ -159,7 +160,7 @@ public class NorwayLineNetexProfileValidatorTest {
 
 		File lineFile = new File("src/test/data/Profile_Error_SingleLineFileCompositeFrame.xml");
 		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>(),context);
-		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>());
+		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>(), context);
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);
 		context.put(Constant.NETEX_DATA_DOM, dom);
@@ -393,7 +394,7 @@ public class NorwayLineNetexProfileValidatorTest {
 
 		File lineFile = new File(fileName);
 		XdmNode dom = importer.parseFileToXdmNode(lineFile, new HashSet<>(),context);
-		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>());
+		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(lineFile, new HashSet<>(), context);
 
 		context.put(Constant.NETEX_DATA_JAVA, lineDeliveryStructure);
 		context.put(Constant.NETEX_DATA_DOM, dom);
@@ -453,6 +454,7 @@ public class NorwayLineNetexProfileValidatorTest {
 		context.put(Constant.VALIDATION_DATA, data);
 
 		context.put(Constant.NETEX_XPATH_COMPILER, importer.getXPathCompiler());
+		context.put(STREAM_TO_CLOSE, new ArrayList<>());
 		return context;
 	}
 

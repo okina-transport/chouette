@@ -45,6 +45,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.stream.XMLStreamException;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -91,7 +92,7 @@ public class NetexFranceCommonFileTest {
 
 
 
-        checkGeneratedFile();
+        checkGeneratedFile(context);
 
 
 
@@ -99,11 +100,11 @@ public class NetexFranceCommonFileTest {
 
     }
 
-    private void checkGeneratedFile() throws DatatypeConfigurationException {
+    private void checkGeneratedFile(Context context) throws DatatypeConfigurationException {
 
         PublicationDeliveryStructure lineDeliveryStructure;
         try {
-            lineDeliveryStructure = importer.unmarshal(generatedFile,new HashSet<>());
+            lineDeliveryStructure = importer.unmarshal(generatedFile,new HashSet<>(),context);
         } catch (JAXBException|XMLStreamException|IOException|SAXException e) {
             Assert.fail("Unable to unmarshal generated file");
             System.out.println(e);
@@ -443,6 +444,8 @@ public class NetexFranceCommonFileTest {
         exportableData.setLine(line);
 
         context.put(EXPORTABLE_DATA, exportableData);
+
+        context.put(STREAM_TO_CLOSE, new ArrayList<>());
 
 
         return context;

@@ -3,6 +3,7 @@ package mobi.chouette.exchange.netexprofile.importer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.xml.bind.JAXBException;
@@ -23,6 +24,8 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
+import static mobi.chouette.common.Constant.STREAM_TO_CLOSE;
+
 public class NetexImporterTest {
 
 	private NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
@@ -31,8 +34,9 @@ public class NetexImporterTest {
 	
 	@Test
 	public void testJavaParsingWithoutSkip() throws FileNotFoundException, SaxonApiException, IOException, SAXException, XMLStreamException, JAXBException {
-		
-		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>());
+		Context context = new Context();
+		context.put(STREAM_TO_CLOSE, new ArrayList<>());
+		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, new HashSet<>(),context);
 		Assert.assertEquals(lineDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().size(),1,"Expected compsite frame");
 		
 	}
@@ -42,7 +46,9 @@ public class NetexImporterTest {
 		
 		HashSet<QName> elementsToSkip = new HashSet<>();
 		elementsToSkip.add(new QName(Constant.NETEX_NAMESPACE, "CompositeFrame"));
-		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, elementsToSkip);
+		Context context = new Context();
+		context.put(STREAM_TO_CLOSE, new ArrayList<>());
+		PublicationDeliveryStructure lineDeliveryStructure = importer.unmarshal(file, elementsToSkip,context);
 		Assert.assertEquals(lineDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().size(),0,"Expected NO compsite frame");
 		
 	}

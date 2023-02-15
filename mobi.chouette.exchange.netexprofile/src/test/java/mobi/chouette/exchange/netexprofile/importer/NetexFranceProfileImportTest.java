@@ -265,7 +265,7 @@ public class NetexFranceProfileImportTest {
 
         PublicationDeliveryStructure netexJava = null;
         try {
-            netexJava = importer.unmarshal(file,elementsToSkip);
+            netexJava = importer.unmarshal(file,elementsToSkip,context);
         } catch (JAXBException | XMLStreamException | IOException | SAXException e) {
             e.printStackTrace();
             throw e;
@@ -306,6 +306,7 @@ public class NetexFranceProfileImportTest {
         context.put(CONFIGURATION,parameters);
         context.put(NETEX_REFERENTIAL, new NetexReferential());
         context.put(INCOMING_LINE_LIST, new ArrayList());
+        context.put(STREAM_TO_CLOSE, new ArrayList<>());
 
         return context;
     }

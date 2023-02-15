@@ -103,7 +103,7 @@ public class NetexFranceProfileTest {
         NetexLineProducerCommand lineProducer = new NetexLineProducerCommand();
         lineProducer.execute(context);
 
-        checkGeneratedFile();
+        checkGeneratedFile(context);
 
 
 
@@ -111,11 +111,11 @@ public class NetexFranceProfileTest {
 
     }
 
-    private void checkGeneratedFile(){
+    private void checkGeneratedFile(Context context){
 
         PublicationDeliveryStructure lineDeliveryStructure;
         try {
-            lineDeliveryStructure = importer.unmarshal(generatedFile,new HashSet<>());
+            lineDeliveryStructure = importer.unmarshal(generatedFile,new HashSet<>(),context);
         } catch (JAXBException|XMLStreamException|IOException|SAXException e) {
             Assert.fail("Unable to unmarshal generated file");
             System.out.println(e);
@@ -686,6 +686,7 @@ public class NetexFranceProfileTest {
         NetexXMLProcessingHelperFactory netexXMLFactory = new NetexXMLProcessingHelperFactory();
         context.put(MARSHALLER, netexXMLFactory.createFragmentMarshaller());
         context.put(LINE,line);
+        context.put(STREAM_TO_CLOSE, new ArrayList<>());
 
 
         return context;
