@@ -2,11 +2,7 @@ package mobi.chouette.exchange.report;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -234,7 +230,7 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 	public ObjectReport findObjectReport(String objectId, OBJECT_TYPE type) {
 		if (collections.containsKey(type)) {
 			ObjectCollectionReport collection = collections.get(type);
-			for (ObjectReport objectReport : collection.getObjectReports()) {
+			for (ObjectReport objectReport : collection.getObjects()) {
 				if (objectReport.getObjectId().equals(objectId))
 					return objectReport;
 			}
@@ -247,14 +243,6 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 	public void print(PrintStream out, StringBuilder ret, int level, boolean first) {
 		ret.setLength(0);
 		ObjectMapper objectMapper = new ObjectMapper();
-
-		AnnotationIntrospector aiJaxb;
-		aiJaxb = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-		AnnotationIntrospector aiJackson = new JacksonAnnotationIntrospector();
-		// first Jaxb, second Jackson annotations
-		objectMapper.setAnnotationIntrospector(AnnotationIntrospector.pair(aiJaxb, aiJackson));
-
-
 
 		Map<String, Object> mainMap = new HashMap<>();
 

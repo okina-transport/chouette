@@ -172,7 +172,7 @@ public class ActionReporterImpl implements ActionReporter, Constant {
 			if (actionReport.getObjects().containsKey(type)) {
 				return true;
 			} else if (actionReport.getCollections().containsKey(type)) {
-				return actionReport.getCollections().get(type).getObjectReports().size() > 0;
+				return actionReport.getCollections().get(type).getObjects().size() > 0;
 			}
 		}
 		return false;

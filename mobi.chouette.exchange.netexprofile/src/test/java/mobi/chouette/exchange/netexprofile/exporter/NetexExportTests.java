@@ -554,9 +554,9 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
             Reporter.log(info.toString(),true);
         }
 
-        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
 
-        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
             Assert.assertEquals(info.getStatus(), ActionReporter.OBJECT_STATE.OK, "line status");
             Reporter.log(info.toString(), true);
         }
@@ -741,9 +741,9 @@ public class NetexExportTests extends Arquillian implements Constant, ReportCons
         Assert.assertEquals(report.getResult(), STATUS_OK, "result");
         Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
         Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), lineCount, "line reported");
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
 
-        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
             Reporter.log("report line :" + info.toString(), true);
             Assert.assertEquals(info.getStatus(), ActionReporter.OBJECT_STATE.OK, "line status");
         }

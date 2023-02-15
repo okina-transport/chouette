@@ -49,7 +49,6 @@ import mobi.chouette.model.NeptuneLocalizedObject;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -193,8 +192,8 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
 		Assert.assertTrue(report.getCollections().containsKey(OBJECT_TYPE.LINE), "line type reported");
-		Assert.assertEquals(report.getCollections().get(OBJECT_TYPE.LINE).getObjectReports().size(), lineCount, "line reported");
-		for (ObjectReport info : report.getCollections().get(OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
+		for (ObjectReport info : report.getCollections().get(OBJECT_TYPE.LINE).getObjects()) {
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}
 
