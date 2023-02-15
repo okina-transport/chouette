@@ -30,7 +30,7 @@ public class ObjectCollectionReport  extends AbstractReport {
 	@XmlElement(name = "type", required = true)
 	private ActionReporter.OBJECT_TYPE objectType;
 
-	@XmlElement(name = "object_reports")
+	@XmlElement(name = "objects")
 	private List<ObjectReport> objectReports = new ArrayList<ObjectReport>();
 
 	@XmlElement(name = "stats")
