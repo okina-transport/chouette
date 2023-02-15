@@ -177,6 +177,25 @@ public class StopPlaceParser implements Parser, Constant {
 
         stopArea.setFilled(true);
         stopArea.setKeyValues(keyValueParser.parse(stopPlace.getKeyList()));
+
+        mapAccessibilityAssesssment(stopArea, stopPlace);
+    }
+
+    /**
+     * Read incoming site and set mobilityrestrictedSuitable to true or false by reading  accessibility limitations
+     * @param stopArea
+     *  the stopArea for which the mobilityRestrictedSuitable must be set
+     * @param site
+     *  the incoming stopPlace or quay which will be read to search the limitations
+     */
+    private void mapAccessibilityAssesssment(StopArea stopArea, SiteElement_VersionStructure site) {
+        if (site.getAccessibilityAssessment() == null || site.getAccessibilityAssessment().getLimitations() == null ||
+                site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation() == null || site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess() == null){
+            return;
+        }
+        LimitationStatusEnumeration wheelchairAccess = site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess();
+        stopArea.setMobilityRestrictedSuitable(LimitationStatusEnumeration.TRUE.equals(wheelchairAccess));
+
     }
 
     StopAreaTypeEnum mapStopAreaType(StopTypeEnumeration netexType) {
@@ -329,6 +348,7 @@ public class StopPlaceParser implements Parser, Constant {
         boardingPosition.setFilled(true);
 
         boardingPosition.setKeyValues(keyValueParser.parse(quay.getKeyList()));
+        mapAccessibilityAssesssment(boardingPosition,quay);
     }
 
     private void parseCentroid(LocationStructure locationStruct, StopArea stopArea) throws Exception {
