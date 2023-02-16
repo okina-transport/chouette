@@ -28,8 +28,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import lombok.extern.log4j.Log4j;
@@ -285,12 +283,12 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		    Reporter.log(info.toString(),true);
 		}
 		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 		    Reporter.log(info.toString(),true);
 		}
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 6, "line reported");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
 		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
 		}
 		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
 		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");
@@ -379,12 +377,12 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 			Reporter.log(info.toString(), true);
 		}
 		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 			Reporter.log(info.toString(), true);
 		}
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 6, "line reported");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
 		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
 		}
 
 	}
@@ -424,22 +422,22 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
  		    Reporter.log(info.toString(),true);
  		}
  		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
- 		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+ 		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
  		    Reporter.log(info.toString(),true);
  		}
- 		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 2, "line reported");
+ 		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 2, "line reported");
  		for (int i = 0; i < 2; i++) {
- 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+ 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
 
  			// Interchange only expected for consumer side = LineB
 			int exptectedInterchanges;
-			if ("longOne".equals(report.getCollections().get(OBJECT_TYPE.LINE).getObjectReports().get(i).getDescription())) {
+			if ("longOne".equals(report.getCollections().get(OBJECT_TYPE.LINE).getObjects().get(i).getDescription())) {
 				exptectedInterchanges = 0;
 			} else {
 				exptectedInterchanges = 1;
 			}
 
- 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
+ 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
  		}
  		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
  		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");
@@ -479,9 +477,9 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		}
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), lineCount, "line reported");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
 		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
 		}
 
 	}
@@ -517,9 +515,9 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		}
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), lineCount, "line reported");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
 		for (int i = 0; i < lineCount; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
 		}
 
 	}

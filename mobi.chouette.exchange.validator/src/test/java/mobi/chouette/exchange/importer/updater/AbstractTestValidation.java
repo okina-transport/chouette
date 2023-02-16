@@ -156,8 +156,8 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
 		Assert.assertTrue(report.getCollections().containsKey(OBJECT_TYPE.LINE), "line type reported");
-		Assert.assertEquals(report.getCollections().get(OBJECT_TYPE.LINE).getObjectReports().size(), lineCount, "line reported");
-		for (ObjectReport info : report.getCollections().get(OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
+		for (ObjectReport info : report.getCollections().get(OBJECT_TYPE.LINE).getObjects()) {
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}
 

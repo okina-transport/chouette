@@ -48,7 +48,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.Test;
 
 @Log4j
 public class NeptuneImportTests extends Arquillian implements Constant, ReportConstant {
@@ -217,8 +216,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
-		Assert.assertTrue(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(0).getDescription().contains("é"), "character conversion");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
+		Assert.assertTrue(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(0).getDescription().contains("é"), "character conversion");
 	}
 
 	// @Test(groups = { "ImportLineUtf8Bom" }, description = "Import Plugin should detect bom in file encoding")
@@ -239,8 +238,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
-		Assert.assertTrue(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().get(0).getDescription().contains("é"), "character conversion");
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
+		Assert.assertTrue(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(0).getDescription().contains("é"), "character conversion");
 	}
 
 	// @Test(groups = { "ImportLineBadEnc" }, description = "Import Plugin should detect file encoding")
@@ -289,8 +288,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 			Reporter.log("report line :" + info.toString(), true);
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}
@@ -333,8 +332,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 			Reporter.log("report line :" + info.toString(), true);
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}
@@ -379,8 +378,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 1, "line reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 1, "line reported");
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}
 
@@ -423,8 +422,8 @@ public class NeptuneImportTests extends Arquillian implements Constant, ReportCo
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		Assert.assertEquals(report.getFiles().size(), 7, "file reported");
 		Assert.assertNotNull(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE), "line reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports().size(), 6, "line reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjectReports()) {
+		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
+		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
 			Reporter.log("report line :" + info.toString(), true);
 			Assert.assertEquals(info.getStatus(), OBJECT_STATE.OK, "line status");
 		}

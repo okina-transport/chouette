@@ -25,13 +25,13 @@ import org.codehaus.jettison.json.JSONObject;
 @EqualsAndHashCode(callSuper=false)
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "objectType", "objectReports", "stats", "ioType" })
+@XmlType(propOrder = { "objectType", "objects", "stats", "ioType" })
 public class ObjectCollectionReport  extends AbstractReport {
 	@XmlElement(name = "type", required = true)
 	private ActionReporter.OBJECT_TYPE objectType;
 
 	@XmlElement(name = "objects")
-	private List<ObjectReport> objectReports = new ArrayList<ObjectReport>();
+	private List<ObjectReport> objects = new ArrayList<ObjectReport>();
 
 	@XmlElement(name = "stats")
 	private Map<ActionReporter.OBJECT_TYPE, Integer> stats = new HashMap<ActionReporter.OBJECT_TYPE, Integer>();
@@ -42,7 +42,7 @@ public class ObjectCollectionReport  extends AbstractReport {
 	 */
 	protected void addObjectReport(ObjectReport object) {
 		if (findObjectReport(object.getObjectId()) == null)
-		   objectReports.add(object);
+		   objects.add(object);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class ObjectCollectionReport  extends AbstractReport {
 
 		JSONArray objects = new JSONArray();
 
-		for (ObjectReport objectReport : objectReports) {
+		for (ObjectReport objectReport : this.objects) {
 			objects.put(objectReport.toJson());
 		}
 		object.put("objects", objects);
@@ -82,7 +82,7 @@ public class ObjectCollectionReport  extends AbstractReport {
 	}
 
 	public ObjectReport findObjectReport(String objectId) {
-		for (ObjectReport object : objectReports) {
+		for (ObjectReport object : objects) {
 			if (object.getObjectId().equals(objectId))
 				return object;
 		}
@@ -94,8 +94,8 @@ public class ObjectCollectionReport  extends AbstractReport {
 		ret.setLength(0);
 		out.print(addLevel(ret, level).append('{'));
 		out.print(toJsonString(ret, level + 1, "type", objectType.toString().toLowerCase(), true));
-		if (!objectReports.isEmpty())
-			printArray(out, ret, level + 1, "objects", objectReports, false);
+		if (!objects.isEmpty())
+			printArray(out, ret, level + 1, "objects", objects, false);
 		if (!stats.isEmpty()) {
 			printMap(out, ret, level + 1, "stats", stats, false);
 		}
