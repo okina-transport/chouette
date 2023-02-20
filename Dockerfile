@@ -1,7 +1,7 @@
 # Adapted from https://github.com/jboss-dockerfiles/base/blob/master/Dockerfile
-FROM redhat/ubi8:8.7
+FROM debian:11-slim
 
-RUN yum update -y && yum clean all
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y openjdk-17-jdk curl
 
 # Create a user and group used to launch processes
 # The user ID 1000 is the default for the first "regular" user on Fedora/RHEL,
@@ -13,11 +13,8 @@ RUN groupadd -r jboss -g 1000 && useradd -u 1000 -r -g jboss -m -d /opt/jboss -s
 # Set the working directory to jboss' user home directory
 WORKDIR /opt/jboss
 
-# Switch back to jboss user
-USER jboss
-
 # Set the JAVA_HOME variable to make it clear where Java is located
-ENV JAVA_HOME /usr/lib/jvm/java
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 
 # Adapted from https://github.com/jboss-dockerfiles/wildfly/blob/26.1.0.Final/Dockerfile
 
@@ -25,8 +22,6 @@ ENV JAVA_HOME /usr/lib/jvm/java
 ENV WILDFLY_VERSION 26.1.3.Final
 ENV WILDFLY_SHA1 b9f52ba41df890e09bb141d72947d2510caf758c
 ENV JBOSS_HOME /opt/jboss/wildfly
-
-USER root
 
 # Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
 # Make sure the distribution is available from a well-known place
@@ -42,14 +37,8 @@ RUN cd $HOME \
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
-USER jboss
-
 # Expose the ports in which we're interested
 EXPOSE 8080
-
-
-USER root
-RUN yum -y update && yum -y install java-17-openjdk java-17-openjdk-devel  && yum clean all
 
 USER jboss
 # Copy iev.properties
