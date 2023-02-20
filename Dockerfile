@@ -1,7 +1,8 @@
 # Adapted from https://github.com/jboss-dockerfiles/base/blob/master/Dockerfile
 FROM debian:11-slim
 
-RUN apt-get -y update && apt-get -y upgrade && apt-get install -y openjdk-17-jdk curl
+RUN apt-get -y update && apt-get -y upgrade && apt-get install -y openjdk-17-jdk curl \
+&& rm -rf /var/lib/apt/lists/*
 
 # Create a user and group used to launch processes
 # The user ID 1000 is the default for the first "regular" user on Fedora/RHEL,
