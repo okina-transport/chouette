@@ -34,6 +34,12 @@ public enum TransportSubModeNameEnum {
     RegionalRail,
     TouristRailway,
     AirportLinkRail,
+    HighSpeedRail,
+    SuburbanRailway,
+    SleeperRailService,
+    CarTransportRailService,
+    RailShuttle,
+    RackAndPinionRailway,
 
     /**
      * Metro sub modes
@@ -93,7 +99,13 @@ public enum TransportSubModeNameEnum {
             TransportSubModeNameEnum.NightRail,
             TransportSubModeNameEnum.RegionalRail,
             TransportSubModeNameEnum.TouristRailway,
-            TransportSubModeNameEnum.AirportLinkRail
+            TransportSubModeNameEnum.AirportLinkRail,
+            TransportSubModeNameEnum.HighSpeedRail,
+            TransportSubModeNameEnum.SuburbanRailway,
+            TransportSubModeNameEnum.SleeperRailService,
+            TransportSubModeNameEnum.CarTransportRailService,
+            TransportSubModeNameEnum.RailShuttle,
+            TransportSubModeNameEnum.RackAndPinionRailway
     );
 
     public static final EnumSet<TransportSubModeNameEnum> FERRY_SUB_MODES = EnumSet.of(
