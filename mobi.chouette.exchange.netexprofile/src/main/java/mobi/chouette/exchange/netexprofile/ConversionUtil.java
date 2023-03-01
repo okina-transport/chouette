@@ -215,8 +215,8 @@ public class ConversionUtil {
 				/**
 				 * Rail sub modes
 				 */
-//				case International:
-//					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.INTERNATIONAL);
+				case International:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.INTERNATIONAL);
 				case InterregionalRail:
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.INTERREGIONAL_RAIL);
 				case Local:
@@ -229,8 +229,21 @@ public class ConversionUtil {
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.REGIONAL_RAIL);
 				case TouristRailway:
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.TOURIST_RAILWAY);
-//				case AirportLinkRail:
-//					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.AIRPORT_LINK_RAIL);
+				case AirportLinkRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.AIRPORT_LINK_RAIL);
+				case HighSpeedRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.HIGH_SPEED_RAIL);
+				case SuburbanRailway:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SUBURBAN_RAILWAY);
+				case SleeperRailService:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SLEEPER_RAIL_SERVICE);
+				case CarTransportRailService:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
+				case RailShuttle:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.RAIL_SHUTTLE);
+				case RackAndPinionRailway:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.RACK_AND_PINION_RAILWAY);
+
 				/**
 				 * Metro sub modes
 				 */
