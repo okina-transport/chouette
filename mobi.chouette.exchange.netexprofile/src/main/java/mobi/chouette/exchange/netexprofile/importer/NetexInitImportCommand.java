@@ -29,11 +29,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Log4j
 @Stateless(name = NetexInitImportCommand.COMMAND)
@@ -63,6 +59,7 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(OPTIMIZED, false);
 			context.put(FILE_TO_REFERENTIAL_STOP_ID_MAP, new HashMap<String, String>());
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
+			context.put(STREAM_TO_CLOSE, new ArrayList<>());
 
 			Map<String, NetexProfileValidator> availableProfileValidators = new HashMap<>();
 
