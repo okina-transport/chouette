@@ -1,9 +1,11 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import com.google.common.collect.Lists;
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public abstract class TripIndex extends MergedIndexImpl<GtfsTrip> implements GtfsConverter {
@@ -186,7 +188,7 @@ public abstract class TripIndex extends MergedIndexImpl<GtfsTrip> implements Gtf
 
 		if (isPresent(bean.getRouteId()))
 			if (dao.getRouteById().containsKey(bean.getRouteId())) {
-				bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);				
+				bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);
 			} else {
 				bean.getErrors().add(
 						new GtfsException(_path, bean.getId(), getIndex(FIELDS.route_id.name()),
@@ -219,10 +221,25 @@ public abstract class TripIndex extends MergedIndexImpl<GtfsTrip> implements Gtf
 	}
 
 	private boolean isCalendar(GtfsImporter dao, String serviceId) {
-		if (dao.hasCalendarImporter() && dao.getCalendarByService().containsKey(serviceId))
-			return true;
-		if (dao.hasCalendarDateImporter() && dao.getCalendarDateByService().containsKey(serviceId))
-			return true;
+	    if(dao.hasCalendarImporter()){
+	        List<String> calendarByServiceList = Lists.newArrayList(dao.getCalendarByService().keys());
+	        for(String calendarByService : calendarByServiceList) {
+                if (serviceId.equals(calendarByService.trim())) {
+                    return true;
+                }
+	        }
+	    }
+
+
+		if(dao.hasCalendarDateImporter()){
+			List<String> calendarDateByServiceList = Lists.newArrayList(dao.getCalendarDateByService().keys());
+			for(String calendarDateByService : calendarDateByServiceList){
+				if(serviceId.equals(calendarDateByService.trim())){
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 
