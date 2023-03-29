@@ -289,11 +289,15 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
         for (mobi.chouette.model.Route route : routes) {
             for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+                mobi.chouette.model.DestinationDisplay ddjp = journeyPattern.getDestinationDisplay();
+                if (ddjp != null) {
+                    addDestinationDisplay(ddjp, exportableNetexData);
+                }
                 for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
                     if (stopPoint != null) {
-                        mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
-                        if (dd != null) {
-                            addDestinationDisplay(dd, exportableNetexData);
+                        mobi.chouette.model.DestinationDisplay ddsp = stopPoint.getDestinationDisplay();
+                        if (ddsp != null) {
+                            addDestinationDisplay(ddsp, exportableNetexData);
                         }
                     }
                 }

@@ -63,6 +63,12 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 				chouetteJourneyPattern.setRegistrationNumber(netexJourneyPattern.getPrivateCode().getValue());
 			}
 
+			if (netexJourneyPattern.getDestinationDisplayRef() != null) {
+				String destinationDisplayId = netexJourneyPattern.getDestinationDisplayRef().getRef();
+				DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
+				chouetteJourneyPattern.setDestinationDisplay(destinationDisplay);
+			}
+
 			parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern, route.getStopPoints());
 			parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
 			chouetteJourneyPattern.setFilled(true);

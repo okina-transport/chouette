@@ -45,16 +45,26 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         NetexProducerUtils.populateReferenceIDFM(journeyPattern.getRoute(), routeRefStructure);
         netexServiceJourneyPattern.setRouteRef(routeRefStructure);
 
-        for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-            if (stopPoint != null) {
-                mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
-                if (dd != null && dd.getFrontText() != null && !dd.getFrontText().isEmpty()) {
-                    DestinationDisplayRefStructure destinationDisplayRefStructure = new DestinationDisplayRefStructure();
-                    destinationDisplayRefStructure.setRef(dd.getObjectId() + ":LOC");
-                    destinationDisplayRefStructure.setVersion("any");
-                    netexServiceJourneyPattern.setDestinationDisplayRef(destinationDisplayRefStructure);
+        mobi.chouette.model.DestinationDisplay dd = null;
+
+        if (journeyPattern.getDestinationDisplay() != null) {
+            dd = journeyPattern.getDestinationDisplay();
+        } else {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    dd = stopPoint.getDestinationDisplay();
                 }
             }
+        }
+
+        if (dd != null && dd.getFrontText() != null && !dd.getFrontText().isEmpty()) {
+            DestinationDisplayRefStructure destinationDisplayRefStructure = new DestinationDisplayRefStructure();
+            destinationDisplayRefStructure.setRef(dd.getObjectId());
+            if(!destinationDisplayRefStructure.getRef().endsWith(":LOC")){
+                destinationDisplayRefStructure.setRef(destinationDisplayRefStructure.getRef() + ":LOC");
+            }
+            destinationDisplayRefStructure.setVersion("any");
+            netexServiceJourneyPattern.setDestinationDisplayRef(destinationDisplayRefStructure);
         }
 
 
@@ -84,10 +94,10 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
                             .collect(Collectors.toList());
 
             // On ne récupère que les vehicleJourneyAtStop qui sont liés à un même stoppoint et qui ont un boardingAlighting identique
-            for(VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops){
+            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
                 boolean getVehicleJourneyAtStopWithBoardingAlighting = false;
 
-                for(VehicleJourneyAtStop vehicleJourneyAtStop1 : vehicleJourneyAtStops) {
+                for (VehicleJourneyAtStop vehicleJourneyAtStop1 : vehicleJourneyAtStops) {
                     if (vehicleJourneyAtStop.getBoardingAlightingPossibility() != null && vehicleJourneyAtStop1.getBoardingAlightingPossibility() != null) {
                         getVehicleJourneyAtStopWithBoardingAlighting = vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(vehicleJourneyAtStop1.getBoardingAlightingPossibility());
                     } else {
@@ -97,7 +107,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
                         break;
 
                 }
-                if(getVehicleJourneyAtStopWithBoardingAlighting && vehicleJourneyAtStop.getBoardingAlightingPossibility() != null){
+                if (getVehicleJourneyAtStopWithBoardingAlighting && vehicleJourneyAtStop.getBoardingAlightingPossibility() != null) {
                     setBoardingAlighting(stopPointInJourneyPattern, vehicleJourneyAtStop);
                 }
             }
@@ -114,7 +124,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
     }
 
 
-    private void setBoardingAlighting(StopPointInJourneyPattern stopPointInJourneyPattern, VehicleJourneyAtStop vehicleJourneyAtStop){
+    private void setBoardingAlighting(StopPointInJourneyPattern stopPointInJourneyPattern, VehicleJourneyAtStop vehicleJourneyAtStop) {
 
 
         BoardingAlightingPossibilityEnum boardingAlightingPossibility = vehicleJourneyAtStop.getBoardingAlightingPossibility();
@@ -138,17 +148,16 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         stopPointInJourneyPattern.setRequestStop(requestStop);
 
 
-        if (requestPickup || requestStop){
+        if (requestPickup || requestStop) {
             stopPointInJourneyPattern.setRequestMethod(RequestMethodTypeEnumeration.PHONE_CALL);
             BookingArrangementsStructure bookingArrangements = new BookingArrangementsStructure();
 
             BookingMethodEnumeration bookingMethod;
 
             if (dropOffType.equals(DropOffTypeEnum.DriverCall) && !pickUpType.equals(PickUpTypeEnum.AgencyCall)
-                    || !dropOffType.equals(DropOffTypeEnum.AgencyCall) && pickUpType.equals(PickUpTypeEnum.DriverCall)){
+                    || !dropOffType.equals(DropOffTypeEnum.AgencyCall) && pickUpType.equals(PickUpTypeEnum.DriverCall)) {
                 bookingMethod = BookingMethodEnumeration.CALL_DRIVER;
-            }
-            else{
+            } else {
                 bookingMethod = BookingMethodEnumeration.CALL_OFFICE;
             }
 
