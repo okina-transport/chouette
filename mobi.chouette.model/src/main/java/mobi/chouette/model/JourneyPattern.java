@@ -266,4 +266,16 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 		}
 	}
 
+	/**
+	 * Current destination display for this journey pattern
+	 *
+	 * @param destinationDisplay
+	 * New value
+	 */
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+	@JoinColumn(name = "destination_display_id")
+	private DestinationDisplay destinationDisplay;
+
 }
