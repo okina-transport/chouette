@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +63,9 @@ public class StopAreaUpdateTask {
 					.collect(Collectors.toSet());
 
 			for(StopArea stopArea : impactedStopAreas){
-				stopArea.getContainedStopAreas().removeIf(containedStopArea -> StringUtils.isEmpty(containedStopArea.getOriginalStopId()));
+				stopArea.getContainedStopAreas()
+						.removeIf(containedStopArea -> StringUtils.isEmpty(containedStopArea.getOriginalStopId()) ||
+								!impactedStopAreasIds.contains(containedStopArea.getObjectId()));
 			}
 
 			impactedStopAreas.stream()

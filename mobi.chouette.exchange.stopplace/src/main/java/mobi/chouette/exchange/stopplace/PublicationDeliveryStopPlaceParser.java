@@ -21,9 +21,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public class PublicationDeliveryStopPlaceParser {
     private static final String MERGED_ID_KEY = "merged-id";
     private static final String ID_VALUE_SEPARATOR = ",";
     private InputStream inputStream;
-    private Instant now;
+    private ZonedDateTime now;
     private Set<String> importedIds = new HashSet<>();
 
     @Getter
@@ -50,7 +50,7 @@ public class PublicationDeliveryStopPlaceParser {
 
     public PublicationDeliveryStopPlaceParser(InputStream inputStream) {
         this.inputStream = inputStream;
-        now = Instant.now();
+        now = ZonedDateTime.now();
         updateContext = new StopAreaUpdateContext();
         parseStopPlaces();
         extractImpactedSchemas();
@@ -161,9 +161,9 @@ public class PublicationDeliveryStopPlaceParser {
 
             if (updateContext.getImpactedStopAreasBySchema().containsKey(schemaName)){
                 impactedStopAreasForSchema = updateContext.getImpactedStopAreasBySchema().get(schemaName);
-            }else{
+            } else{
                 impactedStopAreasForSchema = new ArrayList<>();
-                updateContext.getImpactedStopAreasBySchema().put(schemaName,impactedStopAreasForSchema);
+                updateContext.getImpactedStopAreasBySchema().put(schemaName, impactedStopAreasForSchema);
             }
             impactedStopAreasForSchema.add(netexId);
 
@@ -178,7 +178,7 @@ public class PublicationDeliveryStopPlaceParser {
         if (importedIdByNetex.containsKey(netexId)) {
             importedIds = importedIdByNetex.get(netexId);
         } else {
-            importedIds = new ArrayList<String>();
+            importedIds = new ArrayList<>();
             importedIdByNetex.put(netexId, importedIds);
         }
         importedIds.add(importedId);
@@ -192,7 +192,7 @@ public class PublicationDeliveryStopPlaceParser {
         if (selectIdByNetex.containsKey(netexId)) {
             selectedIds = selectIdByNetex.get(netexId);
         } else {
-            selectedIds = new ArrayList<String>();
+            selectedIds = new ArrayList<>();
             selectIdByNetex.put(netexId, selectedIds);
         }
         selectedIds.addAll(selectedIdToCollect);
@@ -224,13 +224,13 @@ public class PublicationDeliveryStopPlaceParser {
         }
     }
 
-    private boolean isActive(StopPlace stopPlace, Instant atTime) {
+    private boolean isActive(StopPlace stopPlace, ZonedDateTime atTime) {
         if (CollectionUtils.isEmpty(stopPlace.getValidBetween()) || stopPlace.getValidBetween().get(0) == null) {
             return true;
         }
         LocalDateTime validTo = stopPlace.getValidBetween().get(0).getToDate();
 
-        return validTo == null || validTo.atZone(ZoneId.systemDefault()).toInstant().isAfter(atTime);
+        return validTo == null || validTo.atZone(ZoneId.systemDefault()).isAfter(atTime);
     }
 
     private PublicationDeliveryStructure unmarshal(InputStream inputStream) throws JAXBException {
