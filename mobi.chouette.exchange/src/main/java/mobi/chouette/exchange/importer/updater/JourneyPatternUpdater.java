@@ -10,12 +10,14 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
+import mobi.chouette.dao.DestinationDisplayDAO;
 import mobi.chouette.dao.FootnoteDAO;
 import mobi.chouette.dao.RouteSectionDAO;
 import mobi.chouette.dao.StopPointDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
+import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.RouteSection;
@@ -40,17 +42,23 @@ public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 	@EJB
 	private RouteSectionDAO routeSectionDAO;
 
+	@EJB
+	private FootnoteDAO footnoteDAO;
+
+	@EJB
+	private DestinationDisplayDAO destinationDisplayDAO;
+
+	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
+	private Updater<Footnote> footnoteUpdater;
+
 	@EJB(beanName = VehicleJourneyUpdater.BEAN_NAME)
 	private Updater<VehicleJourney> vehicleJourneyUpdater;
 
 	@EJB(beanName = RouteSectionUpdater.BEAN_NAME)
 	private Updater<RouteSection> routeSectionUpdater;
 
-	@EJB
-	private FootnoteDAO footnoteDAO;
-
-	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
-	private Updater<Footnote> footnoteUpdater;
+	@EJB(beanName = DestinationDisplayUpdater.BEAN_NAME)
+	private Updater<DestinationDisplay> destinationDisplayUpdater;
 
 	@Override
 	public void update(Context context, JourneyPattern oldValue, JourneyPattern newValue) throws Exception {
@@ -114,6 +122,26 @@ public class JourneyPatternUpdater implements Updater<JourneyPattern> {
 			if (newValue.getKeyValues() != null && !newValue.getKeyValues().equals(oldValue.getKeyValues())) {
 				oldValue.setKeyValues(newValue.getKeyValues());
 			}
+		}
+
+		// Destination display
+		if (newValue.getDestinationDisplay() == null) {
+			oldValue.setDestinationDisplay(null);
+		} else {
+			String objectId = newValue.getDestinationDisplay().getObjectId();
+			DestinationDisplay destinationDisplay = cache.getDestinationDisplays().get(objectId);
+			if (destinationDisplay == null) {
+				destinationDisplay = destinationDisplayDAO.findByObjectId(objectId);
+				if (destinationDisplay != null) {
+					cache.getDestinationDisplays().put(objectId, destinationDisplay);
+				}
+			}
+			if (destinationDisplay == null) {
+				destinationDisplay = ObjectFactory.getDestinationDisplay(cache, objectId);
+			}
+			oldValue.setDestinationDisplay(destinationDisplay);
+
+			destinationDisplayUpdater.update(context, oldValue.getDestinationDisplay(), newValue.getDestinationDisplay());
 		}
 		
 		

@@ -371,4 +371,17 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 	@CollectionTable(name = "journey_patterns_key_values", joinColumns = @JoinColumn(name = "journey_pattern_id"))
 	private List<KeyValue> keyValues = new ArrayList<>(0);
 
+
+	/**
+	 * Current destination display for this journey pattern
+	 *
+	 * @param destinationDisplay
+	 * New value
+	 */
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+	@JoinColumn(name = "destination_display_id")
+	private DestinationDisplay destinationDisplay;
+
 }
