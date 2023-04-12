@@ -879,7 +879,8 @@ CREATE TABLE chouette_gui.journey_patterns (
                                   geojson character varying,
                                   is_duplicated boolean DEFAULT false,
                                   original_journey_pattern_id bigint,
-                                  edition_status character varying(100)
+                                  edition_status character varying(100),
+                                  destination_display_id bigint
 );
 
 
@@ -2695,6 +2696,15 @@ ALTER TABLE ONLY journey_pattern_sections
 
 ALTER TABLE ONLY journey_patterns
     ADD CONSTRAINT jp_route_fkey FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
+
+
+--
+--
+-- Name: jp_destination_display_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+--
+
+ALTER TABLE ONLY journey_patterns
+    ADD CONSTRAINT jp_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_display(id) ON DELETE CASCADE;
 
 
 --
