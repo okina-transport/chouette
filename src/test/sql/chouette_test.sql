@@ -2704,7 +2704,7 @@ ALTER TABLE ONLY journey_patterns
 --
 
 ALTER TABLE ONLY journey_patterns
-    ADD CONSTRAINT jp_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_display(id) ON DELETE CASCADE;
+    ADD CONSTRAINT jp_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_displays(id) ON DELETE CASCADE;
 
 
 --
