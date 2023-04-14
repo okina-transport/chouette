@@ -139,7 +139,9 @@ public class StopAreaServiceTest extends Arquillian {
 
 	@Test
 	public void testUpdateQuaysOnChildStop() throws Exception {
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
+		initProducers();
+		cleanAllschemas();
+		ContextHolder.setContext("rut");
 		stopAreaDAO.truncate();
 		utx.begin();
 		em.joinTransaction();
@@ -168,6 +170,7 @@ public class StopAreaServiceTest extends Arquillian {
 		utx.begin();
 		em.joinTransaction();
 
+		ContextHolder.setContext("rut");
 		assertStopPlace(alreadyExistingChild.getObjectId(), "NSR:Quay:104061", "NSR:Quay:8128");
 
 	}
