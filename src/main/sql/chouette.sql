@@ -757,7 +757,8 @@ CREATE TABLE journey_patterns (
     published_name character varying(255),
     departure_stop_point_id bigint,
     arrival_stop_point_id bigint,
-    section_status integer DEFAULT 0 NOT NULL
+    section_status integer DEFAULT 0 NOT NULL,
+    destination_display_id bigint
 );
 
 
@@ -1721,6 +1722,11 @@ ALTER TABLE ONLY connection_links
     ADD CONSTRAINT connection_links_pkey PRIMARY KEY (id);
 
 
+
+ALTER TABLE ONLY destination_displays
+    ADD CONSTRAINT destination_displays_pkey PRIMARY KEY (id);
+
+
 --
 -- TOC entry 4016 (class 2606 OID 939707)
 -- Name: facilities_pkey; Type: CONSTRAINT; Schema: :SCH; Owner: chouette; Tablespace:
@@ -2270,6 +2276,10 @@ ALTER TABLE ONLY journey_pattern_sections
 
 ALTER TABLE ONLY journey_patterns
     ADD CONSTRAINT jp_route_fkey FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
+
+
+ALTER TABLE ONLY journey_patterns
+    ADD CONSTRAINT journey_pattern_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_displays(id) ON DELETE CASCADE;
 
 
 --
