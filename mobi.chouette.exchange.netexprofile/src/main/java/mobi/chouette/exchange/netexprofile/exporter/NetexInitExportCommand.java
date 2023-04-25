@@ -17,6 +17,7 @@ import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.model.Codespace;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 
 import javax.annotation.Resource;
@@ -70,9 +71,11 @@ public class NetexInitExportCommand implements Command, Constant {
             log.info("NetexInitExportCommand.execute : ref => " + referential);
 
             String idSite = "";
+            String prefixNetex = "";
             if (!isSimulationExport) {
 				Optional<Provider> provider = providerDAO.findBySchema(referential);
 				idSite = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getCodeIdfm();
+				prefixNetex = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getPrefixNetex();
 				log.info("NetexInitExportCommand.execute : " + referential + " " + idSite);
 			} else {
             	log.info("NetexInitExportCommand.execute : " + referential);
@@ -91,7 +94,8 @@ public class NetexInitExportCommand implements Command, Constant {
 					jobData.setOutputFilename(prefix + "_" + sdf.format(currentDate) + "Z.zip");
 
 				} else {
-					jobData.setOutputFilename("OFFRE_" + idSite + "_" + sdf.format(currentDate) + "Z.zip");
+					String prefixZip = StringUtils.isNotBlank(prefixNetex) ? prefixNetex : idSite;
+					jobData.setOutputFilename("OFFRE_" + prefixZip  + "_" + sdf.format(currentDate) + "Z.zip");
 				}
 
 			}

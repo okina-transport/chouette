@@ -113,7 +113,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
     /**
      * On remplace dans les object_id les espaces par rien, les caractères spéciaux par un _
-     * On remplace le nom de l'espace de données qui constitue la première partie de l'object id par le defaultCodespacePrefix si il est différent (defaultCodespacePrefix vient du nameNetexOffreIdfm dans Okina/Baba)
+     * On remplace le nom de l'espace de données qui constitue la première partie de l'object id par le defaultCodespacePrefix si il est différent (defaultCodespacePrefix vient du nameNetexOffre dans Okina/Baba)
      * @param exportableData
      * @param defaultCodespacePrefix
      */
