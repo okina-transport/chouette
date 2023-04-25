@@ -144,7 +144,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 		Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
 		Context stopAreaContext = (Context) validationContext.get(STOP_AREA_CONTEXT);
 
-		removedCommercialPoints.forEach(stopAreaToRemove -> stopAreaContext.remove(stopAreaToRemove));
+		removedCommercialPoints.forEach(stopAreaContext::remove);
 
 		removeAreaCentroidValidationData(context);
 
@@ -156,7 +156,6 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 	 */
 	private void removeAreaCentroidValidationData(Context context) {
 		Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
-		Context areaCentroidContext = (Context) validationContext.get("AreaCentroid");
 		validationContext.remove("AreaCentroid");
 
 		Context stopAreaContext = (Context) validationContext.get("StopArea");
@@ -184,16 +183,12 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 	}
 
 
-
 	/**
 	 * Commercial stop point initialization with first boarding position values
-	 *
-	 * @param area
-	 *            commercial stop point
-	 * @param stop
-	 *            boarding position
 	 * @param referential
+	 * @param stop
 	 * @param objectId
+	 * @return
 	 */
 	private StopArea initArea(Referential referential, StopArea stop, String objectId) {
 		LocalDateTime now = LocalDateTime.now();
@@ -231,7 +226,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
 		Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
-		String referentialName = parameters.getReferentialName();
+		String referentialName = parameters.getReferentialName().toUpperCase();
 
 		List<StopArea> oldStopArea = referential.getSharedStopAreas().values().stream()
 																			   .filter(stopArea -> !stopArea.getObjectId().startsWith(MOBIITI_PREFIX) &&
@@ -239,7 +234,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 																				.collect(Collectors.toList());
 		//replace all stopAreas with olfd IDs by stopAreas with new Ids at root level
 		for (StopArea stopArea : oldStopArea){
-			String newId = buildTridentId(referentialName,stopArea);
+			String newId = buildTridentId(referentialName, stopArea);
 			StopArea newStopArea = ObjectFactory.getStopArea(referential, newId);
 			Utils.copyStopArea(stopArea,newStopArea);
 			fileToReferentialStopIdMap.put(stopArea.getObjectId(),newId);
@@ -263,7 +258,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 		}
 
 		newStopAreas = referential.getSharedStopAreas().values().stream()
-												.filter(stopArea ->stopArea.getObjectId().startsWith(referentialName))
+												.filter(stopArea -> stopArea.getObjectId().startsWith(referentialName))
 												.collect(Collectors.toList());
 
 		newStopAreas.forEach(stopArea->mapIdsInContainedInStopAreas(context,stopArea));
