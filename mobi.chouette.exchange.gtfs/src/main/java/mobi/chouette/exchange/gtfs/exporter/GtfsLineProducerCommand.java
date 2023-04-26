@@ -17,7 +17,6 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsRouteProducer;
-import mobi.chouette.exchange.gtfs.exporter.producer.GtfsServiceProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsShapeProducer;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsTripProducer;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
@@ -37,10 +36,8 @@ import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -122,7 +119,6 @@ public class GtfsLineProducerCommand implements Command, Constant {
 	private boolean saveLine(Context context, Line line) {
 		Metadata metadata = (Metadata) context.get(METADATA);
 		GtfsExporter exporter = (GtfsExporter) context.get(GTFS_EXPORTER);
-		GtfsServiceProducer calendarProducer = new GtfsServiceProducer(exporter);
 		GtfsTripProducer tripProducer = new GtfsTripProducer(exporter);
 		GtfsRouteProducer routeProducer = new GtfsRouteProducer(exporter);
 		GtfsShapeProducer shapeProducer = new GtfsShapeProducer(exporter);
@@ -131,7 +127,6 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		String prefix = configuration.getObjectIdPrefix();
 		String sharedPrefix = prefix;
 		ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
-		Map<String, List<Timetable>> timetables = collection.getTimetableMap();
 		Set<JourneyPattern> jps = new HashSet<JourneyPattern>();
 
 		boolean hasLine = false;
@@ -139,14 +134,10 @@ public class GtfsLineProducerCommand implements Command, Constant {
 		// utiliser la collection
 		if (!collection.getVehicleJourneys().isEmpty()) {
 			for (VehicleJourney vj : collection.getVehicleJourneys()) {
-				String tmKey = calendarProducer.key(vj.getTimetables(), sharedPrefix, configuration.isKeepOriginalId());
-				if (tmKey != null) {
-					if (tripProducer.save(vj, tmKey, prefix, sharedPrefix, configuration.isKeepOriginalId())) {
+				for(Timetable timetable : vj.getTimetables()){
+					if (tripProducer.save(vj, timetable.getObjectId(), prefix, sharedPrefix, configuration.isKeepOriginalId())) {
 						hasVj = true;
 						jps.add(vj.getJourneyPattern());
-						if (!timetables.containsKey(tmKey)) {
-							timetables.put(tmKey, new ArrayList<Timetable>(vj.getTimetables()));
-						}
 					}
 				}
 			} // vj loop

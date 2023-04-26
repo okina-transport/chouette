@@ -50,9 +50,7 @@ public class GtfsExportCalendarProducerTests
       Period period = new Period(startDate, endDate);
       neptuneObject.addPeriod(period);
 
-      List<Timetable> tms = new ArrayList<>();
-      tms.add(neptuneObject);
-      producer.save(tms,  "GTFS",false, startDate, endDate);
+      producer.save(neptuneObject,  "GTFS",false, startDate, endDate);
       Reporter.log("verifyCalendarProducer1");
       Assert.assertEquals(mock.getExportedCalendars().size(),1,"Calendar must be returned");
       GtfsCalendar gtfsObject = mock.getExportedCalendars().get(0);
@@ -90,9 +88,7 @@ public class GtfsExportCalendarProducerTests
       }
       Reporter.log(neptuneObject.toString());
 
-      List<Timetable> tms = new ArrayList<>();
-      tms.add(neptuneObject);
-      producer.save(tms,  "GTFS",false, null, null);
+      producer.save(neptuneObject,  "GTFS",false, null, null);
       Reporter.log("verifyCalendarProducer2");
 
       Assert.assertEquals(mock.getExportedCalendars().size(), 0, "no calendar produced");
@@ -144,9 +140,7 @@ public class GtfsExportCalendarProducerTests
          c.add(Calendar.DATE, 3);
       }
 
-      List<Timetable> tms = new ArrayList<>();
-      tms.add(neptuneObject);
-      producer.save(tms,  "GTFS",false, startDate, endDate);
+      producer.save(neptuneObject,  "GTFS",false, startDate, endDate);
       Reporter.log("verifyCalendarProducer3");
       Assert.assertEquals(mock.getExportedCalendars().size(),1,"Calendar must be returned");
       GtfsCalendar gtfsObject = mock.getExportedCalendars().get(0);
@@ -210,9 +204,7 @@ public class GtfsExportCalendarProducerTests
       Period period2 = new Period(startDate2, endDate2);
       neptuneObject.addPeriod(period2);
 
-      List<Timetable> tms = new ArrayList<>();
-      tms.add(neptuneObject);
-      producer.save(tms,  "GTFS",false, null, null);
+      producer.save(neptuneObject,  "GTFS",false, null, null);
       Reporter.log("verifyCalendarProducer4");
 
       Assert.assertEquals(mock.getExportedCalendars().size(), 0, "no calendar produced");

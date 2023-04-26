@@ -79,9 +79,6 @@ public class ExportableData {
 	private Set<StopArea> restrictionConstraints = new HashSet<>();
 	@Getter
 	@Setter
-	private Map<String, List<Timetable>> timetableMap = new HashMap<>();
-	@Getter
-	@Setter
 	private List<VehicleJourney> vehicleJourneys = new ArrayList<>();
 	@Getter
 	@Setter
@@ -106,14 +103,6 @@ public class ExportableData {
 	@Setter
 	private Set<StopArea> sharedStops = new HashSet<>();
 
-//	public Timetable findTimetable(String objectId) {
-//		for (Timetable tm : timetables) {
-//			if (tm.getObjectId().equals(objectId))
-//				return tm;
-//		}
-//		return null;
-//	}
-
 	@Getter
 	@Setter
 	private Set<Interchange> interchanges = new HashSet<>();
@@ -136,7 +125,6 @@ public class ExportableData {
 		timetables.clear();
 		excludedTimetables.clear();
 		restrictionConstraints.clear();
-		timetableMap.clear();
 		vehicleJourneys.clear();
 		journeyPatterns.clear();
 		routes.clear();

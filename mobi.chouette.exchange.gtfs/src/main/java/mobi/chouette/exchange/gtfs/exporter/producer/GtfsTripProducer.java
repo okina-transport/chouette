@@ -11,7 +11,6 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
 import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
 import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
 import mobi.chouette.exchange.gtfs.model.GtfsStopTime.DropOffType;
 import mobi.chouette.exchange.gtfs.model.GtfsStopTime.PickupType;
@@ -25,12 +24,8 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
@@ -38,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -55,7 +49,6 @@ public class GtfsTripProducer extends AbstractProducer {
 	GtfsTrip trip = new GtfsTrip();
 	GtfsStopTime time = new GtfsStopTime();
 	GtfsFrequency frequency = new GtfsFrequency();
-	GtfsShape shape = new GtfsShape();
 
 	public GtfsTripProducer(GtfsExporterInterface exporter) {
 		super(exporter);
@@ -77,8 +70,8 @@ public class GtfsTripProducer extends AbstractProducer {
 		/**
 		 * GJT : Attributes used to handle times after midnight
 		 */
-		int departureOffset = 0;
-		int arrivalOffset = 0;
+		int departureOffset;
+		int arrivalOffset;
 
 		String tripId = toGtfsId(vj.getObjectId(), prefix, keepOriginalId);
 		time.setTripId(tripId);
@@ -116,7 +109,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			}
 			time.setDepartureTime(new GtfsTime(departure, departureOffset)); /** GJT */
 
-			time.setStopSequence((int) vjas.getStopPoint().getPosition());
+			time.setStopSequence(vjas.getStopPoint().getPosition());
 
 			if(changesDestinationDisplay && vjas.getStopPoint().getDestinationDisplay() != null) {
 				String stopHeadSign = vjas.getStopPoint().getDestinationDisplay().getFrontTextWithComputedVias();
@@ -196,14 +189,6 @@ public class GtfsTripProducer extends AbstractProducer {
 			time.setPickupType(PickupType.Scheduled);
 			time.setDropOffType(DropOffType.Scheduled);
 		}
-		// check stoppoint specifications
-//		StopPoint point = vjas.getStopPoint();
-//		if (point.getForBoarding() != null) {
-//			time.setPickupType(toPickUpType(point.getForBoarding(), time.getPickupType()));
-//		}
-//		if (point.getForAlighting() != null) {
-//			time.setDropOffType(toDropOffType(point.getForAlighting(), time.getDropOffType()));
-//		}
 
 
 		if(vjas.getBoardingAlightingPossibility() != null){
@@ -237,59 +222,18 @@ public class GtfsTripProducer extends AbstractProducer {
 
 	}
 
-	private DropOffType toDropOffType(AlightingPossibilityEnum forAlighting, DropOffType defaultValue) {
-		if(forAlighting == null) {
-			// If not set on StopPoint return defaultValue (that is, the previous value) or if not set; Scheduled
-			return defaultValue == null ? DropOffType.Scheduled : defaultValue;
-		}
-
-		switch (forAlighting) {
-		case normal:
-			return DropOffType.Scheduled;
-		case forbidden:
-			return DropOffType.NoAvailable;
-		case is_flexible:
-			return DropOffType.AgencyCall;
-		case request_stop:
-			return DropOffType.DriverCall;
-		}
-		return defaultValue;
-	}
-
-	private PickupType toPickUpType(BoardingPossibilityEnum forBoarding, PickupType defaultValue) {
-		if(forBoarding == null) {
-			// If not set on StopPoint return defaultValue (that is, the previous value) or if not set; Scheduled
-			return defaultValue == null ? PickupType.Scheduled : defaultValue;
-		}
-
-		switch (forBoarding) {
-		case normal:
-			return PickupType.Scheduled;
-		case forbidden:
-			return PickupType.NoAvailable;
-		case is_flexible:
-			return PickupType.AgencyCall;
-		case request_stop:
-			return PickupType.DriverCall;
-		}
-		return defaultValue;
-	}
-
 	/**
 	 * convert vehicle journey to trip for a specific timetable
 	 *
 	 * @param vj
 	 *            vehicle journey
 	 * @param sharedPrefix
-	 * @param timetableId
 	 *            timetable id
-	 * @param times
 	 *            stoptimes model
-	 * @param multipleTimetable
 	 *            vehicle journey with multiple timetables
 	 * @return gtfs trip
 	 */
-	public boolean save(VehicleJourney vj, String serviceId,  String prefix, String sharedPrefix, boolean keepOriginalId) {
+	public boolean save(VehicleJourney vj, String serviceId, String prefix, String sharedPrefix, boolean keepOriginalId) {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
@@ -317,29 +261,14 @@ public class GtfsTripProducer extends AbstractProducer {
 
 		trip.setServiceId(serviceId);
 
-		// WARN workaround due to missing unique trip.id on NSB data 
-//		String name = null;
 		if (vj.getNumber() != null && !vj.getNumber().equals(Long.valueOf(0))) {
 			trip.setTripShortName(vj.getNumber().toString());
 		}
-//		} else {
-//			name = vj.getPublishedJourneyName();
-//		}
-//	
-//		if (!isEmpty(name))
-//			trip.setTripShortName(name);
-//		else if (vj.getPublishedJourneyIdentifier() != null)
-//			trip.setTripShortName(vj.getPublishedJourneyIdentifier());
 		else {
 			trip.setTripShortName(null);
 		}
 		List<VehicleJourneyAtStop> lvjas = new ArrayList<>(vj.getVehicleJourneyAtStops());
-		Collections.sort(lvjas, new Comparator<VehicleJourneyAtStop>() {
-			@Override
-			public int compare(VehicleJourneyAtStop o1, VehicleJourneyAtStop o2) {
-				return o1.getStopPoint().getPosition().compareTo(o2.getStopPoint().getPosition());
-			}
-		});
+		lvjas.sort(Comparator.comparing(o -> o.getStopPoint().getPosition()));
 
 
 		List<DestinationDisplay> allDestinationDisplays = new ArrayList<>();
@@ -371,8 +300,6 @@ public class GtfsTripProducer extends AbstractProducer {
 					: GtfsTrip.BikesAllowedType.NoAllowed);
 		else
 			trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
-
-		// trip.setBlockId(...);
 
 		// add StopTimes
 		if (saveTimes(vj,  prefix, sharedPrefix, keepOriginalId,changesDestinationDisplay,lvjas)) {

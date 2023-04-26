@@ -8,13 +8,6 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
@@ -23,13 +16,9 @@ import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
-import mobi.chouette.model.util.CopyUtil;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
+
+import java.util.List;
 
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
@@ -45,27 +34,22 @@ AbstractProducer
       super(exporter);
    }
 
-   // No restrictions in GTFS spec, but restricted to suit clients
-   private static final int MAX_SERVICE_ID_CHARS = 256;
-
    GtfsCalendar calendar = new GtfsCalendar();
    GtfsCalendarDate calendarDate = new GtfsCalendarDate();
 
-   public boolean save(List<Timetable> timetables, String prefix, boolean keepOriginalId, LocalDate startDate, LocalDate endDate)
+   public boolean save(Timetable timetable, String prefix, boolean keepOriginalId, LocalDate startDate, LocalDate endDate)
    {
 
-      Timetable reduced = merge(timetables, prefix,keepOriginalId);
+      if (timetable == null) return false;
 
-      if (reduced == null) return false;
-
-      String serviceId = toGtfsId(reduced.getObjectId(), prefix, keepOriginalId);
+      String serviceId = toGtfsId(timetable.getObjectId(), prefix, keepOriginalId);
       calendar.setServiceId(serviceId);
       clear(calendar);
 
-      if (!isEmpty(reduced.getPeriods()))
+      if (!isEmpty(timetable.getPeriods()))
       {
 
-         for (DayTypeEnum dayType : reduced.getDayTypes())
+         for (DayTypeEnum dayType : timetable.getDayTypes())
          {
             switch (dayType)
             {
@@ -107,7 +91,7 @@ AbstractProducer
          }
 
 
-         Period period = reduced.getPeriods().get(0);
+         Period period = timetable.getPeriods().get(0);
 
          if(startDate != null && startDate.isAfter(period.getStartDate())){
             calendar.setStartDate(startDate);
@@ -126,9 +110,9 @@ AbstractProducer
 
 
       }
-      if (!isEmpty(reduced.getCalendarDays()))
+      if (!isEmpty(timetable.getCalendarDays()))
       {
-         List<CalendarDay> calendarDays = reduced.getCalendarDays();
+         List<CalendarDay> calendarDays = timetable.getCalendarDays();
 
          LocalDate currentMin = null;
          LocalDate currentMax = null;
@@ -185,27 +169,6 @@ AbstractProducer
       c.setSunday(false);
    }
 
-   private Timetable reduce(Timetable timetable)
-   {
-	  Timetable reduced = CopyUtil.copy(timetable);
-
-      // no periods => nothing to reduce
-      if (isEmpty(reduced.getPeriods()))
-      {
-         return reduced;
-      }
-
-      // one valid period => nothing to reduce
-      if (reduced.getPeriods().size() == 1 && ! isEmpty(reduced.getDayTypes()))
-      {
-    	  return reduced;
-      }
-
-      // replace all periods as dates
-      removePeriods(reduced);
-
-      return reduced;
-   }
 
    private boolean saveDay(String serviceId,CalendarDay day)
    {
@@ -223,161 +186,6 @@ AbstractProducer
          return false;
       }
       return true;
-
-   }
-
-   public Timetable removePeriods(Timetable timetable)
-   {
-      Set<LocalDate> excludedDates = new HashSet<LocalDate>(
-    		  timetable.getExcludedDates());
-      Set<LocalDate> includedDates = new HashSet<LocalDate>(
-    		  timetable.getPeculiarDates());
-
-      for (Period period : timetable.getPeriods())
-      {
-         LocalDate checkedDate = period.getStartDate();
-         LocalDate endDate = period.getEndDate().plusDays(1);
-         while (checkedDate.isBefore(endDate))
-         {
-            if (!excludedDates.contains(checkedDate)
-                  && !includedDates.contains(checkedDate))
-            {
-               if (checkValidDay(checkedDate, timetable))
-               {
-                  includedDates.add(checkedDate);
-               }
-            }
-            checkedDate = checkedDate.plusDays(1);
-         }
-      }
-      timetable.getPeriods().clear();
-      timetable.setIntDayTypes(Integer.valueOf(0));
-      timetable.getCalendarDays().clear();
-      for (LocalDate date : includedDates)
-      {
-         timetable.addCalendarDay(new CalendarDay(date, true));
-      }
-      Collections.sort(timetable.getCalendarDays());
-      return timetable;
-
-   }
-
-   private boolean checkValidDay(LocalDate checkedDate, Timetable timetable)
-   {
-      boolean valid = false;
-      // to avoid timezone // TODO NRP-1935 necessary?
-      LocalDateTime c = checkedDate.toLocalDateTime(new LocalTime(12,0,0));
-
-      List<DayTypeEnum> dayTypes = timetable.getDayTypes();
-      switch (c.getDayOfWeek())
-      {
-      case DateTimeConstants.MONDAY :
-         if (dayTypes.contains(DayTypeEnum.Monday)) valid = true;
-         break;
-      case DateTimeConstants.TUESDAY :
-         if (dayTypes.contains(DayTypeEnum.Tuesday)) valid = true;
-         break;
-      case DateTimeConstants.WEDNESDAY :
-         if (dayTypes.contains(DayTypeEnum.Wednesday)) valid = true;
-         break;
-      case DateTimeConstants.THURSDAY :
-         if (dayTypes.contains(DayTypeEnum.Thursday)) valid = true;
-         break;
-      case DateTimeConstants.FRIDAY :
-         if (dayTypes.contains(DayTypeEnum.Friday)) valid = true;
-         break;
-      case DateTimeConstants.SATURDAY :
-         if (dayTypes.contains(DayTypeEnum.Saturday)) valid = true;
-         break;
-      case DateTimeConstants.SUNDAY :
-         if (dayTypes.contains(DayTypeEnum.Sunday)) valid = true;
-         break;
-      }
-      return valid;
-   }
-
-
-   private Timetable merge(List<Timetable> timetables,String prefix, boolean keepOriginalId)
-   {
-      Timetable merged = reduce(timetables.get(0));
-      if (timetables.size() > 1)
-      {
-         removePeriods(merged);
-         for (int i = 1; i < timetables.size(); i++)
-         {
-            Timetable reduced = removePeriods(CopyUtil.copy(timetables.get(i)));
-            for (CalendarDay day : reduced.getCalendarDays()) {
-            	merged.addCalendarDay(day);
-			}
-
-         }
-         if(keepOriginalId) {
-             merged.setObjectId(key(timetables,prefix,true));
-         } else {
-             merged.setObjectId(prefix+":"+Timetable.TIMETABLE_KEY+":"+key(timetables,prefix,false));
-         }
-      }
-      merged.computeLimitOfPeriods();
-      return merged;
-   }
-
-   public boolean isValid(Timetable timetable)
-   {
-      // protection if no valid days
-      if (timetable.getDayTypes().isEmpty()) timetable.getPeriods().clear();
-      return !timetable.getPeriods().isEmpty() || !timetable.getCalendarDays().isEmpty();
-   }
-
-   public String key(List<Timetable> timetables,String prefix, boolean keepOriginalId)
-   {
-      if (isEmpty(timetables)) return null;
-      // remove invalid timetables (no date set)
-      for (Iterator<Timetable> iterator = timetables.iterator(); iterator.hasNext();)
-      {
-         Timetable timetable = iterator.next();
-         if (!isValid(timetable)) iterator.remove();
-      }
-      if (isEmpty(timetables)) return null;
-
-      Collections.sort(timetables, new TimetableSorter());
-      String key = "";
-
-      if(keepOriginalId) {
-          for(int i = 0;i<timetables.size();i++) {
-        	  if(i ==0) {
-        		  // Keep full id
-                  key += toGtfsId(timetables.get(i).getObjectId(), prefix, true);
-        	  } else {
-        		  // Only keep remaining parts
-                  key += "-"+toGtfsId(timetables.get(i).getObjectId(), prefix, false);
-        	  }
-          }
-
-          // Avoid to long strings. Replace truncated part by its hash to preserve a (best effort) semi uniqueness
-		  if (key.length() > MAX_SERVICE_ID_CHARS) {
-			  String tooLongPart = key.substring(MAX_SERVICE_ID_CHARS - 10, key.length());
-			  key = key.replace(tooLongPart, StringUtils.truncate("" + tooLongPart.hashCode(),10));
-		  }
-
-      } else {
-          for (Timetable timetable : timetables)
-          {
-             key += "-"+toGtfsId(timetable.getObjectId(), prefix, keepOriginalId);
-          }
-          // Trim leading dash
-          key = key.substring(1);
-      }
-
-      return key;
-   }
-
-   private class TimetableSorter implements Comparator<Timetable>
-   {
-      @Override
-      public int compare(Timetable arg0, Timetable arg1)
-      {
-         return arg0.getObjectId().compareTo(arg1.getObjectId());
-      }
 
    }
 

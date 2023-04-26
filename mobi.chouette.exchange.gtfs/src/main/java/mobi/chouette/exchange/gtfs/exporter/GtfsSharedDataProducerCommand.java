@@ -29,7 +29,6 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.Interchange;
-import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -116,19 +114,16 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		String prefix = configuration.getObjectIdPrefix();
 		String sharedPrefix = prefix;
 		ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
-		Map<String, List<Timetable>> timetables = collection.getTimetableMap();
 		Set<StopArea> commercialStops = collection.getCommercialStops();
 		Set<StopArea> physicalStops = collection.getPhysicalStops();
 		Set<ConnectionLink> connectionLinks = collection.getConnectionLinks();
-		Set<ScheduledStopPoint> scheduledStopPoints = collection.getScheduledStopPoints();
 		// Only export companies (agencies) actually referred to by routes.
-//		Set<Company> companies = collection.getAgencyCompanies();
 		Set<Company> companies = collection.getOperatorCompanies();
 		Set<Interchange> interchanges = collection.getInterchanges();
 		if (!companies.isEmpty()) {
 			agencyProducer = new GtfsAgencyProducer(exporter);
 		}
-		if (!timetables.isEmpty()) {
+		if (!collection.getTimetables().isEmpty()) {
 			calendarProducer = new GtfsServiceProducer(exporter);
 		}
 
@@ -186,12 +181,10 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
 		}
 
-		for (List<Timetable> tms : timetables.values()) {
-			calendarProducer.save(tms, sharedPrefix, configuration.isKeepOriginalId(), startDate, endDate);
+		for (Timetable timetable : collection.getTimetables()) {
+			calendarProducer.save(timetable, sharedPrefix, configuration.isKeepOriginalId(), startDate, endDate);
 			if (metadata != null) {
-				for (Timetable tm : tms) {
-					metadata.getTemporalCoverage().update(tm.getStartOfPeriod(), tm.getEndOfPeriod());
-				}
+				metadata.getTemporalCoverage().update(timetable.getStartOfPeriod(), timetable.getEndOfPeriod());
 			}
 		}
 
