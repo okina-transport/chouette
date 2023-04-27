@@ -145,9 +145,9 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
             exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternIDFMProducer.produce(neptuneJourneyPattern));
         }
 
-        produceAndCollectScheduledStopPoints(exportableData.getRoutes(), exportableNetexData);
+        produceAndCollectScheduledStopPoints(exportableData.getJourneyPatterns(), exportableNetexData);
 
-        produceAndCollectPassengerStopAssignments(exportableData.getRoutes(), exportableNetexData, configuration);
+        produceAndCollectPassengerStopAssignments(exportableData.getJourneyPatterns(), exportableNetexData, configuration);
 
         List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(vj -> vj.getRoute()).distinct().collect(Collectors.toList());
         produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
@@ -167,17 +167,12 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         }
     }
 
-    private void produceAndCollectScheduledStopPoints(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
-        for (mobi.chouette.model.Route route : routes) {
-            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-                for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-                    if (stopPoint != null) {
-                        collectScheduledStopPoint(stopPoint.getScheduledStopPoint(), exportableNetexData);
-                    }
+    private void produceAndCollectScheduledStopPoints(List<mobi.chouette.model.JourneyPattern> journeys, ExportableNetexData exportableNetexData) {
+        for (JourneyPattern journeyPattern : journeys) {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    collectScheduledStopPoint(stopPoint.getScheduledStopPoint(), exportableNetexData);
                 }
-            }
-            for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
-                collectScheduledStopPoint(routePoint.getScheduledStopPoint(), exportableNetexData);
             }
         }
     }
@@ -217,19 +212,12 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
             exportableNetexData.getDestinationDisplays().put(netexDestinationDisplay.getId(), netexDestinationDisplay);
     }
 
-    private void produceAndCollectPassengerStopAssignments(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData,
+    private void produceAndCollectPassengerStopAssignments(List<mobi.chouette.model.JourneyPattern> journeys, ExportableNetexData exportableNetexData,
                                                            NetexprofileExportParameters parameters) {
-        for (mobi.chouette.model.Route route : routes) {
-            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-                for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-                    if (stopPoint != null) {
-                        collectPassengerStopAssignment(exportableNetexData, parameters, stopPoint.getScheduledStopPoint());
-                    }
-                }
-            }
-            for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
-                if (routePoint.getScheduledStopPoint() != null) {
-                    collectPassengerStopAssignment(exportableNetexData, parameters, routePoint.getScheduledStopPoint());
+        for (JourneyPattern journeyPattern : journeys) {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    collectPassengerStopAssignment(exportableNetexData, parameters, stopPoint.getScheduledStopPoint());
                 }
             }
         }
