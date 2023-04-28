@@ -51,7 +51,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
             dd = journeyPattern.getDestinationDisplay();
         } else {
             for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-                if (stopPoint != null) {
+                if (stopPoint != null && stopPoint.getDestinationDisplay() != null) {
                     dd = stopPoint.getDestinationDisplay();
                 }
             }
