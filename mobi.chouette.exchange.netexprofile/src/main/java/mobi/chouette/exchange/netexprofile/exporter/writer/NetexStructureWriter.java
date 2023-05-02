@@ -3,18 +3,16 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.FlexibleLine;
-import org.rutebanken.netex.model.Line;
-import org.rutebanken.netex.model.Line_VersionStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.ScheduledStopPoint;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.MEMBERS;
@@ -35,6 +33,37 @@ public class NetexStructureWriter extends AbstractNetexWriter {
         writeScheduledStopPointsElement(writer, exportableNetexData, marshaller);
         writePassengerStopAssignmentsElement(writer, exportableNetexData, marshaller);
         writeDestinationDisplaysElement(writer, exportableNetexData, marshaller);
+
+
+        VehicleType vehType = new VehicleType();
+        ServiceFacilitySets_RelStructure servFalicities = new ServiceFacilitySets_RelStructure();
+        ServiceFacilitySet facList = new ServiceFacilitySet();
+        facList.setId("MOBIITI:ServFac:1");
+        facList.setVersion("any");
+
+        AssistanceFacilityEnumeration facEnum = AssistanceFacilityEnumeration.WHEELCHAIR_ASSISTANCE;
+
+
+
+
+        List<AssistanceFacilityEnumeration> list = new ArrayList<AssistanceFacilityEnumeration>();
+        list.add(AssistanceFacilityEnumeration.WHEELCHAIR_ASSISTANCE);
+        list.add(AssistanceFacilityEnumeration.PERSONAL_ASSISTANCE);
+        list.add(AssistanceFacilityEnumeration.BOARDING_ASSISTANCE);
+        facList.withAssistanceFacilityList(list);
+
+        servFalicities.withServiceFacilitySetRefOrServiceFacilitySet(facList);
+
+        vehType.setFacilities(servFalicities);
+        vehType.setVersion("any");
+        vehType.setId("MOBIITI:VehicleType:1");
+
+
+        marshaller.marshal(netexFactory.createVehicleType(vehType), writer);
+
+
+
+
 
         writer.writeEndElement();
     }
