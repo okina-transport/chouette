@@ -328,6 +328,9 @@ CREATE TABLE destination_displays (
     front_text character varying(255)
 );
 
+ALTER TABLE ONLY destination_displays
+    ADD CONSTRAINT destination_displays_pkey PRIMARY KEY (id);
+
 
 ALTER TABLE chouette_gui.destination_displays OWNER TO chouette;
 
@@ -2700,11 +2703,11 @@ ALTER TABLE ONLY journey_patterns
 
 --
 --
--- Name: jp_destination_display_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
+-- Name: journey_pattern_destination_display_fkey; Type: FK CONSTRAINT; Schema: chouette_gui; Owner: chouette
 --
 
 ALTER TABLE ONLY journey_patterns
-    ADD CONSTRAINT jp_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_displays(id) ON DELETE CASCADE;
+    ADD CONSTRAINT journey_pattern_destination_display_fkey FOREIGN KEY (destination_display_id) REFERENCES destination_displays(id) ON DELETE CASCADE;
 
 
 --
