@@ -5164,7 +5164,8 @@ CREATE TABLE admin.client (
     client_parent_id bigint,
     is_idfm boolean DEFAULT false,
     option_traveler_information boolean DEFAULT false,
-    option_indiscipline boolean DEFAULT false
+    option_indiscipline boolean DEFAULT false,
+    netex_prefix character varying(255)
 
 );
 
