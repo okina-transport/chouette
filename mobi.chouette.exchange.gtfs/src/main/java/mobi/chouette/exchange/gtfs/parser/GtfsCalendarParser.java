@@ -205,7 +205,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 				for (GtfsCalendarDate gtfsCalendarDate : importer.getCalendarDateByService().values(serviceId)) {
 					if (timetable == null) {
 						timetable = ObjectFactory.getTimetable(referential, objectId);
-						convert(context, createDummyCalandar(gtfsCalendarDate.getId()), timetable);
+						convert(context, createDummyCalendar(gtfsCalendarDate.getId()), timetable);
 					}
 					addCalendarDay(timetable, gtfsCalendarDate);
 				}
@@ -266,7 +266,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 	}
 
 
-	private GtfsCalendar createDummyCalandar(Integer id ) {
+	private GtfsCalendar createDummyCalendar(Integer id ) {
 		GtfsCalendar calendar = new GtfsCalendar();
 		calendar.setId(id);
 		calendar.setMonday(false);

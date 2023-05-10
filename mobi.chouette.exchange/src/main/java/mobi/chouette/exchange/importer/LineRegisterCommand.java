@@ -162,23 +162,6 @@ public class LineRegisterCommand implements Command {
 			try {
 	
 				optimiser.initialize(cache, referential);
-
-				// Point d'arrêt existant
-
-//				// TODO okina : à revoir, pas stable a priori
-//				for(StopArea oldValueStopArea : cache.getStopAreas().values()){
-//					for(StopArea newValueStopArea : referential.getStopAreas().values()){
-//						if(oldValueStopArea.getObjectId().equals(newValueStopArea.getObjectId())){
-//							if(oldValueStopArea.getLatitude().compareTo(newValueStopArea.getLatitude()) != 0
-//									|| oldValueStopArea.getLongitude().compareTo(newValueStopArea.getLongitude()) != 0
-//									|| !StringUtils.equals(oldValueStopArea.getName(), newValueStopArea.getName())
-//									|| !StringUtils.equals(oldValueStopArea.getComment(), newValueStopArea.getComment())
-//									|| !StringUtils.equals(oldValueStopArea.getRegistrationNumber(), newValueStopArea.getRegistrationNumber()))
-//								variationsDAO.makeVariationsUpdate("Mise à jour du point d'arrêt " + newValueStopArea.getName(), oldValueStopArea.getVariations(newValueStopArea), jobid);
-//						}
-//					}
-//				}
-
 	
 				Line oldValue = cache.getLines().get(newValue.getObjectId());
 				lineUpdater.update(context, oldValue, newValue);
@@ -245,43 +228,6 @@ public class LineRegisterCommand implements Command {
 				throw ex;
 			} finally {
 				log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-				
-	//			monitor = MonitorFactory.getTimeMonitor("LineOptimiser");
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(LineUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(GroupOfLineUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(CompanyUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(RouteUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(JourneyPatternUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(VehicleJourneyUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(StopPointUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(StopAreaUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(ConnectionLinkUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor(TimetableUpdater.BEAN_NAME);
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
-	//			monitor = MonitorFactory.getTimeMonitor("prepareCopy");
-	//			if (monitor != null)
-	//				log.info(Color.LIGHT_GREEN + monitor.toString() + Color.NORMAL);
 			}
 		} else {
 			log.info("skipping obsolete line : " + newValue.getObjectId());

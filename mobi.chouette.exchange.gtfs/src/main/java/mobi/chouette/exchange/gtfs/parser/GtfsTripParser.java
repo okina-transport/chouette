@@ -598,10 +598,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             String timetableId = AbstractConverter.composeObjectId(configuration,
                     Timetable.TIMETABLE_KEY, gtfsTrip.getServiceId(), log);
 
-            // Disable linking to after midnight-calendar as this causes day offsets to be compensated twice.
-//			if (afterMidnight) {
-//				timetableId += GtfsCalendarParser.AFTER_MIDNIGHT_SUFFIX;
-//			}
+
             Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
             vehicleJourney.getTimetables().add(timetable);
 
@@ -649,22 +646,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     }
 
     private String createJourneyKeyFragment(VehicleJourneyAtStopWrapper vehicleJourneyAtStop) {
-        DropOffType drop = (vehicleJourneyAtStop.dropOff == null ? DropOffType.Scheduled : vehicleJourneyAtStop.dropOff);
-        PickupType pickup = (vehicleJourneyAtStop.pickup == null ? PickupType.Scheduled : vehicleJourneyAtStop.pickup);
-
-        String result = null;
-
-//        if (drop == DropOffType.Scheduled && pickup == PickupType.Scheduled) {
-        result = vehicleJourneyAtStop.stopId;
-//        } else {
-//            result = vehicleJourneyAtStop.stopId + "." + drop.ordinal() + "" + pickup.ordinal();
-//        }
-//
-//        if (vehicleJourneyAtStop.stopHeadsign != null) {
-//            result += vehicleJourneyAtStop.stopHeadsign;
-//        }
-
-        return result;
+        return vehicleJourneyAtStop.stopId;
     }
 
     private void createInterchanges(Context context, Referential referential, GtfsImporter importer, GtfsImportParameters configuration, GtfsTrip gtfsTrip,
@@ -1102,7 +1084,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
 
         routeKey += "_" + list.size();
-//        routeKey += "_" + line.getRoutes().size();
         String routeId = AbstractConverter.composeObjectId(configuration, Route.ROUTE_KEY,
                 routeKey, log);
 
