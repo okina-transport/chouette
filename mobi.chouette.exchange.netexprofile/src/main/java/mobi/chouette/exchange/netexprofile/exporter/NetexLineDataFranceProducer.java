@@ -152,6 +152,9 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         for (VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             vehicleJourney.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getObjectId(), defaultCodespacePrefix));
         }
+        for (Company company : exportableData.getCompanies()) {
+            company.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(company.getObjectId(), defaultCodespacePrefix));
+        }
 
         exportableData.getLine().setObjectId(exportableData.getLine().getObjectId().replace(SANITIZED_REPLACEMENT_CODE, "-"));
     }
