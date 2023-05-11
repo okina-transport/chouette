@@ -7,7 +7,6 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.exchange.importer.updater.netex.NavigationPathMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopAreaMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopPlaceMapper;
-import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.validation.ErrorCodeConverter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
@@ -101,10 +100,10 @@ public class NeTExStopPlaceRegisterUpdater {
 
     @PostConstruct
     public void postConstruct() {
-        initializeClient(null, false, false);
+        initializeClient(null, false, false, false);
     }
 
-    private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames){
+    private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames, Boolean updateStopAccessibility){
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
 
         if(!StringUtils.isEmpty(ref)) {
@@ -122,6 +121,8 @@ public class NeTExStopPlaceRegisterUpdater {
         }
 
         url += ("keepStopGeolocalisation=" + keepStopGeolocalisation);
+
+        url += ("&updateStopAccessibility=" + updateStopAccessibility);
 
         url += ("&keepStopNames=" + keepStopNames);
 
@@ -145,8 +146,9 @@ public class NeTExStopPlaceRegisterUpdater {
         Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
         Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
         Boolean keepStopNames = (Boolean) context.get(KEEP_STOP_NAMES);
+        Boolean updateStopAccessibility = (Boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
 
-        initializeClient(ref, keepStopGeolocalisation, keepStopNames);
+        initializeClient(ref, keepStopGeolocalisation, keepStopNames, updateStopAccessibility);
 
         if (client == null) {
             throw new RuntimeException("Looks like PublicationDeliveryClient is not set up correctly. Aborting.");

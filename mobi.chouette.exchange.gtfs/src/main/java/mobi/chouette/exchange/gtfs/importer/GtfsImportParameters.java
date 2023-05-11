@@ -31,7 +31,8 @@ import java.util.Arrays;
 		"quayIdPrefixToRemove",
 		"linePrefixToRemove",
 		"removeParentStations",
-		"importShapesFile"
+		"importShapesFile",
+		"updateStopAccessibility"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -99,6 +100,10 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "import_shapes_file", defaultValue = "true")
 	private boolean importShapesFile = true;
+
+	@Getter@Setter
+	@XmlElement(name = "update_stop_accessibility", defaultValue = "false")
+	private boolean updateStopAccessibility = false;
 
 	public boolean isValid(Logger log, String[] allowedTypes)
 	{
