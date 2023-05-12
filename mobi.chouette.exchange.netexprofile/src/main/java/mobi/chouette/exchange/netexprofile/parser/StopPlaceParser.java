@@ -85,19 +85,19 @@ public class StopPlaceParser implements Parser, Constant {
             if (parent != null) {
                 parent.setAreaType(parentAreaType);
                 child.setParent(parent);
-				copyNameIfMissingRecursively(parent);
-			}
-		}
-	}
+                copyNameIfMissingRecursively(parent);
+            }
+        }
+    }
 
-	private void copyNameIfMissingRecursively(StopArea parent){
-		for(StopArea child:parent.getContainedStopAreas()){
-			if (child.getName()==null){
-				child.setName(parent.getName());
-			}
-			copyNameIfMissingRecursively(child);
-		}
-	}
+    private void copyNameIfMissingRecursively(StopArea parent){
+        for(StopArea child:parent.getContainedStopAreas()){
+            if (child.getName()==null){
+                child.setName(parent.getName());
+            }
+            copyNameIfMissingRecursively(child);
+        }
+    }
 
 
     void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
@@ -126,6 +126,13 @@ public class StopPlaceParser implements Parser, Constant {
         stopArea.setTransportModeName(mapTransportModeName(stopPlace.getTransportMode()));
         stopArea.setTransportSubMode(mapTransportSubMode(stopPlace));
 
+        if(stopPlace.getKeyList() != null && !stopPlace.getKeyList().getKeyValue().isEmpty()){
+            stopPlace.getKeyList().getKeyValue().stream().filter(key -> key.getKey().equals("RAIL-UID"))
+                    .forEach(key -> {
+                        stopArea.setRailUid(key.getValue());
+                    });
+            ;
+        }
         if (stopPlace.getDescription() != null) {
             stopArea.setComment(stopPlace.getDescription().getValue());
         }
