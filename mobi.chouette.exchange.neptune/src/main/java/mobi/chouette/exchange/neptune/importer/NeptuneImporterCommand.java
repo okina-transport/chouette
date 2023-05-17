@@ -75,6 +75,7 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 
 		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 		context.put(KEEP_STOP_NAMES, Boolean.valueOf(parameters.isKeepStopNames()));
+		context.put(UPDATE_STOP_ACCESSIBILITY, Boolean.FALSE);
 		
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NeptuneImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);

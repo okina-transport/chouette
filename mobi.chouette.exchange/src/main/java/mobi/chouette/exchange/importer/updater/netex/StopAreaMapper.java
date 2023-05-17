@@ -10,14 +10,7 @@ import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
-import org.rutebanken.netex.model.LocationStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.Quays_RelStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.Zone_VersionStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
@@ -101,7 +94,7 @@ public class StopAreaMapper {
 
         StopArea boardingPosition = ObjectFactory.getStopArea(referential, quay.getId());
         // Set default values TODO set what we get from NSR
-        mapQuayMobilityRestrictedSuitable(quay, boardingPosition);
+        mapMobilityRestrictedSuitable(quay, boardingPosition);
         boardingPosition.setLiftAvailable(null);
         boardingPosition.setStairsAvailable(null);
         mapQuayDescription(quay, boardingPosition);
@@ -126,18 +119,18 @@ public class StopAreaMapper {
         }
     }
 
-    private void mapQuayMobilityRestrictedSuitable(Quay quay, StopArea boardingPosition) {
-        if(quay.getAccessibilityAssessment() != null){
-            if(quay.getAccessibilityAssessment().getLimitations() != null){
-                if(quay.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation() != null){
-                    if(quay.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess() != null){
-                        if(quay.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)){
+    private void mapMobilityRestrictedSuitable(SiteElement_VersionStructure siteElt, StopArea boardingPosition) {
+        if(siteElt.getAccessibilityAssessment() != null){
+            if(siteElt.getAccessibilityAssessment().getLimitations() != null){
+                if(siteElt.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation() != null){
+                    if(siteElt.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess() != null){
+                        if(siteElt.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)){
                             boardingPosition.setMobilityRestrictedSuitable(true);
                         }
-                        if(quay.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.FALSE)){
+                        if(siteElt.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.FALSE)){
                             boardingPosition.setMobilityRestrictedSuitable(false);
                         }
-                        if(quay.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.UNKNOWN)){
+                        if(siteElt.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.UNKNOWN)){
                             boardingPosition.setMobilityRestrictedSuitable(null);
                         }
                     }
@@ -150,8 +143,8 @@ public class StopAreaMapper {
         StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 
-        // Set default values TODO set what we get from NSR
-        stopArea.setMobilityRestrictedSuitable(null);
+        mapMobilityRestrictedSuitable(stopPlace, stopArea);
+
         stopArea.setLiftAvailable(null);
         stopArea.setStairsAvailable(null);
         stopArea.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(stopPlace.getTransportMode().value()));

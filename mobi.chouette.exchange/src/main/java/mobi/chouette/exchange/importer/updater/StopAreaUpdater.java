@@ -74,6 +74,8 @@ public class StopAreaUpdater implements Updater<StopArea> {
 		setImportMode(context, oldValue, newValue);
 
 		boolean shouldNotUpdate = (oldValue.getId() != null && !oldValue.getImportMode().shouldUpdateStopAreas());
+		boolean stopUpdateAccessibility = context.get(UPDATE_STOP_ACCESSIBILITY) != null && (boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
+
 
 		Long jobid = (Long) context.get(JOB_ID);
 
@@ -97,6 +99,10 @@ public class StopAreaUpdater implements Updater<StopArea> {
 		if (newValue.getAreaType() == null) {
 			log.error("stoparea without mandatory areatype " + newValue.getObjectId());
 			throw new IllegalArgumentException("area type null");
+		}
+
+		if (stopUpdateAccessibility){
+			oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
 		}
 
 		if (oldValue.isDetached()) {

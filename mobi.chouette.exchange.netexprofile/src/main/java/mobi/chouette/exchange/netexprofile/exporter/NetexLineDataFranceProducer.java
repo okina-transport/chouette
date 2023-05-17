@@ -7,28 +7,17 @@ import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.exchange.metadata.NeptuneObjectPresenter;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
-import mobi.chouette.exchange.netexprofile.exporter.producer.CalendarFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.DirectionProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.LineFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import mobi.chouette.exchange.netexprofile.exporter.producer.NetworkFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.OrganisationFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.RouteFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.RouteLinkProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyFranceProducer;
-import mobi.chouette.exchange.netexprofile.exporter.producer.ServiceJourneyPatternFranceProducer;
+import mobi.chouette.exchange.netexprofile.exporter.producer.*;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.Company;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
+import org.rutebanken.netex.model.DestinationDisplay;
+import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.Marshaller;
@@ -151,6 +140,12 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         }
         for (VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             vehicleJourney.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getObjectId(), defaultCodespacePrefix));
+        }
+        for (Company company : exportableData.getCompanies()) {
+            company.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(company.getObjectId(), defaultCodespacePrefix));
+        }
+        for (ConnectionLink connectionLink : exportableData.getConnectionLinks()) {
+            connectionLink.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(connectionLink.getObjectId(), defaultCodespacePrefix));
         }
 
         exportableData.getLine().setObjectId(exportableData.getLine().getObjectId().replace(SANITIZED_REPLACEMENT_CODE, "-"));

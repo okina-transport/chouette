@@ -203,6 +203,7 @@ public abstract class NamingUtil {
 					+ format.print(lastDate) + " : " + monday + tuesday + wednesday + thursday + friday + saturday
 					+ sunday;
 			timetable.setComment(comment);
+			timetable.setVersion(comment);
 		} else {
 			timetable.setComment(timetable.objectIdSuffix() + " : Empty timetable");
 		}
