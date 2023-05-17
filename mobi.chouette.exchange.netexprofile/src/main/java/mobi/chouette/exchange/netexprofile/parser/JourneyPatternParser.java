@@ -7,6 +7,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
+import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.Route;
@@ -163,6 +164,13 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 	private void parseStopPointsInJourneyPattern(Context context, Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
 			mobi.chouette.model.JourneyPattern chouetteJourneyPattern, List<StopPoint> routeStopPoints) throws Exception {
 
+
+		if ( netexJourneyPattern.getPointsInSequence() == null){
+			handleEmptyPointsInSequence(context, netexJourneyPattern);
+			return;
+		}
+
+
 		List<PointInLinkSequence_VersionedChildStructure> pointsInLinkSequence = netexJourneyPattern.getPointsInSequence()
 				.getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern();
 
@@ -256,6 +264,22 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 		chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
 		chouetteRoute.setFilled(true);
 
+	}
+
+	private void handleEmptyPointsInSequence(Context context, JourneyPattern_VersionStructure netexJourneyPattern) {
+
+
+		String fileName = (String) context.get(FILE_NAME);
+		String journeyPatternId = netexJourneyPattern.getId();
+
+		log.error("Empty points in sequence in file :" + fileName + " , journeyPattern:" + journeyPatternId);
+
+		if ( context.get(ANALYSIS_REPORT) == null){
+			return ;
+		}
+
+		AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
+		analyzeReport.addEmptyPointsInSequence(fileName, journeyPatternId);
 	}
 
 	static {

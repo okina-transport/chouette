@@ -1,5 +1,7 @@
 package mobi.chouette.exchange.report;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mobi.chouette.common.Constant;
@@ -105,6 +107,12 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "wrongRouteLinksUsedSameFromAndToScheduledStopPoint")
     private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint = new HashMap<>();
 
+    @XmlElement(name = "emptyPointsInSequence")
+    private Map<String, Set<String>> emptyPointsInSequence = new HashMap<>();
+
+    @XmlElement(name = "emptyPassingTimes")
+    private Map<String, Set<String>> emptyPassingTimes = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -150,23 +158,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         files.add(file);
     }
 
-    private void writeStopPlaceWithDifferentTransportModesInError(JSONObject analyzeReport) throws JSONException {
-        checkStopPlaceTransportModes();
 
-        if (!stopPlaceWithMultipleTransportModes.isEmpty()) {
-            canLaunchImport = false;
-
-            JSONArray array = new JSONArray();
-            analyzeReport.put("stop_place_with_different_transport_modes", array);
-
-            for (String stopPlaceId : stopPlaceWithMultipleTransportModes) {
-                JSONObject object = new JSONObject();
-                object.put("stop_place_id", stopPlaceId);
-                object.put("quays_with_transportModes", buildQuayListWithTransportModes(stopPlaceId));
-                array.put(object);
-            }
-        }
-    }
 
     /**
      * Create a list with all quays ids and transport modes, for a specifid stop place
@@ -208,282 +200,56 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @Override
     public void print(PrintStream out, StringBuilder ret, int level, boolean first) {
         ret.setLength(0);
-        level = 0;
-        out.print("{\"analyze_report\": {\n");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> mainMap = new HashMap<>();
+        Map<String, Object> analyzeReportMap = new HashMap<>();
 
-        out.print("\"exploitation_period\": { \n");
-        out.print("\"start\": \"" + oldestPeriodOfCalendars + "\", \n");
-        out.print("\"end\": \"" + newestPeriodOfCalendars + "\" \n");
-        out.print("}\n");
+        Map<String, Object> explorationPeriodMap = new HashMap<>();
+        explorationPeriodMap.put("start", oldestPeriodOfCalendars.toString());
+        explorationPeriodMap.put("end", newestPeriodOfCalendars.toString());
+        analyzeReportMap.put("exploitation_period",explorationPeriodMap);
 
 
-        if (!files.isEmpty()) {
-            printArray(out, ret, level + 1, "files", files, false);
-            out.print(",\n");
-        }
+        if (!files.isEmpty())
+            analyzeReportMap.put("files", files);
 
         if (!lines.isEmpty())
-            printLineList(out);
+            analyzeReportMap.put("lines", buildLinesList());
 
-        out.print(",\n");
-        out.print("\"journeys_count\": " + journeys.size() + "\n");
+
+        analyzeReportMap.put("journeys_count",journeys.size());
 
         if (!stops.isEmpty()) {
-            List<String> stopList = stops.stream()
-                    .map(stop -> StringUtils.isEmpty(stop.getName()) ? stop.getObjectId() : stop.getName())
-                    .collect(Collectors.toList());
-
-            printStringList(out, stopList, "stops", "stopName");
+            analyzeReportMap.put("stops", buildStopList(stops));
         }
 
         if (!newStops.isEmpty()) {
-            List<String> newStopList = newStops.stream()
-                    .map(newStop -> StringUtils.isEmpty(newStop.getName()) ? newStop.getObjectId() : newStop.getName())
-                    .collect(Collectors.toList());
-
-            printStringList(out, newStopList, "newStops", "stopName");
+            analyzeReportMap.put("newStops", buildStopList(newStops));
         }
 
         if (!stopPlacesWithoutQuay.isEmpty()) {
             canLaunchImport = false;
-            printStringList(out, stopPlacesWithoutQuay, "stopPlacesWithoutQuay", "stopId");
+            analyzeReportMap.put("stopPlacesWithoutQuay", buildStringList(stopPlacesWithoutQuay, "stopId"));
         }
 
         if (!multimodalStopPlaces.isEmpty()) {
-            printStringList(out, multimodalStopPlaces, "multimodalStopPlaces", "stopId");
+            analyzeReportMap.put("multimodalStopPlaces", buildStringList(multimodalStopPlaces, "stopId"));
         }
 
         if (!wrongGeolocStopAreas.isEmpty()) {
             canLaunchImport = false;
-            printWrongGeolocList(out);
+            analyzeReportMap.put("wrongGeolocStopAreas", buildWrongGeolocList());
         }
 
         if (!changedNameStopAreas.isEmpty()) {
             printChangedNameList(out);
+            analyzeReportMap.put("changedNameStopAreas", buildChangedNameList());
         }
 
         if (!multipleUsedTimetables.isEmpty()) {
-            printMultipleUsedTimetablesFromDB(out);
+            List<Map.Entry<String, Set<String>>> entrySetList = multipleUsedTimetables.entrySet().stream().collect(Collectors.toList());
+            analyzeReportMap.put("multipleUsedTimetablesFromDB", buildMultipleUsedTimetablesList(entrySetList));
         }
-
-
-        printMultipleUsedTimetablesFromInputFile(out);
-
-        if (!missingRouteLinks.isEmpty()){
-            canLaunchImport = false;
-            printMissingRouteLink(out);
-        }
-
-        if (!wrongRouteLinksUsedInMutipleFiles.isEmpty()) {
-            canLaunchImport = false;
-            printWrongRouteLinksUsedInMutipleFiles(out);
-        }
-
-        if (!wrongRouteLinksUsedMutipleTimesInTheSameFile.isEmpty()) {
-            canLaunchImport = false;
-            printWrongRouteLinksUsedMutipleTimesInTheSameFile(out);
-        }
-
-        if (!wrongRouteLinksUsedSameFromAndToScheduledStopPoint.isEmpty()) {
-            canLaunchImport = false;
-            printWrongRouteLinksUsedSameFromAndToScheduledStopPoint(out);
-        }
-
-        if (!modifiedTimetables.isEmpty()) {
-            printModifiedTimetables(out);
-        }
-
-
-        if (!duplicateOriginalStopIds.isEmpty()) {
-            canLaunchImport = false;
-            printStringList(out, duplicateOriginalStopIds, "duplicateOriginalStopId", "originalStopId");
-        }
-
-        out.print(",\n");
-
-
-        if (!quayWithDifferentTransportModes.isEmpty()) {
-            canLaunchImport = false;
-            printQuaysWithDifferentTransportModes(out);
-        } else {
-            checkStopPlaceTransportModes();
-            printStopPlaceWithDifferentTransportModes(out);
-        }
-
-        out.print("\"canLaunchImport\": " + canLaunchImport + "\n,");
-        out.print("\"tooManyNewStops\": " + tooManyNewStops + "\n");
-        out.println("\n}}");
-    }
-
-    private void printMissingRouteLink(PrintStream out) {
-
-        out.print(",\n");
-        out.print("\"missingRouteLinks\": [\n");
-
-        String endOfline;
-
-        int i = 0;
-
-        for (Map.Entry<String, Set<String>> missingRouteLinkEntry : missingRouteLinks.entrySet()) {
-
-            endOfline = i == missingRouteLinks.size() - 1 ? " }\n" : " },\n";
-
-            out.print("{ \"fileName\":\"" + missingRouteLinkEntry.getKey() + "\",\n");
-            out.print(" \"routeLinks\": [");
-            writeStringSet(out, missingRouteLinkEntry.getValue());
-            out.print("]" + endOfline);
-            i++;
-        }
-
-        out.println("]");
-
-    }
-
-    private void printWrongRouteLinksUsedInMutipleFiles(PrintStream out) {
-
-        out.print(",\n");
-        out.print("\"wrongRouteLinksUsedInMutipleFiles\": [\n");
-
-        String endOfline;
-
-        int i = 0;
-
-        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedInMutipleFiles.entrySet()) {
-
-            endOfline = i == wrongRouteLinksUsedInMutipleFiles.size() - 1 ? " }\n" : " },\n";
-
-            out.print("{ \"routeLinks\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
-            out.print(" \"fileNames\": [");
-            writeStringSet(out, wrongRouteLinkEntry.getValue());
-            out.print("]" + endOfline);
-            i++;
-        }
-
-        out.println("]");
-
-    }
-
-    private void printWrongRouteLinksUsedMutipleTimesInTheSameFile(PrintStream out) {
-
-        out.print(",\n");
-        out.print("\"wrongRouteLinksUsedMutipleTimesInTheSameFile\": [\n");
-
-        String endOfline;
-
-        int i = 0;
-
-        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedMutipleTimesInTheSameFile.entrySet()) {
-
-            endOfline = i == wrongRouteLinksUsedMutipleTimesInTheSameFile.size() - 1 ? " }\n" : " },\n";
-
-            out.print("{ \"fileName\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
-            out.print(" \"routeLinks\": [");
-            writeStringSet(out, wrongRouteLinkEntry.getValue());
-            out.print("]" + endOfline);
-            i++;
-        }
-
-        out.println("]");
-
-    }
-
-    private void printWrongRouteLinksUsedSameFromAndToScheduledStopPoint(PrintStream out) {
-
-        out.print(",\n");
-        out.print("\"wrongRouteLinksUsedSameFromAndToScheduledStopPoint\": [\n");
-
-        String endOfline;
-
-        int i = 0;
-
-        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedSameFromAndToScheduledStopPoint.entrySet()) {
-
-            endOfline = i == wrongRouteLinksUsedSameFromAndToScheduledStopPoint.size() - 1 ? " }\n" : " },\n";
-
-            out.print("{ \"fileName\":\"" + wrongRouteLinkEntry.getKey() + "\",\n");
-            out.print(" \"routeLinks\": [");
-            writeStringSet(out, wrongRouteLinkEntry.getValue());
-            out.print("]" + endOfline);
-            i++;
-        }
-
-        out.println("]");
-
-    }
-
-    private void printModifiedTimetables(PrintStream out) {
-        out.print(",\n");
-        out.print("\"modifiedTimetables\": [\n");
-
-        String endOfline;
-
-
-        for (int i = 0; i < modifiedTimetables.size(); i++) {
-            Pair<Timetable, Timetable> modifiedTimetable = modifiedTimetables.get(i);
-            Timetable existingTimetable = modifiedTimetable.getLeft();
-            Timetable incomingTimetable = modifiedTimetable.getRight();
-            endOfline = i == modifiedTimetables.size() - 1 ? " }\n" : " },\n";
-
-            out.print("{ \"timetableName\":\"" + existingTimetable.getComment() + "\",\n");
-
-            out.print(" \"existingPeriods\": [");
-            writePeriods(out,existingTimetable.getPeriods());
-            out.print(" ],\n");
-            out.print(" \"incomingPeriods\": [");
-            writePeriods(out,incomingTimetable.getPeriods());
-            out.print(" ],\n");
-
-            out.print(" \"existingDates\": [");
-            writeCalendarDays(out,existingTimetable.getCalendarDays());
-            out.print(" ],\n");
-            out.print(" \"incomingDates\": [");
-            writeCalendarDays(out,incomingTimetable.getCalendarDays());
-            out.print(" ]" + endOfline);
-        }
-
-
-        out.println("]");
-    }
-
-    private void writeCalendarDays(PrintStream out, List<CalendarDay> calendarDays) {
-        String endOfline;
-
-        for (int i = 0; i < calendarDays.size(); i++) {
-            endOfline = i == calendarDays.size() - 1 ? "\"" : "\",";
-            CalendarDay calendarDay = calendarDays.get(i);
-            String inclOrExcl = calendarDay.getIncluded() ? "incl" : "excl";
-            out.print("\"" + calendarDay.getDate().toString() + " " + inclOrExcl + endOfline);
-        }
-    }
-
-    private void writeStringSet(PrintStream out, Set<String> dataToWrite) {
-        String endOfline;
-
-        List objetsList = new ArrayList(dataToWrite);
-
-        for (int i = 0; i < objetsList.size(); i++) {
-            endOfline = i == objetsList.size() - 1 ? "\"" : "\",\n";
-            out.print("\"" + objetsList.get(i) + endOfline);
-        }
-    }
-
-    private void writePeriods(PrintStream out, List<Period> periods) {
-        String endOfline;
-
-        for (int i = 0; i < periods.size(); i++) {
-            endOfline = i == periods.size() - 1 ? "\"" : "\",";
-            Period period = periods.get(i);
-            out.print("\"du " + period.getStartDate().toString() + " au " + period.getEndDate().toString() + endOfline);
-        }
-    }
-
-
-    /**
-     * Write timetables used by multiple networks (detected in input file)
-     *
-     * @param out
-     */
-    private void printMultipleUsedTimetablesFromInputFile(PrintStream out) {
 
         List<Map.Entry<String, Set<String>>> multipleusedTimetablesInInputFile = networksByTimetable.entrySet()
                 .stream()
@@ -493,20 +259,285 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
         if (multipleusedTimetablesInInputFile.size() > 0) {
             printMultipleUsedTimetables(out, multipleusedTimetablesInInputFile, "multipleUsedTimetablesFromInputFile");
+            analyzeReportMap.put("multipleUsedTimetablesFromInputFile", buildMultipleUsedTimetablesList(multipleusedTimetablesInInputFile));
         }
 
+
+        if (!missingRouteLinks.isEmpty()){
+            canLaunchImport = false;
+            analyzeReportMap.put("missingRouteLinks", buildMissingRouteLinksList());
+        }
+
+        if (!wrongRouteLinksUsedInMutipleFiles.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongRouteLinksUsedInMutipleFiles", buildWrongRouteLinksMultipleFilesList());
+        }
+
+        if (!wrongRouteLinksUsedMutipleTimesInTheSameFile.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongRouteLinksUsedMutipleTimesInTheSameFile", buildMapList(wrongRouteLinksUsedMutipleTimesInTheSameFile,"fileName","routeLinks"));
+        }
+
+        if (!wrongRouteLinksUsedSameFromAndToScheduledStopPoint.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongRouteLinksUsedSameFromAndToScheduledStopPoint", buildMapList(wrongRouteLinksUsedSameFromAndToScheduledStopPoint,"fileName","routeLinks"));
+        }
+
+        if (!modifiedTimetables.isEmpty()) {
+            analyzeReportMap.put("modifiedTimetables", buildModifiedTimeTables());
+        }
+
+        if (!duplicateOriginalStopIds.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("duplicateOriginalStopId", buildStringList(duplicateOriginalStopIds,"originalStopId"));
+        }
+
+        if (!quayWithDifferentTransportModes.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("quays_with_different_transport_modes", buildQuayWithDifferentTransportModeList());
+        } else {
+            checkStopPlaceTransportModes();
+            if (!stopPlaceWithMultipleTransportModes.isEmpty()){
+                analyzeReportMap.put("stopplaces_with_different_transport_modes", buildStopPlacesWithDifferentTransportModeList());
+            }
+        }
+
+        if (!emptyPointsInSequence.isEmpty()){
+            canLaunchImport = false;
+            analyzeReportMap.put("empty_point_in_sequence", buildMapList(emptyPointsInSequence,"file_name", "journey_pattern_id"));
+        }
+
+        if (!emptyPassingTimes.isEmpty()){
+            canLaunchImport = false;
+            analyzeReportMap.put("empty_passing_times", buildMapList(emptyPassingTimes,"file_name", "service_journey_id"));
+        }
+
+
+
+        analyzeReportMap.put("canLaunchImport", canLaunchImport);
+        analyzeReportMap.put("tooManyNewStops", tooManyNewStops);
+
+        mainMap.put("analyze_report",analyzeReportMap);
+        try {
+            out.print(objectMapper.writeValueAsString(mainMap));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Write timetables used by multiple networks (detected in database)
-     *
-     * @param out
-     */
-    private void printMultipleUsedTimetablesFromDB(PrintStream out) {
-        List<Map.Entry<String, Set<String>>> entrySetList = multipleUsedTimetables.entrySet().stream().collect(Collectors.toList());
-        printMultipleUsedTimetables(out, entrySetList, "multipleUsedTimetablesFromDB");
+    private List<Object> buildStopPlacesWithDifferentTransportModeList() {
+        List<Object> resultList = new ArrayList<>();
+        canLaunchImport = false;
+        String[] stopPlacesInErrorArray = stopPlaceWithMultipleTransportModes.toArray(new String[stopPlaceWithMultipleTransportModes.size()]);
 
+        for (int i = 0; i < stopPlacesInErrorArray.length; i++) {
+            String stopPlaceId = stopPlacesInErrorArray[i];
+            Map<String,Object> stopPlaceMap = new HashMap<>();
+            stopPlaceMap.put("stop_place_id", stopPlaceId);
+            stopPlaceMap.put("quays_with_transportModes",  buildQuayListWithTransportModes(stopPlaceId));
+            resultList.add(stopPlaceMap);
+        }
+        return resultList;
     }
+
+    private List<Object> buildQuayWithDifferentTransportModeList() {
+        List<Object> resultList = new ArrayList<>();
+        String[] quaysInErrorArray = quayWithDifferentTransportModes.toArray(new String[quayWithDifferentTransportModes.size()]);
+
+        for (int i = 0; i < quaysInErrorArray.length; i++) {
+            String quayId = quaysInErrorArray[i];
+
+            Map<String,Object> quayMap = new HashMap<>();
+            quayMap.put("quay_id", quayId);
+            String quayLineInUseStr = quayLineUse.get(quayId).stream().collect(Collectors.joining(","));
+            quayMap.put("used_in_lines", quayLineInUseStr);
+            resultList.add(quayMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildModifiedTimeTables() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (int i = 0; i < modifiedTimetables.size(); i++) {
+
+            Pair<Timetable, Timetable> modifiedTimetable = modifiedTimetables.get(i);
+            Timetable existingTimetable = modifiedTimetable.getLeft();
+            Timetable incomingTimetable = modifiedTimetable.getRight();
+
+            Map<String,Object> wrongRouteLinkMap = new HashMap<>();
+            wrongRouteLinkMap.put("timetableName",  existingTimetable.getComment() );
+            wrongRouteLinkMap.put("existingPeriods", buildPeriodList(existingTimetable.getPeriods()));
+            wrongRouteLinkMap.put("incomingPeriods", buildPeriodList(incomingTimetable.getPeriods()));
+
+            wrongRouteLinkMap.put("existingDates", buildDatesList(existingTimetable.getCalendarDays()));
+            wrongRouteLinkMap.put("incomingDates", buildDatesList(incomingTimetable.getCalendarDays()));
+            resultList.add(wrongRouteLinkMap);
+        }
+        return resultList;
+    }
+
+    private List<String> buildDatesList(List<CalendarDay> calendarDays) {
+        List<String> resultList = new ArrayList<>();
+
+        for (int i = 0; i < calendarDays.size(); i++) {
+            CalendarDay calendarDay = calendarDays.get(i);
+            String inclOrExcl = calendarDay.getIncluded() ? "incl" : "excl";
+            resultList.add(calendarDay.getDate().toString() + " " + inclOrExcl);
+        }
+        return resultList;
+    }
+
+    private List<String> buildPeriodList(List<Period> periods) {
+        List<String> resultList = new ArrayList<>();
+        for (int i = 0; i < periods.size(); i++) {
+            Period period = periods.get(i);
+            resultList.add("du " + period.getStartDate().toString() + " au " + period.getEndDate().toString());
+        }
+        return resultList;
+    }
+
+    private List<Object> buildMapList(Map<String, Set<String>> mapToWrite, String keyEltName, String valueEltName) {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Set<String>> entry : mapToWrite.entrySet()) {
+            Map<String,Object> map = new HashMap<>();
+            map.put(keyEltName, entry.getKey() );
+            map.put(valueEltName, entry.getValue());
+            resultList.add(map);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildWrongRouteLinksMultipleFilesList() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Set<String>> wrongRouteLinkEntry : wrongRouteLinksUsedInMutipleFiles.entrySet()) {
+            Map<String,Object> wrongRouteLinkMap = new HashMap<>();
+            wrongRouteLinkMap.put("routeLinks", wrongRouteLinkEntry.getKey());
+            wrongRouteLinkMap.put("fileNames", wrongRouteLinkEntry.getValue());
+            resultList.add(wrongRouteLinkMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildMissingRouteLinksList() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Set<String>> missingRouteLinkEntry : missingRouteLinks.entrySet()) {
+
+            Map<String,Object> missingLinkMap = new HashMap<>();
+            missingLinkMap.put("fileName", missingRouteLinkEntry.getKey());
+            missingLinkMap.put("routeLinks", missingRouteLinkEntry.getValue());
+            resultList.add(missingLinkMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildMultipleUsedTimetablesList( List<Map.Entry<String, Set<String>>> entrySetList) {
+        List<Object> resultList = new ArrayList<>();
+
+        for (int i = 0; i < entrySetList.size(); i++) {
+            Map.Entry<String, Set<String>> stringListEntry = entrySetList.get(i);
+
+            Map<String, String> timetableMap = new HashMap<>();
+            timetableMap.put("timetableName",  stringListEntry.getKey());
+            timetableMap.put("networks", buildNetworkListString(stringListEntry.getValue()));
+            resultList.add(timetableMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildChangedNameList() {
+        List<Object>  resultList = new ArrayList<>();
+        for (int i = 0; i < changedNameStopAreas.size(); i++) {
+            StopArea existingStop = changedNameStopAreas.get(i).getLeft();
+            StopArea incomingStop = changedNameStopAreas.get(i).getRight();
+
+            Map<String, String> changedNameMap = new HashMap<>();
+            changedNameMap.put("original_stop_id",incomingStop.getOriginalStopId());
+            changedNameMap.put("existing_name",existingStop.getName());
+            changedNameMap.put("incoming_name",incomingStop.getName());
+        }
+        return resultList;
+    }
+
+    private List<Object> buildWrongGeolocList() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (int i = 0; i < wrongGeolocStopAreas.size(); i++) {
+
+            StopArea existingStop = wrongGeolocStopAreas.get(i).getLeft();
+            StopArea incomingStop = wrongGeolocStopAreas.get(i).getRight();
+
+            Map<String, Object> wrongGeolocMap = new HashMap<>();
+            wrongGeolocMap.put("original_stop_id", incomingStop.getOriginalStopId());
+            wrongGeolocMap.put("existing_name", existingStop.getName());
+            wrongGeolocMap.put("existing_latitude", existingStop.getLatitude());
+            wrongGeolocMap.put("existing_longitude", existingStop.getLongitude());
+
+            wrongGeolocMap.put("incoming_name", incomingStop.getName());
+            wrongGeolocMap.put("incoming_latitude", incomingStop.getLatitude());
+            wrongGeolocMap.put("incoming_longitude", incomingStop.getLongitude());
+            resultList.add(wrongGeolocMap);
+        }
+
+        return resultList;
+    }
+
+    private List<Object> buildStringList(List<String> listToWrite, String elementName) {
+        List<Object> resultList = new ArrayList<>();
+
+        for (String stringToWrite : listToWrite) {
+            Map<String,String> newMap = new HashMap<>();
+            newMap.put(elementName,stringToWrite);
+            resultList.add(newMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildStopList(List<StopArea> stopsListToWrite ) {
+
+        List<Object> stopResults = new ArrayList<>();
+
+        List<String> stopList = stopsListToWrite.stream()
+                                    .map(stop -> StringUtils.isEmpty(stop.getName()) ? stop.getObjectId() : stop.getName())
+                                    .collect(Collectors.toList());
+
+        for (String stop : stopList) {
+
+            Map<String, String> stopMap = new HashMap<>();
+            stopMap.put("stopName", stop);
+            stopResults.add(stopMap);
+        }
+        return stopResults;
+    }
+
+    private List<Object> buildLinesList() {
+        List<Object> lineList = new ArrayList<>();
+
+        for (int i = 0; i < lines.size(); i++) {
+            Map<String,Object> lineMap = new HashMap<>();
+
+            String lineName = lines.get(i);
+            String lineTextColor = lineTextColorMap.containsKey(lineName) ? lineTextColorMap.get(lineName) : "000000";
+            String lineBackgroundColor = lineBackgroundColorMap.containsKey(lineName) ? lineBackgroundColorMap.get(lineName) : "FFFFFF";
+            String lineShortName = lineShortNameMap.containsKey(lineName) ? lineShortNameMap.get(lineName) : "";
+
+
+
+            lineMap.put("lineName", lines.get(i) );
+            lineMap.put("lineTextColor", lineTextColor);
+            lineMap.put("lineBackgroundColor", lineBackgroundColor);
+            lineMap.put("shortName", lineShortName);
+            lineList.add(lineMap);
+        }
+
+        return lineList;
+    }
+
+
+
 
 
     /**
@@ -537,73 +568,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     }
 
 
-    private void printStopPlaceWithDifferentTransportModes(PrintStream out) {
 
-        if (stopPlaceWithMultipleTransportModes.isEmpty())
-            return;
-
-        canLaunchImport = false;
-        out.print("\"stopplaces_with_different_transport_modes\": [\n");
-        String endOfline;
-
-        String[] stopPlacesInErrorArray = stopPlaceWithMultipleTransportModes.toArray(new String[stopPlaceWithMultipleTransportModes.size()]);
-
-        for (int i = 0; i < stopPlacesInErrorArray.length; i++) {
-            String stopPlaceId = stopPlacesInErrorArray[i];
-            endOfline = i == stopPlacesInErrorArray.length - 1 ? "\" }\n" : "\" },\n";
-            out.print("{ \"stop_place_id\": \"" + stopPlaceId + "\",\n");
-            out.print(" \"quays_with_transportModes\": \"" + buildQuayListWithTransportModes(stopPlaceId) + endOfline);
-        }
-
-
-        out.println("]");
-        out.print(",\n");
-    }
-
-    private void printQuaysWithDifferentTransportModes(PrintStream out) {
-
-        out.print("\"quays_with_different_transport_modes\": [\n");
-        String endOfline;
-
-        String[] quaysInErrorArray = quayWithDifferentTransportModes.toArray(new String[quayWithDifferentTransportModes.size()]);
-
-        for (int i = 0; i < quaysInErrorArray.length; i++) {
-            String quayId = quaysInErrorArray[i];
-            endOfline = i == quaysInErrorArray.length - 1 ? "\" }\n" : "\" },\n";
-            out.print("{ \"quay_id\": \"" + quayId + "\",\n");
-
-            String quayLineInUseStr = quayLineUse.get(quayId).stream().collect(Collectors.joining(","));
-            out.print(" \"used_in_lines\": \"" + quayLineInUseStr + endOfline);
-        }
-
-
-        out.println("]");
-        out.print(",\n");
-    }
-
-
-    private void printWrongGeolocList(PrintStream out) {
-        out.print(",\n");
-        out.print("\"wrongGeolocStopAreas\": [\n");
-        String endOfline;
-
-        for (int i = 0; i < wrongGeolocStopAreas.size(); i++) {
-            endOfline = i == wrongGeolocStopAreas.size() - 1 ? "\" }\n" : "\" },\n";
-
-            StopArea existingStop = wrongGeolocStopAreas.get(i).getLeft();
-            StopArea incomingStop = wrongGeolocStopAreas.get(i).getRight();
-
-            out.print("{ \"original_stop_id\": \"" + incomingStop.getOriginalStopId() + "\",\n");
-            out.print(" \"existing_name\": \"" + existingStop.getName() + "\",\n");
-            out.print(" \"existing_latitude\": \"" + existingStop.getLatitude() + "\",\n");
-            out.print(" \"existing_longitude\": \"" + existingStop.getLongitude() + "\",\n");
-
-            out.print(" \"incoming_name\": \"" + incomingStop.getName() + "\",\n");
-            out.print(" \"incoming_latitude\": \"" + incomingStop.getLatitude() + "\",\n");
-            out.print(" \"incoming_longitude\": \"" + incomingStop.getLongitude() + endOfline);
-        }
-        out.println("]");
-    }
 
     private void printChangedNameList(PrintStream out) {
         out.print(",\n");
@@ -624,35 +589,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         out.println("]");
     }
 
-    private void printLineList(PrintStream out) {
-        out.print(",\n");
-        out.print("\"lines\": [\n");
-        String endOfline;
 
-        for (int i = 0; i < lines.size(); i++) {
-            endOfline = i == lines.size() - 1 ? "\" }\n" : "\" },\n";
-            String lineName = lines.get(i);
-            String lineTextColor = lineTextColorMap.containsKey(lineName) ? lineTextColorMap.get(lineName) : "000000";
-            String lineBackgroundColor = lineBackgroundColorMap.containsKey(lineName) ? lineBackgroundColorMap.get(lineName) : "FFFFFF";
-            String lineShortName = lineShortNameMap.containsKey(lineName) ? lineShortNameMap.get(lineName) : "";
-
-            out.print("{ \"lineName\": \"" + lines.get(i) + "\", \"lineTextColor\":\"" + lineTextColor + "\", \"lineBackgroundColor\": \"" + lineBackgroundColor + "\", \"shortName\":\"" + lineShortName + endOfline);
-        }
-        out.println("]");
-    }
-
-
-    private void printStringList(PrintStream out, List<String> listToPrint, String categoryName, String itemName) {
-        out.print(",\n");
-        out.print("\"" + categoryName + "\": [\n");
-        String endOfline;
-
-        for (int i = 0; i < listToPrint.size(); i++) {
-            endOfline = i == listToPrint.size() - 1 ? "\" }\n" : "\" },\n";
-            out.print("{ \"" + itemName + "\": \"" + listToPrint.get(i) + endOfline);
-        }
-        out.println("]");
-    }
 
 
     /**
@@ -703,6 +640,26 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
                 }
                 childrens.add(originalStopId);
             }
+        }
+    }
+
+    public void addEmptyPointsInSequence (String fileName, String journeyPatternId){
+        if (emptyPointsInSequence.containsKey(fileName)){
+            emptyPointsInSequence.get(fileName).add(journeyPatternId);
+        }else{
+            Set<String> journeyPatternSet = new HashSet<>();
+            journeyPatternSet.add(journeyPatternId);
+            emptyPointsInSequence.put(fileName, journeyPatternSet);
+        }
+    }
+
+    public void addEmptyPassingTimes(String fileName, String serviceJourneyId){
+        if (emptyPassingTimes.containsKey(fileName)){
+            emptyPassingTimes.get(fileName).add(serviceJourneyId);
+        }else{
+            Set<String> serviceJourneySet = new HashSet<>();
+            serviceJourneySet.add(serviceJourneyId);
+            emptyPassingTimes.put(fileName, serviceJourneySet);
         }
     }
 
