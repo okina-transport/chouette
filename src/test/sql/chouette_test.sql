@@ -1366,7 +1366,8 @@ CREATE TABLE public.stop_areas (
     city_name character varying(255),
     url character varying(255),
     time_zone character varying(255),
-    compass_bearing integer
+    compass_bearing integer,
+    rail_uid character varying(255)
 );
 
 
