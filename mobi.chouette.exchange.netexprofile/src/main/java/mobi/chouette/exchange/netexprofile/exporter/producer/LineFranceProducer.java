@@ -9,6 +9,7 @@ import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
+import mobi.chouette.model.type.TadEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
@@ -40,11 +41,12 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
 
         org.rutebanken.netex.model.Line_VersionStructure netexLine;
-        if (Boolean.TRUE.equals(neptuneLine.getFlexibleService())) {
-            netexLine = createFlexibleLine(neptuneLine);
-        } else {
+        if (TadEnum.NO_TAD.equals(neptuneLine.getTad())){
             netexLine = netexFactory.createLine();
+        }else{
+            netexLine = createFlexibleLine(neptuneLine);
         }
+
 
         NetexProducerUtils.populateIdAndVersionIDFM(neptuneLine, netexLine);
         NetexProducerUtils.populateLineAccessibilityAssessment(neptuneLine, netexLine);
