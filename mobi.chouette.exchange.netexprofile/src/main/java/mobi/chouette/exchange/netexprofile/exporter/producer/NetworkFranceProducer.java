@@ -4,6 +4,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.model.Line;
+import mobi.chouette.model.type.TadEnum;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
@@ -51,7 +52,7 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
         LineRefs_RelStructure lineRefs_relStructure = netexFactory.createLineRefs_RelStructure();
         List<JAXBElement<? extends LineRefStructure>> jaxbElementsLineRefStructure = new ArrayList<>();
         for(Line line : neptuneNetwork.getLines()){
-            if (Boolean.TRUE.equals(line.getFlexibleService()) && !line.getObjectId().contains(":FlexibleLine:")) {
+            if (isFlexible(line) && !line.getObjectId().contains(":FlexibleLine:")) {
                 line.setObjectId(line.getObjectId().replace(":Line:", ":FlexibleLine:"));
             }
             JAXBElement<? extends LineRefStructure> jaxbElementLineRefStructure = NetexProducerUtils.createLineIDFMRef(line, netexFactory);
@@ -62,6 +63,10 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
         netexNetwork.withMembers(lineRefs_relStructure);
 
         return netexNetwork;
+    }
+
+    private boolean isFlexible(Line line){
+        return !TadEnum.NO_TAD.equals(line.getTad());
     }
 }
 
