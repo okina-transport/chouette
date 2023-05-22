@@ -1527,7 +1527,8 @@ CREATE TABLE chouette_gui.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 -- Route points
@@ -3395,7 +3396,8 @@ CREATE TABLE tro.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 
@@ -3561,7 +3563,8 @@ CREATE TABLE sky.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 ALTER TABLE ONLY sky.stop_areas
@@ -3719,7 +3722,8 @@ CREATE TABLE rut.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 
@@ -3878,7 +3882,8 @@ CREATE TABLE nri.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 
@@ -4037,7 +4042,8 @@ CREATE TABLE akt.stop_areas (
     transport_sub_mode character varying(255),
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
-    platform_code character varying(255)
+    platform_code character varying(255),
+    rail_uid character varying(255)
 );
 
 ALTER TABLE ONLY akt.stop_areas
