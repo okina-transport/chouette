@@ -17,6 +17,7 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
+import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.DestinationDisplay;
@@ -186,6 +187,11 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 		JourneyPattern journeyPattern = referential.getJourneyPatterns().get(journeyPatternId);
 
+		if (serviceJourney.getPassingTimes() == null){
+			handleEmptyPassingTimes(context, serviceJourney);
+			return;
+		}
+
 		for (int i = 0; i < serviceJourney.getPassingTimes().getTimetabledPassingTime().size(); i++) {
 			TimetabledPassingTime passingTime = serviceJourney.getPassingTimes().getTimetabledPassingTime().get(i);
 			String passingTimeId = passingTime.getId();
@@ -206,6 +212,21 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		}
 
 		vehicleJourney.getVehicleJourneyAtStops().sort(Comparator.comparingInt(o -> o.getStopPoint().getPosition()));
+	}
+
+	private void handleEmptyPassingTimes(Context context, ServiceJourney serviceJourney) {
+
+		String fileName = (String) context.get(FILE_NAME);
+		String serviceJourneyId = serviceJourney.getId();
+
+		log.error("Empty passing times in sequence in file :" + fileName + " , serviceJourney:" + serviceJourneyId);
+
+		if ( context.get(ANALYSIS_REPORT) == null){
+			return ;
+		}
+
+		AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
+		analyzeReport.addEmptyPassingTimes(fileName, serviceJourneyId);
 	}
 
 
