@@ -109,7 +109,13 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
             neptuneLine.setObjectId(neptuneLine.getObjectId().replace(":Line:", ":FlexibleLine:"));
         }
         FlexibleLine flexibleLine = netexFactory.createFlexibleLine();
-        flexibleLine.setFlexibleLineType(FlexibleLineTypeEnumeration.FIXED);
+
+        if (TadEnum.PARTIAL_TAD.equals(neptuneLine.getTad())){
+            flexibleLine.setFlexibleLineType(FlexibleLineTypeEnumeration.MIXED_FLEXIBLE);
+        }else{
+            flexibleLine.setFlexibleLineType(FlexibleLineTypeEnumeration.FIXED);
+        }
+
         FlexibleLineProperties flexibleLineProperties = neptuneLine.getFlexibleLineProperties();
         if (flexibleLineProperties != null) {
             BookingArrangement bookingArrangement = flexibleLineProperties.getBookingArrangement();
