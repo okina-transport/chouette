@@ -127,9 +127,9 @@ public class StopPlaceParser implements Parser, Constant {
         stopArea.setTransportSubMode(mapTransportSubMode(stopPlace));
 
         if(stopPlace.getKeyList() != null && !stopPlace.getKeyList().getKeyValue().isEmpty()){
-            stopPlace.getKeyList().getKeyValue().stream().filter(key -> key.getKey().equals("RAIL-UID"))
+            stopPlace.getKeyList().getKeyValue().stream().filter(key -> key.getKey().equals("RAIL-UIC"))
                     .forEach(key -> {
-                        stopArea.setRailUid(key.getValue());
+                        stopArea.setRailUic(key.getValue());
                     });
             ;
         }
