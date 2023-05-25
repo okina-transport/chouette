@@ -434,7 +434,7 @@ public class NetexFranceProfileTest {
         Assert.assertEquals(firstRoute.getName().getValue(), "Test Route", "wrong name in generated route");
 
         LineRefStructure lineRef = firstRoute.getLineRef().getValue();
-        Assert.assertEquals(lineRef.getRef(), "TEST:Line:l1:LOC", "wrong lineRef in generated route");
+        Assert.assertEquals(lineRef.getRef(), "TEST:FlexibleLine:l1:LOC", "wrong lineRef in generated route");
 
         Assert.assertEquals( firstRoute.getDirectionRef().getRef(),"TEST:Direction:r1:LOC", "wrong direction ref");
         Assert.assertEquals( firstRoute.getDirectionType().value(),"outbound", "wrong direction type");

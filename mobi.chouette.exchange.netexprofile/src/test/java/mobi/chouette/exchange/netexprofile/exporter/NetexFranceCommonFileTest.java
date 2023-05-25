@@ -30,12 +30,7 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.GeneralFrame;
-import org.rutebanken.netex.model.General_VersionFrameStructure;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.SiteConnection;
+import org.rutebanken.netex.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
@@ -134,9 +129,9 @@ public class NetexFranceCommonFileTest {
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);
 
 
-        List<org.rutebanken.netex.model.Line> lines = getLines(firstFrame.getMembers());
+        List<FlexibleLine> lines = getFlexibleLines(firstFrame.getMembers());
         Assert.assertFalse(lines.isEmpty(),"lines should be there");
-        org.rutebanken.netex.model.Line firstLine = lines.get(0);
+        FlexibleLine firstLine = lines.get(0);
         Assert.assertEquals(firstLine.getName().getValue(),"TestLineName");
         Assert.assertEquals(firstLine.getShortName().getValue(),"testPublishedName");
         Assert.assertEquals(firstLine.getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
@@ -173,6 +168,15 @@ public class NetexFranceCommonFileTest {
                 .map(JAXBElement::getValue)
                 .filter(member -> member instanceof org.rutebanken.netex.model.Line)
                 .map(member -> (org.rutebanken.netex.model.Line)member )
+                .collect(Collectors.toList());
+
+    }
+
+    private List<org.rutebanken.netex.model.FlexibleLine> getFlexibleLines(General_VersionFrameStructure.Members members){
+        return members.getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity().stream()
+                .map(JAXBElement::getValue)
+                .filter(member -> member instanceof org.rutebanken.netex.model.FlexibleLine)
+                .map(member -> (org.rutebanken.netex.model.FlexibleLine)member )
                 .collect(Collectors.toList());
 
     }
