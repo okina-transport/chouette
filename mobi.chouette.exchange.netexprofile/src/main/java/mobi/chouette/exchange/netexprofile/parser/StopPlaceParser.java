@@ -37,6 +37,8 @@ public class StopPlaceParser implements Parser, Constant {
 
     private KeyValueParser keyValueParser = new KeyValueParser();
 
+    public static final String FARE_ZONE = "fare-zone";
+
     @Override
     public void parse(Context context) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
@@ -186,6 +188,11 @@ public class StopPlaceParser implements Parser, Constant {
         stopArea.setKeyValues(keyValueParser.parse(stopPlace.getKeyList()));
 
         mapAccessibilityAssesssment(stopArea, stopPlace);
+
+        if(stopPlace.getKeyList() != null && !stopPlace.getKeyList().getKeyValue().isEmpty()){
+            stopPlace.getKeyList().getKeyValue().stream().filter(key -> key.getKey().equals(FARE_ZONE))
+                    .forEach(key -> stopArea.setZoneId(key.getValue()));
+        }
     }
 
     /**
@@ -355,7 +362,12 @@ public class StopPlaceParser implements Parser, Constant {
         boardingPosition.setFilled(true);
 
         boardingPosition.setKeyValues(keyValueParser.parse(quay.getKeyList()));
-        mapAccessibilityAssesssment(boardingPosition,quay);
+        mapAccessibilityAssesssment(boardingPosition, quay);
+
+        if(quay.getKeyList() != null && !quay.getKeyList().getKeyValue().isEmpty()){
+            quay.getKeyList().getKeyValue().stream().filter(key -> key.getKey().equals(FARE_ZONE))
+                    .forEach(key -> boardingPosition.setZoneId(key.getValue()));
+        }
     }
 
     private void parseCentroid(LocationStructure locationStruct, StopArea stopArea) throws Exception {
