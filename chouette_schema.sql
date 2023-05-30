@@ -732,7 +732,7 @@ CREATE TABLE stop_areas (
     city_name character varying(255),
     url character varying(255),
     time_zone character varying(255),
-    zone_id character varying (255)
+    zone_id character varying(255)
 );
 
 
