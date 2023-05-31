@@ -88,6 +88,8 @@ public class GtfsStopProducer extends AbstractProducer {
 		stop.setStopCode(neptuneObject.getRegistrationNumber());
 		stop.setStopDesc(neptuneObject.getComment());
 		stop.setStopUrl(getUrl(neptuneObject.getUrl()));
+		stop.setZoneId(neptuneObject.getZoneId());
+
 		// manage stop_timezone
 		stop.setStopTimezone(null);
 		if (!isEmpty(neptuneObject.getTimeZone()))

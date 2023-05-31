@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.FARE_ZONE;
 
 /**
  * Map from NeTEx to chouette model
@@ -104,10 +105,11 @@ public class StopAreaMapper {
         mapQuayUrl(quay, boardingPosition);
         mapQuayRegistrationNumber(quay, boardingPosition);
         createCompassBearing(quay, boardingPosition);
-        mapOriginalStopId(quay,boardingPosition);
+        mapOriginalStopId(quay, boardingPosition);
         boardingPosition.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(quay.getTransportMode().value()));
         boardingPosition.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
         mapKeyValuesExternalRef(quay, boardingPosition);
+        mapFareZone(quay, boardingPosition);
         return boardingPosition;
     }
 
@@ -153,6 +155,7 @@ public class StopAreaMapper {
         mapName(stopPlace, stopArea);
         mapOriginalStopId(stopPlace, stopArea);
         mapKeyValuesExternalRef(stopPlace, stopArea);
+        mapFareZone(stopPlace, stopArea);
         return stopArea;
     }
 
@@ -209,6 +212,16 @@ public class StopAreaMapper {
                     List<KeyValue> keyValues = new ArrayList<>();
                     keyValues.add(keyValue);
                     createdStopArea.setKeyValues(keyValues);
+                }
+            }
+        }
+    }
+
+    private void mapFareZone(Zone_VersionStructure srcZone, StopArea createdStopArea){
+        if(srcZone.getKeyList() != null){
+            for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
+                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), FARE_ZONE) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                    createdStopArea.setZoneId(keyValueStructure.getValue());
                 }
             }
         }

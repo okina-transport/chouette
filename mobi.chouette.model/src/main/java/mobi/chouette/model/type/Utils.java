@@ -76,6 +76,7 @@ public class Utils
       dest.setLongitude(src.getLongitude());
       dest.setLongLatType(src.getLongLatType());
       dest.setRailUic(src.getRailUic());
+      dest.setZoneId(src.getZoneId());
 
    }
 

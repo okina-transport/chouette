@@ -65,6 +65,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
     public static final String EXTERNAL_REF = "external-ref";
 
+    public static final String FARE_ZONE = "fare-zone";
+
     public static final String BEAN_NAME = "NeTExStopPlaceRegisterUpdater";
 
     public static final String IMPORTED_ID_VALUE_SEPARATOR = ",";

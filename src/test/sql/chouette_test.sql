@@ -1367,7 +1367,8 @@ CREATE TABLE public.stop_areas (
     url character varying(255),
     time_zone character varying(255),
     compass_bearing integer,
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 
@@ -1528,7 +1529,8 @@ CREATE TABLE chouette_gui.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 -- Route points
@@ -3397,7 +3399,8 @@ CREATE TABLE tro.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 
@@ -3564,7 +3567,8 @@ CREATE TABLE sky.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 ALTER TABLE ONLY sky.stop_areas
@@ -3723,7 +3727,8 @@ CREATE TABLE rut.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 
@@ -3883,7 +3888,8 @@ CREATE TABLE nri.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 
@@ -4043,7 +4049,8 @@ CREATE TABLE akt.stop_areas (
     original_stop_id character varying(255),
     is_external boolean DEFAULT false,
     platform_code character varying(255),
-    rail_uid character varying(255)
+    rail_uic character varying(255),
+    zone_id character varying(255)
 );
 
 ALTER TABLE ONLY akt.stop_areas

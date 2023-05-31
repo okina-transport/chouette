@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.FARE_ZONE;
 
 /**
  * Map from chouette model to NeTEx
@@ -66,6 +67,7 @@ public class StopPlaceMapper {
         mapComment(stopArea, quay);
         mapMobilityRestrictedSuitable(stopArea, quay);
         addExternalRefInfo(stopArea, quay);
+        addZoneIdInfo(stopArea, quay);
 
         return quay;
     }
@@ -113,6 +115,7 @@ public class StopPlaceMapper {
         mapCentroid(stopArea, stopPlace);
         mapName(stopArea, stopPlace);
         addExternalRefInfo(stopArea, stopPlace);
+        addZoneIdInfo(stopArea, stopPlace);
         return stopPlace;
     }
 
@@ -217,18 +220,11 @@ public class StopPlaceMapper {
         }
     }
 
-    public StopPlace addImportedIdfmInfo(StopPlace stopPlace, Referential referential) {
-        Map<String, String> stopAreaMappingInverse = new HashMap<>();
-        for (Map.Entry<String, String> entry : referential.getStopAreaMapping().entrySet()) {
-            stopAreaMappingInverse.put(entry.getValue(), entry.getKey());
+    public void addZoneIdInfo(StopArea stopArea, Zone_VersionStructure zone) {
+        if (StringUtils.isNotBlank(stopArea.getZoneId())) {
+            zone.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
+                    .withKey(FARE_ZONE)
+                    .withValue(stopArea.getZoneId())));
         }
-        String importedId = stopAreaMappingInverse.get(stopPlace.getId());
-        if (StringUtils.isNotBlank(importedId)) {
-            stopPlace.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-                    .withKey(NeTExIdfmStopPlaceRegisterUpdater.IMPORTED_ID)
-                    .withValue(importedId)));
-        }
-
-        return stopPlace;
     }
 }
