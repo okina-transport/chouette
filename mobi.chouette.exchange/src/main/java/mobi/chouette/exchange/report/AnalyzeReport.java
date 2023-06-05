@@ -242,7 +242,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         }
 
         if (!changedNameStopAreas.isEmpty()) {
-            printChangedNameList(out);
             analyzeReportMap.put("changedNameStopAreas", buildChangedNameList());
         }
 
