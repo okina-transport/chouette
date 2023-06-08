@@ -457,6 +457,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             changedNameMap.put("original_stop_id",incomingStop.getOriginalStopId());
             changedNameMap.put("existing_name",existingStop.getName());
             changedNameMap.put("incoming_name",incomingStop.getName());
+            resultList.add(changedNameMap);
         }
         return resultList;
     }
@@ -561,31 +562,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         return networkList.stream()
                 .collect(Collectors.joining(","));
     }
-
-
-
-
-    private void printChangedNameList(PrintStream out) {
-        out.print(",\n");
-        out.print("\"changedNameStopAreas\": [\n");
-        String endOfline;
-
-        for (int i = 0; i < changedNameStopAreas.size(); i++) {
-            endOfline = i == changedNameStopAreas.size() - 1 ? "\" }\n" : "\" },\n";
-
-            StopArea existingStop = changedNameStopAreas.get(i).getLeft();
-            StopArea incomingStop = changedNameStopAreas.get(i).getRight();
-
-            out.print("{ \"original_stop_id\": \"" + incomingStop.getOriginalStopId() + "\",\n");
-            out.print(" \"existing_name\": \"" + existingStop.getName() + "\",\n");
-
-            out.print(" \"incoming_name\": \"" + incomingStop.getName()  + endOfline);
-        }
-        out.println("]");
-    }
-
-
-
 
     /**
      * Read each stopPlace and checks that all children quays have the same transport mode
