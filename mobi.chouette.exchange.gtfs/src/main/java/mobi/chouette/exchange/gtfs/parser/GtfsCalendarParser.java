@@ -207,6 +207,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 						convert(context, createDummyCalandar(gtfsCalendarDate.getId()), timetable);
 					}
 					addCalendarDay(timetable, gtfsCalendarDate);
+					timetable.computeLimitOfPeriods();
 				}
 				NamingUtil.setDefaultName(timetable);
 			}
