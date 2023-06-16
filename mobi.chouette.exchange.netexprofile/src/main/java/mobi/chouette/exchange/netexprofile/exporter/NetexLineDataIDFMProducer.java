@@ -155,8 +155,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
 
         produceAndCollectPassengerStopAssignments(exportableData.getJourneyPatterns(), exportableNetexData, configuration);
 
-        List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(vj -> vj.getRoute()).distinct().collect(Collectors.toList());
-        produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
+        produceAndCollectDestinationDisplays(exportableData.getJourneyPatterns(), exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             exportableNetexData.getServiceJourneys().add(serviceJourneyIDFMProducer.produce(context, vehicleJourney));
@@ -196,15 +195,13 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         }
     }
 
-    private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
-        for (mobi.chouette.model.Route route : routes) {
-            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-                for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-                    if (stopPoint != null) {
-                        mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
-                        if (dd != null) {
-                            addDestinationDisplay(dd, exportableNetexData);
-                        }
+    private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.JourneyPattern> journeyPatterns, ExportableNetexData exportableNetexData) {
+        for (JourneyPattern journeyPattern : journeyPatterns) {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
+                    if (dd != null) {
+                        addDestinationDisplay(dd, exportableNetexData);
                     }
                 }
             }
