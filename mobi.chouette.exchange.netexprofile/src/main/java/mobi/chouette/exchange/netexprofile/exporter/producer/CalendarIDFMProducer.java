@@ -1,6 +1,5 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
-import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
@@ -17,8 +16,6 @@ import org.rutebanken.netex.model.PropertiesOfDay_RelStructure;
 import org.rutebanken.netex.model.PropertyOfDay;
 
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class CalendarIDFMProducer extends NetexProducer {

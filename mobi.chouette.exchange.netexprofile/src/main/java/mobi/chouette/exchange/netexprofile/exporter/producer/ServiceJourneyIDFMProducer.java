@@ -75,9 +75,7 @@ public class ServiceJourneyIDFMProducer {
 
             TimetabledPassingTimes_RelStructure passingTimesStruct = netexFactory.createTimetabledPassingTimes_RelStructure();
 
-            for (int i = 0; i < vehicleJourneyAtStops.size(); i++) {
-                VehicleJourneyAtStop vehicleJourneyAtStop = vehicleJourneyAtStops.get(i);
-
+            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
                 TimetabledPassingTime timetabledPassingTime = netexFactory.createTimetabledPassingTime();
                 timetabledPassingTime.setVersion("any");
 

@@ -57,8 +57,6 @@ public class RouteMergerCommand implements Command {
 	};
 
 
-
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean execute(Context context) throws Exception {
@@ -87,9 +85,16 @@ public class RouteMergerCommand implements Command {
 	 */
 	private void launchMergeForLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum) {
 
+		//1st pass : trying to merge routes that have at least one StopPoint in common
 		boolean hasMergeHappened = true;
 		while(hasMergeHappened){
-			hasMergeHappened = mergeLineAndDirection(lineId,ptDirectionEnum);
+			hasMergeHappened = mergeLineAndDirection(lineId,ptDirectionEnum, false);
+		}
+
+		//second pass allow merge for route that have no point in common
+		hasMergeHappened = true;
+		while(hasMergeHappened){
+			hasMergeHappened = mergeLineAndDirection(lineId,ptDirectionEnum, true);
 		}
 	}
 
@@ -101,9 +106,14 @@ public class RouteMergerCommand implements Command {
 	 * 	id of the line on which merge must be done
 	 * @param ptDirectionEnum
 	 * 	direction on which merge must be done
+	 * @param allowTotallyDistinctRoute
+	 * 	false : only route that have at least one point in common are merged
+	 * 	true: routes that have no point in common can be merged
 	 * @return
 	 */
-	private boolean mergeLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum) {
+	private boolean mergeLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum, boolean allowTotallyDistinctRoute) {
+
+		log.info(" mergeLineAndDirection - " + lineId + " - " + ptDirectionEnum.name());
 
 		List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
 		for (Route currentRouteTryingToMerge : routes) {
@@ -111,11 +121,17 @@ public class RouteMergerCommand implements Command {
 
 			//collecting all routes different than the current one
 			List<Route> otherRoutes = routes.stream()
-											.filter(route -> route != currentRouteTryingToMerge)
-											.collect(Collectors.toList());
+					.filter(route -> route != currentRouteTryingToMerge)
+					.collect(Collectors.toList());
 
 			for (Route otherRoute : otherRoutes) {
 				// looping on each other route and trying to merge the currentRoute with one of any other route
+
+
+				if (!allowTotallyDistinctRoute && !havePointInCommon(currentRouteTryingToMerge, otherRoute)){
+					// routes have absolutely no point in common and we don't want them to merge. Going to the next route
+					continue;
+				}
 
 				if (checkAndMergeIfPossible(currentRouteTryingToMerge, otherRoute)){
 					// a merge has been done for the current line/direction. Exiting the process on this loop.
@@ -130,6 +146,29 @@ public class RouteMergerCommand implements Command {
 
 	}
 
+	/**
+	 * Check if 2 routes have at least one point in common
+	 * @param route1
+	 * @param route2
+	 * @return
+	 * 	true : at least one point is used by route1 and route2
+	 * 	false : the routes have no points in common
+	 */
+	private boolean havePointInCommon(Route route1, Route route2) {
+
+		for (StopPoint stopPointRoute1 : route1.getStopPoints()) {
+			for (StopPoint stopPointRoute2 : route2.getStopPoints()) {
+				String stopAreaRoute1 = stopPointRoute1.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
+				String stopAreaRoute2 = stopPointRoute2.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
+
+				if (stopAreaRoute1.equals(stopAreaRoute2)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * Check if a route can be merged into another route. If
@@ -142,6 +181,7 @@ public class RouteMergerCommand implements Command {
 		if (areRoutesCompatibles(otherRoute, currentRouteTryingToMerge)){
 			mergeRoutes(otherRoute, currentRouteTryingToMerge);
 			completeRouteInformations(currentRouteTryingToMerge);
+			log.info(" checkAndMergeIfPossible - merge done from: " + otherRoute.getObjectId() + " - " + currentRouteTryingToMerge.getObjectId());
 			// a merge has been done. Loop can be stopped
 			return true;
 		}
@@ -149,10 +189,12 @@ public class RouteMergerCommand implements Command {
 		if (areRoutesCompatibles(currentRouteTryingToMerge, otherRoute)){
 			mergeRoutes(currentRouteTryingToMerge, otherRoute);
 			completeRouteInformations(otherRoute);
+			log.info(" checkAndMergeIfPossible - merge done from : " + currentRouteTryingToMerge.getObjectId() + " - " + otherRoute.getObjectId());
 			// a merge has been done. Loop can be stopped
 			return true;
 		}
 
+		log.info(" checkAndMergeIfPossible - no merge done" + currentRouteTryingToMerge.getObjectId() + " - " + otherRoute.getObjectId());
 		//no merge has been done
 		return false;
 
@@ -400,7 +442,11 @@ public class RouteMergerCommand implements Command {
 		for (StopPoint stopPoint : fromRoute.getStopPoints()) {
 
 			List<String> successors = getSuccessors(fromRoute, stopPoint.getPosition());
+
 			if (!checkSuccessors(destinationRoute, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(),successors)){
+				log.info(" route not compatible because check failed for successors of stopArea :" + stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId());
+				log.info(" position :" + stopPoint.getPosition());
+				log.info(" successors :" + successors.stream().collect(Collectors.joining(",")));
 				return false;
 			}
 		}
@@ -461,9 +507,9 @@ public class RouteMergerCommand implements Command {
 
 
 		List<String> routeRefSuccessors = route.getStopPoints().stream()
-															      .filter(stopPoint -> stopPoint.getPosition() > startPosition)
-																  .map(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
-																  .collect(Collectors.toList());
+				.filter(stopPoint -> stopPoint.getPosition() > startPosition)
+				.map(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
+				.collect(Collectors.toList());
 
 
 		for (String incomingStopArea : incomingSuccessorsToCheck) {
@@ -488,7 +534,7 @@ public class RouteMergerCommand implements Command {
 	 */
 	private boolean isStopAreaUsedInRoute(Route route, String stopAreaId){
 		return route.getStopPoints().stream()
-							.anyMatch(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(stopAreaId));
+				.anyMatch(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(stopAreaId));
 	}
 
 
@@ -503,18 +549,18 @@ public class RouteMergerCommand implements Command {
 	 */
 	private List<String> getSuccessors(Route route, Integer currentPosition ){
 		String currentStopAreaId = route.getStopPoints().stream()
-												.filter(stopPoint -> stopPoint.getPosition().equals(currentPosition))
-												.findFirst()
-												.get()
-												.getScheduledStopPoint()
-												.getContainedInStopAreaRef()
-												.getObjectId();
+				.filter(stopPoint -> stopPoint.getPosition().equals(currentPosition))
+				.findFirst()
+				.get()
+				.getScheduledStopPoint()
+				.getContainedInStopAreaRef()
+				.getObjectId();
 
 
 		return route.getStopPoints().stream()
-						.filter(stopPoint -> stopPoint.getPosition() > currentPosition && !stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(currentStopAreaId))
-						.map(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
-				        .collect(Collectors.toList());
+				.filter(stopPoint -> stopPoint.getPosition() > currentPosition && !stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().equals(currentStopAreaId))
+				.map(stopPoint -> stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
+				.collect(Collectors.toList());
 	}
 
 
@@ -562,20 +608,17 @@ public class RouteMergerCommand implements Command {
 		route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
 
 
+		if (!route.getStopPoints().isEmpty()) {
+			StopPoint firstStopPoint = route.getStopPoints().get(0);
+			StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
 
-			if (!route.getStopPoints().isEmpty()) {
-				StopPoint firstStopPoint = route.getStopPoints().get(0);
-				StopPoint lastStopPoint = route.getStopPoints().get(route.getStopPoints().size() - 1);
-
-				if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
-					String first = firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
-					String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
-					route.setName(first + " -> " + last);
-				}
-
+			if (firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+				String first = firstStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
+				String last = lastStopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
+				route.setName(first + " -> " + last);
 			}
 
-
+		}
 
 
 		// Create route point from first an last stop point on route
@@ -615,7 +658,6 @@ public class RouteMergerCommand implements Command {
 		firstRoutePoint.setFilled(true);
 		return firstRoutePoint;
 	}
-
 
 
 	/**

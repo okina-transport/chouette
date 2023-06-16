@@ -20,17 +20,21 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.QuayRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +65,8 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         mobi.chouette.model.Line neptuneLine = exportableData.getLine();
 
         deleteSpacesInIdsAndChangeSpecialCharacters(exportableData, parameters.getDefaultCodespacePrefix());
+
+        hashTimetableObjectId(exportableData);
 
         // Pour info il n'y a pas de produceAndCollectCommonData car les notices utilisés pour créer ce fichier sont récupérés dans les deux méthodes ci dessous
         produceAndCollectLineData(context, exportableData, exportableNetexData);
@@ -149,8 +155,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
 
         produceAndCollectPassengerStopAssignments(exportableData.getJourneyPatterns(), exportableNetexData, configuration);
 
-        List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(vj -> vj.getRoute()).distinct().collect(Collectors.toList());
-        produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
+        produceAndCollectDestinationDisplays(exportableData.getJourneyPatterns(), exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             exportableNetexData.getServiceJourneys().add(serviceJourneyIDFMProducer.produce(context, vehicleJourney));
@@ -190,15 +195,13 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         }
     }
 
-    private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
-        for (mobi.chouette.model.Route route : routes) {
-            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
-                for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
-                    if (stopPoint != null) {
-                        mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
-                        if (dd != null) {
-                            addDestinationDisplay(dd, exportableNetexData);
-                        }
+    private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.JourneyPattern> journeyPatterns, ExportableNetexData exportableNetexData) {
+        for (JourneyPattern journeyPattern : journeyPatterns) {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    mobi.chouette.model.DestinationDisplay dd = stopPoint.getDestinationDisplay();
+                    if (dd != null) {
+                        addDestinationDisplay(dd, exportableNetexData);
                     }
                 }
             }
@@ -264,6 +267,29 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         passengerStopAssignment.setVersion("any");
 
         return passengerStopAssignment;
+    }
+
+    private void hashTimetableObjectId(ExportableData exportableData) throws NoSuchAlgorithmException {
+        for(Timetable timetable : exportableData.getTimetables()){
+            timetable.setObjectId(computeEndId(timetable.getObjectId()));
+        }
+
+        List<Timetable> timetablesInVJ = exportableData.getVehicleJourneys()
+                .stream()
+                .flatMap(vj -> vj.getTimetables().stream())
+                .collect(Collectors.toList());
+
+        for(Timetable timetable : timetablesInVJ){
+            timetable.setObjectId(computeEndId(timetable.getObjectId()));
+        }
+    }
+
+    private String computeEndId(String timetableKey) throws NoSuchAlgorithmException {
+        String timetableKeyToHash = StringUtils.substringAfterLast(timetableKey, ":");
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(timetableKeyToHash.getBytes());
+        byte[] digest = md.digest();
+        return StringUtils.substringBeforeLast(timetableKey, ":") + ":" + DatatypeConverter.printHexBinary(digest).toUpperCase();
     }
 
 }
