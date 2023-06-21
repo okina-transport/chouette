@@ -2,8 +2,11 @@ package mobi.chouette.exchange.exporter;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 
 import javax.naming.InitialContext;
 
@@ -48,7 +51,7 @@ public class CompressCommand implements Command, Constant {
 			// Store file in permanent storage
 			Path filename = Paths.get(path, file);
 			FileStoreFactory.getFileStore().writeFile(filename, FileUtils.openInputStream(tmpFile));
-
+			changeDirectoryPermissions(path, "rwxrwxrwx");
 			tmpFile.delete();
 
 			result = SUCCESS;
@@ -74,6 +77,26 @@ public class CompressCommand implements Command, Constant {
 			Command result = new CompressCommand();
 			return result;
 		}
+	}
+
+	public static void changeDirectoryPermissions(String directoryPath, String permissions) throws IOException {
+		Set<PosixFilePermission> posixFilePermissions = PosixFilePermissions.fromString(permissions);
+		Path path = Paths.get(directoryPath);
+//		Files.setPosixFilePermissions(path, posixFilePermissions);
+
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.setPosixFilePermissions(file, posixFilePermissions);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				Files.setPosixFilePermissions(dir, posixFilePermissions);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 
 	static {
