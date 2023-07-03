@@ -207,7 +207,6 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 						convert(context, createDummyCalandar(gtfsCalendarDate.getId()), timetable);
 					}
 					addCalendarDay(timetable, gtfsCalendarDate);
-					timetable.computeLimitOfPeriods();
 				}
 				NamingUtil.setDefaultName(timetable);
 			}
@@ -215,6 +214,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 
 		List<Timetable> list = new ArrayList<Timetable>();
 		for (Timetable timetable : referential.getTimetables().values()) {
+			timetable.computeLimitOfPeriods();
 			list.add(cloneTimetableAfterMidnight(timetable));
 		}
 
