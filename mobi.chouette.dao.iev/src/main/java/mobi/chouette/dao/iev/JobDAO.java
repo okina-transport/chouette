@@ -118,6 +118,32 @@ public class JobDAO extends GenericDAOImpl<Job> {
 		return result;
 	}
 
+	public List<Job> findByStatusAndActionAndType(Job.STATUS status, String action, String typeJob) {
+		List<Job> result;
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Job> criteria = builder.createQuery(type);
+		Root<Job> root = criteria.from(type);
+		List<Predicate> predicates = new ArrayList<>();
+
+		Predicate statusPredicate = builder.equal(root.get(Job_.status), status);
+		predicates.add(statusPredicate);
+
+		Predicate actionPredicate = builder.equal(root.get(Job_.action), action);;
+		predicates.add(actionPredicate);
+
+		if (typeJob != null) {
+			Predicate typePredicate = builder.equal(root.get(Job_.type), typeJob);
+			predicates.add(typePredicate);
+		}
+
+		criteria.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));
+		criteria.orderBy(builder.asc(root.get(Job_.created)));
+
+		TypedQuery<Job> query = em.createQuery(criteria);
+		result = query.getResultList();
+		return result;
+	}
+
 	public List<Job> findByStatusesAndUpdatedSince(List<Job.STATUS> statuses, LocalDateTime since) {
 		List<Job> result;
 		CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -323,31 +323,59 @@ public class JobServiceManager {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void removeOldJobs(final int keepDays, final int keepJobsPerReferential) throws ServiceException {
+		List<Job> completedJobsAnalyzeFile = getCompletedJobsByActionAndType("analyzeFile", null);
+		List<Job> completedJobsImport = getCompletedJobsByActionAndType("importer", null);
+		List<Job> completedJobsValidator = getCompletedJobsByActionAndType("validator", null);
+		List<Job> completedJobsTransfer = getCompletedJobsByActionAndType("exporter", "transfer");
+		List<Job> completedJobsExportGTFS = getCompletedJobsByActionAndType("exporter", "gtfs");
+		List<Job> completedJobsExportNeptune = getCompletedJobsByActionAndType("exporter", "neptune");
+		List<Job> completedJobsExportNetex = getCompletedJobsByActionAndType("exporter", "netexprofile");
 
-		List<Job> completedJobs = new ArrayList<>();
-		Job.STATUS.getCompletedStatuses().stream().forEach(status -> completedJobs.addAll(jobDAO.findByStatus(status)));
-		Collections.sort(completedJobs, (job1, job2) -> ObjectUtils.compare(job1.getUpdated(), job2.getUpdated()));
 		int jobsDeleted = 0;
 
-		List<List<Job>> referentialsWithCompletedJobs = completedJobs.stream().collect(Collectors.groupingBy(Job::getReferential))
-				.values().stream().filter(completedJobsForRef -> completedJobsForRef.size() > keepJobsPerReferential).collect(Collectors.toList());
-
-		for (List<Job> referentialWithCompletedJobs : referentialsWithCompletedJobs) {
-			LocalDateTime ageLimit = LocalDateTime.now().minusDays(keepDays);
-			List<Job> deleteJobs = referentialWithCompletedJobs.subList(0, referentialWithCompletedJobs.size() - keepJobsPerReferential)
-					.stream().filter(job -> job.getUpdated() != null && job.getUpdated().isBefore(ageLimit)).collect(Collectors.toList());
-
-			for (Job deleteJob : deleteJobs) {
-				log.debug("Removing old, completed job: " + deleteJob);
-				remove(deleteJob.getReferential(), deleteJob.getId());
-			}
-
-			jobsDeleted = deleteJobs.size();
-
-		}
+		jobsDeleted += deleteOldJobs(completedJobsAnalyzeFile, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsImport, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsValidator, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsTransfer, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsExportGTFS, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsExportNeptune, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsExportNetex, keepDays, keepJobsPerReferential);
 
 		log.info("Removed old jobs. Cnt: " + jobsDeleted);
 	}
+
+	private List<Job> getCompletedJobsByActionAndType(String action, String type) {
+		List<Job> completedJobs = new ArrayList<>();
+		STATUS.getCompletedStatuses().forEach(status -> completedJobs.addAll(jobDAO.findByStatusAndActionAndType(status, action, type)));
+		completedJobs.sort(Comparator.comparing(Job::getUpdated));
+		return completedJobs;
+	}
+
+	private int deleteOldJobs(List<Job> jobs, int keepDays, int keepJobsPerReferential) throws ServiceException {
+		int jobsDeleted = 0;
+
+		Map<String, List<Job>> referentialJobsMap = jobs.stream().collect(Collectors.groupingBy(Job::getReferential));
+
+		for (List<Job> referentialJobs : referentialJobsMap.values()) {
+			if (referentialJobs.size() > keepJobsPerReferential) {
+				LocalDateTime ageLimit = LocalDateTime.now().minusDays(keepDays);
+				List<Job> deleteJobs = referentialJobs.subList(0, referentialJobs.size() - keepJobsPerReferential)
+						.stream()
+						.filter(job -> job.getUpdated() != null && job.getUpdated().isBefore(ageLimit))
+						.collect(Collectors.toList());
+
+				for (Job deleteJob : deleteJobs) {
+					log.debug("Removing old, completed job: " + deleteJob);
+					remove(deleteJob.getReferential(), deleteJob.getId());
+				}
+
+				jobsDeleted += deleteJobs.size();
+			}
+		}
+
+		return jobsDeleted;
+	}
+
 
 	public void drop(String referential) throws ServiceException {
 
