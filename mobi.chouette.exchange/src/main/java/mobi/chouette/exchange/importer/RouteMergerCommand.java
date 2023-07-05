@@ -7,15 +7,18 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.RouteDAO;
 import mobi.chouette.dao.RoutePointDAO;
 import mobi.chouette.model.JourneyPattern;
+import mobi.chouette.model.Provider;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RoutePoint;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.PTDirectionEnum;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -47,6 +50,9 @@ public class RouteMergerCommand implements Command {
 	@EJB
 	private RoutePointDAO routePointDAO;
 
+	@EJB
+	private ProviderDAO providerDAO;
+
 	private Map<Long, Set<PTDirectionEnum>> lineDirections = new HashMap<>();
 
 	public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
@@ -63,15 +69,25 @@ public class RouteMergerCommand implements Command {
 
 
 		Monitor monitor = MonitorFactory.start(COMMAND);
-		buildLineDirectionsMap();
 
-		for (Map.Entry<Long, Set<PTDirectionEnum>> lineDirectionEntry : lineDirections.entrySet()) {
-			for (PTDirectionEnum ptDirectionEnum : lineDirectionEntry.getValue()) {
-				launchMergeForLineAndDirection(lineDirectionEntry.getKey(), ptDirectionEnum);
+		Optional<Provider> provider = providerDAO.findBySchema(ContextHolder.getContext());
+
+		if (provider.isPresent() && provider.get().isIdfm()){
+			buildLineDirectionsMap();
+
+			for (Map.Entry<Long, Set<PTDirectionEnum>> lineDirectionEntry : lineDirections.entrySet()) {
+				for (PTDirectionEnum ptDirectionEnum : lineDirectionEntry.getValue()) {
+					launchMergeForLineAndDirection(lineDirectionEntry.getKey(), ptDirectionEnum);
+				}
 			}
+
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		else{
+			provider.ifPresent(value -> log.info("Filiale non IDFM : " + value.getSchemaName() + " route merge non effectué"));
+		}
+
 		return SUCCESS;
 	}
 
