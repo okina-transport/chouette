@@ -783,12 +783,17 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             timeband.setStartTime(frequency.getStartTime().getTime());
             timeband.setEndTime(frequency.getEndTime().getTime());
 
+            String journeyFrequencyObjectId = AbstractConverter.composeObjectId(configuration,
+                    "HeadwayJourney", gtfsTrip.getTripId() + "-" + count++);
+
             JourneyFrequency journeyFrequency = new JourneyFrequency();
             journeyFrequency.setExactTime(frequency.getExactTimes());
             journeyFrequency.setFirstDepartureTime(frequency.getStartTime().getTime());
             journeyFrequency.setLastDepartureTime(frequency.getEndTime().getTime());
             journeyFrequency.setScheduledHeadwayInterval(Duration.standardSeconds(frequency.getHeadwaySecs()));
             journeyFrequency.setTimeband(timeband);
+            journeyFrequency.setObjectId(journeyFrequencyObjectId);
+
             journeyFrequency.setVehicleJourney(vehicleJourney);
 
             List<VehicleJourneyAtStop> vjass = vehicleJourney.getVehicleJourneyAtStops();

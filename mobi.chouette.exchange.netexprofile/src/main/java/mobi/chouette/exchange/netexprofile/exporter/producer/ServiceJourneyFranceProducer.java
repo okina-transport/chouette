@@ -155,14 +155,12 @@ public class ServiceJourneyFranceProducer {
             headwayJourneyGroup.setFirstDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getFirstDepartureTime()));
             headwayJourneyGroup.setLastDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getLastDepartureTime()));
 
-            String headWayId = vehicleJourney.getObjectId().replace(":VehicleJourney:", ":HeadwayJourney:") + "_" + headwayNb + ":LOC";
-            headwayNb++;
-            headwayJourneyGroup.setId(headWayId);
+            headwayJourneyGroup.setId(journeyFrequency.getObjectId());
             headwayJourneyGroup.setVersion("any");
             exportableNetexData.getHeadwayJourneys().add(headwayJourneyGroup);
 
             HeadwayJourneyGroupRefStructure struct = netexFactory.createHeadwayJourneyGroupRefStructure();
-            struct.setRef(headWayId);
+            struct.setRef(journeyFrequency.getObjectId());
             struct.setVersion("any");
             freqGroup.getHeadwayJourneyGroupRefOrHeadwayJourneyGroupOrRhythmicalJourneyGroupRef().add(struct);
 

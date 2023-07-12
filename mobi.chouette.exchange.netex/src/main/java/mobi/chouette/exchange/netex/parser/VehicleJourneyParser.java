@@ -39,10 +39,19 @@ public class VehicleJourneyParser implements Parser, Constant {
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("ServiceJourney")) {
 				parseServiceJourney(context);
+			} else if (xpp.getName().equals("TemplateServiceJourney")) {
+				parseTemplateServiceJourney(context);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);
 			}
 		}
+	}
+
+	private void parseTemplateServiceJourney(Context context) throws Exception {
+		XmlPullParser xpp = (XmlPullParser) context.get(PARSER);
+		Referential referential = (Referential) context.get(REFERENTIAL);
+
+		xpp.require(XmlPullParser.START_TAG, null, "TemplateServiceJourney");
 	}
 
 	private void parseServiceJourney(Context context) throws Exception {

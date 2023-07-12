@@ -1,27 +1,6 @@
 package mobi.chouette.model.util;
 
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Branding;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RoutePoint;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timeband;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 
 public class ObjectFactory {
 
@@ -148,6 +127,16 @@ public class ObjectFactory {
 			result.setObjectId(objectId);
 			result.setDetached(true);
 			referential.getJourneyPatterns().put(objectId, result);
+		}
+		return result;
+	}
+
+	public static JourneyFrequency getJourneyFrequency(Referential referential, String objectId) {
+		JourneyFrequency result = referential.getJourneyFrequency().get(objectId);
+		if (result == null) {
+			result = new JourneyFrequency();
+			result.setDetached(true);
+			referential.getJourneyFrequency().put(objectId, result);
 		}
 		return result;
 	}
