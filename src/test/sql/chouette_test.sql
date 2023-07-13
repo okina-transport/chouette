@@ -692,7 +692,11 @@ CREATE TABLE journey_frequencies (
     exact_time boolean DEFAULT false,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    timeband_id integer
+    timeband_id integer,
+    objectid character varying(255) NOT NULL,
+    object_version integer,
+    creator_id character varying(255),
+    creation_time timestamp without time zone
 );
 
 
@@ -721,6 +725,11 @@ ALTER TABLE chouette_gui.journey_frequencies_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE journey_frequencies_id_seq OWNED BY journey_frequencies.id;
 
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
 
 --
 -- TOC entry 382 (class 1259 OID 942378)
@@ -1753,6 +1762,8 @@ ALTER TABLE chouette_gui.timebands_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE timebands_id_seq OWNED BY timebands.id;
 
+ALTER TABLE ONLY timebands
+    ADD CONSTRAINT timebands_pkey PRIMARY KEY (id);
 
 --
 -- TOC entry 234 (class 1259 OID 939093)
