@@ -1756,8 +1756,6 @@ ALTER TABLE chouette_gui.timebands_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE timebands_id_seq OWNED BY timebands.id;
 
-ALTER TABLE ONLY timebands
-    ADD CONSTRAINT timebands_pkey PRIMARY KEY (id);
 
 --
 -- TOC entry 234 (class 1259 OID 939093)
