@@ -725,12 +725,6 @@ ALTER TABLE chouette_gui.journey_frequencies_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE journey_frequencies_id_seq OWNED BY journey_frequencies.id;
 
-ALTER TABLE ONLY journey_frequencies
-    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY journey_frequencies
-    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
-
 --
 -- TOC entry 382 (class 1259 OID 942378)
 -- Name: journey_pattern_sections; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
@@ -5251,6 +5245,12 @@ ADD CONSTRAINT journey_patterns_key_values_journey_pattern_fkey FOREIGN KEY (jou
 
 ALTER TABLE ONLY chouette_gui.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES chouette_gui.stop_areas(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY chouette_gui.journey_frequencies
+    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY chouette_gui.journey_frequencies
+    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES chouette_gui.timebands(id) ON DELETE CASCADE;
 
 
 CREATE TABLE tro.stop_areas_key_values (

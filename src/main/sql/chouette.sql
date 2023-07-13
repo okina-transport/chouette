@@ -608,12 +608,6 @@ ALTER TABLE :SCH.journey_frequencies_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE journey_frequencies_id_seq OWNED BY journey_frequencies.id;
 
-ALTER TABLE ONLY journey_frequencies
-    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY journey_frequencies
-    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
-
 --
 -- TOC entry 382 (class 1259 OID 942378)
 -- Name: journey_pattern_sections; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
@@ -2173,6 +2167,12 @@ CREATE UNIQUE INDEX time_tables_objectid_key ON time_tables USING btree (objecti
 
 CREATE UNIQUE INDEX vehicle_journeys_objectid_key ON vehicle_journeys USING btree (objectid);
 
+
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
 
 --
 -- TOC entry 4100 (class 2606 OID 939971)
