@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = VehicleJourneyUpdater.BEAN_NAME)
 public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
@@ -41,14 +42,8 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		@Override
 		public int compare(JourneyFrequency o1, JourneyFrequency o2) {
 			int result = 1;
-			if (o1.getTimeband() != null && o2.getTimeband() != null) {
-				if (o1.getTimeband().equals(o2.getTimeband()))
-					result = 0;
-				else if (o1.getTimeband().getStartTime() == null || o1.getTimeband().getEndTime() == null)
-					result = -1;
-				else if (o1.getTimeband().getEndTime().isBefore(o2.getTimeband().getStartTime())
-						|| o1.getTimeband().getEndTime().equals(o2.getTimeband().getStartTime()))
-					result = -1;
+			if(o1.getObjectId() == null || o2.getObjectId().equals(o1.getObjectId())) {
+				result = 0;
 			}
 			return result;
 		}
@@ -342,24 +337,30 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 					newValue.getJourneyFrequencies(), oldValue.getJourneyFrequencies(), JOURNEY_FREQUENCY_COMPARATOR);
 			final Collection<String> objectIds = new ArrayList<String>();
 			for (JourneyFrequency journeyFrequency : addedJourneyFrequency) {
-				objectIds.add(journeyFrequency.getTimeband().getObjectId());
+				if(journeyFrequency.getTimeband() != null)
+					objectIds.add(journeyFrequency.getTimeband().getObjectId());
+
 			}
 			List<Timeband> timebands = null;
 			for (JourneyFrequency item : addedJourneyFrequency) {
 				JourneyFrequency journeyFrequency = new JourneyFrequency();
-				Timeband timeband = cache.getTimebands().get(item.getTimeband().getObjectId());
-				if (timeband == null) {
-					if (timebands == null) {
-						timebands = timebandDAO.findByObjectId(objectIds);
-						for (Timeband object : timebands) {
-							cache.getTimebands().put(object.getObjectId(), object);
+				if(cache.getTimebands() != null && !cache.getTimebands().isEmpty()
+						&& item.getTimeband() != null){
+					Timeband timeband = cache.getTimebands().get(item.getTimeband().getObjectId());
+					if (timeband == null) {
+						if (timebands == null) {
+							timebands = timebandDAO.findByObjectId(objectIds);
+							for (Timeband object : timebands) {
+								cache.getTimebands().put(object.getObjectId(), object);
+							}
 						}
+						timeband = cache.getTimebands().get(item.getTimeband().getObjectId());
 					}
-					timeband = cache.getTimebands().get(item.getTimeband().getObjectId());
+					if (timeband != null) {
+						journeyFrequency.setTimeband(timeband);
+					}
 				}
-				if (timeband != null) {
-					journeyFrequency.setTimeband(timeband);
-				}
+				journeyFrequency.setObjectId(item.getObjectId());
 				journeyFrequency.setVehicleJourney(oldValue);
 			}
 

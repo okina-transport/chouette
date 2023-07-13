@@ -17,59 +17,7 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections.CollectionUtils;
-import org.rutebanken.netex.model.Branding;
-import org.rutebanken.netex.model.Common_VersionFrameStructure;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DataManagedObjectStructure;
-import org.rutebanken.netex.model.DayTypeAssignment;
-import org.rutebanken.netex.model.DayTypeAssignmentsInFrame_RelStructure;
-import org.rutebanken.netex.model.DayTypesInFrame_RelStructure;
-import org.rutebanken.netex.model.DestinationDisplay;
-import org.rutebanken.netex.model.DestinationDisplaysInFrame_RelStructure;
-import org.rutebanken.netex.model.Direction;
-import org.rutebanken.netex.model.DirectionsInFrame_RelStructure;
-import org.rutebanken.netex.model.EntityStructure;
-import org.rutebanken.netex.model.GeneralFrame;
-import org.rutebanken.netex.model.JourneyInterchangesInFrame_RelStructure;
-import org.rutebanken.netex.model.JourneyPatternsInFrame_RelStructure;
-import org.rutebanken.netex.model.Journey_VersionStructure;
-import org.rutebanken.netex.model.JourneysInFrame_RelStructure;
-import org.rutebanken.netex.model.LinesInFrame_RelStructure;
-import org.rutebanken.netex.model.LinkSequence_VersionStructure;
-import org.rutebanken.netex.model.Network;
-import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.OperatingDay;
-import org.rutebanken.netex.model.OperatingDaysInFrame_RelStructure;
-import org.rutebanken.netex.model.OperatingPeriod_VersionStructure;
-import org.rutebanken.netex.model.OperatingPeriodsInFrame_RelStructure;
-import org.rutebanken.netex.model.OrganisationsInFrame_RelStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.Quays_RelStructure;
-import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.RouteLink;
-import org.rutebanken.netex.model.RouteLinksInFrame_RelStructure;
-import org.rutebanken.netex.model.RoutesInFrame_RelStructure;
-import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.ScheduledStopPointsInFrame_RelStructure;
-import org.rutebanken.netex.model.ServiceCalendarFrame;
-import org.rutebanken.netex.model.ServiceFrame;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.ServiceLinksInFrame_RelStructure;
-import org.rutebanken.netex.model.SiteConnection;
-import org.rutebanken.netex.model.SiteFrame;
-import org.rutebanken.netex.model.StopAssignment_VersionStructure;
-import org.rutebanken.netex.model.StopAssignmentsInFrame_RelStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.StopPlacesInFrame_RelStructure;
-import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
-import org.rutebanken.netex.model.TimetableFrame;
-import org.rutebanken.netex.model.TypesOfValueInFrame_RelStructure;
-import org.rutebanken.netex.model.ValidBetween;
-import org.rutebanken.netex.model.ValidityConditions_RelStructure;
+import org.rutebanken.netex.model.*;
 
 
 import javax.xml.bind.JAXBElement;
@@ -95,7 +43,9 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 	private JourneyPatternParser journeyPatternParser;
 	private ScheduledStopPointParser scheduledStopPointParser;
 	private DestinationDisplayParser destinationDisplayParser;
+	private HeadwayJourneyGroupParser headwayJourneyGroupParser;
 	private ServiceJourneyParser serviceJourneyParser;
+	private TemplateServiceJourneyParser templateServiceJourneyParser;
 	private StopAssignmentParser stopAssignmentParser;
 	private StopPlaceParser stopPlaceParser;
 	private RouteLinkParser routeLinkParser;
@@ -123,7 +73,9 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		journeyPatternParser = (JourneyPatternParser) ParserFactory.create(JourneyPatternParser.class.getName());
 		scheduledStopPointParser = (ScheduledStopPointParser) ParserFactory.create(ScheduledStopPointParser.class.getName());
 		destinationDisplayParser = (DestinationDisplayParser) ParserFactory.create(DestinationDisplayParser.class.getName());
+		headwayJourneyGroupParser = (HeadwayJourneyGroupParser) ParserFactory.create(HeadwayJourneyGroupParser.class.getName());
 		serviceJourneyParser = (ServiceJourneyParser) ParserFactory.create(ServiceJourneyParser.class.getName());
+		templateServiceJourneyParser = (TemplateServiceJourneyParser) ParserFactory.create(TemplateServiceJourneyParser.class.getName());
 		stopAssignmentParser = (StopAssignmentParser) ParserFactory.create(StopAssignmentParser.class.getName());
 		stopPlaceParser = (StopPlaceParser) ParserFactory.create(StopPlaceParser.class.getName());
 		routeLinkParser = (RouteLinkParser) ParserFactory.create(RouteLinkParser.class.getName());
@@ -483,6 +435,12 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<ServiceJourney> journeys = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ServiceJourney.class, members);
 			parseServiceJourney(context,journeys);
 
+			List<HeadwayJourneyGroup> headwayJourneyGroups = NetexObjectUtil.getMembers(org.rutebanken.netex.model.HeadwayJourneyGroup.class, members);
+			parseHeadwayJourneyGroups(context,headwayJourneyGroups);
+
+			List<TemplateServiceJourney> templateServiceJourneys = NetexObjectUtil.getMembers(org.rutebanken.netex.model.TemplateServiceJourney.class, members);
+			parseTemplateServiceJourney(context, templateServiceJourneys);
+
 			List<SiteConnection> siteConnections = NetexObjectUtil.getMembers(org.rutebanken.netex.model.SiteConnection.class, members);
 			parseSiteConnections(context,siteConnections);
 
@@ -520,6 +478,21 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 	}
 
+
+	private void parseHeadwayJourneyGroups(Context context, List<HeadwayJourneyGroup> headwayJourneyGroups) throws Exception {
+		if (headwayJourneyGroups.isEmpty())
+			return;
+
+		FrequencyGroups_RelStructure journeyGroupRelStructure = netexFactory.createFrequencyGroups_RelStructure();
+
+		List<HeadwayJourneyGroup_VersionStructure> listHeadwayJourneyGroup = new ArrayList<>();
+		listHeadwayJourneyGroup.addAll(headwayJourneyGroups);
+
+		journeyGroupRelStructure.withHeadwayJourneyGroupRefOrHeadwayJourneyGroupOrRhythmicalJourneyGroupRef(listHeadwayJourneyGroup);
+		context.put(NETEX_LINE_DATA_CONTEXT, journeyGroupRelStructure);
+		headwayJourneyGroupParser.parse(context);
+	}
+
 	private void parseServiceJourney(Context context,List<ServiceJourney> netexJourneyInframe) throws Exception {
 
 		if (netexJourneyInframe.isEmpty())
@@ -532,6 +505,19 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		journeysInFrame_relStructure.withVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney(journeys);
 		context.put(NETEX_LINE_DATA_CONTEXT, journeysInFrame_relStructure);
 		serviceJourneyParser.parse(context);
+	}
+
+	private void parseTemplateServiceJourney(Context context, List<TemplateServiceJourney> netexJourneyInframe) throws Exception {
+		if (netexJourneyInframe.isEmpty())
+			return;
+
+		JourneysInFrame_RelStructure journeysInFrame_relStructure = netexFactory.createJourneysInFrame_RelStructure();
+
+		List<Journey_VersionStructure> journeys = new ArrayList<>();
+		journeys.addAll(netexJourneyInframe);
+		journeysInFrame_relStructure.withVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney(journeys);
+		context.put(NETEX_LINE_DATA_CONTEXT, journeysInFrame_relStructure);
+		templateServiceJourneyParser.parse(context);
 	}
 
 	private void parseDestinationDisplay(Context context,List<DestinationDisplay> netexDestinationDisplays) throws Exception {

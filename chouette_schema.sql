@@ -2850,7 +2850,11 @@ CREATE TABLE journey_frequencies (
     exact_time boolean DEFAULT false,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    timeband_id integer
+    timeband_id integer,
+    objectid character varying(255) NOT NULL,
+    object_version integer,
+    creator_id character varying(255),
+    creation_time timestamp without time zone
 );
 
 
@@ -2911,6 +2915,11 @@ CREATE INDEX index_journey_frequencies_on_timeband_id ON journey_frequencies USI
 
 CREATE INDEX index_journey_frequencies_on_vehicle_journey_id ON journey_frequencies USING btree (vehicle_journey_id);
 
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_vehicle_journey_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY journey_frequencies
+    ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
 
 -- -- sch variations
 -- CREATE TABLE variations (

@@ -37,6 +37,10 @@ public class JourneyFrequencyUpdater implements Updater<JourneyFrequency> {
 				&& !newValue.getScheduledHeadwayInterval().equals(oldValue.getScheduledHeadwayInterval())) {
 			oldValue.setScheduledHeadwayInterval(newValue.getScheduledHeadwayInterval());
 		}
+		if (newValue.getObjectId() != null
+				&& !newValue.getScheduledHeadwayInterval().equals(oldValue.getScheduledHeadwayInterval())) {
+			oldValue.setScheduledHeadwayInterval(newValue.getScheduledHeadwayInterval());
+		}
 		
 		// Timeband
 		if (newValue.getTimeband() == null) {

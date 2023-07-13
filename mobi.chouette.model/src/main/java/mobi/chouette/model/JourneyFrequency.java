@@ -25,7 +25,7 @@ import org.joda.time.LocalTime;
 @Table(name = "journey_frequencies")
 @NoArgsConstructor
 @ToString(callSuper = true, exclude = { "vehicleJourney", "timeband" })
-public class JourneyFrequency extends NeptuneObject {
+public class JourneyFrequency extends NeptuneIdentifiedObject {
 
 	private static final long serialVersionUID = 8361606377991750952L;
 
