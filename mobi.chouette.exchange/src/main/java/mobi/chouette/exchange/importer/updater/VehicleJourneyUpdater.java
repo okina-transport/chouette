@@ -360,7 +360,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 						journeyFrequency.setTimeband(timeband);
 					}
 				}
-				journeyFrequency.setObjectId(item.getObjectId());
+				journeyFrequency.setObjectId(item.getObjectId() != null ? item.getObjectId() : createJFObjectId(oldValue));
 				journeyFrequency.setVehicleJourney(oldValue);
 			}
 
@@ -382,6 +382,10 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		updateFootnotes(context,oldValue,newValue,cache);
 		updateInterchanges(context, oldValue, newValue);
 //		monitor.stop();
+	}
+
+	private String createJFObjectId(VehicleJourney oldValue) {
+		return oldValue.getObjectId().trim().split(":")[0] + ":JourneyFrequency:" + oldValue.getObjectId().trim().split(":")[2];
 	}
 
 	private void updateFootnotes(Context context, VehicleJourney oldValue, VehicleJourney newValue, Referential cache) throws Exception {
