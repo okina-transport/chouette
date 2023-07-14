@@ -42,7 +42,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		@Override
 		public int compare(JourneyFrequency o1, JourneyFrequency o2) {
 			int result = 1;
-			if(o1.getObjectId() == null || o2.getObjectId().equals(o1.getObjectId())) {
+			if(o2.getObjectId() != null && (o1.getObjectId() == null || o2.getObjectId().equals(o1.getObjectId()))) {
 				result = 0;
 			}
 			return result;
