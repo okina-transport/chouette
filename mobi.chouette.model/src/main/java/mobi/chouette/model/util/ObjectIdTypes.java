@@ -104,6 +104,11 @@ public interface ObjectIdTypes {
 	    * default objectId type for timetabled passing times / vehicle journey at stop
 	    */
 	   public static final String VEHICLE_JOURNEY_AT_STOP_KEY = "TimetabledPassingTime";
+
+	/**
+	 * default objectId type for timetabled passing times / vehicle journey at stop
+	 */
+	public static final String JOURNEY_FREQUENCY = "JourneyFrequency";
 	   
 	   /**
 	    * default objectId type for authorities
