@@ -142,6 +142,7 @@ public class VehicleJourneyParser implements Parser, Constant, JsonExtension {
 				journeyFrequency.setTimeband(ObjectFactory.getTimeband(referential, timeSlotObjectId));
 				journeyFrequency.setFirstDepartureTime(timeSlot.getFirstDepartureTimeInSlot());
 				journeyFrequency.setLastDepartureTime(timeSlot.getLastDepartureTimeInSlot());
+				journeyFrequency.setObjectId(AbstractConverter.composeObjectId(configuration, Line.JOURNEY_FREQUENCY, objectId));
 				if (headwayFrequency != null)
 					journeyFrequency.setScheduledHeadwayInterval(headwayFrequency);
 				
