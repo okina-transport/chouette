@@ -205,8 +205,8 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         Map<String, Object> analyzeReportMap = new HashMap<>();
 
         Map<String, Object> explorationPeriodMap = new HashMap<>();
-        explorationPeriodMap.put("start", oldestPeriodOfCalendars.toString());
-        explorationPeriodMap.put("end", newestPeriodOfCalendars.toString());
+        explorationPeriodMap.put("start", oldestPeriodOfCalendars == null ? "" : oldestPeriodOfCalendars.toString());
+        explorationPeriodMap.put("end", newestPeriodOfCalendars == null ? "" : newestPeriodOfCalendars.toString());
         analyzeReportMap.put("exploitation_period",explorationPeriodMap);
 
 

@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
-import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
-import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.FARE_ZONE;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.*;
 
 /**
  * Map from chouette model to NeTEx
@@ -116,7 +115,16 @@ public class StopPlaceMapper {
         mapName(stopArea, stopPlace);
         addExternalRefInfo(stopArea, stopPlace);
         addZoneIdInfo(stopArea, stopPlace);
+        addRailUICinfo(stopArea, stopPlace);
         return stopPlace;
+    }
+
+    private void addRailUICinfo(StopArea stopArea, StopPlace zone) {
+        if (StringUtils.isNotBlank(stopArea.getRailUic())) {
+            zone.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
+                    .withKey(RAIL_UIC)
+                    .withValue(stopArea.getRailUic())));
+        }
     }
 
     private void mapCompassBearing(StopArea stopArea, Quay quay) {

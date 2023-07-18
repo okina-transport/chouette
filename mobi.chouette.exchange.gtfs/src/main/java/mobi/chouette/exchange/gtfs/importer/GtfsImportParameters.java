@@ -32,7 +32,8 @@ import java.util.Arrays;
 		"linePrefixToRemove",
 		"removeParentStations",
 		"importShapesFile",
-		"updateStopAccessibility"
+		"updateStopAccessibility",
+		"railUICprocessing"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -104,6 +105,10 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "update_stop_accessibility", defaultValue = "false")
 	private boolean updateStopAccessibility = false;
+
+	@Getter@Setter
+	@XmlElement(name = "rail_uic_processing", defaultValue = "false")
+	private boolean railUICprocessing = false;
 
 	public boolean isValid(Logger log, String[] allowedTypes)
 	{

@@ -35,4 +35,8 @@ public class Provider extends NeptuneObject {
 
     @Column(name = "netex_prefix")
     private String prefixNetex;
+
+    @Column(name = "rail_uic_regexp")
+    private String railUICregexp;
+
 }
