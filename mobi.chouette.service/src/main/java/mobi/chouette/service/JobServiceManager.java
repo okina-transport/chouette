@@ -307,7 +307,7 @@ public class JobServiceManager {
 	}
 
 	public void remove(String referential, Long id) throws ServiceException {
-		validateReferential(referential);
+//		validateReferential(referential);
 		JobService jobService = getJobService(referential, id);
 		if (jobService.getStatus().ordinal() <= STATUS.STARTED.ordinal()) {
 			throw new RequestServiceException(RequestExceptionCode.SCHEDULED_JOB, "referential = " + referential
