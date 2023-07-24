@@ -228,7 +228,7 @@ public class JobServiceManager {
 
 		boolean result = checker.validateContener(referential);
 		if (!result) {
-			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "referential");
+			throw new RequestServiceException(RequestExceptionCode.UNKNOWN_REFERENTIAL, "referential : " + referential);
 		}
 
 		referentials.add(referential);
@@ -307,7 +307,7 @@ public class JobServiceManager {
 	}
 
 	public void remove(String referential, Long id) throws ServiceException {
-		validateReferential(referential);
+//		validateReferential(referential);
 		JobService jobService = getJobService(referential, id);
 		if (jobService.getStatus().ordinal() <= STATUS.STARTED.ordinal()) {
 			throw new RequestServiceException(RequestExceptionCode.SCHEDULED_JOB, "referential = " + referential
