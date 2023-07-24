@@ -311,6 +311,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
             if (newStopAreaId == null) continue;
 
             StopArea newStartStopArea = referential.getSharedStopAreas().get(newStopAreaId);
+            if (newStartStopArea == null) continue;
             accessLink.setStopArea(newStartStopArea);
 
         }
