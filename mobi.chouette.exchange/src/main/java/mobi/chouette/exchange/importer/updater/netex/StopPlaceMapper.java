@@ -116,7 +116,17 @@ public class StopPlaceMapper {
         mapName(stopArea, stopPlace);
         addExternalRefInfo(stopArea, stopPlace);
         addZoneIdInfo(stopArea, stopPlace);
+        mapTarifZoneRef(stopArea, stopPlace);
         return stopPlace;
+    }
+
+    private void mapTarifZoneRef(StopArea stopArea, StopPlace stopPlace) {
+        if (StringUtils.isNotBlank(stopArea.getZoneId())) {
+            stopPlace.setTariffZones(new TariffZoneRefs_RelStructure());
+            ZoneRefStructure tariffZone = new ZoneRefStructure();
+            tariffZone.setRef(stopArea.getZoneId());
+            stopPlace.getTariffZones().getTariffZoneRef_().add(netexObjectFactory.createTariffZoneRef_(tariffZone));
+        }
     }
 
     private void mapCompassBearing(StopArea stopArea, Quay quay) {
