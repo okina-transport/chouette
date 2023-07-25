@@ -19,9 +19,13 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j
 public class GtfsStopParser implements Parser, Validator, Constant {
+
+	private String railUICregexp;
 	
 	@Override
 	public void validate(Context context) throws Exception {
@@ -110,6 +114,11 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 
+		if(context.get(RAIL_UIC_REGEXP) != null){
+			railUICregexp = (String) context.get(RAIL_UIC_REGEXP);
+		}
+
+
 		for (GtfsStop gtfsStop : importer.getStopById()) {
 			handlePrefixes(gtfsStop,configuration);
 
@@ -148,6 +157,10 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
+
+		if (LocationType.Station.equals(gtfsStop.getLocationType()) && configuration.isRailUICprocessing()){
+			addRailUICToStopArea(gtfsStop, stopArea);
+		}
 
 		stopArea.setLatitude(gtfsStop.getStopLat());
 		stopArea.setLongitude(gtfsStop.getStopLon());
@@ -215,7 +228,22 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			stopArea.setZoneId(AbstractConverter.composeObjectId(configuration, "TariffZone", gtfsStop.getZoneId()));
 		}
 	}
-	
+
+	/**
+	 * Try to identify rail UIC code, using pattern. If the rail UIC is found, it is feeded in the stopArea
+	 * @param gtfsStop
+	 * 	gtfsStop from stops.txt file
+	 * @param stopArea
+	 * 	the created stopArea
+	 */
+	private void addRailUICToStopArea(GtfsStop gtfsStop, StopArea stopArea) {
+		Pattern pattern = Pattern.compile(railUICregexp);
+		Matcher matcher = pattern.matcher(gtfsStop.getStopId());
+		if (matcher.matches()) {
+			stopArea.setRailUic(matcher.group(1));
+		}
+	}
+
 	static {
 		ParserFactory.register(GtfsStopParser.class.getName(), new ParserFactory() {
 			@Override

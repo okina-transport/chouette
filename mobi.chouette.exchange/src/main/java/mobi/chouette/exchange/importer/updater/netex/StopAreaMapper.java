@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.EXTERNAL_REF;
-import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.FARE_ZONE;
+import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.*;
 
 /**
  * Map from NeTEx to chouette model
@@ -212,6 +211,10 @@ public class StopAreaMapper {
                     List<KeyValue> keyValues = new ArrayList<>();
                     keyValues.add(keyValue);
                     createdStopArea.setKeyValues(keyValues);
+                }
+
+                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), RAIL_UIC) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                    createdStopArea.setRailUic(keyValueStructure.getValue());
                 }
             }
         }
