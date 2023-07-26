@@ -484,7 +484,7 @@ public class ValidationStopAreas extends AbstractTestValidation {
 		Assert.assertEquals(checkPointReport.getState(), ValidationReporter.RESULT.NOK, " checkPointReport must be nok");
 		Assert.assertEquals(checkPointReport.getSeverity(), CheckPointReport.SEVERITY.WARNING,
 				" checkPointReport must be on severity error");
-		Assert.assertEquals(checkPointReport.getCheckPointErrorCount(), 2, " checkPointReport must have 2 item");
+		Assert.assertEquals(checkPointReport.getCheckPointErrorCount(), 3, " checkPointReport must have 2 item");
 		String detailKey = "3-StopArea-5".replaceAll("-", "_").toLowerCase();
 		List<CheckPointErrorReport> details = checkReportForTest(report,"3-StopArea-5",-1);
 		for (CheckPointErrorReport detail : details) {
