@@ -29,6 +29,7 @@ import mobi.chouette.model.util.Referential;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j
 @Stateless(name = GtfsInitImportCommand.COMMAND)
@@ -77,7 +78,8 @@ public class GtfsInitImportCommand implements Command, Constant {
 
 			String referential = parameters.getReferentialName();
 			Optional<Provider> providerOpt = providerDAO.findBySchema(referential);
-			providerOpt.ifPresent(provider -> context.put(RAIL_UIC_REGEXP, provider.getRailUICregexp()));
+			String regExp = providerOpt.isPresent() && StringUtils.isNotEmpty(providerOpt.get().getRailUICregexp()) ? providerOpt.get().getRailUICregexp() : " ";
+			context.put(RAIL_UIC_REGEXP, regExp);
 
 
 			result = SUCCESS;
