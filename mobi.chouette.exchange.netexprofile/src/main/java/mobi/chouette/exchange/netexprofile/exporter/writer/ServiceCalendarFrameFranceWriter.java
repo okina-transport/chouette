@@ -52,8 +52,14 @@ public class ServiceCalendarFrameFranceWriter extends AbstractNetexWriter {
 
     private static void writeOperatingPeriodsElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
         try {
+            int count = 0;
             for (OperatingPeriod operatingPeriod : exportableNetexData.getSharedOperatingPeriods().values()) {
+                if(count != 0){
+                    String id = operatingPeriod.getId();
+                    operatingPeriod.setId(id+"-"+count);
+                }
                 marshaller.marshal(netexFactory.createOperatingPeriod(operatingPeriod), writer);
+                count++;
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

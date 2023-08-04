@@ -63,6 +63,8 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withFromDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay()).withToDate(TimeUtil.toLocalDateFromJoda(p.getEndDate()).atStartOfDay());
                         if (!exportableNetexData.getSharedOperatingPeriods().containsKey(operatingPeriodId)) {
                             exportableNetexData.getSharedOperatingPeriods().put(operatingPeriodId, operatingPeriod);
+                        } else {
+                            exportableNetexData.getSharedOperatingPeriods().put(operatingPeriodId + "-" + i, operatingPeriod);
                         }
 
                         NetexProducerUtils.populateReference(operatingPeriod, operatingPeriodRef, true);
