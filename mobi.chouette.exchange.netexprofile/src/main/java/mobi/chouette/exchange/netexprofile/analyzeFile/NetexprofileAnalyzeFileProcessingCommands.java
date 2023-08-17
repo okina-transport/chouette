@@ -17,16 +17,7 @@ import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
 import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
-import mobi.chouette.exchange.netexprofile.importer.DuplicateIdCheckerCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexCommonFilesParserCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexDisposeImportCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexInitImportCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexInitReferentialCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexLineParserCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexSchemaValidationCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexValidationCommand;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
-import mobi.chouette.exchange.netexprofile.importer.NetexprofileLineDeleteCommand;
+import mobi.chouette.exchange.netexprofile.importer.*;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
@@ -124,6 +115,17 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
             // stream all file paths once
             List<Path> allFilePaths = FileUtil.listFiles(path, "*.xml", ".*.xml");
+
+            if (allFilePaths.size() == 1){
+                //need to split a single xml file into many common files + line files
+                NetexSplitFileCommand splitFileCommand = (NetexSplitFileCommand) CommandFactory.create(initialContext,
+                        NetexSplitFileCommand.class.getName());
+
+                splitFileCommand.execute(context);
+                allFilePaths = FileUtil.listFiles(path, "*.xml", ".*.xml");
+            }
+
+
             Collections.sort(allFilePaths);
             for (Path p : allFilePaths) {
                 reporter.setFileState(context, p.getFileName().toString(), IO_TYPE.INPUT, ActionReporter.FILE_STATE.OK);

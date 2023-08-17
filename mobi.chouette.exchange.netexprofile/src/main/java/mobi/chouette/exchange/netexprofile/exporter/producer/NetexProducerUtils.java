@@ -362,7 +362,7 @@ public class NetexProducerUtils {
             destination.setId(source.getObjectId());
         }
 
-        if (!(destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC) || destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR))) {
+        if (!(destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC) )) {
             destination.setId(destination.getId() + OBJECT_ID_SPLIT_CHAR + LOC);
         }
         destination.setVersion(NETEX_DEFAULT_OBJECT_VERSION);

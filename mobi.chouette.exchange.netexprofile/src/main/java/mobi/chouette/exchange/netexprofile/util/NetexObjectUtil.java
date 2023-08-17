@@ -5,6 +5,7 @@ import org.rutebanken.netex.model.*;
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class NetexObjectUtil {
 
@@ -47,12 +48,23 @@ public class NetexObjectUtil {
         }
     }
 
-    public static OperatingPeriod getOperatingPeriod(NetexReferential referential, String objectId) {
-        OperatingPeriod operatingPeriod = referential.getOperatingPeriods().get(objectId);
-        if (operatingPeriod == null) {
-            throw new NullPointerException("Unknown operating period : " + objectId);
+    public static void addOperatingPeriodRef(NetexReferential referential, String objectId, UicOperatingPeriod uicOpPeriod) {
+        if (uicOpPeriod == null) {
+            throw new NullPointerException("Unknown UIC operating period : " + objectId);
         }
-        return operatingPeriod;
+        if (!referential.getOperatingPeriods().containsKey(objectId)) {
+            referential.getUicOperatingPeriods().put(objectId, uicOpPeriod);
+        }
+    }
+
+    public static Optional<OperatingPeriod> getOperatingPeriod(NetexReferential referential, String objectId) {
+        OperatingPeriod operatingPeriod = referential.getOperatingPeriods().get(objectId);
+        return Optional.ofNullable(operatingPeriod);
+    }
+
+    public static Optional<UicOperatingPeriod> getUicOperatingPeriod(NetexReferential referential, String objectId) {
+        UicOperatingPeriod operatingPeriod = referential.getUicOperatingPeriods().get(objectId);
+        return Optional.ofNullable(operatingPeriod);
     }
 
     public static void addOperatingDayRef(NetexReferential referential, String objectId, OperatingDay operatingDay) {

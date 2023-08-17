@@ -31,205 +31,210 @@ import java.util.stream.Collectors;
 public class JourneyPatternParser extends NetexParser implements Parser, Constant {
 
 
-	private ContactStructureParser contactStructureParser = new ContactStructureParser();
+    private ContactStructureParser contactStructureParser = new ContactStructureParser();
 
-	private KeyValueParser keyValueParser = new KeyValueParser();
+    private KeyValueParser keyValueParser = new KeyValueParser();
 
-	@Override
-	public void parse(Context context) throws Exception {
-		Referential referential = (Referential) context.get(REFERENTIAL);
-		JourneyPatternsInFrame_RelStructure journeyPatternStruct = (JourneyPatternsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
-
-
-
-		for (JAXBElement<?> journeyPatternElement : journeyPatternStruct.getJourneyPattern_OrJourneyPatternView()) {
-				JourneyPattern_VersionStructure netexJourneyPattern = (org.rutebanken.netex.model.JourneyPattern_VersionStructure) journeyPatternElement.getValue();
-
-			String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context,"JourneyPattern",  netexJourneyPattern.getId());
-			mobi.chouette.model.JourneyPattern chouetteJourneyPattern = ObjectFactory.getJourneyPattern(referential, journeyPatternId);
-
-			chouetteJourneyPattern.setObjectVersion(NetexParserUtils.getVersion(netexJourneyPattern));
-
-			String routeIdRef = NetexImportUtil.composeObjectIdFromNetexId(context,"Route",netexJourneyPattern.getRouteRef().getRef());
-			mobi.chouette.model.Route route = ObjectFactory.getRoute(referential, routeIdRef);
-			chouetteJourneyPattern.setRoute(route);
-
-			if (netexJourneyPattern.getName() != null) {
-				chouetteJourneyPattern.setName(netexJourneyPattern.getName().getValue());
-			} else {
-				chouetteJourneyPattern.setName(route.getName());
-			}
-
-			if (netexJourneyPattern.getPrivateCode() != null) {
-				chouetteJourneyPattern.setRegistrationNumber(netexJourneyPattern.getPrivateCode().getValue());
-			}
-
-			if (netexJourneyPattern.getDestinationDisplayRef() != null) {
-				String destinationDisplayId = netexJourneyPattern.getDestinationDisplayRef().getRef();
-				DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
-				chouetteJourneyPattern.setDestinationDisplay(destinationDisplay);
-			}
-
-			parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern, route.getStopPoints());
-			parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
-			chouetteJourneyPattern.setFilled(true);
-			initRouteSections(referential, chouetteJourneyPattern);
-			chouetteJourneyPattern.setKeyValues(keyValueParser.parse(netexJourneyPattern.getKeyList()));
-		}
-	}
-
-	/**
-	 * Recover all routeSections of a journey pattern and set it to the journey pattern
-	 * @param referential
-	 * 	Referential that contains all routeSections
-	 * @param journeyPattern
-	 *  Journey pattern on which routeSection must be initialized
-	 */
-	private void initRouteSections(Referential referential, mobi.chouette.model.JourneyPattern journeyPattern){
-
-		List<StopPoint> orderedPoints = journeyPattern.getStopPoints().stream()
-						    											.sorted(Comparator.comparing(StopPoint::getPosition))
-																		.collect(Collectors.toList());
-
-		List<RouteSection> routeSections = new ArrayList<>();
-
-		for (int i = 0; i < orderedPoints.size() - 1; i++) {
-			StopPoint sectionStartPoint = orderedPoints.get(i);
-			StopPoint sectionEndPoint = orderedPoints.get(i+1);
-			Optional<RouteSection> routeSectionOpt = getRouteSection(referential, sectionStartPoint, sectionEndPoint);
-			routeSectionOpt.ifPresent(routeSections::add);
-		}
-
-		if (!routeSections.isEmpty()) {
-			journeyPattern.setRouteSections(routeSections);
-			journeyPattern.setSectionStatus(SectionStatusEnum.Completed);
-		}
-	}
-
-	/**
-	 * Recover a routeSection from referential, using start point and end point
-	 * @param referential
-	 * 	Referential that contains all routeSections
-	 * @param sectionStartPoint
-	 * 	Start point of the section
-	 * @param sectionEndPoint
-	 *  End point of the section
-	 * @return
-	 * 	- An empty optional if no routeSection has been found
-	 * 	- An optional with the recovered routeSection
-	 */
-	private Optional<RouteSection> getRouteSection(Referential referential, StopPoint sectionStartPoint, StopPoint sectionEndPoint){
-		String startScheduledPointId = sectionStartPoint.getScheduledStopPoint().getObjectId();
-		String endScheduledPointId = sectionEndPoint.getScheduledStopPoint().getObjectId();
+    @Override
+    public void parse(Context context) throws Exception {
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        JourneyPatternsInFrame_RelStructure journeyPatternStruct = (JourneyPatternsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 
 
-		return referential.getRouteSections().values().stream()
-												.filter(routeSection ->
-																		routeSection.getFromScheduledStopPoint().getObjectId().equals(startScheduledPointId) &&
-																				routeSection.getToScheduledStopPoint().getObjectId().equals(endScheduledPointId))
-												.findFirst();
-	}
+        for (JAXBElement<?> journeyPatternElement : journeyPatternStruct.getJourneyPattern_OrJourneyPatternView()) {
+            JourneyPattern_VersionStructure netexJourneyPattern = (org.rutebanken.netex.model.JourneyPattern_VersionStructure) journeyPatternElement.getValue();
+
+            String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context, "JourneyPattern", netexJourneyPattern.getId());
+            mobi.chouette.model.JourneyPattern chouetteJourneyPattern = ObjectFactory.getJourneyPattern(referential, journeyPatternId);
+
+            chouetteJourneyPattern.setObjectVersion(NetexParserUtils.getVersion(netexJourneyPattern));
+
+            if (netexJourneyPattern.getRouteRef() == null) {
+                log.warn("journeyPattern sans route ref:" + netexJourneyPattern.getId());
+            } else {
+                String routeIdRef = NetexImportUtil.composeObjectIdFromNetexId(context, "Route", netexJourneyPattern.getRouteRef().getRef());
+                mobi.chouette.model.Route route = ObjectFactory.getRoute(referential, routeIdRef);
+                chouetteJourneyPattern.setRoute(route);
+
+                if (netexJourneyPattern.getName() != null) {
+                    chouetteJourneyPattern.setName(netexJourneyPattern.getName().getValue());
+                } else if (netexJourneyPattern.getDestinationDisplayRef() != null) {
+                    String destinationDisplayRef = netexJourneyPattern.getDestinationDisplayRef().getRef();
+                    mobi.chouette.model.DestinationDisplay chouetteDestinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayRef);
+                    chouetteJourneyPattern.setName(chouetteDestinationDisplay.getFrontText());
+                }else{
+                    chouetteJourneyPattern.setName(route.getName());
+                }
+            }
 
 
 
-	private void parseServiceLinksInJourneyPattern(Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
-												   mobi.chouette.model.JourneyPattern chouetteJourneyPattern) {
+            if (netexJourneyPattern.getPrivateCode() != null) {
+                chouetteJourneyPattern.setRegistrationNumber(netexJourneyPattern.getPrivateCode().getValue());
+            }
 
-		if (netexJourneyPattern.getLinksInSequence()==null || netexJourneyPattern.getLinksInSequence().getServiceLinkInJourneyPatternOrTimingLinkInJourneyPattern()==null) {
-			return;
-		}
-		List<LinkInLinkSequence_VersionedChildStructure> linksInLinkSequence = netexJourneyPattern.getLinksInSequence()
-				.getServiceLinkInJourneyPatternOrTimingLinkInJourneyPattern();
+            if (netexJourneyPattern.getDestinationDisplayRef() != null) {
+                String destinationDisplayId = netexJourneyPattern.getDestinationDisplayRef().getRef();
+                DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
+                chouetteJourneyPattern.setDestinationDisplay(destinationDisplay);
+            }
 
-		for (LinkInLinkSequence_VersionedChildStructure linkInLinkSequence : linksInLinkSequence){
-			if (linkInLinkSequence instanceof ServiceLinkInJourneyPattern_VersionedChildStructure) {
+            parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern);
 
-				ServiceLinkInJourneyPattern_VersionedChildStructure serviceLinkInJourneyPattern= (ServiceLinkInJourneyPattern_VersionedChildStructure) linkInLinkSequence;
+            parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
+            chouetteJourneyPattern.setFilled(true);
+            initRouteSections(referential, chouetteJourneyPattern);
+            chouetteJourneyPattern.setKeyValues(keyValueParser.parse(netexJourneyPattern.getKeyList()));
+        }
+    }
 
-				if (serviceLinkInJourneyPattern.getServiceLinkRef()!=null && serviceLinkInJourneyPattern.getServiceLinkRef().getRef()!=null){
-					chouetteJourneyPattern.getRouteSections().add(ObjectFactory.getRouteSection(referential, serviceLinkInJourneyPattern.getServiceLinkRef().getRef()));
-				}
-			} else {
-				log.warn("Got unexpected linkInLinkSequence element: " + linkInLinkSequence);
-			}
+    /**
+     * Recover all routeSections of a journey pattern and set it to the journey pattern
+     *
+     * @param referential    Referential that contains all routeSections
+     * @param journeyPattern Journey pattern on which routeSection must be initialized
+     */
+    private void initRouteSections(Referential referential, mobi.chouette.model.JourneyPattern journeyPattern) {
 
-		}
+        List<StopPoint> orderedPoints = journeyPattern.getStopPoints().stream()
+                .sorted(Comparator.comparing(StopPoint::getPosition))
+                .collect(Collectors.toList());
 
-		if (chouetteJourneyPattern.hasCompleteRouteSections()) {
-			chouetteJourneyPattern.setSectionStatus(SectionStatusEnum.Completed);
-		}
+        List<RouteSection> routeSections = new ArrayList<>();
 
-	}
+        for (int i = 0; i < orderedPoints.size() - 1; i++) {
+            StopPoint sectionStartPoint = orderedPoints.get(i);
+            StopPoint sectionEndPoint = orderedPoints.get(i + 1);
+            Optional<RouteSection> routeSectionOpt = getRouteSection(referential, sectionStartPoint, sectionEndPoint);
+            routeSectionOpt.ifPresent(routeSections::add);
+        }
 
-	private void parseStopPointsInJourneyPattern(Context context, Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
-			mobi.chouette.model.JourneyPattern chouetteJourneyPattern, List<StopPoint> routeStopPoints) throws Exception {
+        if (!routeSections.isEmpty()) {
+            journeyPattern.setRouteSections(routeSections);
+            journeyPattern.setSectionStatus(SectionStatusEnum.Completed);
+        }
+    }
+
+    /**
+     * Recover a routeSection from referential, using start point and end point
+     *
+     * @param referential       Referential that contains all routeSections
+     * @param sectionStartPoint Start point of the section
+     * @param sectionEndPoint   End point of the section
+     * @return - An empty optional if no routeSection has been found
+     * - An optional with the recovered routeSection
+     */
+    private Optional<RouteSection> getRouteSection(Referential referential, StopPoint sectionStartPoint, StopPoint sectionEndPoint) {
+        String startScheduledPointId = sectionStartPoint.getScheduledStopPoint().getObjectId();
+        String endScheduledPointId = sectionEndPoint.getScheduledStopPoint().getObjectId();
 
 
-		if ( netexJourneyPattern.getPointsInSequence() == null){
-			handleEmptyPointsInSequence(context, netexJourneyPattern);
-			return;
-		}
+        return referential.getRouteSections().values().stream()
+                .filter(routeSection ->
+                        routeSection.getFromScheduledStopPoint().getObjectId().equals(startScheduledPointId) &&
+                                routeSection.getToScheduledStopPoint().getObjectId().equals(endScheduledPointId))
+                .findFirst();
+    }
 
 
-		List<PointInLinkSequence_VersionedChildStructure> pointsInLinkSequence = netexJourneyPattern.getPointsInSequence()
-				.getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern();
+    private void parseServiceLinksInJourneyPattern(Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
+                                                   mobi.chouette.model.JourneyPattern chouetteJourneyPattern) {
 
-		for (int i = 0; i < pointsInLinkSequence.size(); i++) {
-			PointInLinkSequence_VersionedChildStructure pointInSequence = pointsInLinkSequence.get(i);
-			StopPointInJourneyPattern pointInPattern = (StopPointInJourneyPattern) pointInSequence;
+        if (netexJourneyPattern.getLinksInSequence() == null || netexJourneyPattern.getLinksInSequence().getServiceLinkInJourneyPatternOrTimingLinkInJourneyPattern() == null) {
+            return;
+        }
+        List<LinkInLinkSequence_VersionedChildStructure> linksInLinkSequence = netexJourneyPattern.getLinksInSequence()
+                .getServiceLinkInJourneyPatternOrTimingLinkInJourneyPattern();
 
-			String stopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"StopPoint",pointInPattern.getId());
-			StopPoint stopPointInJourneyPattern = ObjectFactory.getStopPoint(referential, stopPointId);
+        for (LinkInLinkSequence_VersionedChildStructure linkInLinkSequence : linksInLinkSequence) {
+            if (linkInLinkSequence instanceof ServiceLinkInJourneyPattern_VersionedChildStructure) {
 
-			ScheduledStopPointRefStructure scheduledStopPointRef = pointInPattern.getScheduledStopPointRef().getValue();
-			String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",  scheduledStopPointRef.getRef());
+                ServiceLinkInJourneyPattern_VersionedChildStructure serviceLinkInJourneyPattern = (ServiceLinkInJourneyPattern_VersionedChildStructure) linkInLinkSequence;
 
-			ScheduledStopPoint scheduledStopPoint=ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
-			stopPointInJourneyPattern.setScheduledStopPoint(scheduledStopPoint);
-			stopPointInJourneyPattern.setPosition(pointInPattern.getOrder().intValue());
-			stopPointInJourneyPattern.setObjectVersion(NetexParserUtils.getVersion(pointInPattern.getVersion()));
+                if (serviceLinkInJourneyPattern.getServiceLinkRef() != null && serviceLinkInJourneyPattern.getServiceLinkRef().getRef() != null) {
+                    chouetteJourneyPattern.getRouteSections().add(ObjectFactory.getRouteSection(referential, serviceLinkInJourneyPattern.getServiceLinkRef().getRef()));
+                }
+            } else {
+                log.warn("Got unexpected linkInLinkSequence element: " + linkInLinkSequence);
+            }
 
-			if (pointInPattern.isForAlighting() != null && !pointInPattern.isForAlighting()) {
-				stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.forbidden);
-			} else if (Boolean.TRUE.equals(pointInPattern.isRequestStop())) {
-				stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.request_stop);
-			} else {
-				stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.normal);
-			}
+        }
 
-			if (pointInPattern.isForBoarding() != null && !pointInPattern.isForBoarding()) {
-				stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.forbidden);
-			} else if (Boolean.TRUE.equals(pointInPattern.isRequestStop())){
-				stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.request_stop);
-			} else {
-				stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.normal);
-			}
+        if (chouetteJourneyPattern.hasCompleteRouteSections()) {
+            chouetteJourneyPattern.setSectionStatus(SectionStatusEnum.Completed);
+        }
 
-			chouetteJourneyPattern.addStopPoint(stopPointInJourneyPattern);
-			stopPointInJourneyPattern.setRoute(chouetteJourneyPattern.getRoute());
+    }
 
-			if (pointInPattern.getDestinationDisplayRef() != null) {
-				String destinationDisplayId = pointInPattern.getDestinationDisplayRef().getRef();
-				DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
+    private void parseStopPointsInJourneyPattern(Context context, Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
+                                                 mobi.chouette.model.JourneyPattern chouetteJourneyPattern) throws Exception {
 
-				// HACK TODO HACK
-				// Remove Line/PublicCode from DestinationDisplay if FrontText starts with it
-				String lineNumber = referential.getLines().values().iterator().next().getNumber();
-				if (destinationDisplay.getFrontText().startsWith(lineNumber + " ")) {
-					String modifiedDestinationDisplayId = destinationDisplayId + "-NOLINENUMBER";
-					DestinationDisplay modifiedDestinationDisplay = referential.getSharedDestinationDisplays().get(modifiedDestinationDisplayId);
-					if (modifiedDestinationDisplay == null) {
-						modifiedDestinationDisplay = ObjectFactory.getDestinationDisplay(referential, modifiedDestinationDisplayId);
-						modifiedDestinationDisplay.setName(destinationDisplay.getName() == null ? "" : destinationDisplay.getName() + " (stripped number)");
-						modifiedDestinationDisplay.setFrontText(destinationDisplay.getFrontText().substring(lineNumber.length() + 1));
-						modifiedDestinationDisplay.setSideText(destinationDisplay.getSideText());
-						modifiedDestinationDisplay.getVias().addAll(destinationDisplay.getVias());
-					}
-					stopPointInJourneyPattern.setDestinationDisplay(modifiedDestinationDisplay);
-				} else {
-					stopPointInJourneyPattern.setDestinationDisplay(destinationDisplay);
-				}
-			}
+
+        if (netexJourneyPattern.getPointsInSequence() == null) {
+            handleEmptyPointsInSequence(context, netexJourneyPattern);
+            return;
+        }
+
+
+        List<PointInLinkSequence_VersionedChildStructure> pointsInLinkSequence = netexJourneyPattern.getPointsInSequence()
+                .getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern();
+
+        for (int i = 0; i < pointsInLinkSequence.size(); i++) {
+            PointInLinkSequence_VersionedChildStructure pointInSequence = pointsInLinkSequence.get(i);
+            StopPointInJourneyPattern pointInPattern = (StopPointInJourneyPattern) pointInSequence;
+
+            String stopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "StopPoint", pointInPattern.getId());
+            StopPoint stopPointInJourneyPattern = ObjectFactory.getStopPoint(referential, stopPointId);
+
+            ScheduledStopPointRefStructure scheduledStopPointRef = pointInPattern.getScheduledStopPointRef().getValue();
+            String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "ScheduledStopPoint", scheduledStopPointRef.getRef());
+
+            ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
+            stopPointInJourneyPattern.setScheduledStopPoint(scheduledStopPoint);
+            stopPointInJourneyPattern.setPosition(pointInPattern.getOrder().intValue());
+            stopPointInJourneyPattern.setObjectVersion(NetexParserUtils.getVersion(pointInPattern.getVersion()));
+
+            if (pointInPattern.isForAlighting() != null && !pointInPattern.isForAlighting()) {
+                stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.forbidden);
+            } else if (Boolean.TRUE.equals(pointInPattern.isRequestStop())) {
+                stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.request_stop);
+            } else {
+                stopPointInJourneyPattern.setForAlighting(AlightingPossibilityEnum.normal);
+            }
+
+            if (pointInPattern.isForBoarding() != null && !pointInPattern.isForBoarding()) {
+                stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.forbidden);
+            } else if (Boolean.TRUE.equals(pointInPattern.isRequestStop())) {
+                stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.request_stop);
+            } else {
+                stopPointInJourneyPattern.setForBoarding(BoardingPossibilityEnum.normal);
+            }
+
+            chouetteJourneyPattern.addStopPoint(stopPointInJourneyPattern);
+            stopPointInJourneyPattern.setRoute(chouetteJourneyPattern.getRoute());
+
+            if (pointInPattern.getDestinationDisplayRef() != null) {
+                String destinationDisplayId = pointInPattern.getDestinationDisplayRef().getRef();
+                DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
+
+                // HACK TODO HACK
+                // Remove Line/PublicCode from DestinationDisplay if FrontText starts with it
+                String lineNumber = referential.getLines().values().iterator().next().getNumber();
+                if (destinationDisplay.getFrontText().startsWith(lineNumber + " ")) {
+                    String modifiedDestinationDisplayId = destinationDisplayId + "-NOLINENUMBER";
+                    DestinationDisplay modifiedDestinationDisplay = referential.getSharedDestinationDisplays().get(modifiedDestinationDisplayId);
+                    if (modifiedDestinationDisplay == null) {
+                        modifiedDestinationDisplay = ObjectFactory.getDestinationDisplay(referential, modifiedDestinationDisplayId);
+                        modifiedDestinationDisplay.setName(destinationDisplay.getName() == null ? "" : destinationDisplay.getName() + " (stripped number)");
+                        modifiedDestinationDisplay.setFrontText(destinationDisplay.getFrontText().substring(lineNumber.length() + 1));
+                        modifiedDestinationDisplay.setSideText(destinationDisplay.getSideText());
+                        modifiedDestinationDisplay.getVias().addAll(destinationDisplay.getVias());
+                    }
+                    stopPointInJourneyPattern.setDestinationDisplay(modifiedDestinationDisplay);
+                } else {
+                    stopPointInJourneyPattern.setDestinationDisplay(destinationDisplay);
+                }
+            }
 
 /*			if (pointInPattern.getBookingArrangements()!=null) {
 				BookingArrangementsStructure netexBookingArrangement = pointInPattern.getBookingArrangements();
@@ -249,48 +254,51 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 				stopPointInJourneyPattern.setBookingArrangement(bookingArrangement);
 			}*/
 
-			chouetteJourneyPattern.addStopPoint(stopPointInJourneyPattern);
-		}
+            chouetteJourneyPattern.addStopPoint(stopPointInJourneyPattern);
+        }
 
-		List<StopPoint> patternStopPoints = chouetteJourneyPattern.getStopPoints();
-		if (CollectionUtils.isNotEmpty(patternStopPoints)) {
-			chouetteJourneyPattern.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
-			chouetteJourneyPattern.setDepartureStopPoint(patternStopPoints.get(0));
-			chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
-		}
+        List<StopPoint> patternStopPoints = chouetteJourneyPattern.getStopPoints();
+        if (CollectionUtils.isNotEmpty(patternStopPoints)) {
+            chouetteJourneyPattern.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
+            chouetteJourneyPattern.setDepartureStopPoint(patternStopPoints.get(0));
+            chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
+        }
 
-		Route chouetteRoute = chouetteJourneyPattern.getRoute();
-		chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
-		chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
-		chouetteRoute.setFilled(true);
+        Route chouetteRoute = chouetteJourneyPattern.getRoute();
 
-	}
+        if (chouetteRoute != null){
+            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
+            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
+            chouetteRoute.setFilled(true);
+        }
 
-	private void handleEmptyPointsInSequence(Context context, JourneyPattern_VersionStructure netexJourneyPattern) {
+    }
+
+    private void handleEmptyPointsInSequence(Context context, JourneyPattern_VersionStructure netexJourneyPattern) {
 
 
-		String fileName = (String) context.get(FILE_NAME);
-		String journeyPatternId = netexJourneyPattern.getId();
+        String fileName = (String) context.get(FILE_NAME);
+        String journeyPatternId = netexJourneyPattern.getId();
 
-		log.error("Empty points in sequence in file :" + fileName + " , journeyPattern:" + journeyPatternId);
+        log.error("Empty points in sequence in file :" + fileName + " , journeyPattern:" + journeyPatternId);
 
-		if ( context.get(ANALYSIS_REPORT) == null){
-			return ;
-		}
+        if (context.get(ANALYSIS_REPORT) == null) {
+            return;
+        }
 
-		AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
-		analyzeReport.addEmptyPointsInSequence(fileName, journeyPatternId);
-	}
+        AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
+        analyzeReport.addEmptyPointsInSequence(fileName, journeyPatternId);
+    }
 
-	static {
-		ParserFactory.register(JourneyPatternParser.class.getName(), new ParserFactory() {
-			private JourneyPatternParser instance = new JourneyPatternParser();
+    static {
+        ParserFactory.register(JourneyPatternParser.class.getName(), new ParserFactory() {
+            private JourneyPatternParser instance = new JourneyPatternParser();
 
-			@Override
-			protected Parser create() {
-				return instance;
-			}
-		});
-	}
+            @Override
+            protected Parser create() {
+                return instance;
+            }
+        });
+    }
 
 }

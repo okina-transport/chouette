@@ -66,11 +66,13 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
             line.setNetwork(chouetteNetwork);
         }
 
-        for (JAXBElement<? extends LineRefStructure> lineRefStructure : netexNetwork.getMembers().getLineRef()) {
-            String lineRef = lineRefStructure.getValue().getRef();
-            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineRef);
-            Line line = ObjectFactory.getLine(referential, lineId);
-            line.setNetwork(chouetteNetwork);
+        if (netexNetwork.getMembers() != null){
+            for (JAXBElement<? extends LineRefStructure> lineRefStructure : netexNetwork.getMembers().getLineRef()) {
+                String lineRef = lineRefStructure.getValue().getRef();
+                String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineRef);
+                Line line = ObjectFactory.getLine(referential, lineId);
+                line.setNetwork(chouetteNetwork);
+            }
         }
 
         if (netexNetwork.getGroupsOfLines() != null) {
@@ -85,7 +87,8 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
                         String lineIdRef = lineRefRelStruct.getValue().getRef();
                         String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
                         Line line = ObjectFactory.getLine(referential, lineId);
-
+                        chouetteNetwork.getLines().add(line);
+                        line.setNetwork(chouetteNetwork);
                         if (line != null) {
                             groupOfLine.addLine(line);
                         }

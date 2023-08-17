@@ -36,6 +36,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.util.NamingUtil;
+import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.lang.StringUtils;
@@ -113,6 +114,13 @@ public class LineRegisterCommand implements Command {
 		// Use property based enabling of stop place updater, but allow disabling if property exist in context
 		Line newValue  = referential.getLines().values().iterator().next();
 		context.put(CURRENT_LINE_ID,newValue.getObjectId());
+
+		if (newValue.getNetwork() == null){
+			mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, "MOBIITI:Network:DefaultNetwork");
+			newValue.setNetwork(defaultNetwork);
+		}
+
+		removeEmptyRoutes(newValue);
 
 		AbstractImportParameter importParameter = (AbstractImportParameter) context.get(CONFIGURATION);
 		int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
@@ -212,6 +220,28 @@ public class LineRegisterCommand implements Command {
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 		return result;
+	}
+
+	/**
+	 * Read a line and remove routes that have no journey patterns associated
+	 *  (to avoid error on validation)
+	 * @param line
+	 * 	the line for which we need to remove empty routes
+	 */
+	private void removeEmptyRoutes(Line line) {
+
+		List<Route> allRoutes = line.getRoutes();
+		List<Route> cleanedRoutes = new ArrayList<>();
+
+		for (Route route : allRoutes) {
+			if (route.getJourneyPatterns() == null || route.getJourneyPatterns().isEmpty()) {
+				log.warn("Route has been removed because no journey patterns associated to it :" + route.getObjectId());
+			} else {
+				cleanedRoutes.add(route);
+			}
+		}
+		line.setRoutes(cleanedRoutes);
+
 	}
 
 

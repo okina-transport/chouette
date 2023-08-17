@@ -8,23 +8,24 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
-import mobi.chouette.model.Footnote;
+import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.Branding;
+import org.rutebanken.netex.model.DestinationDisplay;
+
+import org.rutebanken.netex.model.Network;
+import org.rutebanken.netex.model.Route;
+import org.rutebanken.netex.model.ScheduledStopPoint;
 
 
 import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,6 +53,13 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 	private SiteConnectionParser siteConnectionParser;
 
 	public static org.rutebanken.netex.model.ObjectFactory netexFactory = null;
+
+	public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
+		@Override
+		public int compare(StopPoint sp1, StopPoint sp2) {
+			return Integer.compare(sp1.getPosition(), sp2.getPosition());
+		}
+	};
 
 	static {
 		try {
@@ -165,10 +173,82 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			}
 		}
 
+		if (!isCommonDelivery){
+
+			for (Line currLine : referential.getLines().values()) {
+				currLine.getRoutes().forEach(route -> createMissingRouteLinksForRoute(referential, route));
+			}
+
+		}
+
 		// post processing
 		// sortStopPoints(referential);
 		// updateBoardingAlighting(referential);
 	}
+
+
+	/**
+	 * Read a route and creates missing route links between stops
+	 * @param referential
+	 * 	the referential that contains all cached data
+	 * @param currentRoute
+	 * 	the route for which we need to create missing route links
+	 */
+	private void createMissingRouteLinksForRoute(Referential referential, mobi.chouette.model.Route currentRoute){
+		currentRoute.getJourneyPatterns().forEach(journeyPattern -> createMissingRouteLinksForJourneyPattern(referential, journeyPattern));
+	}
+
+	/**
+	 * Read a journey pattern and creates missing route links between stops
+	 * @param referential
+	 * 	the referential that contains all cached data
+	 * @param journeyPattern
+	 * 	the journey pattern for which we need to create missing route links
+	 */
+	private void createMissingRouteLinksForJourneyPattern(Referential referential, JourneyPattern journeyPattern) {
+		journeyPattern.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
+
+		StopPoint previousStopPoint = null;
+
+		for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+
+			if (previousStopPoint == null){
+				previousStopPoint = stopPoint;
+				continue;
+			}
+
+			if (!checkRouteLinkPresence(referential, previousStopPoint, stopPoint)){
+
+				String fromScheduledId = previousStopPoint.getScheduledStopPoint().getObjectId();
+				String toScheduledId = stopPoint.getScheduledStopPoint().getObjectId();
+
+				String routeSectionId = "MOBIITI:RouteSection:" + fromScheduledId.replace("MOBIITI:ScheduledStopPoint:", "") + "-" + toScheduledId.replace("MOBIITI:ScheduledStopPoint:", "");
+
+				RouteSection routeSection = ObjectFactory.getRouteSection(referential, routeSectionId);
+				routeSection.setFromScheduledStopPoint(previousStopPoint.getScheduledStopPoint());
+				routeSection.setToScheduledStopPoint(stopPoint.getScheduledStopPoint());
+
+			}
+			previousStopPoint = stopPoint;
+		}
+	}
+
+
+
+	private boolean checkRouteLinkPresence(Referential referential, StopPoint startPoint, StopPoint endPoint) {
+
+		mobi.chouette.model.ScheduledStopPoint startScheduledStopPoint = startPoint.getScheduledStopPoint();
+		mobi.chouette.model.ScheduledStopPoint endScheduledStopPoint = endPoint.getScheduledStopPoint();
+
+		for (RouteSection routeSection : referential.getRouteSections().values()) {
+			if (routeSection.getFromScheduledStopPoint().equals(startScheduledStopPoint) && routeSection.getToScheduledStopPoint().equals(endScheduledStopPoint)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 
 	/**
 	 * Build a resource frame with data stored in "members" element of General Frame
