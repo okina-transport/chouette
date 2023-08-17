@@ -159,18 +159,18 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getSharedDayTypes().get("TEST:DayType:t1:LOC").getId(), "TEST:DayType:t1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getSharedDayTypes().get("TEST:DayType:t1:LOC").getVersion(), "any");
 
-        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1:LOC").getId(), "TEST:OperatingPeriod:t1:LOC");
-        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1:LOC").getVersion(), "any");
+        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getId(), "TEST:OperatingPeriod:t1-0:LOC");
+        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getVersion(), "any");
 
-        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1:LOC").getFromDate(), LocalDateTime.of(2020, 1, 1, 0, 0, 0));
-        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1:LOC").getToDate(), LocalDateTime.of(2020, 12, 31, 0, 0, 0));
+        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getFromDate(), LocalDateTime.of(2020, 1, 1, 0, 0, 0));
+        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getToDate(), LocalDateTime.of(2020, 12, 31, 0, 0, 0));
 
         List<JAXBElement<? extends DayTypeRefStructure>> dayTypesRef = exportableNetexDataResult.getSharedDayTypeAssignments().stream().map(DayTypeAssignment_VersionStructure::getDayTypeRef).collect(Collectors.toList());
         Assert.assertEquals(dayTypesRef.get(0).getValue().getRef(), "TEST:DayType:t1:LOC");
         Assert.assertEquals(dayTypesRef.get(0).getValue().getVersion(), "any");
 
         List<OperatingPeriodRefStructure> operatingPeriodsRef = exportableNetexDataResult.getSharedDayTypeAssignments().stream().map(opr -> opr.getOperatingPeriodRef().getValue()).collect(Collectors.toList());
-        Assert.assertEquals(operatingPeriodsRef.get(0).getRef(), "TEST:OperatingPeriod:t1:LOC");
+        Assert.assertEquals(operatingPeriodsRef.get(0).getRef(), "TEST:OperatingPeriod:t1-0:LOC");
         Assert.assertEquals(operatingPeriodsRef.get(0).getVersion(), "any");
 
         Assert.assertEquals(exportableNetexDataResult.getSharedNotices().get("TEST:Notice:f1:LOC").getId(), "TEST:Notice:f1:LOC");
