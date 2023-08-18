@@ -1206,6 +1206,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }
 
         vehicleJourney.setFilled(true);
+        vehicleJourney.setPublishedJourneyIdentifier(gtfsTrip.getTripShortName());
 
     }
 

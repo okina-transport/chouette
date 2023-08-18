@@ -288,12 +288,8 @@ public class GtfsTripProducer extends AbstractProducer {
 
 		trip.setServiceId(serviceId);
 
-		if (vj.getNumber() != null && !vj.getNumber().equals(0L)) {
-			trip.setTripShortName(vj.getNumber().toString());
-		}
-		else {
-			trip.setTripShortName(null);
-		}
+
+		trip.setTripShortName(vj.getPublishedJourneyIdentifier());
 		List<VehicleJourneyAtStop> lvjas = new ArrayList<>(vj.getVehicleJourneyAtStops());
 		lvjas.sort(Comparator.comparing(o -> o.getStopPoint().getPosition()));
 
