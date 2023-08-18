@@ -23,6 +23,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
+import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -255,15 +256,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         String networkName = "";
 
 
-        if (line.getNetwork() == null) {
-            DataLocation sourceLocation = new DataLocation((String)context.get(FILE_NAME));
-            List<DataLocation> dataLocations = new ArrayList<>();
 
-            ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-            validationReporter.addItemToValidationReport(context, _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION, "E");
 
-            validationReporter.addCheckPointReportError(context, _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION, sourceLocation, line.getRegistrationNumber(),
-                    null, dataLocations.toArray(new DataLocation[0]));
+        if (line.getNetwork() == null ) {
+            Referential referential = (Referential) context.get(REFERENTIAL);
+            mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, "MOBIITI:Network:DefaultNetwork");
+            defaultNetwork.setName("DefaultNetwork");
+            line.setNetwork(defaultNetwork);
+            networkName = defaultNetwork.getName();
 
         }else{
             networkName = line.getNetwork().getName();
@@ -293,7 +293,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                     for (Timetable timetable : vehicleJourney.getTimetables()) {
 
                         if (!cleanRepository){
-                            String timetableName = timetable.getComment();
+                            String timetableName = timetable.getComment() != null ? timetable.getComment() : timetable.getObjectId();
                             networksByTimetable.putIfAbsent(timetableName, new HashSet<>());
                             Set<String> networkSet = networksByTimetable.get(timetableName);
                             networkSet.add(networkName);
@@ -368,7 +368,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         TransportModeNameEnum transportMode = line.getTransportModeName();
         String stopId = StringUtils.isNotEmpty(quay.getOriginalStopId()) ? quay.getOriginalStopId() : quay.getObjectId().split(":")[2];
         Set<String> lineUse;
-        String lineAndTransportString = line.getRegistrationNumber() + "(" + transportMode + ")";
+        String lineBaseName = StringUtils.isNotEmpty( line.getRegistrationNumber()) ?  line.getRegistrationNumber() : line.getName();
+        String lineAndTransportString = lineBaseName + "(" + transportMode + ")";
 
         if (!analyzeReport.getQuayLineUse().containsKey(stopId)){
             lineUse = new HashSet<>();

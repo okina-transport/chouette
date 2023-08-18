@@ -17,6 +17,8 @@ import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.RoutePoint;
 import org.rutebanken.netex.model.RoutePointsInFrame_RelStructure;
 
+import java.util.Optional;
+
 @Log4j
 public class RoutePointParser extends NetexParser implements Parser, Constant {
 
@@ -25,14 +27,17 @@ public class RoutePointParser extends NetexParser implements Parser, Constant {
 		RoutePointsInFrame_RelStructure routePointStruct = (RoutePointsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 
 		for (RoutePoint netexRoutePoint : routePointStruct.getRoutePoint()) {
-			String scheduledStopPointId = getScheduledStopPointId(netexRoutePoint);
+			Optional<String> scheduledStopPointIdOpt = getScheduledStopPointId(netexRoutePoint);
 
 			Referential referential = (Referential) context.get(REFERENTIAL);
 
 			mobi.chouette.model.RoutePoint neptuneRoutePoint = ObjectFactory.getRoutePoint(referential, netexRoutePoint.getId());
 
-			ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
-			neptuneRoutePoint.setScheduledStopPoint(scheduledStopPoint);
+
+			if (scheduledStopPointIdOpt.isPresent()){
+				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointIdOpt.get());
+				neptuneRoutePoint.setScheduledStopPoint(scheduledStopPoint);
+			}
 
 			neptuneRoutePoint.setObjectVersion(NetexParserUtils.getVersion(netexRoutePoint));
 			neptuneRoutePoint.setName(ConversionUtil.getValue(netexRoutePoint.getName()));
@@ -41,7 +46,7 @@ public class RoutePointParser extends NetexParser implements Parser, Constant {
 	}
 
 // TODO RoutePoint - make sure ref is to ssp
-	private String getScheduledStopPointId(RoutePoint netexRoutePoint) {
+	private Optional<String> getScheduledStopPointId(RoutePoint netexRoutePoint) {
 		String scheduledStopPointId=null;
 		if (netexRoutePoint.getProjections() != null) {
 
@@ -58,10 +63,7 @@ public class RoutePointParser extends NetexParser implements Parser, Constant {
 			}
 		}
 
-		if (scheduledStopPointId == null) {
-			throw new RuntimeException("Could not parse RoutePoints without projection to scheduledStopPoint");
-		}
-		return scheduledStopPointId;
+		return Optional.ofNullable(scheduledStopPointId);
 	}
 
 

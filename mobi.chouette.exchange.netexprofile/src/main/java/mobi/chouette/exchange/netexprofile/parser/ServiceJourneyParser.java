@@ -203,6 +203,11 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			VehicleJourneyAtStop vehicleJourneyAtStop = ObjectFactory.getVehicleJourneyAtStop(referential, passingTimeId);
 			vehicleJourneyAtStop.setObjectVersion(NetexParserUtils.getVersion(passingTime));
 
+			if (journeyPattern.getStopPoints().size() == 0 ){
+				log.warn("Empty stop points list for journey pattern : " + journeyPattern.getObjectId());
+				log.warn("serviceJourney : " + serviceJourney.getId());
+			}
+
 //			StopPoint stopPoint = getStopPointFromJourneyPattern(journeyPattern, i);
 			StopPoint stopPoint = journeyPattern.getStopPoints().get(i);
 			vehicleJourneyAtStop.setStopPoint(stopPoint);

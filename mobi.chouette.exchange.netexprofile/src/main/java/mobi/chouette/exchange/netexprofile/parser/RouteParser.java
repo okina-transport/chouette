@@ -19,6 +19,7 @@ import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DirectionTypeEnumeration;
 import org.rutebanken.netex.model.LinkSequence_VersionStructure;
 import org.rutebanken.netex.model.PointOnRoute;
@@ -44,7 +45,7 @@ public class RouteParser implements Parser, Constant {
 
 			chouetteRoute.setObjectVersion(NetexParserUtils.getVersion(netexRoute));
 
-			String routeName = netexRoute.getName().getValue();
+			String routeName =  netexRoute.getName() != null ? netexRoute.getName().getValue() : "";
 			chouetteRoute.setName(routeName);
 
 			if (netexRoute.getShortName() != null) {
@@ -55,11 +56,16 @@ public class RouteParser implements Parser, Constant {
 
 			chouetteRoute.setDirection(getNeptuneDirection(netexRoute, context));
 
-			String lineIdRef = netexRoute.getLineRef().getValue().getRef();
-			String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
 
-			Line chouetteLine = ObjectFactory.getLine(referential, lineId);
-			chouetteRoute.setLine(chouetteLine);
+			if (netexRoute.getLineRef() == null || StringUtils.isEmpty(netexRoute.getLineRef().getValue().getRef())){
+				log.warn("Route without lineRef:" + netexRoute.getId());
+			}else{
+				String lineIdRef = netexRoute.getLineRef().getValue().getRef();
+				String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
+				Line chouetteLine = ObjectFactory.getLine(referential, lineId);
+				chouetteRoute.setLine(chouetteLine);
+			}
+
 
 			// TODO find out if this should be set?
 			// chouetteRoute.setWayBack(directionType.equals(DirectionTypeEnumeration.OUTBOUND) ? "A" : "R");

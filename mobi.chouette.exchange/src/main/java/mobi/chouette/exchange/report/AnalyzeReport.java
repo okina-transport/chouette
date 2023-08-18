@@ -257,7 +257,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
 
         if (multipleusedTimetablesInInputFile.size() > 0) {
-            printMultipleUsedTimetables(out, multipleusedTimetablesInInputFile, "multipleUsedTimetablesFromInputFile");
             analyzeReportMap.put("multipleUsedTimetablesFromInputFile", buildMultipleUsedTimetablesList(multipleusedTimetablesInInputFile));
         }
 

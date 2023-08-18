@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
@@ -18,11 +18,7 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
-import mobi.chouette.model.BookingArrangement;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.FlexibleLineProperties;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.Network;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -77,13 +73,21 @@ public class LineParser implements Parser, Constant {
 						chouetteLine.setNetwork(ptNetwork);
 					}
 				}
+			}else{
+				Optional<Network> networkOpt = findNetworkFromReferential(referential, chouetteLine);
+				networkOpt.ifPresent(chouetteLine::setNetwork);
 			}
 
 			// TODO find out how to handle in chouette? can be: new, delete, revise or delta
 			// ModificationEnumeration modification = netexLine.getModification();
 
 			chouetteLine.setName(ConversionUtil.getValue(netexLine.getName()));
-			chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getShortName()));
+			if (netexLine.getShortName() != null){
+				chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getShortName()));
+			}else{
+				chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getName()));
+			}
+
 			chouetteLine.setComment(ConversionUtil.getValue(netexLine.getDescription()));
 
 			AllVehicleModesOfTransportEnumeration transportMode = netexLine.getTransportMode();
@@ -142,7 +146,29 @@ public class LineParser implements Parser, Constant {
 				flexibleLineProperties.setBookingArrangement(bookingArrangement);
 				chouetteLine.setFlexibleLineProperties(flexibleLineProperties);
 			}
+
 		}
+	}
+
+
+	/**
+	 * Read referential and try to find which network is associated to a line
+	 * @param referential
+	 * 	the referential containing all data
+	 * @param chouetteLine
+	 * 	the line for which we need to find a network association
+	 * @return
+	 * 	the associated network, if it exists
+	 */
+	private Optional<Network> findNetworkFromReferential(Referential referential, Line chouetteLine) {
+		for (Network network : referential.getSharedPTNetworks().values()) {
+			for (Line line : network.getLines()) {
+				if (line.getObjectId().equals(chouetteLine.getObjectId())){
+					return Optional.of(network);
+				}
+			}
+		}
+		return Optional.empty();
 	}
 
 	static {
