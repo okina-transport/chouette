@@ -1,6 +1,7 @@
 package mobi.chouette.service;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.core.CoreException;
@@ -23,11 +24,7 @@ import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -223,6 +220,15 @@ public class StopAreaService {
                 log.info("Updating stop area references for stop points for referential " + referential);
                 int updatedCnt = stopAreaUpdateService.updateStopAreaReferences(replacementMap);
                 log.info("Updated stop area references for " + updatedCnt + " stop points for referential " + referential);
+                updateContext.getActiveStopAreas()
+                        .forEach(stopArea -> stopArea.getKeyValues().stream()
+                                .filter(keyValue -> keyValue.getKey() != null && keyValue.getKey().equals("merged-id"))
+                                .forEach(keyValue -> Arrays.stream(keyValue.getValue().split(","))
+                                        .forEach(id -> {
+                                            log.info(Color.CYAN + "Deleting stop area " + id);
+                                            stopAreaUpdateService.deleteStopArea(id);
+                                        })));
+
             }
         }
 
@@ -231,6 +237,7 @@ public class StopAreaService {
 
     public void deleteStopArea(String objectId) {
         ContextHolder.clear();
+        ContextHolder.setContext("admin");
         stopAreaUpdateService.deleteStopArea(objectId);
     }
 
