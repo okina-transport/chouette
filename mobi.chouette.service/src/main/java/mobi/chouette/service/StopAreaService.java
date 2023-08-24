@@ -237,7 +237,6 @@ public class StopAreaService {
 
     public void deleteStopArea(String objectId) {
         ContextHolder.clear();
-        ContextHolder.setContext("admin");
         stopAreaUpdateService.deleteStopArea(objectId);
     }
 
