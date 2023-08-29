@@ -81,7 +81,7 @@ public class AbstractImportParameter extends AbstractParameter {
 	@XmlElement(name = "generate_map_matching", defaultValue = "false")
 	@Getter
 	@Setter
-	private boolean generateMapMatching = true;
+	private boolean generateMapMatching = false;
 
 	public boolean isValid(Logger log) {
 		return super.isValid(log);
