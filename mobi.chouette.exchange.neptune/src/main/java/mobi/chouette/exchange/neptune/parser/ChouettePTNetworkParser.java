@@ -174,7 +174,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         List<StopArea> boardingPositions = referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
+                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()) && !stopArea.getObjectId().startsWith("MOBIITI:"))
                 .collect(Collectors.toList());
 
         for (StopArea boardingPosition : boardingPositions) {
