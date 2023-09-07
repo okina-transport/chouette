@@ -59,7 +59,8 @@ public class GtfsException extends RuntimeException {
 		EMPTY_SERVICE,
         COORDINATES_STOP_0_0,
 		MISSING_ROUTE_SHORT_NAME,
-		UNUSED_AGENCY_ID
+        UNUSED_AGENCY_ID,
+        NOT_ENOUGH_ROUTE_POINTS
 	}
 
 	@Getter
@@ -150,6 +151,7 @@ public class GtfsException extends RuntimeException {
 		case BAD_REFERENCED_ID:
         case COORDINATES_STOP_0_0:
 		case UNUSED_AGENCY_ID:
+        case NOT_ENOUGH_ROUTE_POINTS:
 			return true;
 		default:
 			return false;

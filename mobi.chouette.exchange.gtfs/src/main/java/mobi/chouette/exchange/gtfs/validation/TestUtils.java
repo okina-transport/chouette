@@ -63,7 +63,9 @@ public class TestUtils implements Constant{
 			gtfsTestList.add(new TestDescription(2, GTFS_2_GTFS_Route_1, "WARNING"));
 			gtfsTestList.add(new TestDescription(2, GTFS_2_GTFS_Route_2, "WARNING"));
 			gtfsTestList.add(new TestDescription(2, GTFS_2_GTFS_Route_3, "WARNING"));
-			gtfsTestList.add(new TestDescription(2, GTFS_2_GTFS_Route_4, "WARNING"));	
+			gtfsTestList.add(new TestDescription(2, GTFS_2_GTFS_Route_4, "WARNING"));
+
+			gtfsTestList.add(new TestDescription(2, GTFS_3_Route_6, "ERROR"));
 	}
 	
 	

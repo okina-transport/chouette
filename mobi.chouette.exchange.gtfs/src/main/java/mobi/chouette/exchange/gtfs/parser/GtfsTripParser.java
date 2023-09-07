@@ -68,16 +68,9 @@ import org.joda.time.LocalTime;
 
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Log4j
 public class GtfsTripParser implements Parser, Validator, Constant {
@@ -177,9 +170,21 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 Iterable<String> tripIds = stopTimeParser.keys();
 
                 Map<Integer, Integer> stopSequences = new HashMap<>();
+                boolean enoughStopTimes = true;
                 for (String tripId : tripIds) {
                     stopSequences.clear();
                     Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
+
+                    if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
+                        enoughStopTimes = false;
+                        gtfsValidationReporter.reportError(
+                                context,
+                                new GtfsException(stopTimeParser.getPath(), stopTimeParser.getValue(tripId).getId(),
+                                        stopTimeParser.getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()),
+                                        StopTimeByTrip.FIELDS.trip_id.name() + "," + StopTimeByTrip.FIELDS.stop_sequence.name(),
+                                        GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS, null, tripId), GTFS_STOP_TIMES_FILE);
+                    }
+
                     for (GtfsStopTime bean : stopTimes) {
                         Integer stopSequence = bean.getStopSequence();
                         if (stopSequence != null) {
@@ -201,6 +206,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     }
                 }
 
+                if (enoughStopTimes) {
+                    gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
+                }
+
             }
             int i = 1;
             boolean unsuedId = true;
@@ -217,9 +226,18 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
             if (unsuedId)
                 gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, GtfsException.ERROR.UNUSED_ID);
+
+            for (GtfsException ex: gtfsValidationReporter.getExceptions()) {
+                if (ex.isFatal()) {
+                    fatalException = ex;
+                }
+            }
+
             gtfsValidationReporter.getExceptions().clear();
+
             if (fatalException != null)
                 throw fatalException;
+
         } else {
             gtfsValidationReporter.reportError(context, new GtfsException(GTFS_STOP_TIMES_FILE, 1, null,
                     GtfsException.ERROR.MISSING_FILE, null, null), GTFS_STOP_TIMES_FILE);
