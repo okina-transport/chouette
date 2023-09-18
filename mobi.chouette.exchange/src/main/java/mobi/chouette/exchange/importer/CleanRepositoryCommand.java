@@ -139,7 +139,6 @@ public class CleanRepositoryCommand implements Command {
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean execute(Context context) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
 
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
