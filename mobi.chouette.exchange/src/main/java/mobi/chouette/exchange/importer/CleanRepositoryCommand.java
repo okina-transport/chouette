@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.importer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
@@ -43,6 +44,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.HashMap;
 
 @Log4j
 @Stateless(name = CleanRepositoryCommand.COMMAND)
@@ -137,10 +139,12 @@ public class CleanRepositoryCommand implements Command {
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean execute(Context context) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
 
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
+		context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
 		try {
 			journeyFrequencyDAO.truncate();
 			journeyPatternDAO.truncate();

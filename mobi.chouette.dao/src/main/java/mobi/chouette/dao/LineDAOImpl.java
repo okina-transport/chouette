@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless (name="LineDAO")
 public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
@@ -105,5 +107,18 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 		}
 
 		return result;
+	}
+
+	@Override
+	public Map<String, String> findColorLines() {
+		List<Object[]> results = em.createNativeQuery("SELECT l.objectid, l.color FROM lines l ")
+				.getResultList();
+
+		return results.stream()
+				.filter(result -> result[1] != null)
+				.collect(Collectors.toMap(
+					result -> (String) result[0],
+					result -> (String) result[1]
+		));
 	}
 }

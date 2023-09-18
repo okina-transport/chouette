@@ -53,10 +53,7 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -113,6 +110,12 @@ public class LineRegisterCommand implements Command {
 
 		// Use property based enabling of stop place updater, but allow disabling if property exist in context
 		Line newValue  = referential.getLines().values().iterator().next();
+		if (context.get(LINE_COLOR) != null){
+			HashMap<String, String> lineColorMap = context.get(LINE_COLOR) instanceof HashMap<?,?> ? (HashMap<String, String>) context.get(LINE_COLOR) : new HashMap<>();
+			lineColorMap.entrySet().stream()
+					.filter(entry -> entry.getKey().equals(newValue.getObjectId()))
+					.forEach(entry -> newValue.setColor(entry.getValue()));
+		}
 		context.put(CURRENT_LINE_ID,newValue.getObjectId());
 
 		if (newValue.getNetwork() == null){
