@@ -488,6 +488,7 @@ private VehicleJourney buildNeptuneObject(boolean full)
       neptuneObject.setObjectId("GTFS:VehicleJourney:4321");
       // if (full) neptuneObject.setName("name");
       if (full) neptuneObject.setNumber(Long.valueOf(456));
+      if (full) neptuneObject.setPublishedJourneyIdentifier("456");
       if (full) neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
       JourneyPattern jp = new JourneyPattern();
       neptuneObject.setJourneyPattern(jp);

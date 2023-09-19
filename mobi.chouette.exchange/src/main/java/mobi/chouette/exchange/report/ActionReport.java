@@ -3,6 +3,7 @@ package mobi.chouette.exchange.report;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -243,6 +244,7 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 	public void print(PrintStream out, StringBuilder ret, int level, boolean first) {
 		ret.setLength(0);
 		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		Map<String, Object> mainMap = new HashMap<>();
 

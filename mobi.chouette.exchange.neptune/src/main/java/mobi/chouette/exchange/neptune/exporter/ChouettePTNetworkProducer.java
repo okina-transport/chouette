@@ -51,6 +51,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 
+import org.apache.commons.lang3.StringUtils;
 import org.trident.schema.trident.ChouettePTNetworkType;
 import org.trident.schema.trident.ChouettePTNetworkType.ChouetteArea;
 import org.trident.schema.trident.ChouettePTNetworkType.ChouetteLineDescription;
@@ -299,7 +300,13 @@ public class ChouettePTNetworkProducer implements Constant {
 		// sauvegarde
 		JaxbNeptuneFileConverter writer = JaxbNeptuneFileConverter.getInstance();
 		Path dir = Paths.get(rootDirectory,OUTPUT);
-		String fileName = collection.getLine().getObjectId().replaceAll(":", "-")+".xml";
+		String fileName;
+		if(StringUtils.isNotEmpty(collection.getLine().getNumber())){
+			fileName = collection.getLine().getNumber().trim() + ".xml";
+		}
+		else{
+			fileName = collection.getLine().getObjectId().replaceAll(":", "-")+".xml";
+		}
 		File file = new File(dir.toFile(),fileName);
 		writer.write(AbstractJaxbNeptuneProducer.tridentFactory.createChouettePTNetwork(rootObject), file );
 
