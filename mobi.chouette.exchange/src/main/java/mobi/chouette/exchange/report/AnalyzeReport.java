@@ -2,6 +2,7 @@ package mobi.chouette.exchange.report;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mobi.chouette.common.Constant;
@@ -201,6 +202,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     public void print(PrintStream out, StringBuilder ret, int level, boolean first) {
         ret.setLength(0);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         Map<String, Object> mainMap = new HashMap<>();
         Map<String, Object> analyzeReportMap = new HashMap<>();
 
@@ -257,7 +259,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
 
         if (multipleusedTimetablesInInputFile.size() > 0) {
-            printMultipleUsedTimetables(out, multipleusedTimetablesInInputFile, "multipleUsedTimetablesFromInputFile");
             analyzeReportMap.put("multipleUsedTimetablesFromInputFile", buildMultipleUsedTimetablesList(multipleusedTimetablesInInputFile));
         }
 

@@ -42,10 +42,10 @@ public class NetexImportUtil {
 
     public static String composeObjectIdFromNetexId(String type, String prefix, String netexId){
         String[] tokens = netexId.split(":");
-        if (tokens.length != 3 && tokens.length != 4){
-            throw new IllegalArgumentException("Netex Id should always have 3 or 4 parts. id in error:" + netexId);
+        if (tokens.length == 3 || ((tokens.length == 4) && "LOC".equals(tokens[3]))){
+            return composeObjectId(type,prefix,tokens[2]);
         }
-        return composeObjectId(type,prefix,tokens[2]);
+        return composeObjectId(type,prefix,netexId);
     }
 
     public static String composeOperatorIdFromNetexId( String prefix, String netexId){

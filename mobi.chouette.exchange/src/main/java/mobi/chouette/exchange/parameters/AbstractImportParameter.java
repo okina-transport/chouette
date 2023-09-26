@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 @NoArgsConstructor
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "noSave", "cleanMode", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines",
+@XmlType(propOrder = { "noSave", "cleanMode", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines", "generateMapMatching",
 		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation", "keepStopNames" }, name = "actionImportParameter")
 public class AbstractImportParameter extends AbstractParameter {
 
@@ -77,6 +77,11 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Getter
 	@Setter
 	private boolean keepStopNames = true;
+
+	@XmlElement(name = "generate_map_matching", defaultValue = "false")
+	@Getter
+	@Setter
+	private boolean generateMapMatching = false;
 
 	public boolean isValid(Logger log) {
 		return super.isValid(log);

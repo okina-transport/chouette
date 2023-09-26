@@ -174,7 +174,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         List<StopArea> boardingPositions = referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()))
+                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()) && !stopArea.getObjectId().startsWith("MOBIITI:"))
                 .collect(Collectors.toList());
 
         for (StopArea boardingPosition : boardingPositions) {
@@ -284,21 +284,21 @@ public class ChouettePTNetworkParser implements Parser, Constant {
 
         List<ConnectionLink> connectionLinksList = referential.getSharedConnectionLinks().values().stream().collect(Collectors.toList());
 
-        for (ConnectionLink connectionLink : connectionLinksList) {
-            String oldStartId = connectionLink.getStartOfLink().getObjectId();
-            String newStartStopAreaId = fileToReferentialStopIdMap.get(oldStartId);
-
-            if (newStartStopAreaId == null) continue;
-
-            StopArea newStartStopArea = referential.getSharedStopAreas().get(newStartStopAreaId);
-            connectionLink.setStartOfLink(newStartStopArea);
-
-            String oldEndId = connectionLink.getEndOfLink().getObjectId();
-            String newEndStopAreaId = fileToReferentialStopIdMap.get(oldEndId);
-            if (newEndStopAreaId == null) continue;
-            StopArea newEndStopArea = referential.getSharedStopAreas().get(newEndStopAreaId);
-            connectionLink.setEndOfLink(newEndStopArea);
-        }
+//        for (ConnectionLink connectionLink : connectionLinksList) {
+//            String oldStartId = connectionLink.getStartOfLink().getObjectId();
+//            String newStartStopAreaId = fileToReferentialStopIdMap.get(oldStartId);
+//
+//            if (newStartStopAreaId == null) continue;
+//
+//            StopArea newStartStopArea = referential.getSharedStopAreas().get(newStartStopAreaId);
+//            connectionLink.setStartOfLink(newStartStopArea);
+//
+//            String oldEndId = connectionLink.getEndOfLink().getObjectId();
+//            String newEndStopAreaId = fileToReferentialStopIdMap.get(oldEndId);
+//            if (newEndStopAreaId == null) continue;
+//            StopArea newEndStopArea = referential.getSharedStopAreas().get(newEndStopAreaId);
+//            connectionLink.setEndOfLink(newEndStopArea);
+//        }
 
         List<AccessLink> accessLinksList = referential.getSharedAccessLinks().values().stream().collect(Collectors.toList());
 

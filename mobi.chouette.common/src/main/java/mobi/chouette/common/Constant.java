@@ -44,6 +44,8 @@ public interface Constant {
 
 	public static final String COLUMN_NUMBER = "column_number";
 	public static final String LINE_NUMBER = "line_number";
+
+	public static final String LINE_COLOR = "line_color";
 	public static final String LINE_POSITION = "line_position";
 	// public static final String OBJECT_LOCALISATION = "object_localisation";
 	public static final String VALIDATION_CONTEXT = "validation_context";

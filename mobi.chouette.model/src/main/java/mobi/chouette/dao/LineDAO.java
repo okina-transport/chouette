@@ -4,6 +4,7 @@ import mobi.chouette.core.CoreException;
 import mobi.chouette.model.Line;
 
 import java.util.List;
+import java.util.Map;
 
 public interface LineDAO extends GenericDAO<Line> {
 
@@ -19,4 +20,5 @@ public interface LineDAO extends GenericDAO<Line> {
 
     Line findByObjectIdAndInitialize(String objectId);
 
+    Map<String, String> findColorLines();
 }

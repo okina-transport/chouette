@@ -57,7 +57,7 @@ public class CalendarFranceProducer extends NetexProducer {
                     if (p.getStartDate().isBefore(p.getEndDate())) {
                         OperatingPeriodRefStructure operatingPeriodRef = netexFactory.createOperatingPeriodRefStructure();
                         // Create Operating period
-                        String operatingPeriodId = netexDaytypeId.replace("DayType", "OperatingPeriod");
+                        String operatingPeriodId = netexDaytypeId.replace("DayType", "OperatingPeriod").replace(":LOC","") + "-" + i + ":LOC";
                         OperatingPeriod operatingPeriod = new OperatingPeriod().withVersion(dayType.getVersion())
                                 .withId(operatingPeriodId)
                                 .withFromDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay()).withToDate(TimeUtil.toLocalDateFromJoda(p.getEndDate()).atStartOfDay());

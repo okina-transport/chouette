@@ -13,6 +13,7 @@ import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.NeptuneIdentifiedObject;
+import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
 
 public class ConnectionLinkValidator extends AbstractValidator implements Validator<ConnectionLink> , Constant{
@@ -68,6 +69,8 @@ public class ConnectionLinkValidator extends AbstractValidator implements Valida
 		Map<String, DataLocation> fileLocations = data.getDataLocations();
 
 		Referential referential = (Referential) context.get(REFERENTIAL);
+		replaceIdsInConnectionLinks(context);
+		
 
 		// 2-NEPTUNE-ConnectionLink-1 : check presence of start or end of link
 		prepareCheckPoint(context, CONNECTION_LINK_1);
@@ -83,6 +86,39 @@ public class ConnectionLinkValidator extends AbstractValidator implements Valida
 
 		}
 		return ;
+	}
+
+	private void replaceIdsInConnectionLinks(Context context) {
+		Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
+		Context localContext = (Context) validationContext.get(LOCAL_CONTEXT);
+		Context stopAreaContext = (Context) validationContext.get(StopAreaValidator.LOCAL_CONTEXT);
+		Referential referential = (Referential) context.get(REFERENTIAL);
+
+		Map<String, String> fileToReferentialStopIdMap = (Map<String, String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
+
+		if (localContext == null || localContext.isEmpty()) return ;
+
+		for (String objectId : localContext.keySet())
+		{
+			ConnectionLink connectionLink = referential.getConnectionLinks().get(objectId);
+			String originalStartId = connectionLink.getStartOfLink().getObjectId();
+			if (fileToReferentialStopIdMap.containsKey(originalStartId)){
+				String newStartId = fileToReferentialStopIdMap.get(originalStartId);
+				StopArea newStartArea = referential.getSharedStopAreas().get(newStartId);
+				if (newStartArea != null){
+					connectionLink.setStartOfLink(newStartArea);
+				}
+			}
+
+			String originalEndId = connectionLink.getEndOfLink().getObjectId();
+			if (fileToReferentialStopIdMap.containsKey(originalEndId)){
+				String newEndId = fileToReferentialStopIdMap.get(originalEndId);
+				StopArea newEndArea = referential.getSharedStopAreas().get(newEndId);
+				if (newEndArea != null){
+					connectionLink.setEndOfLink(newEndArea);
+				}
+			}
+		}
 	}
 
 	public static class DefaultValidatorFactory extends ValidatorFactory {

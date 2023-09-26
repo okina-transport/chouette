@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.rutebanken.netex.model.DayType;
-import org.rutebanken.netex.model.DayTypeAssignment;
-import org.rutebanken.netex.model.DirectionTypeEnumeration;
-import org.rutebanken.netex.model.OperatingDay;
-import org.rutebanken.netex.model.OperatingPeriod;
+import org.rutebanken.netex.model.*;
 
 @NoArgsConstructor
 @ToString()
@@ -34,6 +30,10 @@ public class NetexReferential implements Serializable {
     @Getter
     @Setter
     private Map<String, OperatingPeriod> operatingPeriods = new HashMap<>();
+
+    @Getter
+    @Setter
+    private Map<String, UicOperatingPeriod> uicOperatingPeriods = new HashMap<>();
 
     @Getter
     @Setter

@@ -118,7 +118,9 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             route.getLine().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(route.getLine().getObjectId(), defaultCodespacePrefix));
             for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
                 routePoint.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routePoint.getObjectId(), defaultCodespacePrefix));
-                routePoint.getScheduledStopPoint().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routePoint.getScheduledStopPoint().getObjectId(), defaultCodespacePrefix));
+                if (routePoint.getScheduledStopPoint() != null){
+                    routePoint.getScheduledStopPoint().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routePoint.getScheduledStopPoint().getObjectId(), defaultCodespacePrefix));
+                }
             }
         }
         for (JourneyPattern journeyPattern : exportableData.getJourneyPatterns()) {
