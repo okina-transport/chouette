@@ -162,7 +162,10 @@ AbstractProducer
 
       try
       {
-         getExporter().getCalendarExporter().export(calendar);
+         if (calendar.getMonday() || calendar.getTuesday() || calendar.getWednesday()
+                 || calendar.getThursday() || calendar.getFriday() || calendar.getSaturday() || calendar.getSunday()){
+            getExporter().getCalendarExporter().export(calendar);
+         }
       }
       catch (Exception e)
       {
