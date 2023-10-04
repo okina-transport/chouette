@@ -143,7 +143,9 @@ public class CleanRepositoryCommand implements Command {
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
-		context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
+		if(context != null){
+			context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
+		}
 		try {
 			journeyFrequencyDAO.truncate();
 			journeyPatternDAO.truncate();
