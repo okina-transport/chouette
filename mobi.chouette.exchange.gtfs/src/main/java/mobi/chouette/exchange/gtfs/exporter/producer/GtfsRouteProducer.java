@@ -120,8 +120,10 @@ public class GtfsRouteProducer extends AbstractProducer
                 break;
              case Funicular:
             	 route.setRouteType(RouteTypeEnum.Funicular);
+                 break;
              case Cableway:
             	 route.setRouteType(RouteTypeEnum.Gondola);
+                 break;
              case TrolleyBus:
              case Coach:
              case Bus:
