@@ -193,6 +193,10 @@ public class StopPlaceMapper {
             case Metro:
                 sp.setStopPlaceType(StopTypeEnumeration.METRO_STATION);
                 break;
+            case Funicular:
+                sp.setTransportMode(AllVehicleModesOfTransportEnumeration.FUNICULAR);
+                sp.setStopPlaceType(StopTypeEnumeration.METRO_STATION);
+                break;
             case Rail:
                 sp.setStopPlaceType(StopTypeEnumeration.RAIL_STATION);
                 break;

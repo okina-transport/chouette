@@ -209,12 +209,16 @@ public class NetexCommunWriter extends AbstractNetexWriter {
                 break;
             case Funicular:
                 area.setTransportMode(AllVehicleModesOfTransportEnumeration.FUNICULAR);
+                break;
             case Cableway:
                 area.setTransportMode(AllVehicleModesOfTransportEnumeration.CABLEWAY);
+                break;
             case TrolleyBus:
                 area.setTransportMode(AllVehicleModesOfTransportEnumeration.TROLLEY_BUS);
+                break;
             case Coach:
                 area.setTransportMode(AllVehicleModesOfTransportEnumeration.COACH);
+                break;
             case Bus:
             default:
                 area.setTransportMode(AllVehicleModesOfTransportEnumeration.BUS);

@@ -120,6 +120,20 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 
 			// stream all file paths once
 			List<Path> allFilePaths = FileUtil.listFiles(path, "*.xml", ".*.xml");
+
+
+			if (allFilePaths.size() == 1){
+				//need to split a single xml file into many common files + line files
+				NetexSplitFileCommand splitFileCommand = (NetexSplitFileCommand) CommandFactory.create(initialContext,
+						NetexSplitFileCommand.class.getName());
+
+				splitFileCommand.execute(context);
+				allFilePaths = FileUtil.listFiles(path, "*.xml", ".*.xml");
+			}
+
+
+
+
 			Collections.sort(allFilePaths);
 			for (Path p : allFilePaths) {
 				reporter.setFileState(context, p.getFileName().toString(), IO_TYPE.INPUT, ActionReporter.FILE_STATE.OK);

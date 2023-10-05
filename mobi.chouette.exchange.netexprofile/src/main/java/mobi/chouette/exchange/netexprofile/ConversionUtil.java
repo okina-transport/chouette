@@ -290,7 +290,7 @@ public class ConversionUtil {
 				 * Funicular sub modes
 				 */
 				case Funicular:
-
+					return new TransportSubmodeStructure().withFunicularSubmode(FunicularSubmodeEnumeration.FUNICULAR);
 
 				default:
 					// Fall through
