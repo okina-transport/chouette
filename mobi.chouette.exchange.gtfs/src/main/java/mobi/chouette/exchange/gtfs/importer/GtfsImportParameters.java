@@ -33,8 +33,7 @@ import java.util.Arrays;
 		"removeParentStations",
 		"importShapesFile",
 		"updateStopAccessibility",
-		"railUICprocessing",
-		"description"
+		"railUICprocessing"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -42,10 +41,6 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "object_id_prefix", required=true)
 	private String objectIdPrefix;
-
-	@Getter@Setter
-	@XmlElement(name = "description", required=true)
-	private String description;
 
 	@Getter@Setter
 	@XmlElement(name = "split_id_on_dot", defaultValue="true")
