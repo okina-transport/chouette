@@ -1,12 +1,5 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.XPPUtil;
@@ -17,8 +10,9 @@ import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.model.PTLink;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
+
+import java.util.*;
 
 @Log4j
 public class ChouetteLineDescriptionParser implements Parser, Constant {

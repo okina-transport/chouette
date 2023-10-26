@@ -1,7 +1,7 @@
 package mobi.chouette.exchange.neptune.parser;
 
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
+import mobi.chouette.model.*;
 import org.joda.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j;
@@ -13,9 +13,6 @@ import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.validation.JourneyPatternValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -34,8 +31,8 @@ public class JourneyPatternParser implements Parser, Constant {
 		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
 
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
-		int columnNumber =  xpp.getColumnNumber();
-		int lineNumber =  xpp.getLineNumber();
+		int columnNumber = xpp.getColumnNumber();
+		int lineNumber = xpp.getLineNumber();
 
 		JourneyPatternValidator validator = (JourneyPatternValidator) ValidatorFactory.create(JourneyPatternValidator.class.getName(), context);
 
@@ -57,7 +54,7 @@ public class JourneyPatternParser implements Parser, Constant {
 				journeyPattern.setCreationTime(creationTime);
 			} else if (xpp.getName().equals("creatorId")) {
 				journeyPattern
-				.setCreatorId(ParserUtils.getText(xpp.nextText()));
+						.setCreatorId(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("name")) {
 				journeyPattern.setName(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("publishedName")) {
@@ -112,6 +109,39 @@ public class JourneyPatternParser implements Parser, Constant {
 		}
 		validator.addLocation(context, journeyPattern, lineNumber, columnNumber);
 		NeptuneUtil.refreshDepartureArrivals(journeyPattern);
+		addSyntheticDestinationDisplayIfMissingOnFirstStopPoint(configuration, referential, journeyPattern);
+	}
+
+	private void addSyntheticDestinationDisplayIfMissingOnFirstStopPoint(NeptuneImportParameters configuration, Referential referential, JourneyPattern journeyPattern) {
+		if(journeyPattern != null) {
+			StopPoint departureStopPoint = journeyPattern.getDepartureStopPoint();
+			if (departureStopPoint.getDestinationDisplay() == null) {
+				// Create a forced DestinationDisplay
+				// Use JourneyPattern->PublishedName
+
+				String stopPointId = AbstractConverter.extractOriginalId(departureStopPoint.getObjectId());
+				String journeyPatternId = AbstractConverter.extractOriginalId(journeyPattern.getObjectId());
+
+				DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential,
+						AbstractConverter.composeObjectId(configuration,
+								DestinationDisplay.DESTINATIONDISPLAY_KEY, journeyPatternId + "-" + stopPointId));
+
+				if (journeyPattern.getArrivalStopPoint() != null && journeyPattern.getArrivalStopPoint().getScheduledStopPoint() != null && journeyPattern.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef() != null &&
+						journeyPattern.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+					String content = journeyPattern.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
+
+					if (content != null) {
+						destinationDisplay.setName("Generated: " + content);
+						destinationDisplay.setFrontText(content);
+						departureStopPoint.setDestinationDisplay(destinationDisplay);
+					} else {
+						log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea name is null");
+					}
+				} else {
+					log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea is null");
+				}
+			}
+		}
 	}
 
 	static {

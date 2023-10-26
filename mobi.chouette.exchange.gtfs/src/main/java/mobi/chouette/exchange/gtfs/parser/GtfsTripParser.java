@@ -920,7 +920,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     AbstractConverter.composeObjectId(configuration,
                             DestinationDisplay.DESTINATIONDISPLAY_KEY, journeyPatternId + "-" + stopPointId));
 
-            if (jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
+            if (jp.getArrivalStopPoint() != null && jp.getArrivalStopPoint().getScheduledStopPoint() != null &&
+                    jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef() != null &&
+                    jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null) {
                 String content = jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName();
 
                 if (content != null) {
