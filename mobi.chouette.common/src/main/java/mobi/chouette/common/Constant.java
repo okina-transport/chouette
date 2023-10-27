@@ -109,6 +109,8 @@ public interface Constant {
 	public static final String ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE = "routeLinksUsedMutipleTimesInTheSameFile";
 	public static final String ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT = "routeLinksUsedSameFromAndToScheduledStopPoint";
 
+	public static final String SCHEDULE_STOP_POINT_STOP_AREA_NULL = "scheduleStopPointInStopAreaRefNull";
+
 	public static final String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
 
 	public static final String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";
