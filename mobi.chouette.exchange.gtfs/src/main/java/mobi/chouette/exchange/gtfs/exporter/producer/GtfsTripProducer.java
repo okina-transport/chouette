@@ -71,7 +71,7 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * @pram idParams
 	 * @return list of stoptimes
 	 */
-	private boolean saveTimes(VehicleJourney vj, String prefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams) {
+	private boolean saveTimes(VehicleJourney vj, String prefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams, Boolean googleMapsCompatibility) {
 		if (vj.getVehicleJourneyAtStops().isEmpty())
 			return false;
 		Line l = vj.getRoute().getLine();
@@ -140,6 +140,11 @@ public class GtfsTripProducer extends AbstractProducer {
 			else
 			{
 			   time.setShapeDistTraveled(null);
+			}
+
+			if(googleMapsCompatibility != null && googleMapsCompatibility) {
+				// Don't export shape_dist_traveled if the export targets Google Maps
+				time.setShapeDistTraveled(null);
 			}
 
 			try {
@@ -261,7 +266,7 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * 		    - suffix
 	 * @return gtfs trip
 	 */
-	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, boolean keepOriginalId, IdParameters idParams) {
+	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, boolean keepOriginalId, IdParameters idParams, Boolean googleMapsCompatibility) {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
@@ -324,7 +329,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
 
 		// add StopTimes
-		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams)) {
+		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams, googleMapsCompatibility)) {
 			try {
 				getExporter().getTripExporter().export(trip);
 			} catch (Exception e) {

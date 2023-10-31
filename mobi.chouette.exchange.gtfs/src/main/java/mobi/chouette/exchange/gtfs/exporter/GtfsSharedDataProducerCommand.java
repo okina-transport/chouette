@@ -109,7 +109,6 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 //		Set<Company> companies = collection.getAgencyCompanies();
 		Set<Company> companies = collection.getOperatorCompanies();
 		Set<Interchange> interchanges = collection.getInterchanges();
-		Boolean exportCommercialPoints = configuration.getCommercialPointExport();
 		IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),null,configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
 		if (!companies.isEmpty()) {
 			agencyProducer = new GtfsAgencyProducer(exporter);
@@ -121,7 +120,9 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext();) {
 			StopArea stop = iterator.next();
 
-			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix, exportCommercialPoints)) {
+			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix,
+					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility()))
+			{
 				iterator.remove();
 			} else {
 				if (metadata != null && stop.hasCoordinates())
@@ -131,7 +132,8 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 		for (StopArea stop : physicalStops) {
-			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix, exportCommercialPoints);
+			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix,
+					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility());
 			if (metadata != null && stop.hasCoordinates()) {
 				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),
 						stop.getLatitude().doubleValue());
