@@ -103,6 +103,7 @@ public class StopAreaMapper {
         mapQuayName(stopPlace, quay, boardingPosition);
         mapQuayUrl(quay, boardingPosition);
         mapQuayRegistrationNumber(quay, boardingPosition);
+        mapQuayPrivateCode(quay, boardingPosition);
         createCompassBearing(quay, boardingPosition);
         mapOriginalStopId(quay, boardingPosition);
         boardingPosition.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(quay.getTransportMode().value()));
@@ -143,13 +144,13 @@ public class StopAreaMapper {
     private StopArea mapStopArea(Referential referential, StopPlace stopPlace) {
         StopArea stopArea = ObjectFactory.getStopArea(referential, stopPlace.getId());
         stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
-
         mapMobilityRestrictedSuitable(stopPlace, stopArea);
-
         stopArea.setLiftAvailable(null);
         stopArea.setStairsAvailable(null);
         stopArea.setTransportModeName(NetexParserUtils.toTransportModeNameEnum(stopPlace.getTransportMode().value()));
         stopArea.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
+        stopArea.setPrivateCode(stopPlace.getPrivateCode() != null ? stopPlace.getPrivateCode().getValue() : null);
+        stopArea.setRegistrationNumber(stopPlace.getPublicCode());
         mapCentroidToChouette(stopPlace, stopArea);
         mapName(stopPlace, stopArea);
         mapOriginalStopId(stopPlace, stopArea);
@@ -198,6 +199,12 @@ public class StopAreaMapper {
     private void mapQuayRegistrationNumber(Quay quay, StopArea boardingPosition){
         if(StringUtils.isNotBlank(quay.getPublicCode())){
             boardingPosition.setRegistrationNumber(quay.getPublicCode());
+        }
+    }
+
+    private void mapQuayPrivateCode(Quay quay, StopArea boardingPosition) {
+        if(quay.getPrivateCode() != null && StringUtils.isNotBlank(quay.getPrivateCode().getValue())){
+            boardingPosition.setPrivateCode(quay.getPrivateCode().getValue());
         }
     }
 
