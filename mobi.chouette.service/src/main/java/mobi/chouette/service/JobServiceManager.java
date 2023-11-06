@@ -4,38 +4,45 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Constant;
-import mobi.chouette.common.ContenerChecker;
-import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.*;
 import mobi.chouette.common.file.FileServiceException;
 import mobi.chouette.common.file.FileStore;
 import mobi.chouette.common.file.FileStoreFactory;
 import mobi.chouette.dao.CompanyDAO;
+import mobi.chouette.dao.LineDAO;
+import mobi.chouette.dao.ProviderDAO;
+import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.dao.iev.JobDAO;
 import mobi.chouette.dao.iev.StatDAO;
 import mobi.chouette.exchange.InputValidator;
 import mobi.chouette.exchange.TestDescription;
+import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.exchange.stopplace.StopAreaUpdateService;
+import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.model.Company;
+import mobi.chouette.model.Line;
+import mobi.chouette.model.Provider;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job.STATUS;
 import mobi.chouette.model.iev.Link;
 import mobi.chouette.model.iev.Stat;
+import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.scheduler.Scheduler;
-import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
 import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,6 +61,12 @@ public class JobServiceManager {
 
 	@EJB
 	StatDAO statDAO;
+
+	@EJB(beanName = LineService.BEAN_NAME)
+	LineService lineService;
+
+	@EJB
+	private ProviderDAO providerDAO;
 
 	@EJB(beanName = ContenerChecker.NAME)
 	ContenerChecker checker;
@@ -342,6 +355,57 @@ public class JobServiceManager {
 		jobsDeleted += deleteOldJobs(completedJobsExportNetex, keepDays, keepJobsPerReferential);
 
 		log.info("Removed old jobs. Cnt: " + jobsDeleted);
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void exportLineIds(){
+
+		Context chouetteDbContext = createContext();
+		ContextHolder.clear();
+		ContextHolder.setContext("admin");
+
+		List<Provider> providers = providerDAO.getAllProviders();
+
+		List<Provider> filteredProviders = providers.stream()
+								.filter(prov -> !prov.getCode().startsWith("mobiiti") && !prov.getCode().equals("technique"))
+								.collect(Collectors.toList());
+
+		List<Line> lineIds = new ArrayList<>();
+
+		for (Provider provider : filteredProviders) {
+			String schema = provider.getCode();
+			log.info("Starting lineId export for schema:" + schema);
+			chouetteDbContext = createContext();
+			ContextHolder.clear();
+			ContextHolder.setContext(schema);
+			lineIds.addAll(lineService.exportLineIdsForSchema());
+		}
+
+		Path technicalPath = FileUtil.getTechnicalPath();
+
+		Path lineFilePath = technicalPath.resolve("lines.csv");
+
+		try (BufferedWriter writer = Files.newBufferedWriter(lineFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+
+			for (Line line : lineIds) {
+				writer.write(line.getObjectId() + "," + line.getFlexibleService() +  "\n");
+			}
+		} catch (IOException e) {
+		log.error("Error while trying to write line file", e);
+		}
+
+	}
+
+
+
+	private Context createContext() {
+		Context context = new Context();
+		Referential referential = new Referential();
+		context.put(Constant.REFERENTIAL, referential);
+		context.put(Constant.CACHE, referential);
+		context.put(Constant.REPORT, new ActionReport());
+		context.put(Constant.VALIDATION_REPORT, new ValidationReport());
+		return context;
 	}
 
 	private List<Job> getCompletedJobsByActionAndType(String action, String type) {
