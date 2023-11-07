@@ -381,9 +381,9 @@ public class JobServiceManager {
 			chouetteDbContext = createContext();
 			ContextHolder.clear();
 			ContextHolder.setContext(schema);
-			List<Line> lines = lineService.exportLineIdsForSchema();
+			lineIds.addAll(lineService.exportLineIdsForSchema());
 			if (StringUtils.isNotEmpty(provider.getPrefixNetex())){
-				netexPrefixMap.put(provider.getCode(), provider.getPrefixNetex());
+				netexPrefixMap.put(provider.getCode().toUpperCase(), provider.getPrefixNetex().toUpperCase());
 			}
 
 		}
