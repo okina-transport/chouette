@@ -30,6 +30,7 @@ import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.scheduler.Scheduler;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
@@ -66,7 +67,7 @@ public class JobServiceManager {
 	LineService lineService;
 
 	@EJB
-	private ProviderDAO providerDAO;
+	private ProviderDAO providerDAO;	
 
 	@EJB(beanName = ContenerChecker.NAME)
 	ContenerChecker checker;
@@ -360,6 +361,8 @@ public class JobServiceManager {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void exportLineIds(){
 
+		Map<String, String> netexPrefixMap = new HashMap<>();
+
 		Context chouetteDbContext = createContext();
 		ContextHolder.clear();
 		ContextHolder.setContext("admin");
@@ -378,7 +381,11 @@ public class JobServiceManager {
 			chouetteDbContext = createContext();
 			ContextHolder.clear();
 			ContextHolder.setContext(schema);
-			lineIds.addAll(lineService.exportLineIdsForSchema());
+			List<Line> lines = lineService.exportLineIdsForSchema();
+			if (StringUtils.isNotEmpty(provider.getPrefixNetex())){
+				netexPrefixMap.put(provider.getCode(), provider.getPrefixNetex());
+			}
+
 		}
 
 		Path technicalPath = FileUtil.getTechnicalPath();
@@ -388,7 +395,9 @@ public class JobServiceManager {
 		try (BufferedWriter writer = Files.newBufferedWriter(lineFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
 
 			for (Line line : lineIds) {
-				writer.write(line.getObjectId() + "," + line.getFlexibleService() +  "\n");
+				String linePrefix = line.objectIdPrefix();
+				String objectIdToWrite = netexPrefixMap.containsKey(linePrefix) ? line.getObjectId().replace(linePrefix + ":", netexPrefixMap.get(linePrefix) + ":") : line.getObjectId();
+				writer.write(objectIdToWrite + "," + line.getFlexibleService() +  "\n");
 			}
 		} catch (IOException e) {
 		log.error("Error while trying to write line file", e);
