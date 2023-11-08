@@ -26,6 +26,7 @@ import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Job.STATUS;
 import mobi.chouette.model.iev.Link;
 import mobi.chouette.model.iev.Stat;
+import mobi.chouette.model.type.TadEnum;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -397,7 +398,7 @@ public class JobServiceManager {
 			for (Line line : lineIds) {
 				String linePrefix = line.objectIdPrefix();
 				String objectIdToWrite = netexPrefixMap.containsKey(linePrefix) ? line.getObjectId().replace(linePrefix + ":", netexPrefixMap.get(linePrefix) + ":") : line.getObjectId();
-				String isFlexible = line.getFlexibleService() == null ? "false" : line.getFlexibleService().toString();
+				boolean isFlexible = !TadEnum.NO_TAD.equals(line.getTad());
 				writer.write(objectIdToWrite + "," + isFlexible +  "\n");
 			}
 		} catch (IOException e) {
