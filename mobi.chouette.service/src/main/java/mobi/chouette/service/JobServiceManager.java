@@ -383,7 +383,7 @@ public class JobServiceManager {
 			ContextHolder.setContext(schema);
 			lineIds.addAll(lineService.exportLineIdsForSchema());
 			if (StringUtils.isNotEmpty(provider.getPrefixNetex())){
-				netexPrefixMap.put(provider.getCode().toUpperCase(), provider.getPrefixNetex().toUpperCase());
+				netexPrefixMap.put(provider.getCode().replace("mobiiti_","").toUpperCase(), provider.getPrefixNetex().toUpperCase());
 			}
 
 		}
