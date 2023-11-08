@@ -370,7 +370,7 @@ public class JobServiceManager {
 		List<Provider> providers = providerDAO.getAllProviders();
 
 		List<Provider> filteredProviders = providers.stream()
-								.filter(prov -> !prov.getCode().startsWith("mobiiti") && !prov.getCode().equals("technique"))
+								.filter(prov -> prov.getCode().startsWith("mobiiti") && !prov.getCode().equals("technique"))
 								.collect(Collectors.toList());
 
 		List<Line> lineIds = new ArrayList<>();
@@ -392,7 +392,7 @@ public class JobServiceManager {
 
 		Path lineFilePath = technicalPath.resolve("lines.csv");
 
-		try (BufferedWriter writer = Files.newBufferedWriter(lineFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+		try (BufferedWriter writer = Files.newBufferedWriter(lineFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
 			for (Line line : lineIds) {
 				String linePrefix = line.objectIdPrefix();
