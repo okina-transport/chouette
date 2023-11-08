@@ -397,7 +397,8 @@ public class JobServiceManager {
 			for (Line line : lineIds) {
 				String linePrefix = line.objectIdPrefix();
 				String objectIdToWrite = netexPrefixMap.containsKey(linePrefix) ? line.getObjectId().replace(linePrefix + ":", netexPrefixMap.get(linePrefix) + ":") : line.getObjectId();
-				writer.write(objectIdToWrite + "," + line.getFlexibleService() +  "\n");
+				String isFlexible = line.getFlexibleService() == null ? "false" : line.getFlexibleService().toString();
+				writer.write(objectIdToWrite + "," + isFlexible +  "\n");
 			}
 		} catch (IOException e) {
 		log.error("Error while trying to write line file", e);
