@@ -37,8 +37,6 @@ public class CalendarIDFMProducer extends NetexProducer {
                     }
                 }
 
-                exportableNetexData.getSharedDayTypes().put(netexDaytypeId, dayType);
-
                 DayTypeRefStructure dayTypeRef = netexFactory.createDayTypeRefStructure();
                 NetexProducerUtils.populateReferenceIDFM(timetable, dayTypeRef);
 
@@ -51,7 +49,7 @@ public class CalendarIDFMProducer extends NetexProducer {
                     DayTypeAssignment dayTypeAssignment;
 
                     Period p = timetable.getPeriods().get(i);
-                    if (p.getStartDate().isBefore(p.getEndDate())) {
+                    if (p.getStartDate().isBefore(p.getEndDate()) && !dayOfWeekEnumerations.isEmpty()) {
                         OperatingPeriodRefStructure operatingPeriodRef = netexFactory.createOperatingPeriodRefStructure();
                         // Create Operating period
                         String operatingPeriodId = netexDaytypeId.replace("DayType", "OperatingPeriod");
@@ -70,6 +68,7 @@ public class CalendarIDFMProducer extends NetexProducer {
                                 .withOrder(BigInteger.valueOf(0))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                                 .withOperatingPeriodRef(operatingPeriodRef);
+                        exportableNetexData.getSharedDayTypes().put(netexDaytypeId, dayType);
                     }
                     else{
                         dayTypeAssignment = netexFactory.createDayTypeAssignment()
@@ -78,6 +77,7 @@ public class CalendarIDFMProducer extends NetexProducer {
                                 .withOrder(BigInteger.valueOf(0))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                                 .withDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay());
+                        exportableNetexData.getSharedDayTypes().put(netexDaytypeId, dayType);
                     }
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
                 }
