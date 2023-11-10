@@ -67,6 +67,7 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
         deleteSpacesInIdsAndChangeSpecialCharacters(exportableData, parameters.getDefaultCodespacePrefix());
 
         hashTimetableObjectId(exportableData);
+        hashDestinationDisplayObjectId(exportableData);
 
         // Pour info il n'y a pas de produceAndCollectCommonData car les notices utilisés pour créer ce fichier sont récupérés dans les deux méthodes ci dessous
         produceAndCollectLineData(context, exportableData, exportableNetexData);
@@ -281,6 +282,19 @@ public class NetexLineDataIDFMProducer extends NetexProducer implements Constant
 
         for(Timetable timetable : timetablesInVJ){
             timetable.setObjectId(computeEndId(timetable.getObjectId()));
+        }
+    }
+
+    private void hashDestinationDisplayObjectId(ExportableData exportableData) throws NoSuchAlgorithmException {
+        for (JourneyPattern journeyPattern : exportableData.getJourneyPatterns()) {
+            for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+                if (stopPoint != null) {
+                    mobi.chouette.model.DestinationDisplay destinationDisplay = stopPoint.getDestinationDisplay();
+                    if (destinationDisplay != null) {
+                        destinationDisplay.setObjectId(computeEndId(destinationDisplay.getObjectId()));
+                    }
+                }
+            }
         }
     }
 
