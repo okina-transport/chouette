@@ -225,8 +225,13 @@ public class StopAreaService {
                                 .filter(keyValue -> keyValue.getKey() != null && keyValue.getKey().equals("merged-id"))
                                 .forEach(keyValue -> Arrays.stream(keyValue.getValue().split(","))
                                         .forEach(id -> {
-                                            log.info(Color.CYAN + "Deleting stop area " + id);
-                                            stopAreaUpdateService.deleteStopArea(id);
+                                            try{
+                                                log.info(Color.CYAN + "Deleting stop area " + id);
+                                                stopAreaUpdateService.deleteStopArea(id);
+                                            }catch(Exception e){
+                                                log.error("Error while deleting stopArea:" + id, e);
+                                            }
+
                                         })));
 
             }
