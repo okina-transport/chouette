@@ -45,7 +45,14 @@ public class StopAreaUpdateTask {
 	}
 
 	public void update() throws CoreException {
-		updateContext.getInactiveStopAreaIds().forEach(this::removeStopArea);
+
+		for (String inactiveStopAreaId : updateContext.getInactiveStopAreaIds()) {
+			try{
+				removeStopArea(inactiveStopAreaId);
+			}catch(Exception e){
+				log.error("Error while deleting stop area:" + inactiveStopAreaId, e);
+			}
+		}
 
 		String currentSchema = ContextHolder.getContext();
 		List<String> impactedStopAreasIds = updateContext.getImpactedStopAreasBySchema().get(currentSchema);
