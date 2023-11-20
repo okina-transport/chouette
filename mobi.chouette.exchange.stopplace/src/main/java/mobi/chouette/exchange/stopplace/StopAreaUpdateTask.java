@@ -54,6 +54,8 @@ public class StopAreaUpdateTask {
 			}
 		}
 
+		log.info("Stop Area delete completed");
+
 		String currentSchema = ContextHolder.getContext();
 		List<String> impactedStopAreasIds = updateContext.getImpactedStopAreasBySchema().get(currentSchema);
 
