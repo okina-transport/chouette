@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>mobi.chouette</groupId>
 	<artifactId>mobi.chouette</artifactId>
-	<version>3.5.6_MOBIITI</version>
+	<version>3.5.7_MOBIITI</version>
 	<packaging>pom</packaging>
 
 	<properties>

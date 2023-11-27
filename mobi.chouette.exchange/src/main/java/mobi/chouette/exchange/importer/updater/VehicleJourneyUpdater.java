@@ -21,6 +21,7 @@ import mobi.chouette.dao.TimetableDAO;
 import mobi.chouette.dao.VehicleJourneyAtStopDAO;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
+import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyFrequency;
@@ -105,6 +106,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
 	private Updater<Footnote> footnoteUpdater;
 
+	@EJB(beanName = AccessibilityAssessmentUpdater.BEAN_NAME)
+	private Updater<AccessibilityAssessment> accessibilityAssessmentUpdater;
+
 	@Override
 	public void update(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
 		if (newValue.isSaved()) {
@@ -137,7 +141,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			oldValue.setFacility(newValue.getFacility());
 			oldValue.setVehicleTypeIdentifier(newValue.getVehicleTypeIdentifier());
 			oldValue.setNumber(newValue.getNumber());
-			oldValue.setMobilityRestrictedSuitability(newValue.getMobilityRestrictedSuitability());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setJourneyCategory(newValue.getJourneyCategory());
 			oldValue.setDetached(false);
@@ -180,10 +183,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 				oldValue.setNumber(newValue.getNumber());
 			}
 
-			if (newValue.getMobilityRestrictedSuitability() != null
-					&& !newValue.getMobilityRestrictedSuitability().equals(oldValue.getMobilityRestrictedSuitability())) {
-				oldValue.setMobilityRestrictedSuitability(newValue.getMobilityRestrictedSuitability());
-			}
 			if (newValue.getFlexibleService() != null
 					&& !newValue.getFlexibleService().equals(oldValue.getFlexibleService())) {
 				oldValue.setFlexibleService(newValue.getFlexibleService());
@@ -392,6 +391,14 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		}
 		
 		oldValue.setFootnotes(footnotes);
+
+		// Accessibility assessment
+		if (newValue.getAccessibilityAssessment() == null) {
+			oldValue.setAccessibilityAssessment(null);
+		} else {
+			accessibilityAssessmentUpdater.update(context, oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment());
+		}
+
 //		monitor.stop();
 	}
 	

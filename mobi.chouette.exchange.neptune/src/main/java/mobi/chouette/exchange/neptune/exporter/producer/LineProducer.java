@@ -68,10 +68,6 @@ public class LineProducer extends AbstractJaxbNeptuneProducer<ChouettePTNetworkT
 					.getUserNeeds()));
 			hasExtensions = true;
 		}
-		if (line.getMobilityRestrictedSuitable() != null && line.getMobilityRestrictedSuitable()) {
-			jaxbLineExtension.setMobilityRestrictedSuitability(line.getMobilityRestrictedSuitable());
-			hasExtensions = true;
-		}
 		// jaxbLineExtension.setStableId(stableId); ???
 		if (hasExtensions)
 			jaxbLine.setLineExtension(jaxbLineExtension);

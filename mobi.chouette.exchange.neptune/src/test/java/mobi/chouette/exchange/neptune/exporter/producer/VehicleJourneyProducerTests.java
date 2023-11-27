@@ -76,23 +76,6 @@ public class VehicleJourneyProducerTests
       Assert.assertEquals(xmlComment,"{\"flexible_service\":false}","comment should be correctly built");
 
    }
-   @Test(groups = { "buildComment" }, description = "check null comment with mobility restricted suitability  extension")
-   public void verifyBuildMobilityComment() throws ChouetteException
-   {
-      VehicleJourney vj = new VehicleJourney();
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
-
-      String xmlComment = producer.buildComment(vj,true);
-      Reporter.log("comment = "+xmlComment);
-      Assert.assertEquals(xmlComment,"{\"mobility_restriction\":true}","comment should be correctly built");
-
-      vj.setMobilityRestrictedSuitability(Boolean.FALSE);
-
-      xmlComment = producer.buildComment(vj,true);
-      Reporter.log("comment = "+xmlComment);
-      Assert.assertEquals(xmlComment,"{\"mobility_restriction\":false}","comment should be correctly built");
-
-   }
 
    @Test(groups = { "buildComment" }, description = "check null comment and footnotes extensions")
    public void verifyBuildFootnotesComment() throws ChouetteException
@@ -106,41 +89,6 @@ public class VehicleJourneyProducerTests
       Reporter.log("comment = "+xmlComment);
       Assert.assertEquals(xmlComment,"{\"footnote_refs\":[\"1\",\"3\"]}","comment should be correctly built");
 
-   }
-   
-   @Test(groups = { "buildComment" }, description = "check  comment with all extension")
-   public void verifyBuildCompleteComment() throws ChouetteException
-   {
-      VehicleJourney vj = new VehicleJourney();
-      vj.getFootnotes().add(getLine().getFootnotes().get(0));
-      vj.getFootnotes().add(getLine().getFootnotes().get(2));
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
-      vj.setFlexibleService(Boolean.TRUE);
-      vj.setComment("dummy comment");
-      String xmlComment = producer.buildComment(vj,true);
-      Reporter.log("comment = "+xmlComment);
-      Assert.assertTrue(xmlComment.startsWith("{"),"comment should start with {");
-      Assert.assertTrue(xmlComment.endsWith("}"),"comment should end with }");
-      Assert.assertTrue(xmlComment.contains(JsonExtension.COMMENT),"comment should contain comment tag");
-      Assert.assertTrue(xmlComment.contains(JsonExtension.FOOTNOTE_REFS),"comment should contain footnote refs tag");
-      Assert.assertTrue(xmlComment.contains(JsonExtension.FLEXIBLE_SERVICE),"comment should contain flexible service tag");
-      Assert.assertTrue(xmlComment.contains(JsonExtension.MOBILITY_RESTRICTION),"comment should contain mobility restriction tag");
-
-   }
-
-   @Test(groups = { "buildComment" }, description = "check normal comment without extensions asked")
-   public void verifyBuildNoExtensions() throws ChouetteException
-   {
-      VehicleJourney vj = new VehicleJourney();
-      vj.getFootnotes().add(getLine().getFootnotes().get(0));
-      vj.getFootnotes().add(getLine().getFootnotes().get(2));
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
-      vj.setFlexibleService(Boolean.TRUE);
-      vj.setComment("dummy comment");
-
-      String xmlComment = producer.buildComment(vj,false);
-      Reporter.log("comment = "+xmlComment);
-      Assert.assertEquals(xmlComment,"dummy comment","comment should be correctly built");
    }
 
 }

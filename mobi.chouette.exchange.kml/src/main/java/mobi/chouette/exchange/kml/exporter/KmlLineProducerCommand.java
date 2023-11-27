@@ -187,7 +187,6 @@ public class KmlLineProducerCommand implements Command, Constant {
 		lineItem.addExtraData("registration_number", line.getRegistrationNumber());
 		lineItem.addExtraData("color", line.getColor());
 		lineItem.addExtraData("text_color", line.getTextColor());
-		lineItem.addExtraData("mobility_restricted_suitability", line.getMobilityRestrictedSuitable());
 		lineItem.addExtraData("company_objectid", line.getCompany().getObjectId());
 		lineItem.addExtraData("network_objectid", line.getNetwork().getObjectId());
 

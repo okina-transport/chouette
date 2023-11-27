@@ -22,6 +22,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -195,24 +196,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "transport_submode_name")
 	private TransportSubModeNameEnum transportSubModeName = null;
-
-	/**
-	 * mobility restriction indicator (such as wheel chairs) <br/>
-	 * 
-	 * <ul>
-	 * <li>null if information n is unknown for this line</li>
-	 * <li>true if wheel chairs can use this line</li>
-	 * <li>false if wheel chairs can't use this line</li>
-	 * </ul>
-	 * 
-	 * @param mobilityRestrictedSuitable
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "mobility_restricted_suitability")
-	private Boolean mobilityRestrictedSuitable;
 
 	/**
 	 * coded user needs as binary map<br/>
@@ -461,7 +444,12 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 			routingConstraints.remove(routingConstraint);
 			routingConstraint.getRoutingConstraintLines().remove(this);
 		}
-
 	}
+
+	@Getter
+	@Setter
+	@OneToOne(cascade = { CascadeType.ALL})
+	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
+	private AccessibilityAssessment accessibilityAssessment;
 
 }

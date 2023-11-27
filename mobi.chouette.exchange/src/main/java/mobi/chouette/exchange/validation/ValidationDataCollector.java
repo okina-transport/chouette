@@ -188,7 +188,6 @@ public class ValidationDataCollector {
 		target.setComment(source.getComment());
 		target.setFlexibleService(source.getFlexibleService());
 		target.setIntUserNeeds(source.getIntUserNeeds());
-		target.setMobilityRestrictedSuitable(source.getMobilityRestrictedSuitable());
 		target.setPublishedName(source.getPublishedName());
 		target.setRegistrationNumber(source.getRegistrationNumber());
 		target.setTextColor(source.getTextColor());

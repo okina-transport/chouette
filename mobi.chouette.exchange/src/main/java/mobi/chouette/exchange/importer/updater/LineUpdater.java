@@ -18,6 +18,7 @@ import mobi.chouette.dao.RouteDAO;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
+import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.GroupOfLine;
@@ -67,6 +68,9 @@ public class LineUpdater implements Updater<Line> {
 	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
 	private Updater<Footnote> footnoteUpdater;
 
+	@EJB(beanName = AccessibilityAssessmentUpdater.BEAN_NAME)
+	private Updater<AccessibilityAssessment> accessibilityAssessmentUpdater;
+
 	@Override
 	public void update(Context context, Line oldValue, Line newValue) throws Exception {
 
@@ -96,7 +100,6 @@ public class LineUpdater implements Updater<Line> {
 			oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
 			oldValue.setTransportModeName(newValue.getTransportModeName());
 			oldValue.setTransportSubModeName(newValue.getTransportSubModeName());
-			oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
 			oldValue.setUrl(newValue.getUrl());
@@ -142,10 +145,6 @@ public class LineUpdater implements Updater<Line> {
 			if (newValue.getTransportSubModeName() != null
 					&& !newValue.getTransportSubModeName().equals(oldValue.getTransportSubModeName())) {
 				oldValue.setTransportSubModeName(newValue.getTransportSubModeName());
-			}
-			if (newValue.getMobilityRestrictedSuitable() != null
-					&& !newValue.getMobilityRestrictedSuitable().equals(oldValue.getMobilityRestrictedSuitable())) {
-				oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
 			}
 			if (newValue.getFlexibleService() != null
 					&& !newValue.getFlexibleService().equals(oldValue.getFlexibleService())) {
@@ -346,6 +345,13 @@ public class LineUpdater implements Updater<Line> {
 		}
 		
 		oldValue.setFootnotes(footnotes);
+
+		// Accessibility assessment
+		if (newValue.getAccessibilityAssessment() == null) {
+			oldValue.setAccessibilityAssessment(null);
+		} else {
+			accessibilityAssessmentUpdater.update(context, oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment());
+		}
 
 //		monitor.stop();
 	}

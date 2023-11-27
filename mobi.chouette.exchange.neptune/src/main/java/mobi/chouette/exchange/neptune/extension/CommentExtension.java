@@ -193,9 +193,6 @@ public class CommentExtension implements JsonExtension {
 				if (json.has(FLEXIBLE_SERVICE)) {
 					vj.setFlexibleService(json.getBoolean(FLEXIBLE_SERVICE));
 				}
-				if (json.has(MOBILITY_RESTRICTION)) {
-					vj.setMobilityRestrictedSuitability(json.getBoolean(MOBILITY_RESTRICTION));
-				}
 			} catch (Exception e) {
 				log.warn("VehicleJourney extension : unparsable json : " + comment+ ", reason "+e.getMessage());
 				vj.setComment(comment);

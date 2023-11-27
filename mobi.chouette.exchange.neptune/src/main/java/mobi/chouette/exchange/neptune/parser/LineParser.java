@@ -92,9 +92,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 			} else if (xpp.getName().equals("LineExtension")) {
 
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
-					if (xpp.getName().equals("mobilityRestrictedSuitability")) {
-						line.setMobilityRestrictedSuitable(ParserUtils.getBoolean(xpp.nextText()));
-					} else if (xpp.getName().equals("accessibilitySuitabilityDetails")) {
+					if (xpp.getName().equals("accessibilitySuitabilityDetails")) {
 						List<UserNeedEnum> userNeeds = new ArrayList<UserNeedEnum>();
 						while (xpp.nextTag() == XmlPullParser.START_TAG) {
 							if (xpp.getName().equals("MobilityNeed") || xpp.getName().equals("PsychosensoryNeed")

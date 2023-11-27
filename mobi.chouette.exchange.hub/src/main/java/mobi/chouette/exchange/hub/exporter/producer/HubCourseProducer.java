@@ -56,14 +56,7 @@ public class HubCourseProducer extends AbstractProducer {
 		dayTypes >>= 2;
 		hubObject.setValidite(Integer.valueOf(dayTypes));
 
-		// renvois
-		if (pmrRenvoiId > 0) {
-			if (isTrue(neptuneObject.getMobilityRestrictedSuitability())
-					|| (isTrue(neptuneObject.getRoute().getLine().getMobilityRestrictedSuitable()) && !isFalse(neptuneObject
-							.getMobilityRestrictedSuitability()))) {
-				hubObject.getIdentifiantsRenvoi().add(pmrRenvoiId);
-			}
-		}
+
 		for (Footnote footnote : neptuneObject.getFootnotes()) {
 			hubObject.getIdentifiantsRenvoi().add(Integer.decode(footnote.getKey()));
 		}

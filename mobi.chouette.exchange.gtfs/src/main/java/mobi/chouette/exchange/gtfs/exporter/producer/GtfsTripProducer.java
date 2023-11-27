@@ -25,7 +25,7 @@ import java.util.*;
  * produce Trips and stop_times for vehicleJourney
  * <p>
  * when vehicleJourney is on multiple timetables, it will be cloned for each
- * 
+ *
  * @ TODO : refactor to produce one calendar for each timetable groups
  */
 @Log4j
@@ -42,7 +42,7 @@ public class GtfsTripProducer extends AbstractProducer {
 
 	/**
 	 * produce stoptimes for vehiclejourneyatstops @ TODO see how to manage ITL
-	 * 
+	 *
 	 * @param vj
 	 * @param sharedPrefix
 	 * @return list of stoptimes
@@ -51,13 +51,13 @@ public class GtfsTripProducer extends AbstractProducer {
 		if (vj.getVehicleJourneyAtStops().isEmpty())
 			return false;
 		Line l = vj.getRoute().getLine();
-	
+
 		/**
-		 * GJT : Attributes used to handle times after midnight 
+		 * GJT : Attributes used to handle times after midnight
 		 */
 		int departureOffset = 0;
 		int arrivalOffset = 0;
-		
+
 		String tripId = toGtfsId(vj.getObjectId(), prefix, keepOriginalId);
 		time.setTripId(tripId);
 		List<VehicleJourneyAtStop> lvjas = new ArrayList<>(vj.getVehicleJourneyAtStops());
@@ -74,24 +74,24 @@ public class GtfsTripProducer extends AbstractProducer {
 			time.setStopId(toGtfsId(vjas.getStopPoint().getContainedInStopArea().getObjectId(), sharedPrefix, keepOriginalId));
 			Time arrival = vjas.getArrivalTime();
 			arrivalOffset = vjas.getArrivalDayOffset(); /** GJT */
-			
+
 			if (arrival == null) {
 				arrival = vjas.getDepartureTime();
 				arrivalOffset = vjas.getDepartureDayOffset(); /** GJT */
 			}
-			
-			
+
+
 			time.setArrivalTime(new GtfsTime(arrival, arrivalOffset)); /** GJT */
 			Time departure = vjas.getDepartureTime();
 			departureOffset = vjas.getDepartureDayOffset(); /** GJT */
-			
+
 			time.setDepartureTime(new GtfsTime(departure, departureOffset)); /** GJT */
-			
+
 			time.setStopSequence((int) vjas.getStopPoint().getPosition());
 
 			// time.setStopHeadsign();
 			addDropOffAndPickUpType(time, l, vj, vjas);
-			
+
 			if (vj.getJourneyPattern().getSectionStatus() == SectionStatusEnum.Completed) {
 				Float shapeDistTraveled = new Float(distance);
 				time.setShapeDistTraveled(shapeDistTraveled);
@@ -118,7 +118,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		}
 		return true;
 	}
-	
+
 	private double computeDistance(RouteSection section)
 	{
 		if (isTrue(section.getNoProcessing()) || section.getProcessedGeometry() == null)
@@ -171,7 +171,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			// If not set on StopPoint return defaultValue (that is, the previous value) or if not set; Scheduled
 			return defaultValue == null ? DropOffType.Scheduled : defaultValue;
 		}
-		
+
 		switch (boardingAlightingPossibilityEnum) {
 			case AlightOnly:
 			case BoardAndAlight:
@@ -192,7 +192,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			// If not set on StopPoint return defaultValue (that is, the previous value) or if not set; Scheduled
 			return defaultValue == null ? PickupType.Scheduled : defaultValue;
 		}
-		
+
 		switch (boardingAlightingPossibilityEnum) {
 			case BoardOnly:
 			case BoardAndAlight:
@@ -210,7 +210,7 @@ public class GtfsTripProducer extends AbstractProducer {
 
 	/**
 	 * convert vehicle journey to trip for a specific timetable
-	 * 
+	 *
 	 * @param vj
 	 *            vehicle journey
 	 * @param sharedPrefix
@@ -264,11 +264,19 @@ public class GtfsTripProducer extends AbstractProducer {
 		else
 			trip.setTripHeadSign(null);
 
-		if (vj.getMobilityRestrictedSuitability() != null)
-			trip.setWheelchairAccessible(vj.getMobilityRestrictedSuitability() ? GtfsTrip.WheelchairAccessibleType.Allowed
-					: GtfsTrip.WheelchairAccessibleType.NoAllowed);
-		else
-			trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+		if (vj.getAccessibilityAssessment() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+			switch (vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess()) {
+				case TRUE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.Allowed);
+					break;
+				case FALSE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoAllowed);
+					break;
+				default:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+					break;
+			}
+		}
 		// trip.setBlockId(...);
 		// trip.setBikeAllowed();
 
@@ -281,7 +289,7 @@ public class GtfsTripProducer extends AbstractProducer {
 				return false;
 			}
 		}
-		
+
 		// add frequencies
 		if (JourneyCategoryEnum.Frequency == vj.getJourneyCategory()) {
 			for (JourneyFrequency journeyFrequency : vj.getJourneyFrequencies()) { // Don't care about Timebands !
@@ -302,7 +310,7 @@ public class GtfsTripProducer extends AbstractProducer {
 				}
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -311,5 +319,5 @@ public class GtfsTripProducer extends AbstractProducer {
 		cal.setTime(time);
 		return ( ( cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE) ) * 60 + cal.get(Calendar.SECOND) );
 	}
-	
+
 }

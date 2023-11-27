@@ -41,18 +41,10 @@ public class HubCourseOperationProducer extends AbstractProducer {
 		} else if (neptuneObject.getTransportMode() != null) {
 			switch (neptuneObject.getTransportMode()) {
 			case Coach:
-				if (isTrue(neptuneObject.getMobilityRestrictedSuitability())) {
-					hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.CAR_PMR);
-				} else {
-					hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.CAR);
-				}
+				hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.CAR);
 				break;
 			case Bus:
-				if (isTrue(neptuneObject.getMobilityRestrictedSuitability())) {
-					hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.BUS_PMR);
-				} else {
-					hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.BUS);
-				}
+				hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.BUS);
 				break;
 			case Air:
 				hubObject.setModeTransport(HubCourseOperation.MODE_TRANSPORT.AVION);

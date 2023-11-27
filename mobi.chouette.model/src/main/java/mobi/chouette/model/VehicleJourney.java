@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -187,23 +188,6 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Column(name = "number")
 	private Long number;
 
-	/**
-	 * mobility restriction indicator (such as wheel chairs) <br/>
-	 * 
-	 * <ul>
-	 * <li>null if unknown
-	 * <li>true if wheel chairs can use this line</li>
-	 * <li>false if wheel chairs can't use this line</li>
-	 * </ul>
-	 * 
-	 * @param mobilityRestrictedSuitability
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "mobility_restricted_suitability")
-	private Boolean mobilityRestrictedSuitability;
 
 	/**
 	 * Indicates whether bikes are allowed. Valid options are:
@@ -358,12 +342,18 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
 	private List<JourneyFrequency> journeyFrequencies = new ArrayList<JourneyFrequency>(0);
 
+
+	@Getter
+	@Setter
+	@OneToOne(cascade = { CascadeType.ALL})
+	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
+	private AccessibilityAssessment accessibilityAssessment;
+
 	public void copyAttributes(VehicleJourney source) {
 		super.copyAttributes(source);
 		setComment(source.getComment());
 		setFlexibleService(source.getFlexibleService());
 		setJourneyCategory(source.getJourneyCategory());
-		setMobilityRestrictedSuitability(source.getMobilityRestrictedSuitability());
 		setNumber(source.getNumber());
 		setPublishedJourneyIdentifier(source.getPublishedJourneyIdentifier());
 		setPublishedJourneyName(source.getPublishedJourneyName());
