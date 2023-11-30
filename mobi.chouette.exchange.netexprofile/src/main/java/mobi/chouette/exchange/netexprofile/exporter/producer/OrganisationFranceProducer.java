@@ -37,7 +37,7 @@ public class OrganisationFranceProducer extends NetexProducer implements NetexEn
             organisation = netexFactory.createGeneralOrganisation();
         }
 
-        NetexProducerUtils.populateIdAndVersionIDFM(company, organisation);
+        NetexProducerUtils.populateIdAndVersion(company, organisation);
 
         if (company.getCode() != null) {
             PrivateCodeStructure privateCodeStructure = netexFactory.createPrivateCodeStructure().withValue(company.getCode());

@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.exchange.gtfs.parameters.AttributionsExportModes;
 import org.apache.commons.io.FileUtils;

@@ -31,10 +31,12 @@ import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.DropOffTypeEnum;
 import mobi.chouette.model.type.JourneyCategoryEnum;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.PickUpTypeEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -277,14 +279,12 @@ public class GtfsTripProducer extends AbstractProducer {
 		if (jp.getSectionStatus() == SectionStatusEnum.Completed && jp.getRouteSections().size() != 0) {
 			String shapeId = toGtfsId(jp.getObjectId(), schemaPrefix, keepOriginalId);
 			trip.setShapeId(shapeId);
-		}
-		else
-		{
+		} else {
 			trip.setShapeId(null);
 		}
 		Route route = vj.getRoute();
 		Line line = route.getLine();
-		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
+		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId), idParams));
 		if ("R".equals(route.getWayBack()) || PTDirectionEnum.R.equals(route.getDirection())) {
 			trip.setDirectionId(GtfsTrip.DirectionType.Inbound);
 		} else {
@@ -299,28 +299,39 @@ public class GtfsTripProducer extends AbstractProducer {
 		lvjas.sort(Comparator.comparing(o -> o.getStopPoint().getPosition()));
 
 		List<DestinationDisplay> allDestinationDisplays = new ArrayList<>();
-		for(VehicleJourneyAtStop vjas : lvjas) {
-			if(vjas.getStopPoint().getDestinationDisplay() != null) {
+		for (VehicleJourneyAtStop vjas : lvjas) {
+			if (vjas.getStopPoint().getDestinationDisplay() != null) {
 				allDestinationDisplays.add(vjas.getStopPoint().getDestinationDisplay());
 			}
 		}
 		DestinationDisplay startDestinationDisplay = lvjas.get(0).getStopPoint().getDestinationDisplay();
 		boolean changesDestinationDisplay = allDestinationDisplays.size() > 1;
 
-		if(!isEmpty(vj.getPublishedJourneyName())) {
+		if (!isEmpty(vj.getPublishedJourneyName())) {
 			trip.setTripHeadSign(vj.getPublishedJourneyName());
-		} else if(startDestinationDisplay != null) {
+		} else if (startDestinationDisplay != null) {
 			trip.setTripHeadSign(startDestinationDisplay.getFrontTextWithComputedVias());
 		} else if (!isEmpty(jp.getPublishedName())) {
 			trip.setTripHeadSign(jp.getPublishedName());
 		} else
 			trip.setTripHeadSign(null);
 
-		if (vj.getMobilityRestrictedSuitability() != null)
-			trip.setWheelchairAccessible(vj.getMobilityRestrictedSuitability() ? GtfsTrip.WheelchairAccessibleType.Allowed
-					: GtfsTrip.WheelchairAccessibleType.NoAllowed);
-		else
+		if (vj.getAccessibilityAssessment() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess() != null){
+			switch (vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess()) {
+				case TRUE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.Allowed);
+					break;
+				case FALSE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoAllowed);
+					break;
+				default:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+					break;
+			}
+		}
+		else {
 			trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+		}
 
 		if (vj.getBikesAllowed() != null)
 			trip.setBikesAllowed(vj.getBikesAllowed() ? GtfsTrip.BikesAllowedType.Allowed

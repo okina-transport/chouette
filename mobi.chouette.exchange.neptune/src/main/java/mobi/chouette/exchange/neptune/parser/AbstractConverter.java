@@ -29,15 +29,6 @@ public abstract class AbstractConverter implements Constant{
 	public static String composeObjectId(NeptuneImportParameters configuration, String type, String id) {
 
 		if (id == null || id.isEmpty() ) return "";
-		
-//		if(configuration.isSplitIdOnDot()) {
-//			String[] tokens = id.split("\\.");
-//			if (tokens.length == 2) {
-//				// id should be produced by Chouette
-// 				return tokens[0].trim() + ":" + type + ":"+ tokens[1].trim();
-//				//return tokens[0].trim().replaceAll("[^a-zA-Z_0-9]", "_") + ":" + type + ":"+ tokens[1].trim().replaceAll("[^a-zA-Z_0-9\\-]", "_");
-//			}
-//		}
 
 		String[] tokens = id.split(":");
 		if(tokens.length == 3){

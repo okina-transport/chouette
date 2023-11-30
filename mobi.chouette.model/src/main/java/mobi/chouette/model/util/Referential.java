@@ -182,6 +182,15 @@ public class Referential implements java.io.Serializable {
     @Setter
     private Map<String, JourneyFrequency> journeyFrequency = new HashMap<>();
 
+    @Getter
+    @Setter
+    private Map<String, AccessibilityAssessment> accessibilityAssessments = new HashMap<>();
+
+    @Getter
+    @Setter
+    private Map<String, AccessibilityLimitation> accessibilityLimitations = new HashMap<>();
+
+
     public void clear(boolean cascade) {
         if (cascade) {
             for (Line line : lines.values()) {

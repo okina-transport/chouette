@@ -335,4 +335,28 @@ public class ObjectFactory {
 
 		return interchange;
 	}
+
+	public static AccessibilityAssessment getAccessibilityAssessment(Referential referential,
+												   String objectId) {
+		AccessibilityAssessment result = referential.getAccessibilityAssessments().get(objectId);
+		if (result == null) {
+			result = new AccessibilityAssessment();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getAccessibilityAssessments().put(objectId, result);
+		}
+		return result;
+	}
+
+	public static AccessibilityLimitation getAccessibilityLimitation(Referential referential,
+												   String objectId) {
+		AccessibilityLimitation result = referential.getAccessibilityLimitations().get(objectId);
+		if (result == null) {
+			result = new AccessibilityLimitation();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getAccessibilityLimitations().put(objectId, result);
+		}
+		return result;
+	}
 }

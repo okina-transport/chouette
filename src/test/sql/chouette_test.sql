@@ -1010,8 +1010,12 @@ CREATE SEQUENCE IF NOT EXISTS accessibility_limitation_id_seq
 
 
 CREATE TABLE IF NOT EXISTS accessibility_limitation (
-                                                        id bigint NOT NULL,
-                                                        wheelchair_access varchar(255),
+    id bigint NOT NULL,
+    objectid character varying(255) NOT NULL,
+    object_version integer,
+    creation_time timestamp without time zone,
+    creator_id character varying(255),
+    wheelchair_access varchar(255),
     visual_signs_available varchar(255),
     step_free_access varchar(255),
     lift_free_access varchar(255),
@@ -1021,8 +1025,12 @@ CREATE TABLE IF NOT EXISTS accessibility_limitation (
     );
 
 CREATE TABLE IF NOT EXISTS accessibility_assessment (
-                                                        id bigint NOT NULL,
-                                                        mobility_impaired_access varchar(255),
+    id bigint NOT NULL,
+    objectid character varying(255) NOT NULL,
+    object_version integer,
+    creation_time timestamp without time zone,
+    creator_id character varying(255),
+    mobility_impaired_access varchar(255),
     accessibility_limitation_id bigint,
     CONSTRAINT accessibility_assessment_pkey PRIMARY KEY (id)
     );
@@ -1048,7 +1056,6 @@ CREATE TABLE lines (
     transport_submode_name character varying(255),
     registration_number character varying(255),
     comment character varying(255),
-    mobility_restricted_suitability boolean,
     int_user_needs integer,
     flexible_service boolean,
     url character varying(255),
@@ -1063,7 +1070,8 @@ CREATE TABLE lines (
     tad character varying(14),
     pmr character varying(14),
     pos integer,
-    supprime boolean DEFAULT false
+    supprime boolean DEFAULT false,
+    accessibility_assessment_id bigint
 );
 
 ALTER TABLE lines ADD COLUMN IF NOT EXISTS accessibility_assessment_id bigint;
@@ -1849,7 +1857,6 @@ CREATE TABLE chouette_gui.vehicle_journeys (
                                   etat integer,
                                   facility character varying(255),
                                   flexible_service boolean,
-                                  mobility_restricted_suitability boolean,
                                   number bigint,
                                   objectid character varying(255),
                                   object_version integer,
@@ -1867,7 +1874,8 @@ CREATE TABLE chouette_gui.vehicle_journeys (
                                   private_code character varying(255),
                                   service_alteration character varying(255),
                                   flexible_service_properties_id bigint,
-                                  bikes_allowed boolean
+                                  bikes_allowed boolean,
+                                  accessibility_assessment_id bigint
 );
 
 
@@ -4602,7 +4610,6 @@ CREATE TABLE sky.lines (
                        transport_submode_name character varying(255),
                        registration_number character varying(255),
                        comment character varying(255),
-                       mobility_restricted_suitability boolean,
                        int_user_needs integer,
                        flexible_service boolean,
                        url character varying(255),
@@ -4617,7 +4624,8 @@ CREATE TABLE sky.lines (
                        tad character varying(14),
                        pmr character varying(14),
                        pos integer,
-                       supprime boolean DEFAULT false
+                       supprime boolean DEFAULT false,
+                       accessibility_assessment_id bigint
 );
 
 CREATE TABLE sky.vehicle_journeys (
@@ -4628,7 +4636,6 @@ CREATE TABLE sky.vehicle_journeys (
                                                etat integer,
                                                facility character varying(255),
                                                flexible_service boolean,
-                                               mobility_restricted_suitability boolean,
                                                number bigint,
                                                objectid character varying(255),
                                                object_version integer,
@@ -4646,7 +4653,8 @@ CREATE TABLE sky.vehicle_journeys (
                                                private_code character varying(255),
                                                service_alteration character varying(255),
                                                flexible_service_properties_id bigint,
-                                               bikes_allowed boolean
+                                               bikes_allowed boolean,
+                                               accessibility_assessment_id bigint
 );
 
 
@@ -4710,7 +4718,6 @@ CREATE TABLE rut.lines (
                            transport_submode_name character varying(255),
                            registration_number character varying(255),
                            comment character varying(255),
-                           mobility_restricted_suitability boolean,
                            int_user_needs integer,
                            flexible_service boolean,
                            url character varying(255),
@@ -4725,7 +4732,8 @@ CREATE TABLE rut.lines (
                            tad character varying(14),
                            pmr character varying(14),
                            pos integer,
-                           supprime boolean DEFAULT false
+                           supprime boolean DEFAULT false,
+                           accessibility_assessment_id bigint
 );
 
 
@@ -4737,7 +4745,6 @@ CREATE TABLE rut.vehicle_journeys (
                                       etat integer,
                                       facility character varying(255),
                                       flexible_service boolean,
-                                      mobility_restricted_suitability boolean,
                                       number bigint,
                                       objectid character varying(255),
                                       object_version integer,
@@ -4755,7 +4762,8 @@ CREATE TABLE rut.vehicle_journeys (
                                       private_code character varying(255),
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
-                                      bikes_allowed boolean
+                                      bikes_allowed boolean,
+                                      accessibility_assessment_id bigint
 );
 
 
@@ -4821,7 +4829,6 @@ CREATE TABLE nri.lines (
                            transport_submode_name character varying(255),
                            registration_number character varying(255),
                            comment character varying(255),
-                           mobility_restricted_suitability boolean,
                            int_user_needs integer,
                            flexible_service boolean,
                            url character varying(255),
@@ -4836,7 +4843,8 @@ CREATE TABLE nri.lines (
                            tad character varying(14),
                            pmr character varying(14),
                            pos integer,
-                           supprime boolean DEFAULT false
+                           supprime boolean DEFAULT false,
+                           accessibility_assessment_id bigint
 );
 
 
@@ -4848,7 +4856,6 @@ CREATE TABLE nri.vehicle_journeys (
                                       etat integer,
                                       facility character varying(255),
                                       flexible_service boolean,
-                                      mobility_restricted_suitability boolean,
                                       number bigint,
                                       objectid character varying(255),
                                       object_version integer,
@@ -4866,7 +4873,8 @@ CREATE TABLE nri.vehicle_journeys (
                                       private_code character varying(255),
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
-                                      bikes_allowed boolean
+                                      bikes_allowed boolean,
+                                      accessibility_assessment_id bigint
 );
 
 
@@ -4931,7 +4939,6 @@ CREATE TABLE tro.lines (
                            transport_submode_name character varying(255),
                            registration_number character varying(255),
                            comment character varying(255),
-                           mobility_restricted_suitability boolean,
                            int_user_needs integer,
                            flexible_service boolean,
                            url character varying(255),
@@ -4946,7 +4953,8 @@ CREATE TABLE tro.lines (
                            tad character varying(14),
                            pmr character varying(14),
                            pos integer,
-                           supprime boolean DEFAULT false
+                           supprime boolean DEFAULT false,
+                           accessibility_assessment_id bigint
 );
 
 
@@ -4958,7 +4966,6 @@ CREATE TABLE tro.vehicle_journeys (
                                       etat integer,
                                       facility character varying(255),
                                       flexible_service boolean,
-                                      mobility_restricted_suitability boolean,
                                       number bigint,
                                       objectid character varying(255),
                                       object_version integer,
@@ -4976,7 +4983,8 @@ CREATE TABLE tro.vehicle_journeys (
                                       private_code character varying(255),
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
-                                      bikes_allowed boolean
+                                      bikes_allowed boolean,
+                                      accessibility_assessment_id bigint
 );
 
 
@@ -5041,7 +5049,6 @@ CREATE TABLE akt.lines (
                            transport_submode_name character varying(255),
                            registration_number character varying(255),
                            comment character varying(255),
-                           mobility_restricted_suitability boolean,
                            int_user_needs integer,
                            flexible_service boolean,
                            url character varying(255),
@@ -5056,7 +5063,8 @@ CREATE TABLE akt.lines (
                            tad character varying(14),
                            pmr character varying(14),
                            pos integer,
-                           supprime boolean DEFAULT false
+                           supprime boolean DEFAULT false,
+                           accessibility_assessment_id bigint
 );
 
 
@@ -5069,7 +5077,6 @@ CREATE TABLE akt.vehicle_journeys (
                                       etat integer,
                                       facility character varying(255),
                                       flexible_service boolean,
-                                      mobility_restricted_suitability boolean,
                                       number bigint,
                                       objectid character varying(255),
                                       object_version integer,
@@ -5087,7 +5094,8 @@ CREATE TABLE akt.vehicle_journeys (
                                       private_code character varying(255),
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
-                                      bikes_allowed boolean
+                                      bikes_allowed boolean,
+                                      accessibility_assessment_id bigint
 );
 
 ALTER TABLE ONLY akt.vehicle_journeys

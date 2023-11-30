@@ -1092,7 +1092,8 @@ CREATE TABLE vehicle_journeys (
     number bigint,
     mobility_restricted_suitability boolean,
     flexible_service boolean,
-    journey_category integer NOT NULL DEFAULT 0
+    journey_category integer NOT NULL DEFAULT 0,
+    accessibility_assessment_id bigint
 );
 
 

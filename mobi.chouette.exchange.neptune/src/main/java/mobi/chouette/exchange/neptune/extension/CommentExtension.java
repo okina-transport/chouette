@@ -4,7 +4,10 @@ import java.net.URL;
 import java.util.TimeZone;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
@@ -14,8 +17,10 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 
+import mobi.chouette.model.type.LimitationStatusEnum;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 @Log4j
 public class CommentExtension implements JsonExtension {
@@ -194,10 +199,27 @@ public class CommentExtension implements JsonExtension {
 				if (json.has(FLEXIBLE_SERVICE)) {
 					vj.setFlexibleService(json.getBoolean(FLEXIBLE_SERVICE));
 				}
+				AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+				AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
 				if (json.has(MOBILITY_RESTRICTION)) {
-					vj.setMobilityRestrictedSuitability(json.getBoolean(MOBILITY_RESTRICTION));
+					if (json.getBoolean(MOBILITY_RESTRICTION)){
+						accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
+						accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+						accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+					}
+					else {
+						accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.FALSE);
+						accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
+						accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+					}
 				}
-			} catch (Exception e) {
+				else {
+					accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.UNKNOWN);
+					accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
+					accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+				}
+				vj.setAccessibilityAssessment(accessibilityAssessment);
+		} catch (Exception e) {
 				log.warn("VehicleJourney extension : unparsable json : " + comment+ ", reason "+e.getMessage());
 				vj.setComment(comment);
 			}

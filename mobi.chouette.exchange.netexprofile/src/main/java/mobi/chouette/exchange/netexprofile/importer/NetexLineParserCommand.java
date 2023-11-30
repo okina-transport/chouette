@@ -57,8 +57,7 @@ public class NetexLineParserCommand implements Command, Constant {
             parser.parse(context);
             feedLineInfoWithCommonData(context);
 
-            Context validationContext = (Context) context.get(VALIDATION_CONTEXT);
-            addStats(context, reporter, validationContext, referential);
+            addStats(context, reporter, referential);
             reporter.setFileState(context, fileName, IO_TYPE.INPUT, ActionReporter.FILE_STATE.OK);
             result = SUCCESS;
         } catch (Exception e) {
@@ -169,8 +168,8 @@ public class NetexLineParserCommand implements Command, Constant {
                 currentLine.setNetwork(currentLineInfo.getNetwork());
             }
 
-            if (currentLine.getMobilityRestrictedSuitable() == null) {
-                currentLine.setMobilityRestrictedSuitable(currentLineInfo.getMobilityRestrictedSuitable());
+            if (currentLine.getAccessibilityAssessment() == null) {
+                currentLine.setAccessibilityAssessment(currentLineInfo.getAccessibilityAssessment());
             }
 
             if (currentLine.getPosition() == null) {
@@ -197,11 +196,12 @@ public class NetexLineParserCommand implements Command, Constant {
 
     }
 
-    private void addStats(Context context, ActionReporter reporter, Context validationContext, Referential referential) {
-        Line line = referential.getLines().values().iterator().next();
-        reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.INPUT);
-        reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 1);
-
+    private void addStats(Context context, ActionReporter reporter, Referential referential) {
+        if(referential != null){
+            Line line = referential.getLines().values().iterator().next();
+            reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.INPUT);
+            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 1);
+        }
     }
 
     public static class DefaultCommandFactory extends CommandFactory {

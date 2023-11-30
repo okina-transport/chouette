@@ -21,6 +21,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
@@ -350,12 +351,12 @@ public class NetexProducerUtils {
         return netexFactory.createLineRef(lineRefStruct);
     }
 
-    public static void populateIdAndVersionIDFM(NeptuneIdentifiedObject source, EntityInVersionStructure destination) {
+    public static void populateIdAndVersion(NeptuneIdentifiedObject source, EntityInVersionStructure destination) {
         if (source == null || destination == null) {
             log.error("Cannot set id since either source or destination is null");
             return;
         }
-        String newType = translateTypeIDFM(source);
+        String newType = translateTypeFrance(source);
         if (newType != null) {
             destination.setId(translateObjectId(source.getObjectId(), newType));
         } else {
@@ -380,43 +381,52 @@ public class NetexProducerUtils {
         AccessibilityAssessment sourceAssessment = source.getAccessibilityAssessment();
         org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment = new org.rutebanken.netex.model.AccessibilityAssessment();
         if (sourceAssessment.getMobilityImpairedAccess() != null) {
-            accessibilityAssessment.setMobilityImpairedAccess(sourceAssessment.getMobilityImpairedAccess());
-        }else{
-            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.UNKNOWN);
+            if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.TRUE)){
+                accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.TRUE);
+            }
+            else if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.FALSE)){
+                accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.FALSE);
+            }
+            else if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.PARTIAL)){
+                accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
+            }
+            else{
+                accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.UNKNOWN);
+            }
         }
 
-        accessibilityAssessment.setVersion("any");
-        accessibilityAssessment.setId("MOBIITI:LineAccessibilityAssessment:" + sourceAssessment.getId());
+        NetexProducerUtils.populateIdAndVersion(sourceAssessment, accessibilityAssessment);
 
+        AccessibilityLimitation sourceLimitation = sourceAssessment.getAccessibilityLimitation();
 
-        AccessibilityLimitation sourceLimitations = sourceAssessment.getLimitations();
-
-        if (sourceLimitations != null) {
+        if (sourceLimitation != null) {
             org.rutebanken.netex.model.AccessibilityLimitation accessibilityLimitation = new org.rutebanken.netex.model.AccessibilityLimitation();
+            NetexProducerUtils.populateIdAndVersion(sourceLimitation, accessibilityLimitation);
+
             AccessibilityLimitations_RelStructure accessibilityLimitations_relStructure = new AccessibilityLimitations_RelStructure();
 
-            if (sourceLimitations.getAudibleSignalsAvailable() != null) {
-                accessibilityLimitation.setAudibleSignalsAvailable(sourceLimitations.getAudibleSignalsAvailable());
+            if (sourceLimitation.getAudibleSignalsAvailable() != null) {
+                accessibilityLimitation.setAudibleSignalsAvailable(sourceLimitation.getAudibleSignalsAvailable());
             }
 
-            if (sourceLimitations.getEscalatorFreeAccess() != null) {
-                accessibilityLimitation.setEscalatorFreeAccess(sourceLimitations.getEscalatorFreeAccess());
+            if (sourceLimitation.getEscalatorFreeAccess() != null) {
+                accessibilityLimitation.setEscalatorFreeAccess(sourceLimitation.getEscalatorFreeAccess());
             }
 
-            if (sourceLimitations.getLiftFreeAccess() != null) {
-                accessibilityLimitation.setLiftFreeAccess(sourceLimitations.getLiftFreeAccess());
+            if (sourceLimitation.getLiftFreeAccess() != null) {
+                accessibilityLimitation.setLiftFreeAccess(sourceLimitation.getLiftFreeAccess());
             }
 
-            if (sourceLimitations.getStepFreeAccess() != null) {
-                accessibilityLimitation.setStepFreeAccess(sourceLimitations.getStepFreeAccess());
+            if (sourceLimitation.getStepFreeAccess() != null) {
+                accessibilityLimitation.setStepFreeAccess(sourceLimitation.getStepFreeAccess());
             }
 
-            if (sourceLimitations.getVisualSignsAvailable() != null) {
-                accessibilityLimitation.setVisualSignsAvailable(sourceLimitations.getVisualSignsAvailable());
+            if (sourceLimitation.getVisualSignsAvailable() != null) {
+                accessibilityLimitation.setVisualSignsAvailable(sourceLimitation.getVisualSignsAvailable());
             }
 
-            if (sourceLimitations.getWheelchairAccess() != null) {
-                accessibilityLimitation.setWheelchairAccess(sourceLimitations.getWheelchairAccess());
+            if (sourceLimitation.getWheelchairAccess() != null) {
+                accessibilityLimitation.setWheelchairAccess(sourceLimitation.getWheelchairAccess());
             }
 
             accessibilityLimitations_relStructure.setAccessibilityLimitation(accessibilityLimitation);
@@ -432,7 +442,7 @@ public class NetexProducerUtils {
             log.error("Cannot set reference since either source or destination is null");
             return;
         }
-        String newType = translateTypeIDFM(source);
+        String newType = translateTypeFrance(source);
         if (newType != null) {
             destination.setRef(replaceObjectIdPart(translateObjectId(source.getObjectId(), newType), "FR1", 0, source));
         } else {
@@ -445,7 +455,7 @@ public class NetexProducerUtils {
 
     }
 
-    public static String translateTypeIDFM(NeptuneObject v) {
+    public static String translateTypeFrance(NeptuneObject v) {
         if (v instanceof Timetable) {
             return "DayType";
         } else if (v instanceof Company) {

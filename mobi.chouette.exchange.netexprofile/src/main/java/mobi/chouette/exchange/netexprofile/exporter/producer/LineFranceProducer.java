@@ -48,7 +48,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         }
 
 
-        NetexProducerUtils.populateIdAndVersionIDFM(neptuneLine, netexLine);
+        NetexProducerUtils.populateIdAndVersion(neptuneLine, netexLine);
         NetexProducerUtils.populateLineAccessibilityAssessment(neptuneLine, netexLine);
 
         if (isSet(neptuneLine.getName())) {

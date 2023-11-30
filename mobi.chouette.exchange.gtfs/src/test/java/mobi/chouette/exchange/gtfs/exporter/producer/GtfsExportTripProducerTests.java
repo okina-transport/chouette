@@ -10,6 +10,8 @@ import mobi.chouette.exchange.gtfs.model.exporter.TripExporter;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -21,9 +23,12 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
 
+import org.checkerframework.checker.units.qual.A;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -342,7 +347,7 @@ public class GtfsExportTripProducerTests
       Reporter.log("verifyTripProducerForWheelChairMapping");
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
-      neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
+      neptuneObject.getAccessibilityAssessment().setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
 
       producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
 
@@ -352,7 +357,8 @@ public class GtfsExportTripProducerTests
       Assert.assertEquals(gtfsObject.getWheelchairAccessible(), WheelchairAccessibleType.Allowed, "WheelchairAccessible must be correctly set");
 
       mock.reset();
-      neptuneObject.setMobilityRestrictedSuitability(Boolean.FALSE);
+      neptuneObject.getAccessibilityAssessment().getAccessibilityLimitation().setWheelchairAccess(LimitationStatusEnumeration.FALSE);
+
       producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
@@ -360,7 +366,8 @@ public class GtfsExportTripProducerTests
       Assert.assertEquals(gtfsObject.getWheelchairAccessible(), WheelchairAccessibleType.NoAllowed, "WheelchairAccessible must be correctly set");
 
       mock.reset();
-      neptuneObject.setMobilityRestrictedSuitability(null);
+      neptuneObject.getAccessibilityAssessment().getAccessibilityLimitation().setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
+
       producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
@@ -489,7 +496,13 @@ private VehicleJourney buildNeptuneObject(boolean full)
       // if (full) neptuneObject.setName("name");
       if (full) neptuneObject.setNumber(Long.valueOf(456));
       if (full) neptuneObject.setPublishedJourneyIdentifier("456");
-      if (full) neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
+
+      AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+      AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
+      accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+      neptuneObject.setAccessibilityAssessment(accessibilityAssessment);
+      if (full) neptuneObject.getAccessibilityAssessment().getAccessibilityLimitation().setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+
       JourneyPattern jp = new JourneyPattern();
       neptuneObject.setJourneyPattern(jp);
       Route route = new Route();
@@ -578,7 +591,11 @@ private VehicleJourney buildNeptuneObject(boolean full)
       VehicleJourney neptuneObject = new VehicleJourney();
       neptuneObject.setObjectId("GTFS:VehicleJourney:4321");
       neptuneObject.setNumber(456L);
-      neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
+      AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+      AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
+      accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+      accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+      neptuneObject.setAccessibilityAssessment(accessibilityAssessment);
       JourneyPattern jp = new JourneyPattern();
       neptuneObject.setJourneyPattern(jp);
       Route route = new Route();
@@ -669,7 +686,11 @@ private VehicleJourney buildNeptuneObject(boolean full)
       neptuneObject.setObjectId("GTFS:VehicleJourney:4321");
       // if (full) neptuneObject.setName("name");
       if (full) neptuneObject.setNumber(Long.valueOf(456));
-      if (full) neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
+      AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
+      AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
+      accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+      neptuneObject.setAccessibilityAssessment(accessibilityAssessment);
+      if (full) neptuneObject.getAccessibilityAssessment().getAccessibilityLimitation().setWheelchairAccess(LimitationStatusEnumeration.TRUE);
       JourneyPattern jp = new JourneyPattern();
       neptuneObject.setJourneyPattern(jp);
       Route route = new Route();

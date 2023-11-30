@@ -25,7 +25,7 @@ public class NoticeFranceProducer {
                                                      Collection<Footnote> footnotes) {
         for (Footnote footnote : footnotes) {
             Notice notice = netexFactory.createNotice();
-            NetexProducerUtils.populateIdAndVersionIDFM(footnote, notice);
+            NetexProducerUtils.populateIdAndVersion(footnote, notice);
 
             if (!exportableNetexData.getSharedNotices().containsKey(notice.getId())) {
                 notice.setText(ConversionUtil.getMultiLingualString(footnote.getLabel()));
