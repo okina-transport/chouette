@@ -121,7 +121,7 @@ public class CompanyUpdater implements Updater<Company> {
 				&& !newValue.getOrganisationType().equals(oldValue.getOrganisationType())) {
 			oldValue.setOrganisationType(newValue.getOrganisationType());
 		}
-
+		oldValue.setActive(true);
 		// Branding
 
 		if (newValue.getBranding() == null) {
