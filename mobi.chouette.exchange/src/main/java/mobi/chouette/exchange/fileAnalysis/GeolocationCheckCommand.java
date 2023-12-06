@@ -33,8 +33,6 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
 
     public static final String COMMAND = "GeolocationCheckCommand";
 
-    private static final double MAX_ALLOWED_DISTANCE = 200d;
-
     @EJB
     private
     StopAreaDAO stopAreaDAO;
@@ -77,7 +75,8 @@ public class GeolocationCheckCommand extends AbstractImporterCommand implements 
                     double distance = AbstractValidation.quickDistanceFromCoordinates(existingStop.getLatitude().doubleValue(), incomingStopArea.getLatitude().doubleValue(),
                             existingStop.getLongitude().doubleValue(), incomingStopArea.getLongitude().doubleValue());
 
-                    if (Double.compare(distance, MAX_ALLOWED_DISTANCE) > 0) {
+                    double distanceGeolocation = configuration.getDistanceGeolocation() != null ? configuration.getDistanceGeolocation() : 200d;
+                    if (Double.compare(distance, distanceGeolocation) > 0) {
                         //Distance between incoming StopArea and existing StopArea is superior to max allowed distance.
                         //StopArea is added to wrongGeolocList
                         analyzeReport.getWrongGeolocStopAreas().add(Pair.of(existingStop, incomingStopArea));

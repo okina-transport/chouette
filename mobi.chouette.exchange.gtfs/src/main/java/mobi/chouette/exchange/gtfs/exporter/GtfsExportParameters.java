@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode"})
+@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility"})
 
 public class GtfsExportParameters  extends AbstractExportParameter {
 		
@@ -66,6 +66,10 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	@Getter @Setter
 	@XmlElement(name = "commercial_point_export", required = false)
 	private Boolean commercialPointExport;
+
+	@Getter @Setter
+	@XmlElement(name = "google_maps_compatibility", required = false)
+	private Boolean googleMapsCompatibility;
 
 	@Getter
 	@Setter

@@ -47,7 +47,6 @@ public class RouteLinkParser extends NetexParser implements Parser, Constant {
 		List<String> routeSectionUsedMultipleTimesInTheSameFile = new ArrayList<>();
 		List<String> routeSectionUsedSameFromAndToScheduledStopPoint = new ArrayList<>();
 
-
 		for (RouteLink routeLink : routeLinks) {
 			String routeSectionId = NetexImportUtil.composeObjectIdFromNetexId(context,"RouteSection",routeLink.getId());
 			RouteSection routeSection = ObjectFactory.getRouteSection(referential, routeSectionId);
@@ -84,16 +83,27 @@ public class RouteLinkParser extends NetexParser implements Parser, Constant {
 			Coordinate[] coords = lineString.getCoordinates();
 
 			Coordinate[] inputCoords = new Coordinate[2];
+			boolean isInputCoordsCorrect_0 = false;
+			boolean isInputCoordsCorrect_1 = false;
 
 			StopArea previousLocation = routeSection.getFromScheduledStopPoint().getContainedInStopAreaRef().getObject();
-			inputCoords[0] = new Coordinate(previousLocation.getLongitude().doubleValue(), previousLocation.getLatitude().doubleValue());
+			if (previousLocation != null && previousLocation.getLongitude() != null && previousLocation.getLatitude() != null ) {
+				inputCoords[0] = new Coordinate(previousLocation.getLongitude().doubleValue(), previousLocation.getLatitude().doubleValue());
+				isInputCoordsCorrect_0 = true;
+			}
+
 			StopArea location = routeSection.getToScheduledStopPoint().getContainedInStopAreaRef().getObject();
-			inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude().doubleValue());
+			if (location != null && location.getLongitude() != null && location.getLatitude() != null ){
+				inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude().doubleValue());
+				routeSection.setProcessedGeometry(factory.createLineString(coords));
+				isInputCoordsCorrect_1 = true;
+			}
 
-			routeSection.setProcessedGeometry(factory.createLineString(coords));
-			routeSection.setInputGeometry(factory.createLineString(inputCoords));
+			if(isInputCoordsCorrect_0 && isInputCoordsCorrect_1){
+				routeSection.setInputGeometry(factory.createLineString(inputCoords));
+			}
+
 			routeSection.setNoProcessing(false);
-
 		}
 
 	}

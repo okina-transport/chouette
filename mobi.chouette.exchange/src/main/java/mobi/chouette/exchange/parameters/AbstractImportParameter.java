@@ -22,7 +22,8 @@ import org.apache.log4j.Logger;
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "noSave", "cleanMode", "stopAreaRemoteIdMapping", "stopAreaImportMode", "keepObsoleteLines", "generateMapMatching",
-		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation", "keepStopNames" }, name = "actionImportParameter")
+		"generateMissingRouteSectionsForModes","keepBoardingAlighting", "keepStopGeolocalisation", "keepStopNames", "distanceGeolocation",
+		"description" }, name = "actionImportParameter")
 public class AbstractImportParameter extends AbstractParameter {
 
 	@XmlElement(name = "no_save", defaultValue = "false")
@@ -34,6 +35,10 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Getter
 	@Setter
 	private String cleanMode;
+
+	@Getter@Setter
+	@XmlElement(name = "description", required=true)
+	private String description;
 
 	/**
 	 * Whether or not stop area ids from import files should be mapped against remote stop area registry (ie NSR).
@@ -82,6 +87,11 @@ public class AbstractImportParameter extends AbstractParameter {
 	@Getter
 	@Setter
 	private boolean generateMapMatching = false;
+
+	@XmlElement(name = "distance_geolocation")
+	@Getter
+	@Setter
+	private Long distanceGeolocation = 200L;
 
 	public boolean isValid(Logger log) {
 		return super.isValid(log);

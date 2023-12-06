@@ -44,7 +44,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS", false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS", false, new IdParameters(), false);
       Reporter.log("verifyTripProducerWithFullData");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -111,7 +111,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",null,null,"PREFIX","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",null,null,"PREFIX","COMPREFIX"), false);
       Reporter.log("verifyTripProducerRouteId");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -131,7 +131,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",null,"SUFFIX",null,"COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",null,"SUFFIX",null,"COMPREFIX"), false);
       Reporter.log("verifyTripProducerRouteIdWithSuffix");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -150,7 +150,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",IdFormat.TRIDENT,null,"PREFIX","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",IdFormat.TRIDENT,null,"PREFIX","COMPREFIX"), true);
       Reporter.log("verifyTripProducerRouteIdTrident");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -170,7 +170,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",IdFormat.TRIDENT,"SUFFIX","PREFIX","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIXSTOP",IdFormat.TRIDENT,"SUFFIX","PREFIX","COMPREFIX"), false);
       Reporter.log("verifyTripProducerRouteIdTridentWithSuffix");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -191,7 +191,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObjectWithOriginalStopIds();
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"), false);
       Reporter.log("verifyStopIds");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -220,7 +220,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObjectWithCommercialPointsIds(true);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX",SOURCE,null,"PREFIXROUTE","COMPREFIX"), false);
       Reporter.log("verifyStopIds");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -249,7 +249,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObjectWithOriginalStopIds();
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX", IdFormat.TRIDENT,null,"PREFIXLINE","COMPREFIX"));
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters("PREFIX", IdFormat.TRIDENT,null,"PREFIXLINE","COMPREFIX"), false);
       Reporter.log("verifyStopIds");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -278,7 +278,7 @@ public class GtfsExportTripProducerTests
 
       VehicleJourney neptuneObject = buildNeptuneObject(false);
 
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
       Reporter.log("verifyTripProducerWithLessData");
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
@@ -344,7 +344,7 @@ public class GtfsExportTripProducerTests
       VehicleJourney neptuneObject = buildNeptuneObject(true);
       neptuneObject.setMobilityRestrictedSuitability(Boolean.TRUE);
 
-      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
@@ -353,7 +353,7 @@ public class GtfsExportTripProducerTests
 
       mock.reset();
       neptuneObject.setMobilityRestrictedSuitability(Boolean.FALSE);
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
       Reporter.log(TripExporter.CONVERTER.to(context,gtfsObject));
@@ -361,7 +361,7 @@ public class GtfsExportTripProducerTests
 
       mock.reset();
       neptuneObject.setMobilityRestrictedSuitability(null);
-      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
       Reporter.log(TripExporter.CONVERTER.to(context,gtfsObject));
@@ -377,7 +377,7 @@ public class GtfsExportTripProducerTests
       VehicleJourney neptuneObject = buildNeptuneObject(true);
       Route r = neptuneObject.getRoute();
       r.setWayBack("A");
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
@@ -385,14 +385,14 @@ public class GtfsExportTripProducerTests
 
       mock.reset();
       r.setWayBack("R");
-      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
       Assert.assertEquals(gtfsObject.getDirectionId(), DirectionType.Inbound, "DirectionId must be correctly set");
 
       mock.reset();
       r.setWayBack(null);
-      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01",  "GTFS",false, new IdParameters(), false);
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       gtfsObject = mock.getExportedTrips().get(0);
       Assert.assertEquals(gtfsObject.getDirectionId(), DirectionType.Outbound, "DirectionId must be correctly set");
@@ -406,7 +406,7 @@ public class GtfsExportTripProducerTests
       DestinationDisplay destinationDisplay = new DestinationDisplay();
       destinationDisplay.setFrontText("ShouldBeTripHeadSign");
       neptuneObject.getVehicleJourneyAtStops().get(0).getStopPoint().setDestinationDisplay(destinationDisplay );
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
@@ -426,7 +426,7 @@ public class GtfsExportTripProducerTests
       destinationDisplay.getVias().add(via);
       
       neptuneObject.getVehicleJourneyAtStops().get(0).getStopPoint().setDestinationDisplay(destinationDisplay );
-      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(neptuneObject, "tm_01", "GTFS",false, new IdParameters(), false);
 
       Assert.assertEquals(mock.getExportedTrips().size(), 1, "Trip should be returned");
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
@@ -447,7 +447,7 @@ public class GtfsExportTripProducerTests
       
       journey1.getVehicleJourneyAtStops().get(0).getStopPoint().setDestinationDisplay(journey1FirstDisplay );
       journey1.getVehicleJourneyAtStops().get(2).getStopPoint().setDestinationDisplay(journey1SecondDisplay );
-      producer.save(journey1, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(journey1, "tm_01", "GTFS",false, new IdParameters(), false);
 
       
       VehicleJourney journey2 = buildNeptuneObject(true);
@@ -459,7 +459,7 @@ public class GtfsExportTripProducerTests
       
       journey2.getVehicleJourneyAtStops().get(0).getStopPoint().setDestinationDisplay(journey2FirstDisplay );
       journey2.getVehicleJourneyAtStops().get(2).getStopPoint().setDestinationDisplay(journey2SecondDisplay );
-      producer.save(journey2, "tm_01", "GTFS",false, new IdParameters());
+      producer.save(journey2, "tm_01", "GTFS",false, new IdParameters(), false);
 
       
       Assert.assertEquals(mock.getExportedTrips().size(), 2, "Trip should be returned");

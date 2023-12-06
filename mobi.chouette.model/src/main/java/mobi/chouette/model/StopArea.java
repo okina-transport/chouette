@@ -576,6 +576,11 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Column(name = "zone_id")
 	private String zoneId;
 
+	@Getter
+	@Setter
+	@Column(name = "private_code")
+	private String privateCode;
+
 	/**
 	 * keyvalues
 	 *

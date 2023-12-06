@@ -144,11 +144,11 @@ public class StopPlaceParser implements Parser, Constant {
 
         PrivateCodeStructure privateCodeStruct = stopPlace.getPrivateCode();
         if (privateCodeStruct != null) {
-            stopArea.setRegistrationNumber(privateCodeStruct.getValue());
-        } else {
-            if (stopPlace.getShortName() != null) {
-                stopArea.setRegistrationNumber(stopPlace.getShortName().getValue());
-            }
+            stopArea.setPrivateCode(privateCodeStruct.getValue());
+        }
+
+        if (stopPlace.getShortName() != null) {
+            stopArea.setRegistrationNumber(stopPlace.getShortName().getValue());
         }
 
         SimplePoint_VersionStructure centroidStruct = stopPlace.getCentroid();
@@ -333,7 +333,13 @@ public class StopPlaceParser implements Parser, Constant {
 
         String publicCode = quay.getPublicCode();
         boardingPosition.setRegistrationNumber(publicCode);
-        
+
+        PrivateCodeStructure privateCodeStruct = quay.getPrivateCode();
+        if (privateCodeStruct != null) {
+            boardingPosition.setPrivateCode(privateCodeStruct.getValue());
+        }
+
+
 
         SimplePoint_VersionStructure centroidStruct = quay.getCentroid();
         if (centroidStruct != null) {

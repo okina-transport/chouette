@@ -138,6 +138,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setKeyValues(newValue.getKeyValues());
 				oldValue.setRailUic(newValue.getRailUic());
 				oldValue.setZoneId(newValue.getZoneId());
+				oldValue.setPrivateCode(newValue.getPrivateCode());
 			}
 			if(oldValue.getLongitude() == null) {
 				oldValue.setLongitude(newValue.getLongitude());
@@ -247,6 +248,9 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				}
 				if (newValue.getZoneId() != null && !newValue.getZoneId().equals(oldValue.getZoneId())) {
 					oldValue.setZoneId(newValue.getZoneId());
+				}
+				if (newValue.getPrivateCode() != null && !newValue.getPrivateCode().equals(oldValue.getPrivateCode())) {
+					oldValue.setPrivateCode(newValue.getPrivateCode());
 				}
 		}
 

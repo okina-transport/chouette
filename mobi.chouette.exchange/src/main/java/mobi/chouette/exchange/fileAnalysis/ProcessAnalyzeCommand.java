@@ -49,6 +49,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRouteLinksUsedInMutipleFiles;
     private Map<String, Set<String>> wrongRouteLinksUsedMutipleTimesInTheSameFile;
     private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint;
+    private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
 
@@ -92,7 +93,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongRouteLinksUsedInMutipleFiles = analyzeReport.getWrongRouteLinksUsedInMutipleFiles();
         wrongRouteLinksUsedMutipleTimesInTheSameFile = analyzeReport.getWrongRouteLinksUsedMutipleTimesInTheSameFile();
         wrongRouteLinksUsedSameFromAndToScheduledStopPoint = analyzeReport.getWrongRouteLinksUsedSameFromAndToScheduledStopPoint();
-
+        wrongRefStopAreaInScheduleStopPoint = analyzeReport.getWrongRefStopAreaInScheduleStopPoint();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -104,6 +105,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsRouteLinksUsedInMutipleFiles(context);
         containsRouteLinksUsedMutipleTimesInTheSameFile(context);
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
+        containsStopAreaRefNullScheduleStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
 
 
@@ -213,6 +215,17 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             wrongRouteLinksUsedSameFromAndToScheduledStopPoint.put(currentFileName, routeLinks);
         }
     }
+
+    private void containsStopAreaRefNullScheduleStopPoint(Context context) {
+        List<String> scheduleStopPointUsedWrongRefStopArea = (List<String>) context.get(SCHEDULE_STOP_POINT_STOP_AREA_NULL);
+
+        if (scheduleStopPointUsedWrongRefStopArea != null) {
+            Set<String> stopAreas = new HashSet<>(scheduleStopPointUsedWrongRefStopArea);
+            wrongRefStopAreaInScheduleStopPoint.put(currentFileName, stopAreas);
+        }
+    }
+
+
 
     /**
      * recover all data of stopAreas and write analysis results into analyzeReport     *

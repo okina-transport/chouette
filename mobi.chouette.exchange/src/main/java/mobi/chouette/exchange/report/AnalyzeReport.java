@@ -114,6 +114,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "emptyPassingTimes")
     private Map<String, Set<String>> emptyPassingTimes = new HashMap<>();
 
+    @XmlElement(name = "wrongRefStopAreaInScheduleStopPoint")
+    private  Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -310,6 +313,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!emptyPassingTimes.isEmpty()){
             canLaunchImport = false;
             analyzeReportMap.put("empty_passing_times", buildMapList(emptyPassingTimes,"file_name", "service_journey_id"));
+        }
+
+        if (!wrongRefStopAreaInScheduleStopPoint.isEmpty()){
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongRefStopAreaInScheduleStopPoint", buildMapList(wrongRefStopAreaInScheduleStopPoint,"file_name", "stopArea"));
         }
 
 

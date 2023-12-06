@@ -22,6 +22,10 @@ public abstract class AbstractConverter implements Constant{
 		return composeObjectId(configuration, type, id);
 	}
 
+	public static String extractOriginalId(String chouetteObjectId) {
+		return chouetteObjectId.split(":")[2];
+	}
+
 	public static String composeObjectId(NeptuneImportParameters configuration, String type, String id) {
 
 		if (id == null || id.isEmpty() ) return "";

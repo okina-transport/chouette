@@ -61,6 +61,7 @@ public class StopPlaceMapper {
         mapCentroid(stopArea, quay);
         mapQuayName(stopArea, quay);
         mapPublicCode(stopArea, quay);
+        mapPrivateCode(stopArea, quay);
         mapUrl(stopArea, quay);
         mapCompassBearing(stopArea, quay);
         mapComment(stopArea, quay);
@@ -107,12 +108,32 @@ public class StopPlaceMapper {
         }
     }
 
+    private void mapPrivateCode(StopArea stopArea, Quay quay) {
+        if (StringUtils.isNotBlank(stopArea.getPrivateCode())) {
+            quay.setPrivateCode(new PrivateCodeStructure().withValue(stopArea.getPrivateCode()));
+        }
+    }
+
+    public void mapPublicCode(StopArea stopArea, StopPlace stopPlace) {
+        if (StringUtils.isNotBlank(stopArea.getRegistrationNumber())) {
+            stopPlace.setPublicCode(stopArea.getRegistrationNumber());
+        }
+    }
+
+    private void mapPrivateCode(StopArea stopArea, StopPlace stopPlace) {
+        if (StringUtils.isNotBlank(stopArea.getPrivateCode())) {
+            stopPlace.setPrivateCode(new PrivateCodeStructure().withValue(stopArea.getPrivateCode()));
+        }
+    }
+
     private StopPlace mapStopPlace(StopArea stopArea) {
         StopPlace stopPlace = new StopPlace();
         mapId(stopArea, stopPlace);
         setVersion(stopArea, stopPlace);
         mapCentroid(stopArea, stopPlace);
         mapName(stopArea, stopPlace);
+        mapPublicCode(stopArea, stopPlace);
+        mapPrivateCode(stopArea, stopPlace);
         addExternalRefInfo(stopArea, stopPlace);
         addZoneIdInfo(stopArea, stopPlace);
         addRailUICinfo(stopArea, stopPlace);
@@ -191,6 +212,10 @@ public class StopPlaceMapper {
                 sp.setStopPlaceType(StopTypeEnumeration.FERRY_STOP);
                 break;
             case Metro:
+                sp.setStopPlaceType(StopTypeEnumeration.METRO_STATION);
+                break;
+            case Funicular:
+                sp.setTransportMode(AllVehicleModesOfTransportEnumeration.FUNICULAR);
                 sp.setStopPlaceType(StopTypeEnumeration.METRO_STATION);
                 break;
             case Rail:

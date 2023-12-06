@@ -34,12 +34,12 @@ public class GtfsStopProducer extends AbstractProducer {
 		super(exporter);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix, Boolean exportCommercialPoints) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
 		String stopId = GtfsStopUtils.getNewStopId(neptuneObject, idParams, keepOriginalId, schemaPrefix);
-		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix, exportCommercialPoints);
+		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix, exportCommercialPoints, googleMapsCompatibility);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix, Boolean exportCommercialPoints) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
 		Optional<StopArea> parent = Optional.ofNullable(neptuneObject.getParent());
 		if (validParents != null && !validParents.isEmpty() && parent.isPresent()) {
 			if (parent.get().getObjectId().equals(neptuneObject.getObjectId())) {
@@ -170,7 +170,12 @@ public class GtfsStopProducer extends AbstractProducer {
 	         stop.setVehicleType(null);
 	      }
 
-		
+		if(googleMapsCompatibility != null && googleMapsCompatibility)
+		{
+			// Don't export stop_code if the export targets Google Maps
+			stop.setStopCode(null);
+		}
+
 		try
 		{
 			getExporter().getStopExporter().export(stop);

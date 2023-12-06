@@ -313,4 +313,13 @@ public class FileUtil {
 		return tmpPath;
 	}
 
+	public static Path getTechnicalPath(){
+		String tmpFilePathStr = "/opt/jboss/data/referentials/mobiiti_technique/lines";
+		Path tmpPath = Paths.get(tmpFilePathStr);
+		File tmpFile = tmpPath.toFile();
+		tmpFile.getParentFile().mkdirs();
+		tmpFile.mkdir();
+		return tmpPath;
+	}
+
 }

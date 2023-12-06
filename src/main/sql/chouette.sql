@@ -1125,7 +1125,8 @@ CREATE TABLE stop_areas (
     time_zone character varying(255),
     compass_bearing integer,
     rail_uic character varying(255),
-    zone_id character varying (255)
+    zone_id character varying (255),
+    private_code character varying (255)
 );
 
 

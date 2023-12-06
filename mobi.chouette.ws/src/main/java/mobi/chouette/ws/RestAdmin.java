@@ -59,6 +59,8 @@ public class RestAdmin implements Constant {
 	@Context
 	UriInfo uriInfo;
 
+
+
 	// jobs listing
 	@GET
 	@Path("/active_jobs{format:(\\.[^\\.]+?)?}")
@@ -148,6 +150,20 @@ public class RestAdmin implements Constant {
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@GET
+	@Path("/export_lines_ids")
+	public void exportLineIds() {
+		log.info(Color.BLUE + "Call Admin exportLineIds"+ Color.NORMAL);
+		try {
+			jobServiceManager.exportLineIds();
+			log.info(Color.BLUE + "Finished exportLineIds" + Color.NORMAL);
+		} catch (Exception ex) {
+			log.error("removeOldJobs failed with exception:" + ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 	@GET
 	@Path("/test_list/{action}{type:(/[^/]+?)?}")
