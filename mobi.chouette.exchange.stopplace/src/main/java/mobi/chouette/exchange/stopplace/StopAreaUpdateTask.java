@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.common.Constant.NETEX_VALID_PREFIX;
+
 @Log4j
 public class StopAreaUpdateTask {
 
@@ -132,7 +134,7 @@ public class StopAreaUpdateTask {
 	}
 
 	private boolean isQuayIsGlobal(List<String> quayIds) {
-		return quayIds.stream().anyMatch(quayId -> quayId.equals("MOBIITI"));
+		return quayIds.stream().anyMatch(quayId -> quayId.equals(NETEX_VALID_PREFIX));
 	}
 
 	/**

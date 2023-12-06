@@ -39,6 +39,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static mobi.chouette.common.Constant.NETEX_VALID_PREFIX;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.LOC;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.OBJECT_ID_SPLIT_CHAR;
@@ -386,7 +387,7 @@ public class NetexProducerUtils {
         }
 
         accessibilityAssessment.setVersion("any");
-        accessibilityAssessment.setId("MOBIITI:LineAccessibilityAssessment:" + sourceAssessment.getId());
+        accessibilityAssessment.setId(NETEX_VALID_PREFIX + ":LineAccessibilityAssessment:" + sourceAssessment.getId());
 
 
         AccessibilityLimitation sourceLimitations = sourceAssessment.getLimitations();
