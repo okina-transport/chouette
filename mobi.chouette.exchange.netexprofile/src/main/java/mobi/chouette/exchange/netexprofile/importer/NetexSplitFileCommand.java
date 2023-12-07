@@ -183,7 +183,7 @@ public class NetexSplitFileCommand implements Command, Constant {
 
         pubDelivery.setDataObjects(dataObj);
         pubDelivery.setPublicationTimestamp(LocalDateTime.now());
-        pubDelivery.setParticipantRef("MOBIITI");
+        pubDelivery.setParticipantRef(NETEX_VALID_PREFIX);
 
         return pubDelivery;
     }

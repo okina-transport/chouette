@@ -222,7 +222,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				String fromScheduledId = previousStopPoint.getScheduledStopPoint().getObjectId();
 				String toScheduledId = stopPoint.getScheduledStopPoint().getObjectId();
 
-				String routeSectionId = "MOBIITI:RouteSection:" + fromScheduledId.replace("MOBIITI:ScheduledStopPoint:", "") + "-" + toScheduledId.replace("MOBIITI:ScheduledStopPoint:", "");
+				String routeSectionId = NETEX_VALID_PREFIX + ":RouteSection:" + fromScheduledId.replace(NETEX_VALID_PREFIX + ":ScheduledStopPoint:", "") + "-" + toScheduledId.replace(NETEX_VALID_PREFIX + ":ScheduledStopPoint:", "");
 
 				RouteSection routeSection = ObjectFactory.getRouteSection(referential, routeSectionId);
 				routeSection.setFromScheduledStopPoint(previousStopPoint.getScheduledStopPoint());

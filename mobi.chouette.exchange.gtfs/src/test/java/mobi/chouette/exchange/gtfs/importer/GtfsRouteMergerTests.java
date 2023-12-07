@@ -250,15 +250,15 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
         newRoute.setName(tripPattern);
         newRoute.setLine(getOrCreateDefaultLine());
         newRoute.setDirection(PTDirectionEnum.A);
-        newRoute.setObjectId("MOBIITI:Route:" + tripPattern);
+        newRoute.setObjectId(NETEX_VALID_PREFIX + ":Route:" + tripPattern);
 
         JourneyPattern journeyPattern = new JourneyPattern();
-        journeyPattern.setObjectId("MOBIITI:JourneyPattern:" + tripPattern);
+        journeyPattern.setObjectId(NETEX_VALID_PREFIX + ":JourneyPattern:" + tripPattern);
 
         VehicleJourney vehicleJourney = new VehicleJourney();
 
         vehicleJourney.setRoute(newRoute);
-        vehicleJourney.setObjectId("MOBIITI:VehicleJourney:" + tripPattern);
+        vehicleJourney.setObjectId(NETEX_VALID_PREFIX + ":VehicleJourney:" + tripPattern);
 
 
         int currentPosition = 0;
@@ -269,11 +269,11 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
             StopPoint stopPoint = new StopPoint();
             stopPoint.setRoute(newRoute);
             stopPoint.setPosition(currentPosition);
-            stopPoint.setObjectId("MOBIITI:StopPoint:" + tripPattern + "_" + stopName + "_" + currentPosition);
+            stopPoint.setObjectId(NETEX_VALID_PREFIX + ":StopPoint:" + tripPattern + "_" + stopName + "_" + currentPosition);
 
 
             ScheduledStopPoint scheduledStopPoint = new ScheduledStopPoint();
-            scheduledStopPoint.setObjectId("MOBIITI:Scheduled:" + tripPattern + "_" + currentPosition);
+            scheduledStopPoint.setObjectId(NETEX_VALID_PREFIX + ":Scheduled:" + tripPattern + "_" + currentPosition);
             scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
 
             stopPoint.setScheduledStopPoint(scheduledStopPoint);
@@ -282,7 +282,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
 
 
             VehicleJourneyAtStop vjas = new VehicleJourneyAtStop();
-            vjas.setObjectId("MOBIITI:VJAS:" + tripPattern + "_" + stopName + "_" + currentPosition);
+            vjas.setObjectId(NETEX_VALID_PREFIX + ":VJAS:" + tripPattern + "_" + stopName + "_" + currentPosition);
             vjas.setStopPoint(stopPoint);
             vjas.setDepartureTime(new LocalTime(startingHour, currentPosition, 0));
             vjas.setArrivalTime(new LocalTime(startingHour, currentPosition, 0));
@@ -301,7 +301,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
     }
 
     private Line getOrCreateDefaultLine() {
-        Line line = lineDAO.findByObjectIdAndInitialize("MOBIITI:Line:1");
+        Line line = lineDAO.findByObjectIdAndInitialize(NETEX_VALID_PREFIX + ":Line:1");
 
         if (line != null) {
             Hibernate.initialize(line.getRoutes());
@@ -309,20 +309,20 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
         }
 
         Line newLine = new Line();
-        newLine.setObjectId("MOBIITI:Line:1");
+        newLine.setObjectId(NETEX_VALID_PREFIX + ":Line:1");
         lineDAO.create(newLine);
         return newLine;
     }
 
     private StopArea getOrCreateStop(String stopName) {
-        StopArea foundStopArea = stopAreaDAO.findByObjectId("MOBIITI:StopArea:" + stopName);
+        StopArea foundStopArea = stopAreaDAO.findByObjectId(NETEX_VALID_PREFIX + ":StopArea:" + stopName);
 
         if (foundStopArea != null) {
             return foundStopArea;
         }
 
         StopArea newStopArea = new StopArea();
-        newStopArea.setObjectId("MOBIITI:StopArea:" + stopName);
+        newStopArea.setObjectId(NETEX_VALID_PREFIX + ":StopArea:" + stopName);
         newStopArea.setName(stopName);
         newStopArea.setOriginalStopId(stopName);
         newStopArea.setAreaType(ChouetteAreaEnum.BoardingPosition);

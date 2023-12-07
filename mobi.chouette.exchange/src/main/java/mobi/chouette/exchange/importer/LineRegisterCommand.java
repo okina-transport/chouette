@@ -121,7 +121,7 @@ public class LineRegisterCommand implements Command {
 		}
 
 		if (newValue.getNetwork() == null){
-			mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, "MOBIITI:Network:DefaultNetwork");
+			mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, NETEX_VALID_PREFIX + ":Network:DefaultNetwork");
 			newValue.setNetwork(defaultNetwork);
 		}
 

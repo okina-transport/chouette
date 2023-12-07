@@ -273,7 +273,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         if (line.getNetwork() == null ) {
             Referential referential = (Referential) context.get(REFERENTIAL);
-            mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, "MOBIITI:Network:DefaultNetwork");
+            mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, NETEX_VALID_PREFIX + ":Network:DefaultNetwork");
             defaultNetwork.setName("DefaultNetwork");
             line.setNetwork(defaultNetwork);
             networkName = defaultNetwork.getName();

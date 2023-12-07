@@ -75,7 +75,6 @@ public class NeTExStopPlaceRegisterUpdater {
 
     public static final String IMPORTED_ID_VALUE_SEPARATOR = ",";
 
-    public static final String MOBI_ITI_PREFIX = "MOBIITI:";
 
     public static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
