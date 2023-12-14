@@ -9,6 +9,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.RouteDAO;
 import mobi.chouette.dao.RoutePointDAO;
+import mobi.chouette.dao.RouteSectionDAO;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.RoutePoint;
@@ -45,6 +46,9 @@ public class RouteMergerCommand implements Command {
     private RouteDAO routeDAO;
 
     @EJB
+    private RouteSectionDAO routeSectionDAO;
+
+    @EJB
     private RoutePointDAO routePointDAO;
 
     private Map<Long, Set<PTDirectionEnum>> lineDirections = new HashMap<>();
@@ -62,6 +66,10 @@ public class RouteMergerCommand implements Command {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public boolean execute(Context context) throws Exception {
+
+        // remove all routeSection because it causes errors while merging 2 routes with different shapes.
+        // route section will be recalculated later
+        routeSectionDAO.deleteAll();
 
 
         Monitor monitor = MonitorFactory.start(COMMAND);
