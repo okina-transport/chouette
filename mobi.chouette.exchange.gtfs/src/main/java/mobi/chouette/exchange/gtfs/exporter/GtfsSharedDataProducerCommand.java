@@ -140,7 +140,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 		}
 
-		if (!configuration.getGoogleMapsCompatibility()){
+		if (configuration.getGoogleMapsCompatibility() == null || !configuration.getGoogleMapsCompatibility()){
 			// remove incomplete connectionlinks
 			for (ConnectionLink link : connectionLinks) {
 				if (!physicalStops.contains(link.getStartOfLink()) && !commercialStops.contains(link.getStartOfLink())) {
