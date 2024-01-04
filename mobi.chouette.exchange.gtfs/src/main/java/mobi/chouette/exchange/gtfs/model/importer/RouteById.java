@@ -319,18 +319,7 @@ public class RouteById extends MergedIndexImpl<GtfsRoute> implements GtfsConvert
 			}
 			copy_bean.setAgencyId(agencyId);
 		}
-		if (dao.getAgencyById().getValue(agencyId) == null) {
-			// this bean has no agency
-			if (getIndex(FIELDS.agency_id.name()) == null)
-				bean.getErrors().add(
-						new GtfsException(_path, copy_bean.getId(), FIELDS.agency_id.name(),
-								GtfsException.ERROR.UNREFERENCED_ID, copy_bean.getRouteId(), agencyId));
-			else
-				bean.getErrors().add(
-						new GtfsException(_path, copy_bean.getId(), getIndex(FIELDS.agency_id.name()), FIELDS.agency_id
-								.name(), GtfsException.ERROR.UNREFERENCED_ID, copy_bean.getRouteId(), agencyId));
-			result = false;
-		}
+
 		if (result)
 			bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);
 
