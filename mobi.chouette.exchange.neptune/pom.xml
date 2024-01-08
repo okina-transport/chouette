@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>4.0.41_MOSAIC-SNAPSHOT</version>
+		<version>4.0.41_MOSAIC</version>
 
 	</parent>
 	<artifactId>mobi.chouette.exchange.neptune</artifactId>
@@ -230,6 +230,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>

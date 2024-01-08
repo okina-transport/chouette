@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>mobi.chouette</groupId>
     <artifactId>mobi.chouette</artifactId>
-    <version>4.0.41_MOSAIC-SNAPSHOT</version>
+    <version>4.0.41_MOSAIC</version>
 
     <packaging>pom</packaging>
 
@@ -589,6 +589,15 @@
                 <groupId>org.entur</groupId>
                 <artifactId>netex-java-model</artifactId>
                 <version>${netex-java-model.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                    </exclusion>
+                </exclusions>
+
+
+
             </dependency>
 
             <dependency>
