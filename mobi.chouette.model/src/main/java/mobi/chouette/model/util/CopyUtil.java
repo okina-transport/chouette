@@ -2,6 +2,7 @@ package mobi.chouette.model.util;
 
 import java.util.ArrayList;
 
+import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.CalendarDay;
@@ -18,7 +19,7 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 
-
+@Log4j
 public abstract class CopyUtil {
 
 	public static Network copy(Network object)
@@ -74,7 +75,12 @@ public abstract class CopyUtil {
 	      tm.setCalendarDays(new ArrayList<CalendarDay>());
 	      for (CalendarDay day : object.getCalendarDays())
 	      {
-	         tm.addCalendarDay(new CalendarDay(day.getDate(), day.getIncluded()));
+			  try {
+				  tm.addCalendarDay(new CalendarDay(day.getDate(), day.getIncluded()));
+			  }catch (Exception e){
+				  log.error("Error while processing timetable:" + object.getObjectId());
+				  throw e;
+			  }
 	      }
 	      return tm;
 
