@@ -115,4 +115,6 @@ public interface Constant {
 	public static final String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";
 	public static final String STREAM_TO_CLOSE = "streamToClose";
 
+	public static final String DETECT_CHANGED_TRIPS = "detectChangedTrips";
+
 }
