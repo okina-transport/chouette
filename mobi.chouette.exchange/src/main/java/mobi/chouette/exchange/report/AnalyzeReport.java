@@ -117,6 +117,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "wrongRefStopAreaInScheduleStopPoint")
     private  Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint = new HashMap<>();
 
+    @XmlElement(name = "changedTrips")
+    private Map<String, Pair<String, String>> changedTrips = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -184,6 +187,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         return false;
     }
 
+    public void recordChangedTrip(String tripId, String existingTrip, String incomingTrip){
+        Pair<String, String> difference = Pair.of(existingTrip, incomingTrip);
+        changedTrips.put(tripId,difference);
+    }
+
 
     public void addLineTextColor(String lineName, String lineTextColor) {
         if (!lineTextColorMap.containsKey(lineName))
@@ -244,6 +252,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!wrongGeolocStopAreas.isEmpty()) {
             canLaunchImport = false;
             analyzeReportMap.put("wrongGeolocStopAreas", buildWrongGeolocList());
+        }
+
+        if (!changedTrips.isEmpty()){
+            canLaunchImport = false;
+            analyzeReportMap.put("changedTrips", buildChangedTrips());
         }
 
         if (!changedNameStopAreas.isEmpty()) {
@@ -331,6 +344,21 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<Object> buildChangedTrips() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Pair<String, String>> changedTrip : changedTrips.entrySet()) {
+            String tripId = changedTrip.getKey();
+            Pair<String, String> differences = changedTrip.getValue();
+            Map<String,String> differenceMap = new HashMap<>();
+            differenceMap.put("trip_id", tripId);
+            differenceMap.put("existing", differences.getLeft());
+            differenceMap.put("incoming", differences.getRight());
+            resultList.add(differenceMap);
+        }
+        return resultList;
     }
 
     private List<Object> buildStopPlacesWithDifferentTransportModeList() {

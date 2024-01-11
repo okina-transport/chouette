@@ -16,6 +16,7 @@ import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceComm
 import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceLineNetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.ValidationData;
@@ -60,6 +61,7 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(FILE_TO_REFERENTIAL_STOP_ID_MAP, new HashMap<String, String>());
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
 			context.put(STREAM_TO_CLOSE, new ArrayList<>());
+			context.put(DETECT_CHANGED_TRIPS, !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
 			Map<String, NetexProfileValidator> availableProfileValidators = new HashMap<>();
 
