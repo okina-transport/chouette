@@ -36,7 +36,7 @@ public class NetexInitImportCommand implements Command, Constant {
 
 			NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 			context.put(StopArea.IMPORT_MODE, parameters.getStopAreaImportMode());
-			context.put(DETECT_CHANGED_TRIPS, !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 			result = SUCCESS;
 
 		} catch (Exception e) {

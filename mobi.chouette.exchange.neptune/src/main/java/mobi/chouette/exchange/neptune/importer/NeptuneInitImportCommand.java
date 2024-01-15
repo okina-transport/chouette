@@ -40,7 +40,7 @@ public class NeptuneInitImportCommand implements Command, Constant {
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NeptuneErrorCodeConverter());
 			int linePosition = 0;
 			context.put(LINE_POSITION, linePosition);
-			context.put(DETECT_CHANGED_TRIPS, !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+			context.put(DETECT_CHANGED_TRIPS,parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
 			if (context.get(VALIDATION) != null)
 			   context.put(VALIDATION_DATA, new ValidationData());

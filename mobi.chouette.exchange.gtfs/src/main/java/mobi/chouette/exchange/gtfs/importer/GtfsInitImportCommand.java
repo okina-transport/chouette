@@ -83,7 +83,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 			context.put(RAIL_UIC_REGEXP, regExp);
 
 
-			context.put(DETECT_CHANGED_TRIPS, !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
 
 			result = SUCCESS;
