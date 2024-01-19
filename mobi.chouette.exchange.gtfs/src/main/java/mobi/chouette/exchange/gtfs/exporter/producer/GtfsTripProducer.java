@@ -17,6 +17,7 @@ import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyFrequency;
@@ -27,13 +28,7 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-import mobi.chouette.model.type.DropOffTypeEnum;
-import mobi.chouette.model.type.JourneyCategoryEnum;
-import mobi.chouette.model.type.PTDirectionEnum;
-import mobi.chouette.model.type.PickUpTypeEnum;
-import mobi.chouette.model.type.SectionStatusEnum;
+import mobi.chouette.model.type.*;
 import org.joda.time.LocalTime;
 
 import java.math.BigDecimal;
@@ -285,6 +280,10 @@ public class GtfsTripProducer extends AbstractProducer {
 		Route route = vj.getRoute();
 		Line line = route.getLine();
 		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
+		if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(line.getTad())){
+			trip.setRouteId(trip.getRouteId().replace(":Line:", ":FlexibleLine:"));
+		}
+
 		if ("R".equals(route.getWayBack()) || PTDirectionEnum.R.equals(route.getDirection())) {
 			trip.setDirectionId(GtfsTrip.DirectionType.Inbound);
 		} else {
