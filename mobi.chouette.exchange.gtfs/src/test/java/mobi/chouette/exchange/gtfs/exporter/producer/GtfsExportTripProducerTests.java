@@ -158,7 +158,7 @@ public class GtfsExportTripProducerTests
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
       Reporter.log(TripExporter.CONVERTER.to(context,gtfsObject));
 
-      Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:Line:0123", "RouteID must be correctly set");
+      Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:FlexibleLine:0123", "RouteID must be correctly set");
 
    }
 
@@ -178,7 +178,7 @@ public class GtfsExportTripProducerTests
       GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
       Reporter.log(TripExporter.CONVERTER.to(context,gtfsObject));
 
-      Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:Line:0123SUFFIX", "RouteID must be correctly set");
+      Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:FlexibleLine:0123SUFFIX", "RouteID must be correctly set");
 
    }
 

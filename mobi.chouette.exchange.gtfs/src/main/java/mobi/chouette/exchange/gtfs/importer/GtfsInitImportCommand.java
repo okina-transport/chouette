@@ -22,6 +22,7 @@ import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.model.importer.FactoryParameters;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.StopArea;
@@ -80,6 +81,9 @@ public class GtfsInitImportCommand implements Command, Constant {
 			Optional<Provider> providerOpt = providerDAO.findBySchema(referential);
 			String regExp = providerOpt.isPresent() && StringUtils.isNotEmpty(providerOpt.get().getRailUICregexp()) ? providerOpt.get().getRailUICregexp() : " ";
 			context.put(RAIL_UIC_REGEXP, regExp);
+
+
+			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
 
 			result = SUCCESS;
