@@ -237,6 +237,19 @@ public class StopAreaUpdater implements Updater<StopArea> {
 					oldValue.setKeyValues(newValue.getKeyValues());
 				}
 			}
+
+				if (newValue.getStopAreaType() != null){
+					oldValue.setStopAreaType(newValue.getStopAreaType());
+				}
+
+				if (newValue.getTransportModeName() != null && !newValue.getTransportModeName().equals(oldValue.getTransportModeName())) {
+					oldValue.setTransportModeName(newValue.getTransportModeName());
+				}
+				if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
+					oldValue.setTransportSubMode(newValue.getTransportSubMode());
+				}
+
+
 				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
 					oldValue.setLongitude(newValue.getLongitude());
 				}

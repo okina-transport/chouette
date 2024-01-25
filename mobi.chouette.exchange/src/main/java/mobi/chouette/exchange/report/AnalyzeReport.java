@@ -309,7 +309,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         }
 
         if (!quayWithDifferentTransportModes.isEmpty()) {
-            canLaunchImport = false;
             analyzeReportMap.put("quays_with_different_transport_modes", buildQuayWithDifferentTransportModeList());
         } else {
             checkStopPlaceTransportModes();
