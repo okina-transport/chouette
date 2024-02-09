@@ -187,6 +187,7 @@ public class NetexSchemaValidationCommand implements Command, Constant {
 					}
 
 					public void addToActionReport(SAXParseException exception) throws SAXParseException {
+						log.error("Sax exception found on Schema validation:",exception);
 						validationReporter.addCheckPointReportError(context, AbstractNetexProfileValidator._1_NETEX_SCHEMA_VALIDATION_ERROR,
 								new DataLocation(fileName, exception.getLineNumber(), exception.getColumnNumber()), exception.getMessage());
 						String message = exception.getLineNumber() + ":" + exception.getColumnNumber() + " " + exception.getMessage();

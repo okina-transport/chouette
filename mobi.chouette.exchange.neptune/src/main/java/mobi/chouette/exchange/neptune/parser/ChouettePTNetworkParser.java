@@ -43,6 +43,8 @@ public class ChouettePTNetworkParser implements Parser, Constant {
     public static final String END_OF_LINK_ID = "endOfLinkId";
     public static final String START_OF_LINK_ID = "startOfLinkId";
 
+    private static final String NETEX_PREFIX = NETEX_VALID_PREFIX != null ? NETEX_VALID_PREFIX : "MOBIITI";
+
     public static final String CENTROID_OF_AREA = "centroidOfArea";
     public static final String CONTAINS2 = "contains";
     protected static final String OBJECT_IDS = "encontered_ids";
@@ -174,7 +176,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
 
         List<StopArea> boardingPositions = referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()) && !stopArea.getObjectId().startsWith("MOBIITI:"))
+                .filter(stopArea -> ChouetteAreaEnum.BoardingPosition.equals(stopArea.getAreaType()) && !stopArea.getObjectId().startsWith(NETEX_VALID_PREFIX + ":"))
                 .collect(Collectors.toList());
 
         for (StopArea boardingPosition : boardingPositions) {
@@ -234,7 +236,7 @@ public class ChouettePTNetworkParser implements Parser, Constant {
         String referentialName = parameters.getReferentialName().toUpperCase();
 
         List<StopArea> oldStopArea = referential.getSharedStopAreas().values().stream()
-                .filter(stopArea -> !stopArea.getObjectId().startsWith(MOBIITI_PREFIX) &&
+                .filter(stopArea -> !stopArea.getObjectId().startsWith(NETEX_PREFIX) &&
                             !hasBeenCreatedByChouette(referentialName, stopArea.getObjectId()))
                 .collect(Collectors.toList());
         //replace all stopAreas with olfd IDs by stopAreas with new Ids at root level

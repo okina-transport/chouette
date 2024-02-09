@@ -214,6 +214,7 @@ CREATE TABLE companies (
     name character varying(255),
     short_name character varying(255),
     legal_name character varying(255),
+    active boolean,
     organisation_type character varying(255),
     organizational_unit character varying(255),
     operating_department_name character varying(255),

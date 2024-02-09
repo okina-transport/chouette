@@ -87,8 +87,7 @@ public interface Constant {
 
 	public static final String IMPORTED_ID = "imported-id";
 	public static final String SELECTED_ID = "selected-id";
-
-	public static final String MOBIITI_PREFIX = "MOBIITI";
+	public static final String NETEX_VALID_PREFIX = System.getenv("NETEX_VALID_PREFIX");
 	public static final String COLON_REPLACEMENT_CODE="##3A##";
 
 	public static final String SANITIZED_REPLACEMENT_CODE="__3A__";
@@ -115,5 +114,7 @@ public interface Constant {
 
 	public static final String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";
 	public static final String STREAM_TO_CLOSE = "streamToClose";
+
+	public static final String DETECT_CHANGED_TRIPS = "detectChangedTrips";
 
 }

@@ -377,6 +377,18 @@ public class Company extends NeptuneIdentifiedObject {
 	private List<Line> lines = new ArrayList<Line>(0);
 
 	/**
+	 * lines
+	 *
+	 * @param lines
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Column(name = "active")
+	private Boolean active;
+
+	/**
 	 * branding
 	 *
 	 * @param branding

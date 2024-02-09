@@ -11,6 +11,8 @@ import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.type.TadEnum;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.FlexibleLine;
@@ -35,6 +37,8 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
 
     private static ContactStructureProducer contactStructureProducer = new ContactStructureProducer();
 
+    private static final Logger logger = Logger.getLogger(LineFranceProducer.class);
+
     @Override
     public org.rutebanken.netex.model.Line_VersionStructure produce(Context context, mobi.chouette.model.Line neptuneLine) {
 
@@ -50,6 +54,10 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
 
         NetexProducerUtils.populateIdAndVersion(neptuneLine, netexLine);
         NetexProducerUtils.populateLineAccessibilityAssessment(neptuneLine, netexLine);
+
+        if (StringUtils.isEmpty(neptuneLine.getName())){
+            logger.error("Name not defined for line:" + neptuneLine.getId());
+        }
 
         if (isSet(neptuneLine.getName())) {
             netexLine.setName(ConversionUtil.getMultiLingualString(neptuneLine.getName()));

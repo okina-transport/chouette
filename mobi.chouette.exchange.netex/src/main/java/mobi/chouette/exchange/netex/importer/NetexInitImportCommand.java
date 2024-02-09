@@ -10,6 +10,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.netex.Constant;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
@@ -35,6 +36,7 @@ public class NetexInitImportCommand implements Command, Constant {
 
 			NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 			context.put(StopArea.IMPORT_MODE, parameters.getStopAreaImportMode());
+			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 			result = SUCCESS;
 
 		} catch (Exception e) {

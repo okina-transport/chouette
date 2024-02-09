@@ -58,6 +58,8 @@ import static mobi.chouette.common.PropertyNames.*;
 public class NeTExStopPlaceRegisterUpdater {
     private static final String STOP_PLACE_REGISTER_MAP = "STOP_PLACE_REGISTER_MAP";
 
+    private static final String STOP_PLACE_REGISTERED_TRANSPORT_MODES = "STOP_PLACE_REGISTERED_TRANSPORT_MODES";
+
     private static final String VERSION = "1";
 
 
@@ -75,7 +77,6 @@ public class NeTExStopPlaceRegisterUpdater {
 
     public static final String IMPORTED_ID_VALUE_SEPARATOR = ",";
 
-    public static final String MOBI_ITI_PREFIX = "MOBIITI:";
 
     public static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
@@ -175,17 +176,22 @@ public class NeTExStopPlaceRegisterUpdater {
             context.put(STOP_PLACE_REGISTER_MAP, stopPlaceRegisterMap);
         }
 
+        Map<String, Set<TransportModeNameEnum>> stopPlaceRegisteredTransportModesMap = (Map<String, Set<TransportModeNameEnum>>) context.get(STOP_PLACE_REGISTERED_TRANSPORT_MODES);
+        if (stopPlaceRegisteredTransportModesMap == null) {
+            stopPlaceRegisteredTransportModesMap = new HashMap<>();
+            context.put(STOP_PLACE_REGISTERED_TRANSPORT_MODES, stopPlaceRegisteredTransportModesMap);
+        }
+
         final Map<String, String> m = stopPlaceRegisterMap;
+
+        final Map<String, Set<TransportModeNameEnum>> registeredTransportModes = stopPlaceRegisteredTransportModesMap;
 
         Predicate<StopArea> fullStopAreaNotCached = t -> {
             if (m.containsKey(t.getObjectId())) {
-                for (StopArea child : t.getContainedStopAreas()) {
-                    if (!m.containsKey(child.getObjectId())) {
-                        return true;
-                    }
-                }
-                return false;
+                // stopArea has already been seen. Checking if something changed on child or if transport mode has changed
+                return hasUnprocessedChild(m, t) || hasAnotherTransportMode(registeredTransportModes,t);
             }
+            // never seen this stopArea before
             return true;
         };
 
@@ -454,6 +460,47 @@ public class NeTExStopPlaceRegisterUpdater {
             referential.getStopAreas().remove(sa.getObjectId());
         }
 
+    }
+
+    private boolean hasAnotherTransportMode(Map<String, Set<TransportModeNameEnum>> registeredTransportModes, StopArea stopArea) {
+        Set<TransportModeNameEnum> incomingTransportModes = NeTExStopPlaceUtil.findTransportModeForStopArea(new HashSet<>(), stopArea);
+        
+        if (!registeredTransportModes.containsKey(stopArea.getObjectId())){
+            registeredTransportModes.put(stopArea.getObjectId(), incomingTransportModes);
+            return true;
+        }
+
+        Set<TransportModeNameEnum> alreadyProcessedTransportModes = registeredTransportModes.get(stopArea.getObjectId());
+
+        boolean result = false;
+        for (TransportModeNameEnum incomingTransportMode : incomingTransportModes) {
+            if (!alreadyProcessedTransportModes.contains(incomingTransportMode)){
+                alreadyProcessedTransportModes.add(incomingTransportMode);
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+
+    /**
+     * Checks if a stopArea has unknown child
+     * (it means this stopArea must be sent to stop place registery to be updated)
+     * @param m
+     *      map that contains already processed stopAreas
+     * @param t
+     *      stopArea to check
+     * @return
+     *      true : at least one child is unknown
+     *      false : all children have already been processed
+     */
+    private boolean hasUnprocessedChild(Map<String, String> m, StopArea t) {
+        for (StopArea child : t.getContainedStopAreas()) {
+            if (!m.containsKey(child.getObjectId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /***

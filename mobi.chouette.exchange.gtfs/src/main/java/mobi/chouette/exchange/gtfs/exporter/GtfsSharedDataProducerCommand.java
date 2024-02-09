@@ -140,15 +140,18 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 		}
 
-		// remove incomplete connectionlinks
-		for (ConnectionLink link : connectionLinks) {
-			if (!physicalStops.contains(link.getStartOfLink()) && !commercialStops.contains(link.getStartOfLink())) {
-				continue;
-			} else if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
-				continue;
+		if (configuration.getGoogleMapsCompatibility() == null || !configuration.getGoogleMapsCompatibility()){
+			// remove incomplete connectionlinks
+			for (ConnectionLink link : connectionLinks) {
+				if (!physicalStops.contains(link.getStartOfLink()) && !commercialStops.contains(link.getStartOfLink())) {
+					continue;
+				} else if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
+					continue;
+				}
+				transferProducer.save(link, prefix, configuration.isKeepOriginalId(), idParams);
 			}
-			transferProducer.save(link, prefix, configuration.isKeepOriginalId(), idParams);
 		}
+
 		
 		// produce interchanges
 		for(Interchange interchange : interchanges) {

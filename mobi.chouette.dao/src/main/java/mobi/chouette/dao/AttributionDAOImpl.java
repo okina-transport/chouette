@@ -8,6 +8,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import static mobi.chouette.common.Constant.NETEX_VALID_PREFIX;
+
 @Stateless
 public class AttributionDAOImpl extends GenericDAOImpl<Attribution> implements AttributionDAO{
 
@@ -27,7 +29,7 @@ public class AttributionDAOImpl extends GenericDAOImpl<Attribution> implements A
 		em.persist(attribution);
 
 		//On corrige ensuite l'objectId
-		attribution.setObjectId("MOBIITI:" + ObjectIdTypes.ATTRIBUTION_KEY + ":" + attribution.getId());
+		attribution.setObjectId(NETEX_VALID_PREFIX + ":" + ObjectIdTypes.ATTRIBUTION_KEY + ":" + attribution.getId());
 		em.merge(attribution);
 	}
 

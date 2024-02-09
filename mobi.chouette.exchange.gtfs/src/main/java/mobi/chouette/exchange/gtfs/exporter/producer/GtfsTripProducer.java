@@ -17,6 +17,7 @@ import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTime;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyFrequency;
@@ -27,14 +28,7 @@ import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import mobi.chouette.model.type.AlightingPossibilityEnum;
-import mobi.chouette.model.type.BoardingPossibilityEnum;
-import mobi.chouette.model.type.DropOffTypeEnum;
-import mobi.chouette.model.type.JourneyCategoryEnum;
-import mobi.chouette.model.type.LimitationStatusEnum;
-import mobi.chouette.model.type.PTDirectionEnum;
-import mobi.chouette.model.type.PickUpTypeEnum;
-import mobi.chouette.model.type.SectionStatusEnum;
+import mobi.chouette.model.type.*;
 import org.joda.time.LocalTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
@@ -279,12 +273,18 @@ public class GtfsTripProducer extends AbstractProducer {
 		if (jp.getSectionStatus() == SectionStatusEnum.Completed && jp.getRouteSections().size() != 0) {
 			String shapeId = toGtfsId(jp.getObjectId(), schemaPrefix, keepOriginalId);
 			trip.setShapeId(shapeId);
-		} else {
+		}
+		else
+		{
 			trip.setShapeId(null);
 		}
 		Route route = vj.getRoute();
 		Line line = route.getLine();
-		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId), idParams));
+		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
+		if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(line.getTad())){
+			trip.setRouteId(trip.getRouteId().replace(":Line:", ":FlexibleLine:"));
+		}
+
 		if ("R".equals(route.getWayBack()) || PTDirectionEnum.R.equals(route.getDirection())) {
 			trip.setDirectionId(GtfsTrip.DirectionType.Inbound);
 		} else {
@@ -299,17 +299,17 @@ public class GtfsTripProducer extends AbstractProducer {
 		lvjas.sort(Comparator.comparing(o -> o.getStopPoint().getPosition()));
 
 		List<DestinationDisplay> allDestinationDisplays = new ArrayList<>();
-		for (VehicleJourneyAtStop vjas : lvjas) {
-			if (vjas.getStopPoint().getDestinationDisplay() != null) {
+		for(VehicleJourneyAtStop vjas : lvjas) {
+			if(vjas.getStopPoint().getDestinationDisplay() != null) {
 				allDestinationDisplays.add(vjas.getStopPoint().getDestinationDisplay());
 			}
 		}
 		DestinationDisplay startDestinationDisplay = lvjas.get(0).getStopPoint().getDestinationDisplay();
 		boolean changesDestinationDisplay = allDestinationDisplays.size() > 1;
 
-		if (!isEmpty(vj.getPublishedJourneyName())) {
+		if(!isEmpty(vj.getPublishedJourneyName())) {
 			trip.setTripHeadSign(vj.getPublishedJourneyName());
-		} else if (startDestinationDisplay != null) {
+		} else if(startDestinationDisplay != null) {
 			trip.setTripHeadSign(startDestinationDisplay.getFrontTextWithComputedVias());
 		} else if (!isEmpty(jp.getPublishedName())) {
 			trip.setTripHeadSign(jp.getPublishedName());

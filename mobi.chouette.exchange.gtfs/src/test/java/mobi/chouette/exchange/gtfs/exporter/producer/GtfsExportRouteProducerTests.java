@@ -113,7 +113,7 @@ public class GtfsExportRouteProducerTests
       mock.reset();
 
       Line neptuneObject = buildStandardLine();
-      String expectedId = "PREFIX:Line:4321SUFFIX";
+      String expectedId = "PREFIX:FlexibleLine:4321SUFFIX";
 
       IdParameters idParams = new IdParameters("PREFIXSTOP", IdFormat.TRIDENT,"SUFFIX","PREFIX","");
       producer.save(neptuneObject, "GTFS",false,false,idParams);
@@ -131,7 +131,7 @@ public class GtfsExportRouteProducerTests
       mock.reset();
 
       Line neptuneObject = buildStandardLine();
-      String expectedId = "PREFIX:Line:4321";
+      String expectedId = "PREFIX:FlexibleLine:4321";
 
       IdParameters idParams = new IdParameters("PREFIXSTOP", IdFormat.TRIDENT,null,"PREFIX","");
       producer.save(neptuneObject, "GTFS",false,false,idParams);

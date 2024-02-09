@@ -6,21 +6,11 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.AnalyzeReport;
-import mobi.chouette.exchange.validation.report.DataLocation;
-import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
@@ -30,6 +20,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -52,11 +43,25 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
+    private Map<String, String> originalIdMap = new HashMap<>();
+
+    @EJB
+    private VehicleJourneyDAO vehicleJourneyDAO;
+
+    @EJB
+    StopAreaDAO stopAreaDAO;
 
     public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
         @Override
         public int compare(StopPoint sp1, StopPoint sp2) {
             return Integer.compare(sp1.getPosition(), sp2.getPosition());
+        }
+    };
+
+    public static final Comparator<VehicleJourneyAtStop> VEHICLE_AT_STOP_COMPARATOR = new Comparator<VehicleJourneyAtStop>() {
+        @Override
+        public int compare(VehicleJourneyAtStop vas1, VehicleJourneyAtStop vas2) {
+            return vas1.getDepartureTime().compareTo(vas2.getDepartureTime());
         }
     };
 
@@ -69,6 +74,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         DateTime startingTime = new DateTime();
         int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
         context.put(CURRENT_LINE_NB, currentLineNb);
+
+        
+        boolean detectChangedTrips = context.get(DETECT_CHANGED_TRIPS) == null ? false : (boolean) context.get(DETECT_CHANGED_TRIPS);
 
         cleanRepository = (boolean) context.get(CLEAR_FOR_IMPORT);
 
@@ -107,6 +115,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
         containsStopAreaRefNullScheduleStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
+        if (detectChangedTrips){
+            launchTripAnalyze(newValue);
+        }
 
 
         DateTime endingTime = new DateTime();
@@ -117,6 +128,116 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
         return result;
+    }
+
+    /**
+     * Analyze if trips changed between existing trip in BDD and incoming trip from file
+     * @param newValue
+     *  new line incoming from file
+     */
+    private void launchTripAnalyze(Line newValue) {
+
+        for (Route route : newValue.getRoutes()) {
+            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+                for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
+
+                    String objectId = vehicleJourney.getObjectId();
+                    VehicleJourney existingVehicleJourney = vehicleJourneyDAO.findByObjectId(objectId);
+
+                    if (existingVehicleJourney == null){
+                        continue;
+                    }
+
+                    if(!areTripEquals(existingVehicleJourney.getVehicleJourneyAtStops(),vehicleJourney.getVehicleJourneyAtStops())){
+                        writeDifferentTrips(vehicleJourney.getObjectId(), existingVehicleJourney.getVehicleJourneyAtStops(), vehicleJourney.getVehicleJourneyAtStops());
+                    }
+
+                    List<VehicleJourneyAtStop> existingVehAtStops = existingVehicleJourney.getVehicleJourneyAtStops();
+                    Collections.sort(existingVehAtStops, VEHICLE_AT_STOP_COMPARATOR);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get an originalStopId from an objectId
+     * @param objectId
+     *  an object id : MOBIITI:Quay:xxxx
+     * @return
+     *  an original id
+     */
+    private String getOrRecoverOriginalId(String objectId){
+
+        if (originalIdMap.containsKey(objectId)){
+            return originalIdMap.get(objectId);
+        }else{
+            StopArea existingStopArea = stopAreaDAO.findByObjectId(objectId);
+            originalIdMap.put(existingStopArea.getObjectId(), existingStopArea.getOriginalStopId());
+            return existingStopArea.getOriginalStopId();
+        }
+    }
+
+    /**
+     * Write trip mismatch to analyze report
+     * @param tripId
+     *  the trip id for which mismatch has been detected
+     * @param existingStops
+     *  list of stops from existing trip in BDD
+     * @param incomingStops
+     *  list of stops from incoming file
+     */
+    private void writeDifferentTrips(String tripId, List<VehicleJourneyAtStop> existingStops, List<VehicleJourneyAtStop> incomingStops) {
+        StringBuilder existingTrip = new StringBuilder();
+
+        for (VehicleJourneyAtStop vehicleJourneyAtStop : existingStops) {
+            if (StringUtils.isNotEmpty(existingTrip.toString())){
+                existingTrip.append("-");
+            }
+            String objectId = vehicleJourneyAtStop.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
+            existingTrip.append(getOrRecoverOriginalId(objectId));
+        }
+
+        StringBuilder incomingTrip = new StringBuilder();
+
+        for (VehicleJourneyAtStop vehicleJourneyAtStop : incomingStops) {
+            if (StringUtils.isNotEmpty(incomingTrip.toString())){
+                incomingTrip.append("-");
+            }
+            incomingTrip.append(vehicleJourneyAtStop.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId().split(":Quay:")[1]);
+        }
+        analyzeReport.recordChangedTrip(tripId.split(":VehicleJourney:")[1], existingTrip.toString(), incomingTrip.toString());
+
+    }
+
+    /**
+     * Tells if 2 trips has the same structure or not (all stops must be equals)
+     * @param existingStops
+     *  existingStop from BDD
+     * @param incomingStops
+     *  incoming stops from file
+     * @return
+     *  true : trips are equals
+     *  false :trips are differents
+     */
+    private boolean areTripEquals(List<VehicleJourneyAtStop> existingStops, List<VehicleJourneyAtStop> incomingStops) {
+
+        if (existingStops.size() != incomingStops.size()){
+            return false;
+        }
+
+        for (int i = 0 ; i < existingStops.size(); i++){
+            VehicleJourneyAtStop existing = existingStops.get(i);
+            VehicleJourneyAtStop incoming = incomingStops.get(i);
+
+            String existingStopAreaObjectId = existing.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
+            String existingOriginalId = getOrRecoverOriginalId(existingStopAreaObjectId);
+            String incomingStopArea = incoming.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId();
+
+            if (!existingOriginalId.equals(incomingStopArea.split(":Quay:")[1]))
+                return false;
+        }
+        // all stops have been checked. trips are equals
+        return true;
     }
 
     private void checkRouteLinksIfNeeded(Context context, Line line){
@@ -273,7 +394,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
         if (line.getNetwork() == null ) {
             Referential referential = (Referential) context.get(REFERENTIAL);
-            mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, "MOBIITI:Network:DefaultNetwork");
+            mobi.chouette.model.Network defaultNetwork = ObjectFactory.getPTNetwork(referential, NETEX_VALID_PREFIX + ":Network:DefaultNetwork");
             defaultNetwork.setName("DefaultNetwork");
             line.setNetwork(defaultNetwork);
             networkName = defaultNetwork.getName();

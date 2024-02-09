@@ -193,6 +193,7 @@ CREATE TABLE companies (
     organisation_type character varying(255),
     organizational_unit character varying(255),
     operating_department_name character varying(255),
+    active boolean,
     code character varying(255),
     phone character varying(255),
     fax character varying(255),
