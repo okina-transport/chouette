@@ -266,7 +266,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         if (chouetteScheduledStopPoint != null) {
             if (isSet(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject())) {
                 ScheduledStopPoint scheduledStopPoint = netexFactory.createScheduledStopPoint();
-                NetexProducerUtils.populateIdAndVersionIDFM(chouetteScheduledStopPoint, scheduledStopPoint);
+                NetexProducerUtils.populateIdAndVersion(chouetteScheduledStopPoint, scheduledStopPoint);
 
 
                 LocationStructure locationStructure = new LocationStructure();
@@ -304,7 +304,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
     protected void addDestinationDisplay(mobi.chouette.model.DestinationDisplay dd, ExportableNetexData exportableNetexData) {
         DestinationDisplay netexDestinationDisplay = netexFactory.createDestinationDisplay();
-        NetexProducerUtils.populateIdAndVersionIDFM(dd, netexDestinationDisplay);
+        NetexProducerUtils.populateIdAndVersion(dd, netexDestinationDisplay);
         netexDestinationDisplay.setFrontText(ConversionUtil.getMultiLingualString(dd.getFrontText()));
         exportableNetexData.getDestinationDisplays().put(netexDestinationDisplay.getId(), netexDestinationDisplay);
     }

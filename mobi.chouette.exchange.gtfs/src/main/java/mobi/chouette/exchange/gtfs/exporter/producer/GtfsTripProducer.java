@@ -30,6 +30,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.*;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -315,11 +316,22 @@ public class GtfsTripProducer extends AbstractProducer {
 		} else
 			trip.setTripHeadSign(null);
 
-		if (vj.getMobilityRestrictedSuitability() != null)
-			trip.setWheelchairAccessible(vj.getMobilityRestrictedSuitability() ? GtfsTrip.WheelchairAccessibleType.Allowed
-					: GtfsTrip.WheelchairAccessibleType.NoAllowed);
-		else
+		if (vj.getAccessibilityAssessment() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess() != null){
+			switch (vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess()) {
+				case TRUE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.Allowed);
+					break;
+				case FALSE:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoAllowed);
+					break;
+				default:
+					trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+					break;
+			}
+		}
+		else {
 			trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
+		}
 
 		if (vj.getBikesAllowed() != null)
 			trip.setBikesAllowed(vj.getBikesAllowed() ? GtfsTrip.BikesAllowedType.Allowed

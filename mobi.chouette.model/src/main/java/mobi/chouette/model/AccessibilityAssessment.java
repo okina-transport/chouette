@@ -11,8 +11,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
+import mobi.chouette.model.type.LimitationStatusEnum;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
@@ -36,7 +37,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccessibilityAssessment implements Serializable {
+public class AccessibilityAssessment extends NeptuneIdentifiedObject {
 
 	@Id
 	@SequenceGenerator(name = "accessibility_assessment_id_seq", sequenceName = "accessibility_assessment_id_seq", allocationSize = 1)
@@ -46,13 +47,15 @@ public class AccessibilityAssessment implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "mobility_impaired_access")
-	protected LimitationStatusEnumeration mobilityImpairedAccess = LimitationStatusEnumeration.UNKNOWN;
+	protected LimitationStatusEnum mobilityImpairedAccess = LimitationStatusEnum.UNKNOWN;
 
-	@OneToOne
+	@OneToOne(cascade = { CascadeType.ALL})
 	@JoinColumn(name = "accessibility_limitation_id", referencedColumnName = "id")
-	protected AccessibilityLimitation limitations;
+	protected AccessibilityLimitation accessibilityLimitation;
 
 	@OneToOne(mappedBy = "accessibilityAssessment")
 	private Line line;
 
+	@OneToOne(mappedBy = "accessibilityAssessment")
+	private VehicleJourney vehicleJourney;
 }

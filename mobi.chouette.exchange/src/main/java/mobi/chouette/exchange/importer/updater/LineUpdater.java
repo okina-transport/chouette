@@ -3,6 +3,7 @@ package mobi.chouette.exchange.importer.updater;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.dao.FootnoteDAO;
 import mobi.chouette.dao.GroupOfLineDAO;
@@ -11,15 +12,14 @@ import mobi.chouette.dao.RouteDAO;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
+import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Footnote;
 import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -28,7 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Stateless(name = LineUpdater.BEAN_NAME)
 public class LineUpdater implements Updater<Line> {
@@ -73,6 +72,12 @@ public class LineUpdater implements Updater<Line> {
 	@EJB(beanName = FootnoteUpdater.BEAN_NAME)
 	private Updater<Footnote> footnoteUpdater;
 
+	@EJB(beanName = AccessibilityAssessmentUpdater.BEAN_NAME)
+	private Updater<AccessibilityAssessment> accessibilityAssessmentUpdater;
+
+	@EJB
+	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+
 	@Override
 	public void update(Context context, Line oldValue, Line newValue) throws Exception {
 
@@ -105,7 +110,6 @@ public class LineUpdater implements Updater<Line> {
 			oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
 			oldValue.setTransportModeName(newValue.getTransportModeName());
 			oldValue.setTransportSubModeName(newValue.getTransportSubModeName());
-			oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
 			oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
 			oldValue.setUrl(newValue.getUrl());
 			oldValue.setColor(newValue.getColor());
@@ -149,10 +153,6 @@ public class LineUpdater implements Updater<Line> {
 			if (newValue.getTransportSubModeName() != null
 					&& !newValue.getTransportSubModeName().equals(oldValue.getTransportSubModeName())) {
 				oldValue.setTransportSubModeName(newValue.getTransportSubModeName());
-			}
-			if (newValue.getMobilityRestrictedSuitable() != null
-					&& !newValue.getMobilityRestrictedSuitable().equals(oldValue.getMobilityRestrictedSuitable())) {
-				oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
 			}
 			if (newValue.getIntUserNeeds() != null && !newValue.getIntUserNeeds().equals(oldValue.getIntUserNeeds())) {
 				oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
@@ -319,7 +319,30 @@ public class LineUpdater implements Updater<Line> {
 		}
 
 		updateFootnotes(context, oldValue,newValue,cache);
+		updateAccessibilityAssessment(context, cache, oldValue, newValue);
+
 //		monitor.stop();
+	}
+
+	private void updateAccessibilityAssessment(Context context, Referential cache, Line oldValue, Line newValue) throws Exception {
+		// Accessibility assessment
+		if (newValue.getAccessibilityAssessment() == null) {
+			oldValue.setAccessibilityAssessment(null);
+		} else {
+			String objectId = newValue.getAccessibilityAssessment().getObjectId();
+			AccessibilityAssessment accessibilityAssessment = cache.getAccessibilityAssessments().get(objectId);
+			if (accessibilityAssessment == null) {
+				accessibilityAssessment = accessibilityAssessmentDAO.findByObjectId(objectId);
+				if (accessibilityAssessment != null) {
+					cache.getAccessibilityAssessments().put(objectId, accessibilityAssessment);
+				}
+			}
+			if (accessibilityAssessment == null) {
+				accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(cache, objectId);
+			}
+			oldValue.setAccessibilityAssessment(accessibilityAssessment);
+			accessibilityAssessmentUpdater.update(context, oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment());
+		}
 	}
 
 	private void updateFootnotes(Context context, Line oldValue, Line newValue, Referential cache) throws Exception {

@@ -12,14 +12,19 @@ import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.AccessibilityAssessment;
+import org.rutebanken.netex.model.AccessibilityLimitation;
+import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FrequencyGroups_RelStructure;
 import org.rutebanken.netex.model.HeadwayJourneyGroup;
 import org.rutebanken.netex.model.HeadwayJourneyGroupRefStructure;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 import org.rutebanken.netex.model.ServiceFacilitySet;
 import org.rutebanken.netex.model.ServiceFacilitySets_RelStructure;
@@ -45,7 +50,7 @@ public class ServiceJourneyFranceProducer {
 
         ServiceJourney_VersionStructure serviceJourney;
 
-        if (vehicleJourney.getJourneyFrequencies().size() > 0) {
+        if (!vehicleJourney.getJourneyFrequencies().isEmpty()) {
             serviceJourney = netexFactory.createTemplateServiceJourney();
             TemplateServiceJourney templateServiceJourney = (TemplateServiceJourney) serviceJourney;
             templateServiceJourney.setTemplateVehicleJourneyType(TemplateVehicleJourneyTypeEnumeration.HEADWAY);
@@ -54,7 +59,7 @@ public class ServiceJourneyFranceProducer {
             serviceJourney = netexFactory.createServiceJourney();
         }
 
-        NetexProducerUtils.populateIdAndVersionIDFM(vehicleJourney, serviceJourney);
+        NetexProducerUtils.populateIdAndVersion(vehicleJourney, serviceJourney);
 
         serviceJourney.setName(ConversionUtil.getMultiLingualString(vehicleJourney.getPublishedJourneyName()));
 
@@ -66,7 +71,7 @@ public class ServiceJourneyFranceProducer {
         NoticeFranceProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, serviceJourney, vehicleJourney.getFootnotes());
 
 
-        if (vehicleJourney.getTimetables().size() > 0) {
+        if (!vehicleJourney.getTimetables().isEmpty()) {
             DayTypeRefs_RelStructure dayTypeStruct = netexFactory.createDayTypeRefs_RelStructure();
             serviceJourney.setDayTypes(dayTypeStruct);
 
@@ -89,9 +94,7 @@ public class ServiceJourneyFranceProducer {
 
             TimetabledPassingTimes_RelStructure passingTimesStruct = netexFactory.createTimetabledPassingTimes_RelStructure();
 
-            for (int i = 0; i < vehicleJourneyAtStops.size(); i++) {
-                VehicleJourneyAtStop vehicleJourneyAtStop = vehicleJourneyAtStops.get(i);
-
+            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
                 TimetabledPassingTime timetabledPassingTime = netexFactory.createTimetabledPassingTime();
                 timetabledPassingTime.setVersion("any");
 
@@ -120,7 +123,7 @@ public class ServiceJourneyFranceProducer {
         }
 
         ServiceFacilitySet serviceFacilitySet = new ServiceFacilitySet();
-        NetexProducerUtils.populateIdAndVersionIDFM(vehicleJourney, serviceFacilitySet);
+        NetexProducerUtils.populateIdAndVersion(vehicleJourney, serviceFacilitySet);
         serviceFacilitySet.setId(serviceFacilitySet.getId().replace("ServiceJourney", "ServiceFacilitySet"));
         serviceFacilitySet.setVersion("any");
         if (vehicleJourney.getBikesAllowed() != null && vehicleJourney.getBikesAllowed().equals(true)) {
@@ -138,14 +141,61 @@ public class ServiceJourneyFranceProducer {
         serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues()));
         serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));
 
+        getAccessibility(vehicleJourney, serviceJourney);
+
         return serviceJourney;
+    }
+
+    private static void getAccessibility(VehicleJourney vehicleJourney, ServiceJourney_VersionStructure serviceJourney) {
+        if(vehicleJourney.getAccessibilityAssessment() != null && vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
+            AccessibilityLimitation netexAccessibilityLimitation = netexFactory.createAccessibilityLimitation();
+            mobi.chouette.model.AccessibilityLimitation accessibilityLimitation = vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation();
+            NetexProducerUtils.populateIdAndVersion(accessibilityLimitation, netexAccessibilityLimitation);
+
+            AccessibilityAssessment netexAccessibilityAssessment = netexFactory.createAccessibilityAssessment();
+            mobi.chouette.model.AccessibilityAssessment accessibilityAssessment = vehicleJourney.getAccessibilityAssessment();
+            NetexProducerUtils.populateIdAndVersion(accessibilityAssessment, netexAccessibilityAssessment);
+
+            if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess() != null){
+                if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess().equals(LimitationStatusEnum.TRUE)){
+                    netexAccessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.TRUE);
+                }
+                else if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess().equals(LimitationStatusEnum.FALSE)){
+                    netexAccessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.FALSE);
+                }
+                else if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess().equals(LimitationStatusEnum.PARTIAL)){
+                    netexAccessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
+                }
+                else {
+                    netexAccessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.UNKNOWN);
+                }
+            }
+
+            if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess() != null){
+                if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)){
+                    netexAccessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+                }
+                else if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.FALSE)){
+                    netexAccessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
+                }
+                else if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.PARTIAL)){
+                    netexAccessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
+                }
+                else {
+                    netexAccessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
+                }
+            }
+
+            AccessibilityLimitations_RelStructure accessibilityLimitationsRelStructure = new AccessibilityLimitations_RelStructure();
+            accessibilityLimitationsRelStructure.setAccessibilityLimitation(netexAccessibilityLimitation);
+            netexAccessibilityAssessment.setLimitations(accessibilityLimitationsRelStructure);
+
+            serviceJourney.setAccessibilityAssessment(netexAccessibilityAssessment);
+        }
     }
 
 
     private void buildHeadWayJourneys(ExportableNetexData exportableNetexData, TemplateServiceJourney templateServiceJourney, VehicleJourney vehicleJourney) {
-
-        int headwayNb = 0;
-
         FrequencyGroups_RelStructure freqGroup = netexFactory.createFrequencyGroups_RelStructure();
 
         for (JourneyFrequency journeyFrequency : vehicleJourney.getJourneyFrequencies()) {

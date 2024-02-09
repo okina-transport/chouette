@@ -825,13 +825,13 @@ CREATE TABLE lines (
     transport_submode_name character varying(255),
     registration_number character varying(255),
     comment character varying(255),
-    mobility_restricted_suitability boolean,
     int_user_needs integer,
     flexible_service boolean,
     url character varying(255),
     color character varying(6),
     text_color character varying(6),
-    stable_id character varying(255)
+    stable_id character varying(255),
+    accessibility_assessment_id bigint
 );
 
 
@@ -1471,9 +1471,9 @@ CREATE TABLE vehicle_journeys (
     facility character varying(255),
     vehicle_type_identifier character varying(255),
     number bigint,
-    mobility_restricted_suitability boolean,
     flexible_service boolean,
-    journey_category integer DEFAULT 0 NOT NULL
+    journey_category integer DEFAULT 0 NOT NULL,
+    accessibility_assessment_id bigint
 );
 
 

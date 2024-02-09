@@ -6,6 +6,7 @@ import mobi.chouette.model.Footnote;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.VehicleJourney;
 
+import mobi.chouette.model.type.LimitationStatusEnum;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -80,13 +81,12 @@ public class VehicleJourneyProducerTests
    public void verifyBuildMobilityComment() throws ChouetteException
    {
       VehicleJourney vj = new VehicleJourney();
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
-
+      vj.getAccessibilityAssessment().setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
       String xmlComment = producer.buildComment(vj,true);
       Reporter.log("comment = "+xmlComment);
       Assert.assertEquals(xmlComment,"{\"mobility_restriction\":true}","comment should be correctly built");
 
-      vj.setMobilityRestrictedSuitability(Boolean.FALSE);
+      vj.getAccessibilityAssessment().setMobilityImpairedAccess(LimitationStatusEnum.FALSE);
 
       xmlComment = producer.buildComment(vj,true);
       Reporter.log("comment = "+xmlComment);
@@ -114,7 +114,7 @@ public class VehicleJourneyProducerTests
       VehicleJourney vj = new VehicleJourney();
       vj.getFootnotes().add(getLine().getFootnotes().get(0));
       vj.getFootnotes().add(getLine().getFootnotes().get(2));
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
+      vj.getAccessibilityAssessment().setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
       vj.setFlexibleService(Boolean.TRUE);
       vj.setComment("dummy comment");
       String xmlComment = producer.buildComment(vj,true);
@@ -134,7 +134,7 @@ public class VehicleJourneyProducerTests
       VehicleJourney vj = new VehicleJourney();
       vj.getFootnotes().add(getLine().getFootnotes().get(0));
       vj.getFootnotes().add(getLine().getFootnotes().get(2));
-      vj.setMobilityRestrictedSuitability(Boolean.TRUE);
+      vj.getAccessibilityAssessment().setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
       vj.setFlexibleService(Boolean.TRUE);
       vj.setComment("dummy comment");
 

@@ -35,7 +35,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
     public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();
 
-        NetexProducerUtils.populateIdAndVersionIDFM(journeyPattern, netexServiceJourneyPattern);
+        NetexProducerUtils.populateIdAndVersion(journeyPattern, netexServiceJourneyPattern);
 
         MultilingualString serviceJourneyPatternName = new MultilingualString();
         serviceJourneyPatternName.setValue(journeyPattern.getName());
@@ -73,7 +73,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
         for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
             StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
-            NetexProducerUtils.populateIdAndVersionIDFM(stopPoint, stopPointInJourneyPattern);
+            NetexProducerUtils.populateIdAndVersion(stopPoint, stopPointInJourneyPattern);
 
             stopPointInJourneyPattern.setOrder(BigInteger.valueOf(stopPoint.getPosition() + 1));
 

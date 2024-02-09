@@ -17,6 +17,8 @@ import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.*;
+import mobi.chouette.model.util.ObjectIdTypes;
+import org.joda.time.LocalDateTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
@@ -48,6 +50,7 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
     @Override
     public boolean execute(Context context) throws Exception {
+        deleteUnusedPMR();
         lineDAO.findAll().forEach(line -> {
             List<VehicleJourney> vehicleJourneyList = line.getRoutes().stream()
                     .map((Route::getJourneyPatterns))
@@ -68,48 +71,58 @@ public class UpdateLineInfosCommand implements Command, Constant {
         lineDAO.flush(); // to prevent SQL error outside method
         vehicleJourneyDAO.flush();
 
-         return SUCCESS;
+        return SUCCESS;
+    }
+
+    private void deleteUnusedPMR() {
+        accessibilityAssessmentDAO.deleteUnusedAccessibilityAssessments();
+        accessibilityLimitationDAO.deleteUnusedAccessibilityLimitations();
     }
 
     private void managePMR(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {
-        // PMR
-        if (lineToUpdate.getAccessibilityAssessment() != null &&
-                lineToUpdate.getAccessibilityAssessment().getLimitations() != null &&
-                lineToUpdate.getAccessibilityAssessment().getLimitations().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)) {
+        AccessibilityAssessment accessibilityAssessment;
+        AccessibilityLimitation accessibilityLimitation;
 
-            vehicleJourneyList.forEach(vehicleJourney -> {
-                vehicleJourney.setMobilityRestrictedSuitability(true);
-                vehicleJourneyDAO.update(vehicleJourney);
-
-            });
+        if (lineToUpdate.getAccessibilityAssessment() == null) {
+            accessibilityAssessment = new AccessibilityAssessment();
+            accessibilityAssessment.setObjectId(lineToUpdate.getObjectId().split(":")[0] + ":" + ObjectIdTypes.ACCESSIBILITYASSESSMENT_KEY + ":" + "line_" + lineToUpdate.getObjectId().split(":")[2]);
+            accessibilityAssessment.setObjectVersion(1);
+            accessibilityAssessment.setCreationTime(LocalDateTime.now());
+            accessibilityAssessment.setLine(lineToUpdate);
         } else {
-            AccessibilityAssessment accessibilityAssessment;
-            AccessibilityLimitation accessibilityLimitation;
-
-            if (lineToUpdate.getAccessibilityAssessment() == null) {
-                accessibilityAssessment = new AccessibilityAssessment();
-                accessibilityAssessment.setLine(lineToUpdate);
-            } else {
-                accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
-            }
-
-            accessibilityLimitation = accessibilityAssessment.getLimitations() == null ? new AccessibilityLimitation() : accessibilityAssessment.getLimitations();
-
-            int nbVehicleJourneyWithPMR = (int) vehicleJourneyList.stream()
-                    .filter(vehicleJourney -> vehicleJourney.getMobilityRestrictedSuitability() != null && vehicleJourney.getMobilityRestrictedSuitability()).count();
-            if (nbVehicleJourneyWithPMR == 0) {
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
-            } else if (nbVehicleJourneyWithPMR == nbVehicleJourney) {
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
-            } else {
-                accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
-            }
-
-            accessibilityLimitationDAO.create(accessibilityLimitation);
-            accessibilityAssessment.setLimitations(accessibilityLimitation);
-            accessibilityAssessmentDAO.create(accessibilityAssessment);
-            lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
+            accessibilityAssessment = lineToUpdate.getAccessibilityAssessment();
         }
+
+        if (accessibilityAssessment.getAccessibilityLimitation() == null) {
+            accessibilityLimitation = new AccessibilityLimitation();
+            accessibilityLimitation.setObjectId(lineToUpdate.getObjectId().split(":")[0] + ":" + ObjectIdTypes.ACCESSIBILITYLIMITATION_KEY + ":" + "line_" + lineToUpdate.getObjectId().split(":")[2]);
+            accessibilityLimitation.setObjectVersion(1);
+            accessibilityLimitation.setCreationTime(LocalDateTime.now());
+        } else {
+            accessibilityLimitation = accessibilityAssessment.getAccessibilityLimitation();
+        }
+
+
+        int nbVehicleJourneyWithPMR = (int) vehicleJourneyList.stream()
+                .filter(vehicleJourney -> vehicleJourney.getAccessibilityAssessment() != null
+                        && vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null
+                        && vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess().equals(LimitationStatusEnumeration.TRUE)).count();
+        if (nbVehicleJourneyWithPMR == 0) {
+            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.FALSE);
+            accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
+        } else if (nbVehicleJourneyWithPMR == nbVehicleJourney) {
+            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
+            accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+        } else {
+            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.PARTIAL);
+            accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.PARTIAL);
+        }
+
+        accessibilityLimitationDAO.create(accessibilityLimitation);
+        accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+        accessibilityAssessmentDAO.create(accessibilityAssessment);
+        lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
+
     }
 
     private void manageBike(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {
@@ -147,7 +160,7 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
     private boolean isVJASTAD(VehicleJourneyAtStop vehicleJourneyAtStop) {
 
-        if (vehicleJourneyAtStop.getBoardingAlightingPossibility() == null){
+        if (vehicleJourneyAtStop.getBoardingAlightingPossibility() == null) {
             return false;
         }
 

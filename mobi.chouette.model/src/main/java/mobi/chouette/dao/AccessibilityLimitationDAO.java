@@ -6,5 +6,5 @@ import mobi.chouette.model.AccessibilityLimitation;
 
 public interface AccessibilityLimitationDAO extends GenericDAO<AccessibilityLimitation> {
 
-
+    void deleteUnusedAccessibilityLimitations();
 }

@@ -118,8 +118,8 @@ public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJ
 			if (vj.getFlexibleService() != null) {
 				jsonComment.put(FLEXIBLE_SERVICE, vj.getFlexibleService());
 			}
-			if (vj.getMobilityRestrictedSuitability() != null) {
-				jsonComment.put(MOBILITY_RESTRICTION, vj.getMobilityRestrictedSuitability());
+			if (vj.getAccessibilityAssessment() != null && vj.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+				jsonComment.put(MOBILITY_RESTRICTION, vj.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess());
 			}
 
 			if (jsonComment.length() == 0) {

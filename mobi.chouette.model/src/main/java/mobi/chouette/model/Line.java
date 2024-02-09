@@ -225,24 +225,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	private TransportSubModeNameEnum transportSubModeName = null;
 
 	/**
-	 * mobility restriction indicator (such as wheel chairs) <br/>
-	 * 
-	 * <ul>
-	 * <li>null if information n is unknown for this line</li>
-	 * <li>true if wheel chairs can use this line</li>
-	 * <li>false if wheel chairs can't use this line</li>
-	 * </ul>
-	 * 
-	 * @param mobilityRestrictedSuitable
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "mobility_restricted_suitability")
-	private Boolean mobilityRestrictedSuitable;
-
-	/**
 	 * coded user needs as binary map<br/>
 	 * 
 	 * use following methods for easier access :
@@ -535,7 +517,7 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Getter
 	@Setter
-	@OneToOne
+	@OneToOne(cascade = { CascadeType.ALL})
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
 	private AccessibilityAssessment accessibilityAssessment;
 
@@ -551,29 +533,5 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 		if(!StringUtils.equals(this.getColor(),              l.getColor()))              return false;
 		if(!StringUtils.equals(this.getTextColor(),          l.getTextColor()))          return false;
 		return true;
-	}
-
-	public String getVariations(Object o){
-		String variations = null;
-		if (this == o) return null;
-		if (o == null || getClass() != o.getClass()) return null;
-		Line l = (Line) o;
-		if(!StringUtils.equals(this.getName(),               l.getName()))               variations =  addVariation(variations, "Changement de nom("                    + this.getName()               + " => " + l.getName());
-		if(!StringUtils.equals(this.getNumber(),             l.getNumber()))             variations =  addVariation(variations, "Changement de numéro("                 + this.getNumber()             + " => " + l.getNumber());
-		if(!StringUtils.equals(this.getPublishedName(),      l.getPublishedName()))      variations =  addVariation(variations, "Changement de nom public("             + this.getPublishedName()      + " => " + l.getPublishedName());
-		if(!StringUtils.equals(this.getRegistrationNumber(), l.getRegistrationNumber())) variations =  addVariation(variations, "Changement de numéro de registration(" + this.getRegistrationNumber() + " => " + l.getRegistrationNumber());
-		if(!StringUtils.equals(this.getColor(),              l.getColor()))              variations =  addVariation(variations, "Changement de couleur("                + this.getColor()              + " => " + l.getColor());
-		if(!StringUtils.equals(this.getTextColor(),          l.getTextColor()))          variations =  addVariation(variations, "Changement de couleur de texte("       + this.getTextColor()          + " => " + l.getTextColor());
-		return variations;
-	}
-
-	private String addVariation(String variations, String newVariation){
-		if(StringUtils.isEmpty(newVariation)) return variations;
-		if(StringUtils.isEmpty(variations)){
-			variations = newVariation;
-		} else {
-			variations = variations + " - " + newVariation;
-		}
-		return variations;
 	}
 }

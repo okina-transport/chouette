@@ -70,7 +70,7 @@ public abstract class AbstractConverter implements Constant{
 	 */
 
 	private static String replaceColons(String inputString){
- 		return inputString.replace(":",COLON_REPLACEMENT_CODE);
+ 		return inputString.replace(":", COLON_REPLACEMENT_CODE);
 	}
 
 	public static String toString(URL url) {

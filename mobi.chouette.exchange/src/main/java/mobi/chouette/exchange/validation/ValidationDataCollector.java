@@ -8,6 +8,8 @@ import java.util.Set;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.JourneyPattern;
@@ -194,7 +196,7 @@ public class ValidationDataCollector {
 		target.setComment(source.getComment());
 		target.setFlexibleService(source.getFlexibleService());
 		target.setIntUserNeeds(source.getIntUserNeeds());
-		target.setMobilityRestrictedSuitable(source.getMobilityRestrictedSuitable());
+		target.setAccessibilityAssessment(cloneAccessibilityAssessment(source.getAccessibilityAssessment()));
 		target.setPublishedName(source.getPublishedName());
 		target.setRegistrationNumber(source.getRegistrationNumber());
 		target.setTextColor(source.getTextColor());
@@ -215,6 +217,32 @@ public class ValidationDataCollector {
 		target.setObjectId(source.getObjectId());
 		target.setObjectVersion(source.getObjectVersion());
 		target.setName(source.getName());
+		return target;
+	}
+
+	private AccessibilityAssessment cloneAccessibilityAssessment(AccessibilityAssessment source) {
+		if (source == null)
+			return null;
+		AccessibilityAssessment target = new AccessibilityAssessment();
+		target.setId(source.getId());
+		target.setMobilityImpairedAccess(source.getMobilityImpairedAccess());
+		target.setAccessibilityLimitation(cloneAccessibilityLimitation(source.getAccessibilityLimitation()));
+
+		return target;
+	}
+
+	private AccessibilityLimitation cloneAccessibilityLimitation(AccessibilityLimitation source) {
+		if (source == null)
+			return null;
+		AccessibilityLimitation target = new AccessibilityLimitation();
+		target.setId(source.getId());
+		target.setWheelchairAccess(source.getWheelchairAccess());
+		target.setStepFreeAccess(source.getStepFreeAccess());
+		target.setEscalatorFreeAccess(source.getEscalatorFreeAccess());
+		target.setLiftFreeAccess(source.getLiftFreeAccess());
+		target.setAudibleSignalsAvailable(source.getAudibleSignalsAvailable());
+		target.setVisualSignsAvailable(source.getVisualSignsAvailable());
+
 		return target;
 	}
 

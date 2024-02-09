@@ -25,6 +25,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
@@ -223,16 +224,18 @@ public class NetexFranceCommonFileTest {
 
         AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
         accessibilityAssessment.setId(3l);
-        accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
+        accessibilityAssessment.setObjectId("TEST:AccessibilityAssessement:line_l1");
+        accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.PARTIAL);
         AccessibilityLimitation limitations = new AccessibilityLimitation();
         limitations.setStepFreeAccess(LimitationStatusEnumeration.FALSE);
         limitations.setLiftFreeAccess(LimitationStatusEnumeration.TRUE);
         limitations.setEscalatorFreeAccess(LimitationStatusEnumeration.PARTIAL);
         limitations.setAudibleSignalsAvailable(LimitationStatusEnumeration.UNKNOWN);
         limitations.setId(4l);
+        limitations.setObjectId("TEST:AccessibilityLimitation:line_l1");
 
 
-        accessibilityAssessment.setLimitations(limitations);
+        accessibilityAssessment.setAccessibilityLimitation(limitations);
 
 
         line.setAccessibilityAssessment(accessibilityAssessment);

@@ -31,7 +31,7 @@ public class CalendarFranceProducer extends NetexProducer {
             netexDaytypeId += ":LOC";
             if (!exportableNetexData.getSharedDayTypes().containsKey(netexDaytypeId)) {
                 DayType dayType = netexFactory.createDayType();
-                NetexProducerUtils.populateIdAndVersionIDFM(timetable, dayType);
+                NetexProducerUtils.populateIdAndVersion(timetable, dayType);
 
                 List<DayOfWeekEnumeration> dayOfWeekEnumerations = NetexProducerUtils.toDayOfWeekEnumerationIDFM(timetable.getDayTypes());
                 if (!dayOfWeekEnumerations.isEmpty()) {

@@ -226,24 +226,6 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * mobility restriction indicator (such as wheel chairs) <br/>
-	 * 
-	 * <ul>
-	 * <li>null if unknown
-	 * <li>true if wheel chairs can use this line</li>
-	 * <li>false if wheel chairs can't use this line</li>
-	 * </ul>
-	 * 
-	 * @param mobilityRestrictedSuitability
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "mobility_restricted_suitability")
-	private Boolean mobilityRestrictedSuitability;
-
-	/**
 	 * Indicates whether bikes are allowed. Valid options are:
 	 *
 	 * empty - No bike information for the trip.
@@ -466,5 +448,11 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@DefaultValue("false")
 	private Boolean supprime = false;
+
+	@Getter
+	@Setter
+	@OneToOne(cascade = { CascadeType.ALL})
+	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
+	private AccessibilityAssessment accessibilityAssessment;
 
 }

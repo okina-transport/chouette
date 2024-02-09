@@ -29,7 +29,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccessibilityLimitation implements Serializable {
+public class AccessibilityLimitation extends NeptuneIdentifiedObject {
 
 	@Id
 	@SequenceGenerator(name = "accessibility_limitation_id_seq", sequenceName = "accessibility_limitation_id_seq", allocationSize = 1)

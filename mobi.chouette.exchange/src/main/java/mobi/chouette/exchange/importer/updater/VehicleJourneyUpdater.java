@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless(name = VehicleJourneyUpdater.BEAN_NAME)
 public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
@@ -97,6 +96,12 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB(beanName = InterchangeUpdater.BEAN_NAME)
 	private Updater<Interchange> interchangeUpdater;
 
+	@EJB(beanName = AccessibilityAssessmentUpdater.BEAN_NAME)
+	private Updater<AccessibilityAssessment> accessibilityAssessmentUpdater;
+
+	@EJB
+	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+
 
 	@Override
 	public void update(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
@@ -136,7 +141,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			oldValue.setFacility(newValue.getFacility());
 			oldValue.setVehicleTypeIdentifier(newValue.getVehicleTypeIdentifier());
 			oldValue.setNumber(newValue.getNumber());
-			oldValue.setMobilityRestrictedSuitability(newValue.getMobilityRestrictedSuitability());
 			oldValue.setBikesAllowed(newValue.getBikesAllowed());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setJourneyCategory(newValue.getJourneyCategory());
@@ -187,10 +191,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			}
 			if (newValue.getNumber() != null && !newValue.getNumber().equals(oldValue.getNumber())) {
 				oldValue.setNumber(newValue.getNumber());
-			}
-			if (newValue.getMobilityRestrictedSuitability() != null
-					&& !newValue.getMobilityRestrictedSuitability().equals(oldValue.getMobilityRestrictedSuitability()) && !dataTripIdfm) {
-				oldValue.setMobilityRestrictedSuitability(newValue.getMobilityRestrictedSuitability());
 			}
 			if (newValue.getBikesAllowed() != null
 					&& !newValue.getBikesAllowed().equals(oldValue.getBikesAllowed()) && !dataTripIdfm) {
@@ -379,9 +379,31 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			}
 		}
 
-		updateFootnotes(context,oldValue,newValue,cache);
+		updateFootnotes(context, oldValue, newValue, cache);
 		updateInterchanges(context, oldValue, newValue);
+		updateAccessibilityAssessment(context, cache, oldValue, newValue);
 //		monitor.stop();
+	}
+
+	private void updateAccessibilityAssessment(Context context, Referential cache, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
+		// Accessibility assessment
+		if (newValue.getAccessibilityAssessment() == null) {
+			oldValue.setAccessibilityAssessment(null);
+		} else {
+			String objectId = newValue.getAccessibilityAssessment().getObjectId();
+			AccessibilityAssessment accessibilityAssessment = cache.getAccessibilityAssessments().get(objectId);
+			if (accessibilityAssessment == null) {
+				accessibilityAssessment = accessibilityAssessmentDAO.findByObjectId(objectId);
+				if (accessibilityAssessment != null) {
+					cache.getAccessibilityAssessments().put(objectId, accessibilityAssessment);
+				}
+			}
+			if (accessibilityAssessment == null) {
+				accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(cache, objectId);
+			}
+			oldValue.setAccessibilityAssessment(accessibilityAssessment);
+			accessibilityAssessmentUpdater.update(context, oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment());
+		}
 	}
 
 	private String createJFObjectId(VehicleJourney oldValue) {

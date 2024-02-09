@@ -68,10 +68,21 @@ public class LineProducer extends AbstractJaxbNeptuneProducer<ChouettePTNetworkT
 					.getUserNeeds()));
 			hasExtensions = true;
 		}
-		if (line.getMobilityRestrictedSuitable() != null && line.getMobilityRestrictedSuitable()) {
-			jaxbLineExtension.setMobilityRestrictedSuitability(line.getMobilityRestrictedSuitable());
-			hasExtensions = true;
+
+		if (line.getAccessibilityAssessment() != null && line.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+			switch (line.getAccessibilityAssessment().getAccessibilityLimitation().getWheelchairAccess()) {
+				case TRUE:
+					jaxbLineExtension.setMobilityRestrictedSuitability(true);
+					hasExtensions = true;
+					break;
+				case FALSE:
+					jaxbLineExtension.setMobilityRestrictedSuitability(false);
+					hasExtensions = true;
+					break;
+			}
 		}
+
+
 		// jaxbLineExtension.setStableId(stableId); ???
 		if (hasExtensions)
 			jaxbLine.setLineExtension(jaxbLineExtension);

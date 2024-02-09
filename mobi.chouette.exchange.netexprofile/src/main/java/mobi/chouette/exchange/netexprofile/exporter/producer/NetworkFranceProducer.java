@@ -20,7 +20,7 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
     public org.rutebanken.netex.model.Network produce(Context context, mobi.chouette.model.Network neptuneNetwork) {
         org.rutebanken.netex.model.Network netexNetwork = netexFactory.createNetwork();
 
-        NetexProducerUtils.populateIdAndVersionIDFM(neptuneNetwork, netexNetwork);
+        NetexProducerUtils.populateIdAndVersion(neptuneNetwork, netexNetwork);
 
         if (isSet(neptuneNetwork.getVersionDate())) {
             LocalDateTime changedDateTime = TimeUtil.toLocalDateFromJoda(neptuneNetwork.getVersionDate()).atStartOfDay();

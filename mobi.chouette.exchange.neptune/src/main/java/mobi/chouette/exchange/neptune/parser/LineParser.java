@@ -1,6 +1,9 @@
 package mobi.chouette.exchange.neptune.parser;
 
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import org.joda.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,7 @@ import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -106,10 +110,35 @@ public class LineParser implements Parser, Constant, JsonExtension {
 			} else if (xpp.getName().equals("comment")) {
 				line.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("LineExtension")) {
-
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
 					if (xpp.getName().equals("mobilityRestrictedSuitability")) {
-						line.setMobilityRestrictedSuitable(ParserUtils.getBoolean(xpp.nextText()));
+						String objectIdAccessibilityAssessment = AbstractConverter.composeObjectId(configuration,
+								AccessibilityAssessment.ACCESSIBILITYASSESSMENT_KEY, "line_" + objectId.split(":")[2]);
+						AccessibilityAssessment accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(referential, objectIdAccessibilityAssessment);
+
+						String objectIdAccessibilityLimitation = AbstractConverter.composeObjectId(configuration,
+								AccessibilityLimitation.ACCESSIBILITYLIMITATION_KEY, "line_" + objectId.split(":")[2]);
+						AccessibilityLimitation accessibilityLimitation = ObjectFactory.getAccessibilityLimitation(referential, objectIdAccessibilityLimitation);
+
+						String mobilityRestrictedSuitability = xpp.nextText();
+
+
+						if (ParserUtils.getBoolean(mobilityRestrictedSuitability) == null) {
+							accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.UNKNOWN);
+							accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
+							accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+						}
+						else if (ParserUtils.getBoolean(mobilityRestrictedSuitability)){
+							accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
+							accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
+							accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+						}
+						else {
+							accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.FALSE);
+							accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
+							accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
+						}
+						line.setAccessibilityAssessment(accessibilityAssessment);
 					} else if (xpp.getName().equals("accessibilitySuitabilityDetails")) {
 						List<UserNeedEnum> userNeeds = new ArrayList<UserNeedEnum>();
 						while (xpp.nextTag() == XmlPullParser.START_TAG) {
