@@ -362,7 +362,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
     private List<Object> buildStopPlacesWithDifferentTransportModeList() {
         List<Object> resultList = new ArrayList<>();
-        canLaunchImport = false;
         String[] stopPlacesInErrorArray = stopPlaceWithMultipleTransportModes.toArray(new String[stopPlaceWithMultipleTransportModes.size()]);
 
         for (int i = 0; i < stopPlacesInErrorArray.length; i++) {
