@@ -25,14 +25,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -122,7 +115,10 @@ public class RouteMergerCommand implements Command {
                     .filter(route -> route != currentRouteTryingToMerge)
                     .collect(Collectors.toList());
 
-            for (Route otherRoute : otherRoutes) {
+
+            List<Route> orderedOtherRoutes = generateOrderedListBySimilarity(currentRouteTryingToMerge, otherRoutes);
+
+            for (Route otherRoute : orderedOtherRoutes) {
                 // looping on each other route and trying to merge the currentRoute with one of any other route
 
                 if (checkAndMergeIfPossible(currentRouteTryingToMerge, otherRoute)){
@@ -135,6 +131,68 @@ public class RouteMergerCommand implements Command {
 
         // no merge has been done for this line/direction
         return false;
+
+    }
+
+    /**
+     * Compares a route to a list of otherRoutes and sort otherRoutes.
+     *      Sort is done by the number of matching points in the base route.
+     *      otherRoute having the maximum number of points in baseRoute will be first
+     *      otherRoute having the minimum number of points in baseRoute will be least
+     * @param baseRoute
+     *      the route that will be compared to otherRoutes
+     * @param otherRoutes
+     *      the list of routes to sort
+     * @return
+     *      an ordered list of routes
+     */
+    private List<Route> generateOrderedListBySimilarity(Route baseRoute, List<Route> otherRoutes){
+        List<Route> orderedRoutes = new ArrayList<>();
+        Map<Route, Long> similarityMap = new HashMap<>();
+        for (Route otherRoute : otherRoutes) {
+            similarityMap.put(otherRoute, countSimilarity(baseRoute, otherRoute));
+        }
+
+        List<Map.Entry<Route, Long>> list = new ArrayList<>(similarityMap.entrySet());
+
+        list.sort(new Comparator<Map.Entry<Route, Long>>() {
+            @Override
+            public int compare(Map.Entry<Route, Long> o1, Map.Entry<Route, Long> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+
+        for (Map.Entry<Route, Long> entry : list) {
+            orderedRoutes.add(entry.getKey());
+        }
+
+        return orderedRoutes;
+    }
+
+
+    /**
+     * Count the number of points in otherRoute that exist in baseRoute
+     * @param baseRoute
+     *      the base route
+     * @param otherRoute
+     *      the route for which we need to count the points
+     * @return
+     *      the number of points existing in baseRoute
+     */
+    private Long countSimilarity(Route baseRoute, Route otherRoute) {
+
+        List<String> baseRoutePoints = baseRoute.getRoutePoints().stream()
+                                            .map(routePoint -> routePoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
+                                            .collect(Collectors.toList());
+
+        List<String> otherRoutePoints = otherRoute.getRoutePoints().stream()
+                                            .map(routePoint -> routePoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId())
+                                             .collect(Collectors.toList());
+
+
+        return otherRoutePoints.stream()
+                .filter(baseRoutePoints::contains)
+                .count();
 
     }
 
@@ -249,7 +307,7 @@ public class RouteMergerCommand implements Command {
     private String generateRoutePathLog(Route route){
         StringBuilder tmpPath = new StringBuilder();
         for (StopPoint stopPoint : route.getStopPoints()) {
-            tmpPath.append(stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName() + ",");
+            tmpPath.append(stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getObjectId().split(":")[2] + ",");
         }
         String completePath = tmpPath.toString();
         if (completePath.endsWith(",")){
@@ -409,6 +467,11 @@ public class RouteMergerCommand implements Command {
 
             List<String> successors = getSuccessors(fromRoute, stopPoint.getPosition());
             if (!checkSuccessors(destinationRoute, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(),successors)){
+                log.warn("incompatibles routes. from:" + fromRoute.getId() + " destRoute : " + destinationRoute.getId());
+                log.warn("stopPoint:" +  stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId());
+                log.warn("fromRoute:" + generateRoutePathLog(fromRoute));
+                log.warn("destinationRoute:" + generateRoutePathLog(destinationRoute));
+                log.warn("--------------------------------------------------------------");
                 return false;
             }
         }
