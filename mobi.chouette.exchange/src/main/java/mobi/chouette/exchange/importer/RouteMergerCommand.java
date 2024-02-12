@@ -107,7 +107,10 @@ public class RouteMergerCommand implements Command {
     private boolean mergeLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum) {
 
         List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
-        for (Route currentRouteTryingToMerge : routes) {
+        List<Route> orderedRoutes = sortByNumberOfStops(routes);
+
+
+        for (Route currentRouteTryingToMerge : orderedRoutes) {
 
 
             //collecting all routes different than the current one
@@ -132,6 +135,16 @@ public class RouteMergerCommand implements Command {
         // no merge has been done for this line/direction
         return false;
 
+    }
+
+    private List<Route> sortByNumberOfStops(List<Route> routes) {
+           routes.sort(new Comparator<Route>() {
+            @Override
+            public int compare(Route o1, Route o2) {
+                return Integer.compare(o2.getStopPoints().size(), o1.getStopPoints().size());
+            }
+        });
+        return routes;
     }
 
     /**
