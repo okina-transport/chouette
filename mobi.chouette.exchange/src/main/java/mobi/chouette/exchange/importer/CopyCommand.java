@@ -23,6 +23,8 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
+import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
@@ -37,6 +39,12 @@ public class CopyCommand implements Command {
 
 	@EJB 
 	private VehicleJourneyDAO vehicleJourneyDAO;
+
+	@EJB
+	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+
+	@EJB
+	private AccessibilityLimitationDAO accessibilityLimitationDAO;
 	
 	@EJB 
 	private ContenerChecker checker;
@@ -83,7 +91,9 @@ public class CopyCommand implements Command {
 					}
 				}
 				CommandCallable callable = new CommandCallable();
-				callable.buffer = (String) context.remove(BUFFER);
+				callable.bufferVjas = (String) context.remove(BUFFER_VJAS);
+				callable.bufferAa = (String) context.remove(BUFFER_AA);
+				callable.bufferAl = (String) context.remove(BUFFER_AL);
 				callable.schema = ContextHolder.getContext();
 				Future<Void> future = executor.submit(callable);
 				futures.add(future);
@@ -99,18 +109,22 @@ public class CopyCommand implements Command {
 	}
 
 	private class CommandCallable implements Callable<Void> {
-		private String buffer;
+		private String bufferVjas;
+		private String bufferAa;
+		private String bufferAl;
 		private String schema;
 
 		@Override
 		@TransactionAttribute(TransactionAttributeType.REQUIRED)
-		public Void call() throws Exception {
+		public Void call() {
 			Monitor monitor = MonitorFactory.start(COMMAND);
 			ContextHolder.setContext(schema);
-			vehicleJourneyDAO.copy(buffer);
+			vehicleJourneyDAO.copy(bufferVjas);
+			accessibilityLimitationDAO.copy(bufferAl);
+			accessibilityAssessmentDAO.copy(bufferAa);
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			ContextHolder.setContext(null);
-			log.info("VehicleJourney copy ended successfully");
+			log.info("VehicleJourney, accessibility assessment and accessibility limitation copy ended successfully");
 			return null;
 		}
 

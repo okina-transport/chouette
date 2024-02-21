@@ -63,9 +63,9 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 				}
 
 				Statement statement = connection.createStatement();
-				String sql = String.format(SQL, buffer.toString());
+				String sql = String.format(SQL, buffer);
 				int count = statement.executeUpdate(sql);
-				log.info("[DSU] delete " + count + " objects.");
+				log.info("Vjas deleted before copycommand : " + count + " objects.");
 			}
 		});
 	}
@@ -73,52 +73,47 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 	@Override
 	public void copy(final String data) {
 
+		log.info("Copy command vjas started");
+
 		Session session = em.unwrap(Session.class);
 
-		session.doWork(new Work() {
+		session.doWork(connection -> {
+            // Monitor monitor = MonitorFactory.start("COPY");
 
-			@Override
-			public void execute(Connection connection) throws SQLException {
-				// Monitor monitor = MonitorFactory.start("COPY");
+                linesToCopy = data.split("\n");
+                String currentBatchOfLines = null;
+                int nbOfLinesInBatch = 0;
 
-					linesToCopy = data.split("\n");
-					log.info("nb of lines to copy:" + linesToCopy.length);
-					String currentBatchOfLines = null;
-					int nbOfLinesInBatch = 0;
+                for (int i = 0 ; i < linesToCopy.length ; i++){
 
-					for (int i = 0 ; i < linesToCopy.length ; i++){
+                    if (!linesToCopy[i].isEmpty()) {
+                        if (currentBatchOfLines != null) {
+                            currentBatchOfLines = currentBatchOfLines + linesToCopy[i] + "\n";
+                        } else {
+                            currentBatchOfLines = linesToCopy[i] + "\n";
+                        }
+                        nbOfLinesInBatch++;
+                    }
 
-						if (!linesToCopy[i].isEmpty()) {
-							if (currentBatchOfLines != null) {
-								currentBatchOfLines = currentBatchOfLines + linesToCopy[i] + "\n";
-							} else {
-								currentBatchOfLines = linesToCopy[i] + "\n";
-							}
-							nbOfLinesInBatch++;
-						}
+                    if (nbOfLinesInBatch == MAX_NB_OF_LINES){
+						launchCopyVJAS(connection,currentBatchOfLines);
+                        currentBatchOfLines = null;
+                        nbOfLinesInBatch=0;
+                    }
+                }
 
-						if (nbOfLinesInBatch == MAX_NB_OF_LINES){
-							launchCopy(connection,currentBatchOfLines);
-							log.info("copy batch terminated. Current index:" + i);
-							currentBatchOfLines = null;
-							nbOfLinesInBatch=0;
-						}
-					}
+                if (currentBatchOfLines != null){
+					launchCopyVJAS(connection,currentBatchOfLines);
+                }
 
-					if (currentBatchOfLines != null){
-						launchCopy(connection,currentBatchOfLines);
-						log.info("last batch has been copied. Length:" + nbOfLinesInBatch);
-					}
-
-					log.info("copie VJAS terminée");
-				// log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-			}
-		});
+			log.info("Copy command vjas finished");
+            // log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+        });
 	}
 
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void launchCopy(Connection connection, String currentBatchOfLines) throws SQLException{
+	public void launchCopyVJAS(Connection connection, String currentBatchOfLines) throws SQLException{
 
 		try {
 			StringReader from = new StringReader(currentBatchOfLines);
@@ -132,15 +127,13 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 					+ "vehicle_journey_id, stop_point_id, "
 					+ "arrival_time, departure_time, "
 					+ "arrival_day_offset, departure_day_offset, boardingalightingpossibility)"
-					// + "arrival_time, departure_time, "
-					// + "elapse_duration, headway_frequency)"
 					+ " FROM STDIN WITH DELIMITER '|'";
 
 			manager.copyIn(copyStatement, from);
 
 
 		} catch (IOException e) {
-			log.error("Erreur pendant la copie des VJAS");
+			log.error("Error while copying VJAS");
 			log.error(e);
 		}
 	}
