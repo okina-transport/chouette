@@ -1,7 +1,6 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
 import mobi.chouette.common.HTMLTagValidator;
-import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import org.apache.commons.lang3.StringUtils;
@@ -64,12 +63,6 @@ public abstract class AbstractRouteById extends IndexImpl<GtfsRoute> implements 
             }
         }
 
-        // no column agency_id
-        // if (fields.get(FIELDS.agency_id.name()) == null) {
-        // getErrors().add(new GtfsException(_path, 1, FIELDS.agency_id.name(),
-        // GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, null));
-        // }
-
         // checks for ubiquitous header fields : 1-GTFS-Stop-2 error
         if (fields.get(RouteById.FIELDS.route_id.name()) == null
                 || (fields.get(RouteById.FIELDS.route_long_name.name()) == null && fields.get(RouteById.FIELDS.route_short_name.name()) == null)
@@ -91,6 +84,11 @@ public abstract class AbstractRouteById extends IndexImpl<GtfsRoute> implements 
                         new GtfsException(_path, 1, RouteById.FIELDS.route_type.name(),
                                 GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, null));
             }
+        }
+
+        if (fields.get(FIELDS.agency_id.name()) == null) {
+            getErrors().add(new GtfsException(_path, 1, RouteById.FIELDS.route_type.name(),
+                    GtfsException.ERROR.MISSING_ROUTE_AGENCY_ID, null, null));
         }
     }
 
@@ -317,6 +315,7 @@ public abstract class AbstractRouteById extends IndexImpl<GtfsRoute> implements 
         GtfsRoute copy_bean = new GtfsRoute(bean);
         // Verify the agency_id
         String agencyId = copy_bean.getAgencyId();
+
         if (agencyId == null || GtfsAgency.DEFAULT_ID.equals(agencyId)) {
             if (dao.getAgencyById().getLength() == 1) {
                 agencyId = dao.getAgencyById().iterator().next().getAgencyId();

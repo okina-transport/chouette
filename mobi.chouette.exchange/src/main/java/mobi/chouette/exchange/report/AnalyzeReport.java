@@ -99,6 +99,12 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "missingRouteLinks")
     private Map<String, Set<String>> missingRouteLinks = new HashMap<>();
 
+    @XmlElement(name = "missingRouteAgencyId")
+    private boolean missingRouteAgencyId = false;
+
+    @XmlElement(name = "missingAgencyId")
+    private boolean missingAgencyId = false;
+
     @XmlElement(name = "wrongRouteLinksUsedInMutipleFiles")
     private Map<String, Set<String>> wrongRouteLinksUsedInMutipleFiles = new HashMap<>();
 
@@ -282,6 +288,14 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!missingRouteLinks.isEmpty()){
             canLaunchImport = false;
             analyzeReportMap.put("missingRouteLinks", buildMissingRouteLinksList());
+        }
+
+        if (missingRouteAgencyId){
+            analyzeReportMap.put("missingRouteAgencyId", true);
+        }
+
+        if (missingAgencyId){
+            analyzeReportMap.put("missingAgencyId", true);
         }
 
         if (!wrongRouteLinksUsedInMutipleFiles.isEmpty()) {

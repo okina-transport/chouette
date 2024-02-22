@@ -129,6 +129,8 @@ public class GtfsValidationCommand implements Command, Constant {
 			if (e instanceof RuntimeException)
 				log.error(e, e);
 			throw e;
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
 		} finally {
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
