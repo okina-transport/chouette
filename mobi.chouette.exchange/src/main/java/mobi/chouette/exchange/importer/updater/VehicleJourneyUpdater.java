@@ -381,7 +381,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
 		updateFootnotes(context, oldValue, newValue, cache);
 		updateInterchanges(context, oldValue, newValue);
-		updateAccessibilityAssessment(context, cache, oldValue, newValue);
+//		updateAccessibilityAssessment(context, cache, oldValue, newValue);
 //		monitor.stop();
 	}
 

@@ -75,9 +75,7 @@ public interface Constant {
 	public static final char SEP = '|';
 	public static final String NULL = "\\N";
 	
-	public static final String BUFFER_VJAS = "buffer_vjas";
-	public static final String BUFFER_AA = "buffer_aa";
-	public static final String BUFFER_AL = "buffer_al";
+	public static final String BUFFER = "buffer";
 
 	public static final String CREATION_DATE = "CreationDate";
 

@@ -48,7 +48,7 @@ public class LineRegisterCommandTest implements Constant {
         
 		lineRegister = new LineRegisterCommand();
 		
-		lineRegister.writeVjas(buffer, neptuneObject, sp, vjas,false);
+		lineRegister.write(buffer, neptuneObject, sp, vjas,false);
 		
 		
 		Assert.assertEquals(buffer.toString(), "ObjectID|1|2000-02-01T00:00:00|creatorId|4321|1001|23:59:00|00:05:00|0|1|\\N\n", "Invalid data entry for buffer");

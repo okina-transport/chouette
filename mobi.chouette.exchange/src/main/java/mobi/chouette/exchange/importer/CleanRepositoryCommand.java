@@ -10,8 +10,6 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessLinkDAO;
 import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.BookingArrangementDAO;
 import mobi.chouette.dao.BrandingDAO;
 import mobi.chouette.dao.CategoriesForLinesDAO;
@@ -138,12 +136,6 @@ public class CleanRepositoryCommand implements Command {
 	@EJB
 	FeedInfoDAO feedInfoDAO;
 
-	@EJB
-	AccessibilityLimitationDAO accessibilityLimitationDAO;
-
-	@EJB
-	AccessibilityAssessmentDAO accessibilityAssessmentDAO;
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean execute(Context context) throws Exception {
@@ -174,8 +166,6 @@ public class CleanRepositoryCommand implements Command {
 			accessLinkDao.truncate();
 			accessPointDAO.truncate();
 			connectionLinkDAO.truncate();
-			accessibilityLimitationDAO.truncate();
-			accessibilityAssessmentDAO.truncate();
 
 			// si pas import et ( transfert ou clean admin )
 			if(context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {

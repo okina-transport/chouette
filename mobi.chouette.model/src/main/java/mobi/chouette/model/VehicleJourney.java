@@ -451,8 +451,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@OneToOne(cascade = {CascadeType.ALL})
-	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id", updatable = false)
+	@OneToOne(cascade = { CascadeType.ALL})
+	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
 	private AccessibilityAssessment accessibilityAssessment;
 
 }

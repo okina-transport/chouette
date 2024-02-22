@@ -10,8 +10,6 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
@@ -28,8 +26,6 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -58,7 +54,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -80,12 +75,6 @@ public class LineRegisterCommand implements Command {
 
 	@EJB
 	private VehicleJourneyDAO vehicleJourneyDAO;
-
-	@EJB
-	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
-
-	@EJB
-	private AccessibilityLimitationDAO accessibilityLimitationDAO;
 
 	@EJB
 	private CategoriesForLinesDAO categoriesForLinesDAO;
@@ -187,32 +176,22 @@ public class LineRegisterCommand implements Command {
 
 				if (optimized) {
 					Monitor wMonitor = MonitorFactory.start("prepareCopy");
-					StringWriter bufferVjas = new StringWriter(1024);
-					StringWriter bufferAa = new StringWriter(1024);
-					StringWriter bufferAl = new StringWriter(1024);
-					final List<String> vehicleJourneysToDelete = new ArrayList<>(referential.getVehicleJourneys().keySet());
-					final List<String> accessibilityAssessmentToDelete = new ArrayList<>(referential.getAccessibilityAssessments().keySet());
-					final List<String> accessibilityLimitationToDelete = new ArrayList<>(referential.getAccessibilityLimitations().keySet());
+					StringWriter buffer = new StringWriter(1024);
+					final List<String> list = new ArrayList<String>(referential.getVehicleJourneys().keySet());
+					for (VehicleJourney item : referential.getVehicleJourneys().values()) {
+						VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(item.getObjectId());
 
-					for (VehicleJourney vj : referential.getVehicleJourneys().values()) {
-						VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(vj.getObjectId());
-
-						List<VehicleJourneyAtStop> vehicleJourneyAtStops = vj.getVehicleJourneyAtStops();
+						List<VehicleJourneyAtStop> vehicleJourneyAtStops = item.getVehicleJourneyAtStops();
 						for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
 
 							StopPoint stopPoint = cache.getStopPoints().get(
 									vehicleJourneyAtStop.getStopPoint().getObjectId());
 
-							writeVjas(bufferVjas, vehicleJourney, stopPoint, vehicleJourneyAtStop, importParameter.isKeepBoardingAlighting());
+							write(buffer, vehicleJourney, stopPoint, vehicleJourneyAtStop,importParameter.isKeepBoardingAlighting());
 						}
-						writeAccessibilityAssessmentVj(bufferAa, bufferAl, vehicleJourney.getAccessibilityAssessment());
 					}
-					vehicleJourneyDAO.deleteChildren(vehicleJourneysToDelete);
-					accessibilityAssessmentDAO.deleteAccessibilityAssessmentVJ(accessibilityAssessmentToDelete);
-					accessibilityLimitationDAO.deleteAccessibilityLimitationVJ(accessibilityLimitationToDelete);
-					context.put(BUFFER_VJAS, bufferVjas.toString());
-					context.put(BUFFER_AA, bufferAa.toString());
-					context.put(BUFFER_AL, bufferAl.toString());
+					vehicleJourneyDAO.deleteChildren(list);
+					context.put(BUFFER, buffer.toString());
 					wMonitor.stop();
 				}
 				result = SUCCESS;
@@ -362,8 +341,8 @@ public class LineRegisterCommand implements Command {
 	}
 	
 	
-	protected void writeVjas(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint,
-			VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) {
+	protected void write(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint,
+			VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) throws IOException {
 		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
 		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -413,102 +392,6 @@ public class LineRegisterCommand implements Command {
 		}
 
 		buffer.append('\n');
-
-	}
-
-	protected void writeAccessibilityAssessmentVj(StringWriter bufferAa, StringWriter bufferAl, AccessibilityAssessment accessibilityAssessment) {
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-
-		bufferAa.write(accessibilityAssessment.getObjectId().replace('|', '_'));
-		bufferAa.append(SEP);
-		bufferAa.write(accessibilityAssessment.getObjectVersion().toString());
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getCreationTime() != null) {
-			bufferAa.write(dateTimeFormat.print(accessibilityAssessment.getCreationTime()));
-		} else {
-			bufferAa.write(NULL);
-		}
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getCreatorId() != null) {
-			bufferAa.write(accessibilityAssessment.getCreatorId().replace('|', '_'));
-		} else {
-			bufferAa.write(NULL);
-		}
-
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getMobilityImpairedAccess() != null) {
-			bufferAa.write(accessibilityAssessment.getMobilityImpairedAccess().toString());
-		} else {
-			bufferAa.write(NULL);
-		}
-		if(accessibilityAssessment.getAccessibilityLimitation() != null) {
-			bufferAa.append(SEP);
-			bufferAa.write(accessibilityAssessment.getAccessibilityLimitation().getId().toString());
-		}
-
-		bufferAa.append('\n');
-
-		writeAccessibilityLimitationVj(bufferAl, accessibilityAssessment.getAccessibilityLimitation());
-
-	}
-
-	protected void writeAccessibilityLimitationVj(StringWriter bufferAl, AccessibilityLimitation accessibilityLimitation) {
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-		bufferAl.write(accessibilityLimitation.getObjectId().replace('|', '_'));
-		bufferAl.append(SEP);
-		bufferAl.write(accessibilityLimitation.getObjectVersion().toString());
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getCreationTime() != null) {
-			bufferAl.write(dateTimeFormat.print(accessibilityLimitation.getCreationTime()));
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getCreatorId() != null) {
-			bufferAl.write(accessibilityLimitation.getCreatorId().replace('|', '_'));
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getWheelchairAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getWheelchairAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getVisualSignsAvailable() != null) {
-			bufferAl.write(accessibilityLimitation.getVisualSignsAvailable().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getStepFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getStepFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getLiftFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getLiftFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getEscalatorFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getEscalatorFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getAudibleSignalsAvailable() != null) {
-			bufferAl.write(accessibilityLimitation.getAudibleSignalsAvailable().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-
-		bufferAl.append('\n');
 
 	}
 
