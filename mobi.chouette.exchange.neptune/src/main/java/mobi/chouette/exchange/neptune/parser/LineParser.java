@@ -48,7 +48,6 @@ public class LineParser implements Parser, Constant, JsonExtension {
 		xpp.require(XmlPullParser.START_TAG, null, CHILD_TAG);
 		int columnNumber = xpp.getColumnNumber();
 		int lineNumber = xpp.getLineNumber();
-		int linePosition = (int) context.get(LINE_POSITION);
 
 		LineValidator validator = (LineValidator) ValidatorFactory.create(LineValidator.class.getName(), context);
 
@@ -65,8 +64,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 				line.setFilled(true);
 				line.setNetwork(getPtNetwork(referential));
 				line.setCompany(getFirstCompany(referential));
-				line.setPosition(linePosition);
-				context.put(LINE_POSITION, linePosition + 1);
+				line.setPosition((int) context.get(LINE_POSITION));
 			} else if (xpp.getName().equals("objectVersion")) {
 				Integer version = ParserUtils.getInt(xpp.nextText());
 				line.setObjectVersion(version);

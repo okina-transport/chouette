@@ -22,6 +22,8 @@ import mobi.chouette.model.util.Referential;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
+import static mobi.chouette.exchange.neptune.JsonExtension.LINE_POSITION;
+
 @Log4j
 public class NeptuneInitImportCommand implements Command, Constant {
 

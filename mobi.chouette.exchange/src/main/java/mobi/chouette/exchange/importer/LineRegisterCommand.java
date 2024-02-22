@@ -164,7 +164,7 @@ public class LineRegisterCommand implements Command {
 				if(oldValue.getCategoriesForLine() == null){
 					oldValue.setCategoriesForLine(categoriesForLinesDAO.find(0L));
 				}
-				if(oldValue.getPosition() == null) {
+				if(oldValue.getPosition() == null || !oldValue.getPosition().equals(newValue.getPosition())) {
 					oldValue.setPosition(newValue.getPosition());
 				}
 				searchEmptyOriginalStopIds(referential,oldValue);

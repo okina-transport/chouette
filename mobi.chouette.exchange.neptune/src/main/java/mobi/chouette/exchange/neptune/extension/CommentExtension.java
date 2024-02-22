@@ -79,6 +79,14 @@ public class CommentExtension implements JsonExtension {
 						log.error("Line extension : cannot parse url " + json.getString(URL_REF), e);
 					}
 				}
+				if (json.has(LINE_POSITION)) {
+					try {
+						new Integer(json.getInt(LINE_POSITION));
+						line.setPosition(json.getInt(LINE_POSITION));
+					} catch (Exception e) {
+						log.error("Line extension : cannot parse position " + json.getInt(LINE_POSITION), e);
+					}
+				}
 			} catch (Exception e1) {
 				log.warn("Line extension : unparsable json : " + comment);
 				line.setComment(comment);

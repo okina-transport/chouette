@@ -74,6 +74,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
     @Setter
     private String gtfsRouteId;
 
+    @Getter
+    @Setter
+    private Integer position;
+
     @Override
     public void validate(Context context) throws Exception {
         GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
@@ -523,7 +527,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
         quayIdPrefixToRemove = configuration.getQuayIdPrefixToRemove();
 
-
         Map<String, JourneyPattern> journeyPatternByStopSequence = new HashMap<>();
 
         // VehicleJourney
@@ -595,7 +598,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             JourneyPattern journeyPattern = journeyPatternByStopSequence.get(objectIdKey.toString());
             if (journeyPattern == null) {
                 journeyPattern = createJourneyPattern(referential, configuration, gtfsTrip, importer,
-                        vehicleJourney, objectIdKey.toString(), journeyPatternByStopSequence);
+                        vehicleJourney, objectIdKey.toString(), journeyPatternByStopSequence, position);
             }
 
             if(StringUtils.isBlank(vehicleJourney.getPublishedJourneyName())){
@@ -823,7 +826,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
     private JourneyPattern createJourneyPattern(Referential referential,
                                                 GtfsImportParameters configuration, GtfsTrip gtfsTrip, GtfsImporter importer,
-                                                VehicleJourney vehicleJourney, String objectIdKey, Map<String, JourneyPattern> journeyPatternByStopSequence) throws NoSuchAlgorithmException {
+                                                VehicleJourney vehicleJourney, String objectIdKey, Map<String, JourneyPattern> journeyPatternByStopSequence, Integer position) throws NoSuchAlgorithmException {
         JourneyPattern journeyPattern;
 
         // Route
@@ -836,7 +839,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         journeyPatternByStopSequence.put(objectIdKey, journeyPattern);
 
         // StopPoints
-        createStopPoint(route, journeyPattern, vehicleJourney.getVehicleJourneyAtStops(), referential, configuration);
+        createStopPoint(route, journeyPattern, vehicleJourney.getVehicleJourneyAtStops(), referential, configuration, position);
 
         List<StopPoint> stopPoints = journeyPattern.getStopPoints();
         journeyPattern.setDepartureStopPoint(stopPoints.get(0));
@@ -1247,10 +1250,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
      * @param configuration
      */
     private void createStopPoint(Route route, JourneyPattern journeyPattern, List<VehicleJourneyAtStop> list,
-                                 Referential referential, GtfsImportParameters configuration) {
+                                 Referential referential, GtfsImportParameters configuration, Integer position) {
         Set<String> stopPointKeys = new HashSet<String>();
 
-        int position = 0;
+        int positionInitial = 0;
         for (VehicleJourneyAtStop vehicleJourneyAtStop : list) {
             VehicleJourneyAtStopWrapper wrapper = (VehicleJourneyAtStopWrapper) vehicleJourneyAtStop;
             String stopIdKeyFragment = createJourneyKeyFragment(wrapper);
@@ -1276,7 +1279,12 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
             stopPoint.setRoute(route);
-            stopPoint.setPosition(position++);
+            if (position != null) {
+                stopPoint.setPosition(position);
+            } else {
+                stopPoint.setPosition(positionInitial++);
+            }
+
             stopPoint.setForBoarding(toBoardingPossibility(wrapper.pickup));
             stopPoint.setForAlighting(toAlightingPossibility(wrapper.dropOff));
 

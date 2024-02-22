@@ -33,7 +33,8 @@ import java.util.Arrays;
 		"removeParentStations",
 		"importShapesFile",
 		"updateStopAccessibility",
-		"railUICprocessing"
+		"railUICprocessing",
+		"routeSortOrder"
 
 })
 public class GtfsImportParameters extends AbstractImportParameter {
@@ -109,6 +110,10 @@ public class GtfsImportParameters extends AbstractImportParameter {
 	@Getter@Setter
 	@XmlElement(name = "rail_uic_processing", defaultValue = "false")
 	private boolean railUICprocessing = false;
+
+	@Getter@Setter
+	@XmlElement(name = "route_sort_order", defaultValue = "false")
+	private boolean routeSortOrder = false;
 
 	public boolean isValid(Logger log, String[] allowedTypes)
 	{

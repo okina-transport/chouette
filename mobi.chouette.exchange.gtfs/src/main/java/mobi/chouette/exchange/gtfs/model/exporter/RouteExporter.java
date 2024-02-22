@@ -12,7 +12,7 @@ import mobi.chouette.exchange.gtfs.model.importer.GtfsConverter;
 public class RouteExporter extends ExporterImpl<GtfsRoute> implements
 		GtfsConverter {
 	public static enum FIELDS {
-		route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_url, route_color, route_text_color,route_sort_order;
+		route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_url, route_color, route_text_color, route_sort_order;
 	};
 
 	public static final String FILENAME = "routes.txt";
@@ -58,6 +58,8 @@ public class RouteExporter extends ExporterImpl<GtfsRoute> implements
 			bean.setRouteTextColor(COLOR_CONVERTER.from(context,
 					FIELDS.route_text_color, values.get(i++), Color.BLACK,
 					false));
+			bean.setPosition(INTEGER_CONVERTER.from(context,
+					FIELDS.route_sort_order, values.get(i++), false));
 
 			return bean;
 		}
@@ -84,8 +86,8 @@ public class RouteExporter extends ExporterImpl<GtfsRoute> implements
 					input.getRouteColor(), false));
 			values.add(COLOR_CONVERTER.to(context, FIELDS.route_text_color,
 					input.getRouteTextColor(), false));
-			values.add(STRING_CONVERTER.to(context, FIELDS.route_sort_order,
-					input.getPosition() != null ? input.getPosition().toString() : "", false));
+			values.add(INTEGER_CONVERTER.to(context, FIELDS.route_sort_order,
+					input.getPosition(), false));
 
 
 			result = Tokenizer.untokenize(values);

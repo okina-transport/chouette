@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class AbstractRouteById extends IndexImpl<GtfsRoute> implements GtfsConverter{
 
     public static enum FIELDS {
-        route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_url, route_color, route_text_color;
+        route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_url, route_color, route_text_color, route_sort_order;
     };
 
     public static final String FILENAME = "routes.txt";
@@ -304,6 +304,19 @@ public abstract class AbstractRouteById extends IndexImpl<GtfsRoute> implements 
                     bean.getErrors().add(
                             new GtfsException(_path, id, RouteById.FIELDS.route_text_color.name(), GtfsException.ERROR.BAD_COLOR,
                                     bean.getRouteId(), value));
+            }
+        }
+
+        value = array[i++];
+        testExtraSpace(AbstractRouteById.FIELDS.route_sort_order.name(), value, bean);
+        if (value != null || !value.trim().isEmpty()) {
+            try {
+                bean.setPosition(INTEGER_CONVERTER.from(context, AbstractRouteById.FIELDS.route_sort_order, value, false));
+            } catch (GtfsException e) {
+                if (withValidation)
+                    bean.getErrors().add(
+                            new GtfsException(_path, id, getIndex(RouteById.FIELDS.route_sort_order.name()), RouteById.FIELDS.route_sort_order.name(),
+                                    GtfsException.ERROR.INVALID_FORMAT, null, value));
             }
         }
 

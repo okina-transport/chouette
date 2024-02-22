@@ -111,7 +111,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                 GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
                         GtfsRouteParserCommand.class.getName());
                 parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                parser.setPosition(cpt);
+                parser.setPosition(gtfsRoute.getPosition());
                 cpt++;
                 chain.add(parser);
                 if (withDao && !parameters.isNoSave()) {
@@ -239,6 +239,9 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             if (parameters.isRoutesReorganization()){
                 commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
             }
+//            if (parameters.isRouteSortOrder()) {
+//                commands.add(CommandFactory.create(initialContext, RouteSortOrderCommand.class.getName()));
+//            }
 
 
 
