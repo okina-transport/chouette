@@ -10,7 +10,6 @@ import mobi.chouette.exchange.gtfs.parser.AbstractConverter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.FILE_ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
-import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
@@ -39,9 +38,9 @@ public class GtfsValidationReporter implements Constant{
 		reporter.addItemToValidationReport(context, "1-GTFS-", "Calendar", 2, "W","E");
 		reporter.addItemToValidationReport(context, "1-GTFS-", "Route", 3, "E","E","W");
 
-		reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 5, "E","W","E","W","W");
+		reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 4, "E","W","E","W");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 7, "E","W","W","E","E","E","E");
-		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 5, "W","W","W","W","W");
+		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W","W","W","W");
 
 		reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
 }
@@ -51,7 +50,7 @@ public class GtfsValidationReporter implements Constant{
 		exceptions = null;
 	}
 
-	public Throwable throwUnknownError(Context context, Exception ex, String filenameInfo) throws Exception {
+	public void throwUnknownError(Context context, Exception ex, String filenameInfo) throws Exception {
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
 		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
 		String name = name(filenameInfo);
@@ -65,7 +64,6 @@ public class GtfsValidationReporter implements Constant{
 			log.error(ex, ex);
 			throw new Exception("A problem occured while reading the file \"" + filenameInfo + "\" : " + message);
 		}
-		return null;
 	}
 
 	public void validateUnknownError(Context context) {
@@ -142,7 +140,6 @@ public class GtfsValidationReporter implements Constant{
 			return;
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
 		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-		AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
 		String name = name(filenameInfo);
 		String filenameInfo2 = "";
 		String checkPointName = "";
@@ -499,13 +496,7 @@ public class GtfsValidationReporter implements Constant{
 			validationReporter.addCheckPointReportError(context,checkPointName,
 					buildDataLocation(context,new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()),routeId), ex.getValue(), ex.getField());
 			break;
-		case MISSING_AGENCY_ID:
-			//2-GTFS-Common-5
-			checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_AGENCY_ID);
-			analyzeReport.setMissingAgencyId(true);
-			validationReporter.addCheckPointReportError(context, checkPointName,
-					buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
-			break;
+
 		case BAD_REFERENCED_ID:
 			// 2-GTFS-Stop-1
 			checkPointName = checkPointName(name, GtfsException.ERROR.BAD_REFERENCED_ID);
@@ -546,13 +537,6 @@ public class GtfsValidationReporter implements Constant{
             validationReporter.addCheckPointReportError(context, checkPointName,
                     buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
             throw ex;
-		case MISSING_ROUTE_AGENCY_ID:
-			//2-GTFS-Route-5
-			checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_ROUTE_AGENCY_ID);
-			analyzeReport.setMissingRouteAgencyId(true);
-			validationReporter.addCheckPointReportError(context, checkPointName,
-					buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
-			break;
 
 		case PREFIX_REMOVAL_ERROR:
 			// 2-GTFS-Stop-6
@@ -692,8 +676,6 @@ public class GtfsValidationReporter implements Constant{
 			return GTFS_2_GTFS_Common_3;
 		case SHARED_VALUE:
 			return GTFS_2_GTFS_Common_4;
-		case MISSING_AGENCY_ID:
-			return GTFS_2_GTFS_Common_5;
 		case MISSING_ROUTE_SHORT_NAME:
 			return GTFS_1_GTFS_Route_3;
 
@@ -715,8 +697,6 @@ public class GtfsValidationReporter implements Constant{
 			return GTFS_2_GTFS_Route_3;
 		case INVERSE_DUPLICATE_ROUTE_NAMES:
 			return GTFS_2_GTFS_Route_4;
-		case MISSING_ROUTE_AGENCY_ID:
-			return GTFS_2_GTFS_Route_5;
 		case PREFIX_REMOVAL_ERROR:
 			return GTFS_2_GTFS_Stop_6;
 		case NOT_ENOUGH_ROUTE_POINTS:
