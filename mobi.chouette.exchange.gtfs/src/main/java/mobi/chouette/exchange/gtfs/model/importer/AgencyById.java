@@ -68,15 +68,8 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 		// 1-GTFS-Agency-4 error
 		if (fields.get(FIELDS.agency_id.name()) == null) {
 
-			getErrors().add(new GtfsException(_path, 1, FIELDS.agency_id.name(),
-					GtfsException.ERROR.MISSING_AGENCY_ID, null, null));
-
-			getErrors().add(
-					new GtfsException(_path, 1, FIELDS.agency_id.name(), GtfsException.ERROR.MISSING_OPTIONAL_FIELD,
-							null, null));
 		} else {
 			getOkTests().add(GtfsException.ERROR.MISSING_OPTIONAL_FIELD);
-			getOkTests().add(GtfsException.ERROR.MISSING_AGENCY_ID);
 		}
 
 		if (fields.get(FIELDS.agency_url.name()) == null
@@ -133,10 +126,9 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 		if (withValidation)
 			testExtraSpace(FIELDS.agency_name.name(), value, bean);
 		if (value == null || value.trim().isEmpty()) {
-			if (withValidation)
-				bean.getErrors().add(
-						new GtfsException(_path, id, getIndex(FIELDS.agency_name.name()), FIELDS.agency_name.name(),
-								GtfsException.ERROR.MISSING_REQUIRED_VALUES, null, null));
+//			String referential = ((String) context.get(Context.PATH)).split("referentials/")[1].split("/")[0];
+//			value = referentialDAO.getReferentialNameBySlug(referential);
+//			bean.setAgencyName(STRING_CONVERTER.from(context, FIELDS.agency_name, value, true));
 		} else {
 			if (withValidation)
 				bean.getOkTests().add(GtfsException.ERROR.MISSING_REQUIRED_VALUES);

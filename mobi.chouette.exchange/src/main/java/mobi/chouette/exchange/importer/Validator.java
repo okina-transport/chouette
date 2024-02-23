@@ -4,6 +4,6 @@ import mobi.chouette.common.Context;
 
 public interface Validator {
 
-	public void validate(Context context) throws Exception, Throwable;
+	public void validate(Context context) throws Exception;
 
 }
