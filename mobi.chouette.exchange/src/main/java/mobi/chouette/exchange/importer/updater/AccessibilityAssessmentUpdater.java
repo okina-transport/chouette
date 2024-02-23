@@ -4,14 +4,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.AccessibilityLimitationDAO;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
 import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.AccessibilityLimitation;
-import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 
@@ -68,9 +63,8 @@ public class AccessibilityAssessmentUpdater implements Updater<AccessibilityAsse
             if (accessibilityLimitation == null) {
                 accessibilityLimitation = ObjectFactory.getAccessibilityLimitation(cache, objectId);
             }
-            oldValue.setAccessibilityLimitation(accessibilityLimitation);
 
-            accessibilityLimitationUpdater.update(context, oldValue.getAccessibilityLimitation(), newValue.getAccessibilityLimitation());
+            accessibilityLimitationUpdater.update(context, accessibilityLimitation, newValue.getAccessibilityLimitation());
         }
     }
 }

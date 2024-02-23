@@ -381,7 +381,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
 		updateFootnotes(context, oldValue, newValue, cache);
 		updateInterchanges(context, oldValue, newValue);
-//		updateAccessibilityAssessment(context, cache, oldValue, newValue);
+		updateAccessibilityAssessment(context, cache, oldValue, newValue);
 //		monitor.stop();
 	}
 
@@ -401,8 +401,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			if (accessibilityAssessment == null) {
 				accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(cache, objectId);
 			}
-			oldValue.setAccessibilityAssessment(accessibilityAssessment);
-			accessibilityAssessmentUpdater.update(context, oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment());
+			accessibilityAssessmentUpdater.update(context, accessibilityAssessment, newValue.getAccessibilityAssessment());
 		}
 	}
 

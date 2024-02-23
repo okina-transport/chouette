@@ -120,6 +120,9 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                     Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
                     chain.add(register);
 
+                    Command accessibilityCommmand = CommandFactory.create(initialContext, AccessibilityCommand.class.getName());
+                    chain.add(accessibilityCommmand);
+
                     Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
                     chain.add(copy);
                 }

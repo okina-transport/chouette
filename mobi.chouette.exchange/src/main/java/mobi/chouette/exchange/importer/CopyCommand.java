@@ -1,21 +1,7 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.ContenerChecker;
@@ -26,8 +12,20 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 @Log4j
 @Stateless(name = CopyCommand.COMMAND)
@@ -37,7 +35,7 @@ public class CopyCommand implements Command {
 
 	@EJB 
 	private VehicleJourneyDAO vehicleJourneyDAO;
-	
+
 	@EJB 
 	private ContenerChecker checker;
 
@@ -83,7 +81,8 @@ public class CopyCommand implements Command {
 					}
 				}
 				CommandCallable callable = new CommandCallable();
-				callable.buffer = (String) context.remove(BUFFER);
+				callable.bufferVjas = (String) context.remove(BUFFER_VJAS);
+
 				callable.schema = ContextHolder.getContext();
 				Future<Void> future = executor.submit(callable);
 				futures.add(future);
@@ -99,18 +98,19 @@ public class CopyCommand implements Command {
 	}
 
 	private class CommandCallable implements Callable<Void> {
-		private String buffer;
+		private String bufferVjas;
+
 		private String schema;
 
 		@Override
 		@TransactionAttribute(TransactionAttributeType.REQUIRED)
-		public Void call() throws Exception {
+		public Void call() {
 			Monitor monitor = MonitorFactory.start(COMMAND);
 			ContextHolder.setContext(schema);
-			vehicleJourneyDAO.copy(buffer);
+			vehicleJourneyDAO.copy(bufferVjas);
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			ContextHolder.setContext(null);
-			log.info("VehicleJourney copy ended successfully");
+			log.info("VehicleJourneyAtStop copy ended successfully");
 			return null;
 		}
 
