@@ -52,6 +52,8 @@ public class CleanLineInCacheCommand implements Command {
         List<String> journeyPatternsToDelete = new ArrayList<>();
         List<String> vehicleJourneysToDelete = new ArrayList<>();
         List<String> stopPointsToDelete = new ArrayList<>();
+        List<String> accessibilityAssessmentToDelete = new ArrayList<>();
+        List<String> accessibilityLimitationToDelete = new ArrayList<>();
 
         for (Route route : currentLine.getRoutes()) {
 
@@ -67,6 +69,13 @@ public class CleanLineInCacheCommand implements Command {
                 for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
 
                     vehicleJourneysToDelete.add(vehicleJourney.getObjectId());
+
+                    if(vehicleJourney.getAccessibilityAssessment() != null){
+                        accessibilityAssessmentToDelete.add(vehicleJourney.getAccessibilityAssessment().getObjectId());
+                        if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
+                            accessibilityLimitationToDelete.add(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId());
+                        }
+                    }
 
                     for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourney.getVehicleJourneyAtStops()) {
 
@@ -137,6 +146,16 @@ public class CleanLineInCacheCommand implements Command {
         stopPointsToDelete.forEach(stopPoint->{
             referential.getStopPoints().remove(stopPoint);
             cache.getStopPoints().remove(stopPoint);
+        });
+
+        accessibilityAssessmentToDelete.forEach(accessibilityAssessment->{
+            referential.getAccessibilityAssessments().remove(accessibilityAssessment);
+            cache.getAccessibilityAssessments().remove(accessibilityAssessment);
+        });
+
+        accessibilityLimitationToDelete.forEach(accessibilityLimitation->{
+            referential.getAccessibilityLimitations().remove(accessibilityLimitation);
+            cache.getAccessibilityLimitations().remove(accessibilityLimitation);
         });
 
 

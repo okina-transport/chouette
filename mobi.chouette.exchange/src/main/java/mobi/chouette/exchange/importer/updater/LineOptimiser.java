@@ -8,6 +8,8 @@ import javax.ejb.Stateless;
 
 import mobi.chouette.dao.AccessLinkDAO;
 import mobi.chouette.dao.AccessPointDAO;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
+import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.dao.GroupOfLineDAO;
@@ -22,6 +24,8 @@ import mobi.chouette.dao.TimetableDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.GroupOfLine;
@@ -83,6 +87,12 @@ public class LineOptimiser {
 	@EJB
 	private TimebandDAO timebandDAO;
 
+	@EJB
+	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+
+	@EJB
+	private AccessibilityLimitationDAO accessibilityLimitationDAO;
+
 	public void initialize(Referential cache, Referential referential) {
 
 //		Monitor monitor = MonitorFactory.start("LineOptimiser");
@@ -102,6 +112,8 @@ public class LineOptimiser {
 		initializeStopPoint(cache, referential.getStopPoints().values());
 		initializeJourneyPattern(cache, referential.getJourneyPatterns().values());
 		initializeVehicleJourney(cache, referential.getVehicleJourneys().values());
+		initializeAccessibilityAssessment(cache, referential.getAccessibilityAssessments().values());
+		initializeAccessibilityLimitation(cache, referential.getAccessibilityLimitations().values());
 
 		initializeTimeband(cache, referential.getTimebands().values());
 //		monitor.stop();
@@ -344,6 +356,40 @@ public class LineOptimiser {
 				Timeband object = cache.getTimebands().get(item.getObjectId());
 				if (object == null) {
 					object = ObjectFactory.getTimeband(cache, item.getObjectId());
+				}
+			}
+		}
+	}
+
+	private void initializeAccessibilityAssessment(Referential cache, Collection<AccessibilityAssessment> list) {
+		if (list != null && !list.isEmpty()) {
+			Collection<String> objectIds = UpdaterUtils.getObjectIds(list);
+			List<AccessibilityAssessment> objects = accessibilityAssessmentDAO.findByObjectId(objectIds);
+			for (AccessibilityAssessment object : objects) {
+				cache.getAccessibilityAssessments().put(object.getObjectId(), object);
+			}
+
+			for (AccessibilityAssessment item : list) {
+				AccessibilityAssessment object = cache.getAccessibilityAssessments().get(item.getObjectId());
+				if (object == null) {
+					object = ObjectFactory.getAccessibilityAssessment(cache, item.getObjectId());
+				}
+			}
+		}
+	}
+
+	private void initializeAccessibilityLimitation(Referential cache, Collection<AccessibilityLimitation> list) {
+		if (list != null && !list.isEmpty()) {
+			Collection<String> objectIds = UpdaterUtils.getObjectIds(list);
+			List<AccessibilityLimitation> objects = accessibilityLimitationDAO.findByObjectId(objectIds);
+			for (AccessibilityLimitation object : objects) {
+				cache.getAccessibilityLimitations().put(object.getObjectId(), object);
+			}
+
+			for (AccessibilityLimitation item : list) {
+				AccessibilityLimitation object = cache.getAccessibilityLimitations().get(item.getObjectId());
+				if (object == null) {
+					object = ObjectFactory.getAccessibilityLimitation(cache, item.getObjectId());
 				}
 			}
 		}
