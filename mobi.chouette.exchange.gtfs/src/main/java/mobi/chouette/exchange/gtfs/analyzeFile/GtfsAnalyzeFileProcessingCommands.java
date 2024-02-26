@@ -108,7 +108,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
                 GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
                         GtfsRouteParserCommand.class.getName());
                 parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                parser.setPosition(cpt);
+                parser.setPosition(gtfsRoute.getPosition());
                 cpt++;
                 chain.add(parser);
 

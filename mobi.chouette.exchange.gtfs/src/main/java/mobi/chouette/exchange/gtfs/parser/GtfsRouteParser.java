@@ -225,6 +225,7 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         // Route VehicleJourney VehicleJourneyAtStop , JourneyPattern ,StopPoint
         GtfsTripParser gtfsTripParser = (GtfsTripParser) ParserFactory.create(GtfsTripParser.class.getName());
         gtfsTripParser.setGtfsRouteId(gtfsRouteId);
+        gtfsTripParser.setPosition(position);
         gtfsTripParser.parse(context);
 
     }
