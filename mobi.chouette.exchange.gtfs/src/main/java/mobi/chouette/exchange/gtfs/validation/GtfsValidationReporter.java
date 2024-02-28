@@ -502,7 +502,8 @@ public class GtfsValidationReporter implements Constant{
 		case MISSING_AGENCY_ID:
 			//2-GTFS-Common-5
 			checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_AGENCY_ID);
-			analyzeReport.setMissingAgencyId(true);
+			if(analyzeReport != null)
+				analyzeReport.setMissingAgencyId(true);
 			validationReporter.addCheckPointReportError(context, checkPointName,
 					buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
 			break;
@@ -549,7 +550,8 @@ public class GtfsValidationReporter implements Constant{
 		case MISSING_ROUTE_AGENCY_ID:
 			//2-GTFS-Route-5
 			checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_ROUTE_AGENCY_ID);
-			analyzeReport.setMissingRouteAgencyId(true);
+			if(analyzeReport != null)
+				analyzeReport.setMissingRouteAgencyId(true);
 			validationReporter.addCheckPointReportError(context, checkPointName,
 					buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
 			break;
