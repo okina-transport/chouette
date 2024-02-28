@@ -10,4 +10,8 @@ public interface VehicleJourneyDAO extends GenericDAO<VehicleJourney> {
 
 	void deleteChildren(List<String> list);
 
+	long updateAcessibilityId(Long accessibilityId, List<String> objectIds);
+
+	long updateDefaultAccessibility(Long defaultAccessibilityId);
+
 }

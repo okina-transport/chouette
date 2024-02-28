@@ -398,6 +398,11 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             GtfsException fatalException = null;
             tripParser.setWithValidation(true);
+            Map<GtfsTrip.WheelchairAccessibleType, List<String>> accessibilityTripMap = new HashMap<>();
+            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.Allowed, new ArrayList<>());
+            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.NoAllowed, new ArrayList<>());
+            String prefix = configuration.getObjectIdPrefix();
+
             for (GtfsTrip bean : tripParser) {
                 if(!configuration.isImportShapesFile()){
                     bean.setShapeId(null);
@@ -420,7 +425,12 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 }
                 gtfsValidationReporter.reportErrors(context, bean.getRouteId(), bean.getErrors(), GTFS_TRIPS_FILE);
                 gtfsValidationReporter.validate(context, GTFS_TRIPS_FILE, bean.getOkTests());
+
+                if (bean.getWheelchairAccessible() != null && !GtfsTrip.WheelchairAccessibleType.NoInformation.equals(bean.getWheelchairAccessible())){
+                    accessibilityTripMap.get(bean.getWheelchairAccessible()).add(prefix.toUpperCase() + ":VehicleJourney:" + bean.getTripId());
+                }
             }
+            context.put(GTFS_ACCESSIBILITY_MAP, accessibilityTripMap);
             tripParser.setWithValidation(false);
             int i = 1;
             boolean unsuedId = true;
@@ -1185,41 +1195,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         if (StringUtils.trimToNull(gtfsTrip.getTripHeadSign()) != null) {
             vehicleJourney.setPublishedJourneyName(gtfsTrip.getTripHeadSign());
         }
-
-        String objectIdAccessibilityAssessment = AbstractConverter.composeObjectId(configuration,
-                AccessibilityAssessment.ACCESSIBILITYASSESSMENT_KEY, "vehicle_journey_" + gtfsTrip.getTripId());
-        AccessibilityAssessment accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(referential, objectIdAccessibilityAssessment);
-
-        String objectIdAccessibilityLimitation = AbstractConverter.composeObjectId(configuration,
-                AccessibilityLimitation.ACCESSIBILITYLIMITATION_KEY, "vehicle_journey_" + gtfsTrip.getTripId());
-        AccessibilityLimitation accessibilityLimitation = ObjectFactory.getAccessibilityLimitation(referential, objectIdAccessibilityLimitation);
-
-        if (gtfsTrip.getWheelchairAccessible() != null) {
-            switch (gtfsTrip.getWheelchairAccessible()) {
-                case NoInformation:
-                    accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.UNKNOWN);
-                    accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
-                    accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
-                    break;
-                case NoAllowed:
-                    accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.FALSE);
-                    accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.FALSE);
-                    accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
-                    break;
-                case Allowed:
-                    accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.TRUE);
-                    accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
-                    accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
-                    break;
-            }
-        }
-        else {
-            accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnum.UNKNOWN);
-            accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
-            accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
-        }
-
-        vehicleJourney.setAccessibilityAssessment(accessibilityAssessment);
 
 
         if (gtfsTrip.getBikesAllowed() != null) {

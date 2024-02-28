@@ -119,4 +119,6 @@ public interface Constant {
 
 	public static final String DETECT_CHANGED_TRIPS = "detectChangedTrips";
 
+	public static final String GTFS_ACCESSIBILITY_MAP = "GTFSAccessibilityMap";
+
 }
