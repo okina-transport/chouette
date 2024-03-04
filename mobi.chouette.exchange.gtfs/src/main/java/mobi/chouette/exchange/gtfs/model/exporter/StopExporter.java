@@ -19,6 +19,10 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 
 	public static final String FILENAME = "stops.txt";
 
+	private static String convertFloat(Float input){
+		return String.format("%.6f", input);
+	}
+
 	public StopExporter(String name) throws IOException {
 		super(name);
 	}
@@ -83,8 +87,8 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_code,                           input.getStopCode(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_name,                           input.getStopName(), true));
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_desc,                           input.getStopDesc(), false));
-			values.add(FLOAT_CONVERTER.to(context, FIELDS.stop_lat,                             input.getStopLat().floatValue(), true));
-			values.add(FLOAT_CONVERTER.to(context, FIELDS.stop_lon,                             input.getStopLon().floatValue(), true));
+			values.add(convertFloat(input.getStopLat().floatValue()));
+			values.add(convertFloat(input.getStopLon().floatValue()));
 			values.add(STRING_CONVERTER.to(context, FIELDS.zone_id,                             input.getZoneId(), false));
 			values.add(URL_CONVERTER.to(context, FIELDS.stop_url,                               input.getStopUrl(), false));
 			values.add(LOCATIONTYPE_CONVERTER.to(context, FIELDS.location_type,                 input.getLocationType(), false));
