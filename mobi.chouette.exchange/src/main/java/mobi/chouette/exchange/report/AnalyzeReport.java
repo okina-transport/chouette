@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mobi.chouette.common.Constant;
-import mobi.chouette.common.Context;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.StopArea;
