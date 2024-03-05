@@ -174,8 +174,6 @@ public class CleanRepositoryCommand implements Command {
 			accessLinkDao.truncate();
 			accessPointDAO.truncate();
 			connectionLinkDAO.truncate();
-			accessibilityLimitationDAO.truncate();
-			accessibilityAssessmentDAO.truncate();
 
 			// si pas import et ( transfert ou clean admin )
 			if(context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {
