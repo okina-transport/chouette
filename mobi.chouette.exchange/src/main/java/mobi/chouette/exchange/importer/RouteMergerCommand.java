@@ -25,6 +25,8 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,9 @@ public class RouteMergerCommand implements Command {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public boolean execute(Context context) throws Exception {
 
+
+        LocalDateTime start = LocalDateTime.now();
+
         // remove all routeSection because it causes errors while merging 2 routes with different shapes.
         // route section will be recalculated later
         routeSectionDAO.deleteAll();
@@ -73,6 +78,15 @@ public class RouteMergerCommand implements Command {
                 launchMergeForLineAndDirection(lineDirectionEntry.getKey(), ptDirectionEnum);
             }
         }
+
+
+        LocalDateTime end = LocalDateTime.now();
+        Duration duration = Duration.between(start, end);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        log.info("RouteMergerCommand duration:" + " - " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+
 
         log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
         return SUCCESS;
@@ -105,6 +119,7 @@ public class RouteMergerCommand implements Command {
      * @return
      */
     private boolean mergeLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum) {
+
 
         List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
         List<Route> orderedRoutes = sortByNumberOfStops(routes);

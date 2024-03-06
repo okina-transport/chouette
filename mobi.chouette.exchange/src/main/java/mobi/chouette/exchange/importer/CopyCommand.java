@@ -3,10 +3,7 @@ package mobi.chouette.exchange.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.ContenerChecker;
-import mobi.chouette.common.Context;
-import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.*;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.VehicleJourneyDAO;
@@ -21,6 +18,8 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +44,11 @@ public class CopyCommand implements Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
+
+		JobData jobData = (JobData) context.get(JOB_DATA);
+
+
+
 		String sMaxCopy = System.getProperty(checker.getContext()+ PropertyNames.MAX_COPY_BY_JOB);
 		if (sMaxCopy == null) sMaxCopy = "5";
 		int maxCopy = Integer.parseInt(sMaxCopy);
@@ -88,6 +92,7 @@ public class CopyCommand implements Command {
 				futures.add(future);
 			}
 
+
 			result = SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
@@ -105,12 +110,19 @@ public class CopyCommand implements Command {
 		@Override
 		@TransactionAttribute(TransactionAttributeType.REQUIRED)
 		public Void call() {
+			LocalDateTime start = LocalDateTime.now();
 			Monitor monitor = MonitorFactory.start(COMMAND);
 			ContextHolder.setContext(schema);
 			vehicleJourneyDAO.copy(bufferVjas);
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			ContextHolder.setContext(null);
 			log.info("VehicleJourneyAtStop copy ended successfully");
+			LocalDateTime end = LocalDateTime.now();
+			Duration duration = Duration.between(start, end);
+			long hours = duration.toHours();
+			long minutes = duration.toMinutes() % 60;
+			long seconds = duration.getSeconds() % 60;
+			log.info("CopyCommand duration:" + " - " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
 			return null;
 		}
 

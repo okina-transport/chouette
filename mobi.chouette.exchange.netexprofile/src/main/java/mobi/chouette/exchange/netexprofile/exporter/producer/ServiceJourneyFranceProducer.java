@@ -151,10 +151,12 @@ public class ServiceJourneyFranceProducer {
             AccessibilityLimitation netexAccessibilityLimitation = netexFactory.createAccessibilityLimitation();
             mobi.chouette.model.AccessibilityLimitation accessibilityLimitation = vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation();
             NetexProducerUtils.populateIdAndVersion(accessibilityLimitation, netexAccessibilityLimitation);
+            netexAccessibilityLimitation.setId(netexAccessibilityLimitation.getId().replace(":LOC",vehicleJourney.getId() + ":LOC"));
 
             AccessibilityAssessment netexAccessibilityAssessment = netexFactory.createAccessibilityAssessment();
             mobi.chouette.model.AccessibilityAssessment accessibilityAssessment = vehicleJourney.getAccessibilityAssessment();
             NetexProducerUtils.populateIdAndVersion(accessibilityAssessment, netexAccessibilityAssessment);
+            netexAccessibilityAssessment.setId(netexAccessibilityAssessment.getId().replace(":LOC",vehicleJourney.getId() + ":LOC"));
 
             if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess() != null){
                 if(vehicleJourney.getAccessibilityAssessment().getMobilityImpairedAccess().equals(LimitationStatusEnum.TRUE)){

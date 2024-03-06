@@ -57,6 +57,7 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
+
 import java.util.*;
 
 @Log4j
@@ -187,8 +188,7 @@ public class LineRegisterCommand implements Command {
 				if (optimized) {
 					Monitor wMonitor = MonitorFactory.start("prepareCopy");
 					StringWriter bufferVjas = new StringWriter(1024);
-					StringWriter bufferAa = new StringWriter(1024);
-					StringWriter bufferAl = new StringWriter(1024);
+
 					final List<String> vehicleJourneysToDelete = new ArrayList<>(referential.getVehicleJourneys().keySet());
 					HashMap<String, String> mapIdsVjAa = new HashMap<>();
 					HashMap<String, String> mapIdsAaAl = new HashMap<>();
@@ -204,13 +204,10 @@ public class LineRegisterCommand implements Command {
 
 							writeVjas(bufferVjas, vehicleJourney, stopPoint, vehicleJourneyAtStop, importParameter.isKeepBoardingAlighting());
 						}
-						writeAccessibilityAssessmentVj(bufferAa, bufferAl, vj.getAccessibilityAssessment());
-						mapIdsVjAa.put(vj.getObjectId(), vj.getAccessibilityAssessment().getObjectId());
-						mapIdsAaAl.put(vj.getAccessibilityAssessment().getObjectId(),  vj.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId());
 					}
 
-					accessibilityLimitationDAO.copy(bufferAl.toString());
-					accessibilityAssessmentDAO.copy(bufferAa.toString());
+
+
 
 
 					vehicleJourneyDAO.deleteChildren(vehicleJourneysToDelete);
