@@ -132,7 +132,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				}
 				parseServiceFrames(context, serviceFrames, isCommonDelivery);
 				parseServiceCalendarFrame(context, serviceCalendarFrames);
-				parseGeneralFrames(context,generalFrames);
+				parseGeneralFrames(context, configuration, generalFrames);
 
 				if (!isCommonDelivery) {
 					parseTimetableFrames(context, timetableFrames);
@@ -166,7 +166,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			}
 			parseServiceFrames(context, serviceFrames, isCommonDelivery);
 			parseServiceCalendarFrame(context, serviceCalendarFrames);
-			parseGeneralFrames(context, generalFrames);
+			parseGeneralFrames(context, configuration, generalFrames);
 
 			if (!isCommonDelivery) {
 				parseTimetableFrames(context, timetableFrames);
@@ -462,7 +462,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 
 
-	private void parseGeneralFrames(Context context, List<GeneralFrame> generalFrames) throws Exception {
+	private void parseGeneralFrames(Context context, NetexprofileImportParameters configuration, List<GeneralFrame> generalFrames) throws Exception {
 		
 		for (GeneralFrame generalFrame : generalFrames ){
 			List<JAXBElement<? extends EntityStructure>> members = generalFrame.getMembers().getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity();
@@ -495,8 +495,12 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<Direction> directions = NetexObjectUtil.getMembers(Direction.class, members);
 			parseDirection(context,directions);
 
-			List<RouteLink> routeLinks = NetexObjectUtil.getMembers(org.rutebanken.netex.model.RouteLink.class, members);
-			parseRouteLinks(context,routeLinks);
+			if(configuration.isNetexImportLayouts()) {
+				List<RouteLink> routeLinks = NetexObjectUtil.getMembers(org.rutebanken.netex.model.RouteLink.class, members);
+				parseRouteLinks(context,routeLinks);
+			} else {
+				parseRouteLinks(context,new ArrayList<>());
+			}
 
 
 			List<JAXBElement<?>> journeyPatterns = NetexObjectUtil.getMembersAsJaxb(org.rutebanken.netex.model.ServiceJourneyPattern.class, members)
