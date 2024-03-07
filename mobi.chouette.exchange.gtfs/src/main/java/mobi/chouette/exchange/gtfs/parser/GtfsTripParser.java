@@ -1061,7 +1061,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     inputCoords[1] = new Coordinate(location.getLongitude().doubleValue(), location.getLatitude()
                             .doubleValue());
 
-                    if (TransportModeNameEnum.Air.equals(transportmodeName)){
+                    if (TransportModeNameEnum.Air.equals(transportmodeName) || TransportModeNameEnum.Ferry.equals(transportmodeName)){
                         // No trace calculated for airplanes. Only a straight line between start and destination
                         section.setProcessedGeometry(factory.createLineString(inputCoords));
                     }else{
