@@ -190,8 +190,6 @@ public class LineRegisterCommand implements Command {
 					StringWriter bufferVjas = new StringWriter(1024);
 
 					final List<String> vehicleJourneysToDelete = new ArrayList<>(referential.getVehicleJourneys().keySet());
-					HashMap<String, String> mapIdsVjAa = new HashMap<>();
-					HashMap<String, String> mapIdsAaAl = new HashMap<>();
 
 					for (VehicleJourney vj : referential.getVehicleJourneys().values()) {
 						VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(vj.getObjectId());
@@ -205,15 +203,8 @@ public class LineRegisterCommand implements Command {
 							writeVjas(bufferVjas, vehicleJourney, stopPoint, vehicleJourneyAtStop, importParameter.isKeepBoardingAlighting());
 						}
 					}
-
-
-
-
-
 					vehicleJourneyDAO.deleteChildren(vehicleJourneysToDelete);
 					context.put(BUFFER_VJAS, bufferVjas.toString());
-					context.put(MAP_IDS_VJ_AA, mapIdsVjAa);
-					context.put(MAP_IDS_AA_AL, mapIdsAaAl);
 					wMonitor.stop();
 				}
 				result = SUCCESS;
@@ -299,9 +290,6 @@ public class LineRegisterCommand implements Command {
 	private void findRefToLoc(Line line){
 		for (Route route : line.getRoutes()) {
 			checkStopPointList(route.getStopPoints());
-
-
-
 			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
 				checkStopPointList(journeyPattern.getStopPoints());
 
@@ -414,98 +402,6 @@ public class LineRegisterCommand implements Command {
 		}
 
 		buffer.append('\n');
-
-	}
-
-	protected void writeAccessibilityAssessmentVj(StringWriter bufferAa, StringWriter bufferAl, AccessibilityAssessment accessibilityAssessment) {
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-
-		bufferAa.write(accessibilityAssessment.getObjectId().replace('|', '_'));
-		bufferAa.append(SEP);
-		bufferAa.write(accessibilityAssessment.getObjectVersion().toString());
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getCreationTime() != null) {
-			bufferAa.write(dateTimeFormat.print(accessibilityAssessment.getCreationTime()));
-		} else {
-			bufferAa.write(NULL);
-		}
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getCreatorId() != null) {
-			bufferAa.write(accessibilityAssessment.getCreatorId().replace('|', '_'));
-		} else {
-			bufferAa.write(NULL);
-		}
-
-		bufferAa.append(SEP);
-		if(accessibilityAssessment.getMobilityImpairedAccess() != null) {
-			bufferAa.write(accessibilityAssessment.getMobilityImpairedAccess().toString());
-		} else {
-			bufferAa.write(NULL);
-		}
-
-		bufferAa.append('\n');
-
-		writeAccessibilityLimitationVj(bufferAl, accessibilityAssessment.getAccessibilityLimitation());
-
-	}
-
-	protected void writeAccessibilityLimitationVj(StringWriter bufferAl, AccessibilityLimitation accessibilityLimitation) {
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-		bufferAl.write(accessibilityLimitation.getObjectId().replace('|', '_'));
-		bufferAl.append(SEP);
-		bufferAl.write(accessibilityLimitation.getObjectVersion().toString());
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getCreationTime() != null) {
-			bufferAl.write(dateTimeFormat.print(accessibilityLimitation.getCreationTime()));
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getCreatorId() != null) {
-			bufferAl.write(accessibilityLimitation.getCreatorId().replace('|', '_'));
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getWheelchairAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getWheelchairAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getVisualSignsAvailable() != null) {
-			bufferAl.write(accessibilityLimitation.getVisualSignsAvailable().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getStepFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getStepFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getLiftFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getLiftFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getEscalatorFreeAccess() != null) {
-			bufferAl.write(accessibilityLimitation.getEscalatorFreeAccess().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-		bufferAl.append(SEP);
-		if(accessibilityLimitation.getAudibleSignalsAvailable() != null) {
-			bufferAl.write(accessibilityLimitation.getAudibleSignalsAvailable().toString());
-		} else {
-			bufferAl.write(NULL);
-		}
-
-		bufferAl.append('\n');
 
 	}
 
