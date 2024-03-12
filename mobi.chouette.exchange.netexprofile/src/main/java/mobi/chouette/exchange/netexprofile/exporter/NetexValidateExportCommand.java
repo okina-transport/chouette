@@ -105,10 +105,12 @@ public class NetexValidateExportCommand implements Command, Constant {
 
         if (streamsToClose != null){
             for (BufferedInputStream bufferedInputStream : streamsToClose) {
-                try {
-                    bufferedInputStream.close();
-                } catch (IOException e) {
-                    log.error("Error while closing stream", e);
+                if(bufferedInputStream != null){
+                    try {
+                        bufferedInputStream.close();
+                    } catch (IOException e) {
+                        log.error("Error while closing stream", e);
+                    }
                 }
             }
         }
