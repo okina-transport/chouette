@@ -194,7 +194,10 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 
         String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, gtfsRouteId);
         Line line = ObjectFactory.getLine(referential, lineId);
-        line.setPosition(position);
+        if (configuration.isRouteSortOrder()) {
+            line.setPosition(position);
+        }
+
         convert(context, gtfsRoute, line);
 
 

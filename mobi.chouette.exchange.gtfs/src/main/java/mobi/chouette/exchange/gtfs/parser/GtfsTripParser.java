@@ -1254,7 +1254,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
             stopPoint.setRoute(route);
-            if (position != null) {
+            if (configuration.isRouteSortOrder() && position != null) {
                 stopPoint.setPosition(position);
             } else {
                 stopPoint.setPosition(positionInitial++);
