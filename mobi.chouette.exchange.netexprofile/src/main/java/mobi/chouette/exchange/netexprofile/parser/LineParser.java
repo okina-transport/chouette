@@ -112,11 +112,13 @@ public class LineParser implements Parser, Constant {
 			if (netexLine.getPresentation() != null) {
 				PresentationStructure presentation = netexLine.getPresentation();
 				HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();
-				if (presentation.getColour() != null) {
-					chouetteLine.setColor(hexBinaryAdapter.marshal(presentation.getColour()));
-				}
-				if (presentation.getTextColour() != null) {
-					chouetteLine.setTextColor(hexBinaryAdapter.marshal(presentation.getTextColour()));
+				if (parameters.isNetexImportColors()) {
+					if (presentation.getColour() != null) {
+						chouetteLine.setColor(hexBinaryAdapter.marshal(presentation.getColour()));
+					}
+					if (presentation.getTextColour() != null) {
+						chouetteLine.setTextColor(hexBinaryAdapter.marshal(presentation.getTextColour()));
+					}
 				}
 			}
 

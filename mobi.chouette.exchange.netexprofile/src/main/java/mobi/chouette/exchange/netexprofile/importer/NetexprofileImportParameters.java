@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"parseSiteFrames", "validateAgainstSchema", "validateAgainstProfile", "continueOnLineErrors", "cleanOnErrors", "objectIdPrefix", "importMode", "netexImportLayouts"})
+@XmlType(propOrder = {"parseSiteFrames", "validateAgainstSchema", "validateAgainstProfile", "continueOnLineErrors", "cleanOnErrors", "objectIdPrefix", "importMode", "netexImportLayouts", "netexImportColors"})
 public class NetexprofileImportParameters extends AbstractImportParameter {
 
 	@Getter
@@ -52,6 +52,11 @@ public class NetexprofileImportParameters extends AbstractImportParameter {
 	@Setter
 	@XmlElement(name = "netex_import_layouts", defaultValue = "false")
 	private boolean netexImportLayouts = false;
+
+	@Getter
+	@Setter
+	@XmlElement(name = "netex_import_colors", defaultValue = "false")
+	private boolean netexImportColors = false;
 
 
 }
