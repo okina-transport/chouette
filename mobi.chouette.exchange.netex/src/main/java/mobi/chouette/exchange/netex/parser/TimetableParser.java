@@ -52,6 +52,8 @@ public class TimetableParser implements Parser, Constant {
 
 		referential.getTimetables().put(timetable.getObjectId(), timetable);
 
+		timetable.computeLimitOfPeriods();
+
 		log.debug("[DSU] " + "ServiceCalendarFrame" + "\t"
 				+ timetable.getObjectId());
 		timetable.setFilled(true);

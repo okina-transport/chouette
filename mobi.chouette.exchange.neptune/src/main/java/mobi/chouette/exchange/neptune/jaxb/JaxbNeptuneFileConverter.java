@@ -64,6 +64,8 @@ public class JaxbNeptuneFileConverter {
 	private JaxbNeptuneFileConverter() throws JAXBException, SAXException, URISyntaxException, IOException {
 		context = JAXBContext.newInstance(ChouettePTNetworkType.class);
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		//todo switch to run neptune local
+		//schema = schemaFactory.newSchema(new File("/tmp/xsd/neptune.xsd"));
 		schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("xsd/neptune.xsd"));
 	}
 

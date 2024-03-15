@@ -60,16 +60,19 @@ public class NeptuneComplianceCheckerCommand implements Command, Constant {
 
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("xsd/neptune.xsd"));
 
-        validationReporter = ValidationReporter.Factory.getInstance();
-        validationReporter.addItemToValidationReport(context, XML_3, "E");
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(org.trident.schema.trident.ObjectFactory.class);
-        unmarshaller = jaxbContext.createUnmarshaller();
-        unmarshaller.setSchema(schema);
 
         try {
+            //todo switch to run neptune local
+            //Schema schema = schemaFactory.newSchema(new File("/tmp/xsd/neptune.xsd"));
+            Schema schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("/xsd/neptune.xsd"));
+            validationReporter = ValidationReporter.Factory.getInstance();
+            validationReporter.addItemToValidationReport(context, XML_3, "E");
+
+            JAXBContext jaxbContext = JAXBContext.newInstance(org.trident.schema.trident.ObjectFactory.class);
+            unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.setSchema(schema);
+
             context.put(REFERENTIAL, new Referential());
             JobData jobData = (JobData) context.get(JOB_DATA);
             Path path = Paths.get(jobData.getPathName(), INPUT);

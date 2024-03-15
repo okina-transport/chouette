@@ -66,6 +66,7 @@ public class NeptuneAnalyzeFileCommand extends AbstractImporterCommand implement
 
             progression.saveAnalyzeReport(context,true);
         }catch(Exception e){
+            log.error("Error while validating Neptune file : " + e);
             report.setResult("NOK");
             reporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR,"Fatal :" + e);
         }

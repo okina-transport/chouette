@@ -96,6 +96,9 @@ public class TimetableParser implements Parser, Constant {
 				XPPUtil.skipSubTree(log, xpp);
 			}
 		}
+		if(timetable != null){
+			timetable.computeLimitOfPeriods();
+		}
 		validator.addLocation(context, timetable, lineNumber, columnNumber);
 	}
 

@@ -214,13 +214,7 @@ public abstract class NeptuneUtil {
 					return;
 				}
 			}
-			Collections.sort(jp.getStopPoints(), new Comparator<StopPoint>() {
-
-				@Override
-				public int compare(StopPoint arg0, StopPoint arg1) {
-					return arg0.getPosition().intValue() - arg1.getPosition().intValue();
-				}
-			});
+			jp.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
 			jp.setDepartureStopPoint(stopPoints.get(0));
 			jp.setArrivalStopPoint(stopPoints.get(stopPoints.size() - 1));
 		}
