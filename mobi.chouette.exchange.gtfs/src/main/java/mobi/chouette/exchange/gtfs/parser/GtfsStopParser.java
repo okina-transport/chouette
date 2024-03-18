@@ -19,6 +19,9 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +35,8 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
 		gtfsValidationReporter.getExceptions().clear();
+
+		List<String> selfReferencingStops = new ArrayList<>();
 		
 		// stops.txt
 		// log.info("validating stops");
@@ -76,6 +81,10 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			parser.setWithValidation(true);
 			for (GtfsStop bean : parser) {
 				try {
+					if (bean.getStopId().equals(bean.getParentStation())){
+						selfReferencingStops.add(bean.getStopId());
+					}
+
 					if (bean.getLocationType() == null)
 						;//bean.setLocationType(LocationType.Stop);
 					else
@@ -95,6 +104,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 				gtfsValidationReporter.reportErrors(context, bean.getErrors(), GTFS_STOPS_FILE);
 				gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, bean.getOkTests());
 			}
+			context.put(GTFS_SELF_REFERENCING_STOPS, selfReferencingStops);
 			parser.setWithValidation(false);
 			if (hasLocationType)
 				gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, GtfsException.ERROR.NO_LOCATION_TYPE);

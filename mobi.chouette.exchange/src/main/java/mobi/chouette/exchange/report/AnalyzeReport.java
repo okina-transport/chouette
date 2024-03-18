@@ -84,6 +84,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "duplicateOriginalStopIds")
     private List<String> duplicateOriginalStopIds = new ArrayList<>();
 
+    @XmlElement(name = "selfReferencingStops")
+    private List<String> selfReferencingStops = new ArrayList<>();
+
     @XmlElement(name = "canLaunchImport")
     private boolean canLaunchImport = true;
 
@@ -243,6 +246,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!stopPlacesWithoutQuay.isEmpty()) {
             canLaunchImport = false;
             analyzeReportMap.put("stopPlacesWithoutQuay", buildStringList(stopPlacesWithoutQuay, "stopId"));
+        }
+
+        if (selfReferencingStops != null && selfReferencingStops.size() >0){
+            canLaunchImport = false;
+            analyzeReportMap.put("selfReferencingStops", buildStringList(selfReferencingStops, "stopId"));
         }
 
         if (!multimodalStopPlaces.isEmpty()) {

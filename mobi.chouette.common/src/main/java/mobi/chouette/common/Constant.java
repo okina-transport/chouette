@@ -121,4 +121,6 @@ public interface Constant {
 
 	public static final String GTFS_ACCESSIBILITY_MAP = "GTFSAccessibilityMap";
 
+	public static final String GTFS_SELF_REFERENCING_STOPS = "GTFSSelfReferencingStops";
+
 }

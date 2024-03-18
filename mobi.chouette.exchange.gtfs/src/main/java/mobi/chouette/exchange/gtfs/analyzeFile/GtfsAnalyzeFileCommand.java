@@ -18,6 +18,7 @@ import mobi.chouette.model.StopArea;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements Command, Constant {
@@ -50,6 +51,8 @@ public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements C
 
         try{
             result = process(context, commands, progression, true, Mode.line);
+            List<String> selfReferencingStops = (List) context.get(GTFS_SELF_REFERENCING_STOPS);
+            analyzeReport.setSelfReferencingStops(selfReferencingStops);
             report.setResult("OK");
             progression.saveAnalyzeReport(context,true);
             log.info("Gtfs analysis completed");
