@@ -5,6 +5,8 @@ import mobi.chouette.core.CoreExceptionCode;
 import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -20,6 +22,7 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
 
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String lauchCleanUpFunction(String functionName) throws CoreException {
 
         if (functionName == null || functionName == ""){
@@ -41,6 +44,29 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
             throw new CoreException(CoreExceptionCode.DELETE_IMPOSSIBLE,"Error while trying to launch function:" + functionName);
         }
     }
+
+    @Override
+    public void launchVoidFunction(String functionName) throws CoreException {
+
+        if (functionName == null || functionName == ""){
+            throw new IllegalArgumentException("Function name must be provided");
+        }
+
+        String fctResult = "";
+        try {
+             em.createNativeQuery(
+                            "SELECT count(*) FROM " + functionName + "()")
+                    .getSingleResult();
+
+
+
+        } catch (Exception e) {
+            throw new CoreException(CoreExceptionCode.DELETE_IMPOSSIBLE,"Error while trying to launch function:" + functionName);
+        }
+    }
+
+
+
 
     @Override
     public String removeExpiredTimetableDates(LocalDate startDate) {

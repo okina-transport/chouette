@@ -79,7 +79,7 @@ public class VehicleJourneyProducer extends AbstractJaxbNeptuneProducer<VehicleJ
 					jaxbVehicleJourneyAtStop.setBoardingAlightingPossibility(buildBoardingAndAlightingPossibility(vehicleJourneyAtStop));
 					jaxbVehicleJourneyAtStop.setOrder(BigInteger.valueOf(order++));
 					jaxbVehicleJourneyAtStop.setStopPointId(getNonEmptyObjectId(vehicleJourneyAtStop.getStopPoint()));
-					jaxbVehicleJourneyAtStop.setVehicleJourneyId(jaxbVehicleJourney.getObjectId());
+				//	jaxbVehicleJourneyAtStop.setVehicleJourneyId(jaxbVehicleJourney.getObjectId());
 					switch(vehicleJourney.getJourneyCategory()) {
 					case Timesheet:
 						if (vehicleJourneyAtStop.getArrivalTime() != null) {

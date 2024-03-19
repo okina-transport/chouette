@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
@@ -36,6 +37,7 @@ public class NeptuneInitExportCommand implements Command, Constant {
 
 		try {
 			JobData jobData = (JobData) context.get(JOB_DATA);
+			context.put(INCOMING_LINE_LIST, new ArrayList());
 			NeptuneExportParameters configuration = (NeptuneExportParameters) context.get(CONFIGURATION);
 			String exportedFileName = configuration.getExportedFileName();
 			if (exportedFileName != null && !"".equals(exportedFileName)){

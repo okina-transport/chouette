@@ -180,7 +180,11 @@ public class ChouettePTNetworkProducer implements Constant {
 				{
 					if(vehicleJourney.getTimetables().size() > 1){
 						String[] timetableObjectIdSplit = timetable.getObjectId().split(":");
-						jaxbObj.getVehicleJourneyId().add(vehicleJourney.getObjectId() + "-" + timetableObjectIdSplit[2]);
+						String vehicleJourneyRef = vehicleJourney.getObjectId() + "-" + timetableObjectIdSplit[2];
+						if (!jaxbObj.getVehicleJourneyId().contains(vehicleJourneyRef)){
+							jaxbObj.getVehicleJourneyId().add(vehicleJourneyRef);
+						}
+
 					}
 					else{
 						jaxbObj.getVehicleJourneyId().add(vehicleJourney.getObjectId());

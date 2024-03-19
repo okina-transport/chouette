@@ -16,6 +16,7 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.CleanUpDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.exchange.neptune.Constant;
@@ -39,12 +40,17 @@ public class DaoNeptuneLineProducerCommand implements Command, Constant {
 	@EJB
 	private ScheduledStopPointDAO scheduledStopPointDAO;
 
+	@EJB
+	CleanUpDAO cleanUpDAO;
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public boolean execute(Context context) throws Exception {
 
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
+
+		cleanUpDAO.launchVoidFunction("clean_duplicates_tt_vj");
 
 		try {
 

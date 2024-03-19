@@ -20,6 +20,8 @@ public class PTNetworkProducer extends
       //
       populateFromModel(jaxbPTNetwork, ptNetwork);
 
+      jaxbPTNetwork.setObjectId(jaxbPTNetwork.getObjectId().replaceAll("[^a-zA-Z0-9:]", "_"));
+
       jaxbPTNetwork.setName(ptNetwork.getName());
       jaxbPTNetwork.setRegistration(getRegistration(ptNetwork
             .getRegistrationNumber()));

@@ -41,7 +41,7 @@ public class LineProducer extends AbstractJaxbNeptuneProducer<ChouettePTNetworkT
 		jaxbLine.setName(line.getName());
 		jaxbLine.setNumber(line.getNumber());
 		jaxbLine.setPublishedName(line.getPublishedName());
-		jaxbLine.setPtNetworkIdShortcut(getNonEmptyObjectId(line.getNetwork()));
+		jaxbLine.setPtNetworkIdShortcut(getNonEmptyObjectId(line.getNetwork()).replaceAll("[^a-zA-Z0-9:]", "_"));
 
 		try {
 			mobi.chouette.exchange.neptune.model.TransportModeNameEnum transportModeName = mapTransportModeAndTransportSubModeToNeptuneTransportMode(line);
