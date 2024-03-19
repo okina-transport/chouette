@@ -165,8 +165,8 @@ public class NetexFranceProfileImportTest {
         Assert.assertEquals(someLine.getPublishedName(),"Ligne Express A14 Les Mureaux - La Défense");
         Assert.assertEquals(someLine.getRegistrationNumber(),"142");
         Assert.assertEquals(someLine.getTransportModeName(),TransportModeNameEnum.Bus);
-        Assert.assertEquals(someLine.getColor(),"2618F2");
-        Assert.assertEquals(someLine.getTextColor(),"000000");
+        Assert.assertEquals(someLine.getColor(),null);
+        Assert.assertEquals(someLine.getTextColor(),null);
         Assert.assertEquals(someLine.getNetwork().getObjectId(),"TESTORGANISATION:Network:default", "Problem between line-network link");
         Assert.assertEquals(someLine.getCompany().getObjectId(),"TESTORGANISATION:Operator:ag1o", "Problem between line-company link");
 
