@@ -1,15 +1,21 @@
 package mobi.chouette.exchange.importer.updater;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.type.TransportModeNameEnum;
 
+import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.rutebanken.netex.model.StopTypeEnumeration;
+import org.rutebanken.netex.model.Zone_VersionStructure;
+
+import static mobi.chouette.common.Constant.IMPORTED_ID;
 
 public class NeTExStopPlaceUtil {
 
@@ -62,6 +68,32 @@ public class NeTExStopPlaceUtil {
 		}
 
 		return transportModes;
+	}
+
+	public static Optional<String> getImportedId(Zone_VersionStructure stopPlace){
+
+		String currentSchema = ContextHolder.getContext();
+
+		if (stopPlace.getKeyList() == null)
+			return Optional.empty();
+
+		List<String> importedIds = stopPlace.getKeyList().getKeyValue().stream()
+				.filter(kv -> IMPORTED_ID.equals(kv.getKey()))
+				.map(kv -> kv.getValue().split(","))
+				.flatMap(Stream::of)
+				.filter(importedId -> importedId != null && importedId.toLowerCase().startsWith(currentSchema))
+				.collect(Collectors.toList());
+
+
+		if (importedIds.isEmpty())
+			return Optional.empty();
+
+		return Optional.of(importedIds.get(0));
+
+	}
+
+	public static String extractIdPostfix(String netexId) {
+		return netexId.substring(netexId.lastIndexOf(':') + 1).trim();
 	}
 
 }

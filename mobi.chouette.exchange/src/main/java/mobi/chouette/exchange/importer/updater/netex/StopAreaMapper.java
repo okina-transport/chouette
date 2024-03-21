@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.importer.updater.netex;
 
+import mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -13,6 +14,8 @@ import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.Zone_VersionStructure;
+
+import java.util.Optional;
 
 /**
  * Map from NeTEx to chouette model
@@ -98,6 +101,7 @@ public class StopAreaMapper {
         mapQuayUrl(quay, boardingPosition);
         mapQuayRegistrationNumber(quay, boardingPosition);
         createCompassBearing(quay, boardingPosition);
+        mapOriginalStopId(quay, boardingPosition);
         return boardingPosition;
     }
 
@@ -161,5 +165,10 @@ public class StopAreaMapper {
         if(StringUtils.isNotBlank(quay.getPublicCode())){
             boardingPosition.setRegistrationNumber(quay.getPublicCode());
         }
+    }
+
+    private void mapOriginalStopId(Zone_VersionStructure srcZone, StopArea createdStopArea){
+        Optional<String> importedIdOpt = NeTExStopPlaceUtil.getImportedId(srcZone);
+        importedIdOpt.ifPresent(importedId->createdStopArea.setOriginalStopId(NeTExStopPlaceUtil.extractIdPostfix(importedId)));
     }
 }

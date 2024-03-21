@@ -80,4 +80,6 @@ public interface Constant {
 
 	public static final String DEFAULT_AGENCY = "DEFAULT_AGENCY";
 
+	public static final String IMPORTED_ID = "imported-id";
+
 }

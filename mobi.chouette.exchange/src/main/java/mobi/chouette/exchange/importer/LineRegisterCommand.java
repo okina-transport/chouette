@@ -39,6 +39,7 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -179,6 +180,8 @@ public class LineRegisterCommand implements Command {
 				if (oldValue.getNetwork() == null){
 					feedNetwork(oldValue);
 				}
+
+				searchEmptyOriginalStopIds(referential, oldValue);
 
 				lineDAO.create(oldValue);
 				lineDAO.flush(); // to prevent SQL error outside method
@@ -335,6 +338,20 @@ public class LineRegisterCommand implements Command {
 
 		buffer.append('\n');
 
+	}
+
+	private void searchEmptyOriginalStopIds(Referential referential, Line line){
+		for (Route route : line.getRoutes()) {
+			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+				for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
+					StopArea stopArea = stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject();
+					if (stopArea != null && StringUtils.isEmpty(stopArea.getOriginalStopId())){
+						StopArea sharedStopArea = referential.getSharedStopAreas().get(stopArea.getObjectId());
+						stopArea.setOriginalStopId(sharedStopArea != null ? sharedStopArea.getOriginalStopId() : null);
+					}
+				}
+			}
+		}
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {

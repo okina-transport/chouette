@@ -139,6 +139,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		stopArea.setComment(AbstractConverter.getNonEmptyTrimedString(gtfsStop.getStopDesc()));
 		stopArea.setTimeZone(AbstractConverter.toString(gtfsStop.getStopTimezone()));
 		stopArea.setFareCode(0);
+		stopArea.setOriginalStopId(gtfsStop.getStopId());
 
 		if (gtfsStop.getLocationType() == GtfsStop.LocationType.Station) {
 			stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);

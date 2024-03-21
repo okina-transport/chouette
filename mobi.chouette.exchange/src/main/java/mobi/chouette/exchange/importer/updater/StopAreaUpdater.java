@@ -132,6 +132,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setComment(newValue.getComment());
 				oldValue.setLongLatType(newValue.getLongLatType());
 				oldValue.setUrl(newValue.getUrl());
+				oldValue.setOriginalStopId(newValue.getOriginalStopId());
 			}
 			oldValue.setLongitude(newValue.getLongitude());
 			oldValue.setLatitude(newValue.getLatitude());
@@ -220,6 +221,10 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				if (newValue.getStopAreaType() != null && !newValue.getStopAreaType().equals(oldValue.getStopAreaType())) {
 					oldValue.setStopAreaType(newValue.getStopAreaType());
 				}
+			}
+
+			if (newValue.getOriginalStopId() != null && !newValue.getOriginalStopId().equals(oldValue.getOriginalStopId())) {
+				oldValue.setOriginalStopId(newValue.getOriginalStopId());
 			}
 			if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
 				oldValue.setLongitude(newValue.getLongitude());
