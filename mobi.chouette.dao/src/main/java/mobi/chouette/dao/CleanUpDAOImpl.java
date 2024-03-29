@@ -22,7 +22,6 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
 
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String lauchCleanUpFunction(String functionName) throws CoreException {
 
         if (functionName == null || functionName == ""){
