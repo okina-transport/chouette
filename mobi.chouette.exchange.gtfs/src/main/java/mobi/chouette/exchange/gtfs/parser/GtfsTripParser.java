@@ -27,8 +27,6 @@ import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.Interchange;
 import mobi.chouette.model.JourneyFrequency;
@@ -51,10 +49,8 @@ import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
@@ -353,7 +349,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
         GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-        Set<String> routeIds = new HashSet<String>();
+        Set<String> routeIds = new HashSet<>();
 
         // trips.txt
         // log.info("validating trips");
@@ -398,10 +394,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             GtfsException fatalException = null;
             tripParser.setWithValidation(true);
-            Map<GtfsTrip.WheelchairAccessibleType, List<String>> accessibilityTripMap = new HashMap<>();
-            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.Allowed, new ArrayList<>());
-            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.NoAllowed, new ArrayList<>());
-            String prefix = configuration.getObjectIdPrefix();
 
             for (GtfsTrip bean : tripParser) {
                 if(!configuration.isImportShapesFile()){
@@ -426,11 +418,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.reportErrors(context, bean.getRouteId(), bean.getErrors(), GTFS_TRIPS_FILE);
                 gtfsValidationReporter.validate(context, GTFS_TRIPS_FILE, bean.getOkTests());
 
-                if (bean.getWheelchairAccessible() != null && !GtfsTrip.WheelchairAccessibleType.NoInformation.equals(bean.getWheelchairAccessible())){
-                    accessibilityTripMap.get(bean.getWheelchairAccessible()).add(prefix.toUpperCase() + ":VehicleJourney:" + bean.getTripId());
-                }
             }
-            context.put(GTFS_ACCESSIBILITY_MAP, accessibilityTripMap);
             tripParser.setWithValidation(false);
             int i = 1;
             boolean unsuedId = true;
@@ -539,6 +527,17 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
         Map<String, JourneyPattern> journeyPatternByStopSequence = new HashMap<>();
 
+        Map<GtfsTrip.WheelchairAccessibleType, List<String>> accessibilityTripMap;
+        if(context.get(GTFS_ACCESSIBILITY_MAP) == null){
+            accessibilityTripMap = new HashMap<>();
+            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.Allowed, new ArrayList<>());
+            accessibilityTripMap.put(GtfsTrip.WheelchairAccessibleType.NoAllowed, new ArrayList<>());
+        }
+        else{
+            accessibilityTripMap = (Map<GtfsTrip.WheelchairAccessibleType, List<String>>) context.get(GTFS_ACCESSIBILITY_MAP);
+        }
+
+
         // VehicleJourney
         Index<GtfsTrip> gtfsTrips = importer.getTripByRoute();
 
@@ -564,7 +563,36 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             String objectId = AbstractConverter.composeObjectId(configuration,
                     VehicleJourney.VEHICLEJOURNEY_KEY, gtfsTrip.getTripId());
             VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, objectId);
-            convert(referential, configuration, gtfsTrip, vehicleJourney);
+
+            if (gtfsTrip.getWheelchairAccessible() != null && !GtfsTrip.WheelchairAccessibleType.NoInformation.equals(gtfsTrip.getWheelchairAccessible())){
+                accessibilityTripMap.get(gtfsTrip.getWheelchairAccessible()).add(vehicleJourney.getObjectId());
+            }
+
+            if (gtfsTrip.getTripShortName() != null) {
+                vehicleJourney.setPrivateCode(gtfsTrip.getTripShortName());
+            }
+
+            if (StringUtils.trimToNull(gtfsTrip.getTripHeadSign()) != null) {
+                vehicleJourney.setPublishedJourneyName(gtfsTrip.getTripHeadSign());
+            }
+
+
+            if (gtfsTrip.getBikesAllowed() != null) {
+                switch (gtfsTrip.getBikesAllowed()) {
+                    case NoInformation:
+                        vehicleJourney.setBikesAllowed(null);
+                        break;
+                    case NoAllowed:
+                        vehicleJourney.setBikesAllowed(Boolean.FALSE);
+                        break;
+                    case Allowed:
+                        vehicleJourney.setBikesAllowed(Boolean.TRUE);
+                        break;
+                }
+            }
+
+            vehicleJourney.setFilled(true);
+            vehicleJourney.setPublishedJourneyIdentifier(gtfsTrip.getTripShortName());
 
             // VehicleJourneyAtStop
             boolean afterMidnight = true;
@@ -635,6 +663,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
 
         }
+
+        context.put(GTFS_ACCESSIBILITY_MAP, accessibilityTripMap);
+
         // dispose collections
         journeyPatternByStopSequence.clear();
     }
@@ -1184,36 +1215,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 return AlightingPossibilityEnum.request_stop;
         }
         return null;
-    }
-
-    protected void convert(Referential referential, GtfsImportParameters configuration, GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) {
-
-        if (gtfsTrip.getTripShortName() != null) {
-            vehicleJourney.setPrivateCode(gtfsTrip.getTripShortName());
-        }
-
-        if (StringUtils.trimToNull(gtfsTrip.getTripHeadSign()) != null) {
-            vehicleJourney.setPublishedJourneyName(gtfsTrip.getTripHeadSign());
-        }
-
-
-        if (gtfsTrip.getBikesAllowed() != null) {
-            switch (gtfsTrip.getBikesAllowed()) {
-                case NoInformation:
-                    vehicleJourney.setBikesAllowed(null);
-                    break;
-                case NoAllowed:
-                    vehicleJourney.setBikesAllowed(Boolean.FALSE);
-                    break;
-                case Allowed:
-                    vehicleJourney.setBikesAllowed(Boolean.TRUE);
-                    break;
-            }
-        }
-
-        vehicleJourney.setFilled(true);
-        vehicleJourney.setPublishedJourneyIdentifier(gtfsTrip.getTripShortName());
-
     }
 
     /**
