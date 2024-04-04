@@ -111,6 +111,12 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             network.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(network.getObjectId(), defaultCodespacePrefix));
             for(Line line : network.getLines()){
                 line.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getObjectId(), defaultCodespacePrefix));
+                if(line.getAccessibilityAssessment() != null){
+                    line.getAccessibilityAssessment().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getAccessibilityAssessment().getObjectId(), defaultCodespacePrefix));
+                    if(line.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+                        line.getAccessibilityAssessment().getAccessibilityLimitation().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId(), defaultCodespacePrefix));
+                    }
+                }
             }
         }
         for (Route route : exportableData.getRoutes()) {
@@ -142,6 +148,12 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         }
         for (VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             vehicleJourney.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getObjectId(), defaultCodespacePrefix));
+            if(vehicleJourney.getAccessibilityAssessment() != null){
+                vehicleJourney.getAccessibilityAssessment().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getAccessibilityAssessment().getObjectId(), defaultCodespacePrefix));
+                if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+                    vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId(), defaultCodespacePrefix));
+                }
+            }
         }
         for (Company company : exportableData.getCompanies()) {
             company.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(company.getObjectId(), defaultCodespacePrefix));
