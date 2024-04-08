@@ -114,8 +114,8 @@ public abstract class AbstractProducer
             String[] orignalIdStrings =  originalId.split(":");
             sb.append(idPrefix).append(":").append(orignalIdStrings[1]).append(":").append(orignalIdStrings[2]);
          }
-         if (StringUtils.isNotEmpty(idSuffix)){
-            sb.append(idSuffix);
+         else{
+            sb.append(originalId);
          }
       }
       else {
@@ -126,14 +126,14 @@ public abstract class AbstractProducer
             sb.append(":Line:");
          }
          sb.append(originalId);
-
-         if (StringUtils.isNotEmpty(idSuffix)){
-            sb.append(idSuffix);
-         }
       }
 
+       if (StringUtils.isNotEmpty(idSuffix)){
+          sb.append(idSuffix);
+       }
 
-      return sb.toString().replace(Constant.COLON_REPLACEMENT_CODE, ":");
+
+       return sb.toString().replace(Constant.COLON_REPLACEMENT_CODE, ":");
    }
 
 
