@@ -26,6 +26,10 @@ public abstract class AbstractProducer
    static protected String toGtfsId(String neptuneId, String prefix, boolean keepOriginal)
    {
       if (keepOriginal) {
+         if(StringUtils.isNotEmpty(prefix)){
+            String[] neptuneIdStrings = neptuneId.split(":");
+            return prefix + ":" + neptuneIdStrings[1] + ":" + neptuneIdStrings[2];
+         }
          return neptuneId;
       } else {
          String[] tokens = neptuneId.split(":");
@@ -105,18 +109,28 @@ public abstract class AbstractProducer
       String idSuffix= idParams.getIdSuffix();
       StringBuilder sb = new StringBuilder();
 
-      if (StringUtils.isNotEmpty(idPrefix))
-         sb.append(idPrefix);
-
-      if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)){
-         sb.append(":Line:");
+      if(originalId.split(":").length > 1){
+         if (StringUtils.isNotEmpty(idPrefix)){
+            String[] orignalIdStrings =  originalId.split(":");
+            sb.append(idPrefix).append(":").append(orignalIdStrings[1]).append(":").append(orignalIdStrings[2]);
+         }
+         if (StringUtils.isNotEmpty(idSuffix)){
+            sb.append(idSuffix);
+         }
       }
-      sb.append(originalId);
+      else {
+         if (StringUtils.isNotEmpty(idPrefix))
+            sb.append(idPrefix);
 
-      if (StringUtils.isNotEmpty(idSuffix)){
-         sb.append(idSuffix);
+         if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)){
+            sb.append(":Line:");
+         }
+         sb.append(originalId);
+
+         if (StringUtils.isNotEmpty(idSuffix)){
+            sb.append(idSuffix);
+         }
       }
-
 
 
       return sb.toString().replace(Constant.COLON_REPLACEMENT_CODE, ":");

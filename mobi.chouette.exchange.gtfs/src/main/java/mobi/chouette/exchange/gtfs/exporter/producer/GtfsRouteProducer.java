@@ -40,7 +40,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
    public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams)
    {
-      route.setRouteId(generateCustomRouteId(toGtfsId(neptuneObject.getObjectId(), prefix,keepOriginalId),idParams));
+      route.setRouteId(generateCustomRouteId(toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
        if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
            route.setRouteId(route.getRouteId().replace(":Line:", ":FlexibleLine:"));
        }
