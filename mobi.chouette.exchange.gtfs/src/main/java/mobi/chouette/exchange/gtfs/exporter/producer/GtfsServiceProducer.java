@@ -111,13 +111,11 @@ AbstractProducer
 
          Period period = reduced.getPeriods().get(0);
          if (exportStartDate != null && exportStartDate.isAfter(period.getStartDate())) {
-            // DATA-148
             calendar.setStartDate(exportStartDate);
          } else {
             calendar.setStartDate(period.getStartDate());
          }
          if (exportEndDate != null && exportEndDate.isBefore(period.getEndDate())) {
-            // DATA-148
             calendar.setEndDate(exportEndDate);
          } else {
             calendar.setEndDate(period.getEndDate());
@@ -134,7 +132,7 @@ AbstractProducer
       }
       if (!isEmpty(reduced.getCalendarDays()))
       {
-         // DATA-148: remove dates that are before export start date and after export end date
+         // remove dates that are before export start date and after export end date
          List<CalendarDay> validCalendarDays = reduced.getCalendarDays().stream()
                  .filter(
                          cd -> (exportStartDate == null || !cd.getDate().isBefore(exportStartDate))
