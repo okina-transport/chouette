@@ -33,6 +33,7 @@ import mobi.chouette.model.Interchange;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
+import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -164,8 +165,11 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
 		}
 
+		LocalDate startDate = new LocalDate(configuration.getStartDate());
+		LocalDate endDate = new LocalDate(configuration.getEndDate());
+
 		for (List<Timetable> tms : timetables.values()) {
-			calendarProducer.save(tms, prefix, configuration.isKeepOriginalId());
+			calendarProducer.save(tms, prefix, configuration.isKeepOriginalId(), startDate, endDate);
 			if (metadata != null) {
 				for (Timetable tm : tms) {
 					metadata.getTemporalCoverage().update(tm.getStartOfPeriod(), tm.getEndOfPeriod());

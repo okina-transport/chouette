@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
@@ -30,6 +31,8 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+
+import javax.annotation.Nullable;
 
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
@@ -51,7 +54,8 @@ AbstractProducer
    GtfsCalendar calendar = new GtfsCalendar();
    GtfsCalendarDate calendarDate = new GtfsCalendarDate();
 
-   public boolean save(List<Timetable> timetables,  String prefix, boolean keepOriginalId)
+   public boolean save(List<Timetable> timetables, String prefix, boolean keepOriginalId, @Nullable LocalDate exportStartDate,
+                       @Nullable LocalDate exportEndDate)
    {
 
       Timetable reduced = merge(timetables, prefix,keepOriginalId);
@@ -106,9 +110,18 @@ AbstractProducer
          calendar.setServiceId(serviceId);
 
          Period period = reduced.getPeriods().get(0);
-         calendar.setStartDate(period.getStartDate());
-         calendar.setEndDate(period.getEndDate());
-
+         if (exportStartDate != null && exportStartDate.isAfter(period.getStartDate())) {
+            // DATA-148
+            calendar.setStartDate(exportStartDate);
+         } else {
+            calendar.setStartDate(period.getStartDate());
+         }
+         if (exportEndDate != null && exportEndDate.isBefore(period.getEndDate())) {
+            // DATA-148
+            calendar.setEndDate(exportEndDate);
+         } else {
+            calendar.setEndDate(period.getEndDate());
+         }
          try
          {
             getExporter().getCalendarExporter().export(calendar);
@@ -121,7 +134,13 @@ AbstractProducer
       }
       if (!isEmpty(reduced.getCalendarDays()))
       {
-         for (CalendarDay day : reduced.getCalendarDays())
+         // DATA-148: remove dates that are before export start date and after export end date
+         List<CalendarDay> validCalendarDays = reduced.getCalendarDays().stream()
+                 .filter(
+                         cd -> (exportStartDate == null || !cd.getDate().isBefore(exportStartDate))
+                                 && (exportEndDate == null || !cd.getDate().isAfter(exportEndDate)))
+                 .collect(Collectors.toList());
+         for (CalendarDay day : validCalendarDays)
          {
             saveDay(serviceId,day);
          }
