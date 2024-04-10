@@ -240,6 +240,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                 commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
             }
 //            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, AccessibilityCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
             if (parameters.isRoutesReorganization()){
                 commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
@@ -247,9 +248,6 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 //            if (parameters.isRouteSortOrder()) {
 //                commands.add(CommandFactory.create(initialContext, RouteSortOrderCommand.class.getName()));
 //            }
-
-
-            commands.add(CommandFactory.create(initialContext, AccessibilityCommand.class.getName()));
 
 
 
