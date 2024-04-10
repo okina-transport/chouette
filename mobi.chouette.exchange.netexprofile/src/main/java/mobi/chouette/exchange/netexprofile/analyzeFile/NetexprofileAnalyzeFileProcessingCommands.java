@@ -72,9 +72,6 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         List<Command> commands = new ArrayList<>();
         try {
             Chain initChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
-                initChain.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
-            }
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
             commands.add(initChain);
@@ -242,10 +239,6 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             lineChain.add(parser);
 
             if (!parameters.isNoSave()) {
-
-                Command clean = CommandFactory.create(initialContext, NetexprofileLineDeleteCommand.class.getName());
-                lineChain.add(clean);
-
                 // analyze
                 Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
                 lineChain.add(analyzeCommand);
