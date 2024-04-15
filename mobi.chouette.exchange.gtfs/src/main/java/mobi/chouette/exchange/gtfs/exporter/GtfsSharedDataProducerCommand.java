@@ -165,8 +165,8 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
 		}
 
-		LocalDate startDate = new LocalDate(configuration.getStartDate());
-		LocalDate endDate = new LocalDate(configuration.getEndDate());
+		LocalDate startDate = configuration.getStartDate() == null ? null : new LocalDate(configuration.getStartDate());
+		LocalDate endDate = configuration.getEndDate() == null ? null : new LocalDate(configuration.getEndDate());
 
 		for (List<Timetable> tms : timetables.values()) {
 			calendarProducer.save(tms, prefix, configuration.isKeepOriginalId(), startDate, endDate);

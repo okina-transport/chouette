@@ -279,7 +279,6 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		ActionReport report = (ActionReport) context.get(REPORT);
 		ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		for (FileReport info : report.getFiles()) {
 		    Reporter.log(info.toString(),true);
 		}
