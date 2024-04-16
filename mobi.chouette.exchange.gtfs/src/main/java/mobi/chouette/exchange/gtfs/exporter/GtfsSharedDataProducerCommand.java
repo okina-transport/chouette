@@ -157,7 +157,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		// produce interchanges
 		for(Interchange interchange : interchanges) {
 			if (isInterchangeValid(interchange)) {
-				transferProducer.save(interchange, prefix, configuration.isKeepOriginalId());
+				transferProducer.save(interchange, prefix, configuration.isKeepOriginalId(), idParams);
 			}
 		}
 

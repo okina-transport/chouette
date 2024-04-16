@@ -5199,7 +5199,8 @@ CREATE TABLE admin.client (
     option_traveler_information boolean DEFAULT false,
     option_indiscipline boolean DEFAULT false,
     netex_prefix character varying(255),
-    rail_uic_regexp character varying(255)
+    rail_uic_regexp character varying(255),
+    gtfs_prefix_export character varying(255)
 
 );
 

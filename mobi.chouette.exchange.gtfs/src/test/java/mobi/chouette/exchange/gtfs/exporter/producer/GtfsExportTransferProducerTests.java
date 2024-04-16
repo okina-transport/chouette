@@ -129,20 +129,20 @@ public class GtfsExportTransferProducerTests
       Interchange interchange = new Interchange();
 
       // Set via reflection due to StopPoint and VehicleJourney is unset after set, but available after reload from database (cannot be transient)
-      FieldUtils.writeField(interchange, "feederStopPoint",feederSSP, true);
-      FieldUtils.writeField(interchange, "feederVehicleJourney",feederVJ, true);
-      FieldUtils.writeField(interchange, "consumerStopPoint",consumerSSP, true);
-      FieldUtils.writeField(interchange, "consumerVehicleJourney",consumerVJ, true);
+      FieldUtils.writeField(interchange, "feederStopPoint", feederSSP, true);
+      FieldUtils.writeField(interchange, "feederVehicleJourney", feederVJ, true);
+      FieldUtils.writeField(interchange, "consumerStopPoint", consumerSSP, true);
+      FieldUtils.writeField(interchange, "consumerVehicleJourney", consumerVJ, true);
 
       interchange.setGuaranteed(Boolean.TRUE);
 
-      producer.save(interchange, "GTFS",false);
+      producer.save(interchange, "GTFS", false, new IdParameters());
       GtfsTransfer gtfsObject = mock.getExportedTransfers().get(0);
 
       Reporter.log(TransferExporter.CONVERTER.to(context,gtfsObject));
 
-      Assert.assertEquals(gtfsObject.getFromStopId(), "start");
-      Assert.assertEquals(gtfsObject.getToStopId(), "end");
+      Assert.assertEquals(gtfsObject.getFromStopId(), "GTFS:StopArea:start");
+      Assert.assertEquals(gtfsObject.getToStopId(), "GTFS:StopArea:end");
  //     Assert.assertEquals(gtfsObject.getFromRouteId(), "feederLine");
  //     Assert.assertEquals(gtfsObject.getToRouteId(), "consumerLine");
       Assert.assertEquals(gtfsObject.getFromTripId(), "feederJourney");
