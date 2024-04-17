@@ -49,8 +49,7 @@ public class CopyCommand implements Command {
 
 
 
-		String sMaxCopy = System.getProperty(checker.getContext()+ PropertyNames.MAX_COPY_BY_JOB);
-		if (sMaxCopy == null) sMaxCopy = "5";
+		String sMaxCopy = System.getProperty(checker.getContext()+ PropertyNames.MAX_COPY_BY_JOB, "5");
 		int maxCopy = Integer.parseInt(sMaxCopy);
 
 		boolean result = ERROR;
