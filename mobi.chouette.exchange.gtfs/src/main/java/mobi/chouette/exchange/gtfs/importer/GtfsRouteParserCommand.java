@@ -37,10 +37,6 @@ public class GtfsRouteParserCommand implements Command, Constant {
 	@Setter
 	private String gtfsRouteId;
 
-	@Getter
-	@Setter
-	private Integer position;
-
 	@Override
 	public boolean execute(Context context) throws Exception {
 		boolean result = ERROR;
@@ -91,7 +87,6 @@ public class GtfsRouteParserCommand implements Command, Constant {
 			// Line
 			GtfsRouteParser gtfsRouteParser = (GtfsRouteParser) ParserFactory.create(GtfsRouteParser.class.getName());
 			gtfsRouteParser.setGtfsRouteId(gtfsRouteId);
-			gtfsRouteParser.setPosition(position);
 			gtfsRouteParser.parse(context);
 
 			addStats(context, referential);

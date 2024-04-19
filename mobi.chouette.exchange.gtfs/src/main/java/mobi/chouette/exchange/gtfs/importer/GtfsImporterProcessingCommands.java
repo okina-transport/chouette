@@ -90,11 +90,10 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                 commands.add(chain);
             }
 
-           ArrayList<String> savedLines = new ArrayList<String>();
-           Integer cpt = 1;
-
+            ArrayList<String> savedLines = new ArrayList<String>();
             String splitCharacter = parameters.getSplitCharacter();
             context.put(TOTAL_NB_OF_LINES,index.getLength());
+
             for (GtfsRoute gtfsRoute : index) {
 
                 if (StringUtils.isNotEmpty(splitCharacter)){
@@ -104,20 +103,11 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                     gtfsRoute.setRouteId(newRouteId.replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
                 }
 
-
-
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
                 GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
                         GtfsRouteParserCommand.class.getName());
                 parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                if (parameters.isRouteSortOrder()) {
-                    parser.setPosition(gtfsRoute.getPosition());
-                } else {
-                    parser.setPosition(cpt);
-                }
-
-                cpt++;
                 chain.add(parser);
                 if (withDao && !parameters.isNoSave()) {
 
@@ -182,7 +172,18 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
+            if (!withDao) {
+            return new ArrayList<>();
+        }
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        List<Command> commands = new ArrayList<>();
+        try {
+            commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
     }
 
     @Override
@@ -193,6 +194,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
         List<Command> commands = new ArrayList<>();
         try {
+            commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
             if (level3validation && !(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
                 // add shared data validation
                 commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));

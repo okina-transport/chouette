@@ -39,11 +39,6 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
     @Setter
     private String gtfsRouteId;
 
-
-    @Getter
-    @Setter
-    private Integer position;
-
     /**
      * Parse the GTFS file routes.txt into a virtual list of GtfsRoute. This
      * list is virtual: (Re-)Parse the list to access a GtfsRoute.
@@ -194,9 +189,6 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 
         String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, gtfsRouteId);
         Line line = ObjectFactory.getLine(referential, lineId);
-        if (configuration.isRouteSortOrder()) {
-            line.setPosition(position);
-        }
 
         convert(context, gtfsRoute, line);
 
@@ -265,6 +257,9 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         line.setTextColor(toHexa(gtfsRoute.getRouteTextColor()));
         line.setUrl(AbstractConverter.toString(gtfsRoute.getRouteUrl()));
         line.setFilled(true);
+        if (configuration.isRouteSortOrder()) {
+            line.setPosition(gtfsRoute.getPosition());
+        }
     }
 
 

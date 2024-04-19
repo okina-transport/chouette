@@ -10,8 +10,6 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
@@ -28,8 +26,6 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.AccessLink;
 import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
@@ -80,12 +76,6 @@ public class LineRegisterCommand implements Command {
 
 	@EJB
 	private VehicleJourneyDAO vehicleJourneyDAO;
-
-	@EJB
-	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
-
-	@EJB
-	private AccessibilityLimitationDAO accessibilityLimitationDAO;
 
 	@EJB
 	private CategoriesForLinesDAO categoriesForLinesDAO;

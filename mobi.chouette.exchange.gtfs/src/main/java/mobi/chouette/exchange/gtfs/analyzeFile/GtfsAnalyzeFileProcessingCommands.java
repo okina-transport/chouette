@@ -23,7 +23,6 @@ import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
-import mobi.chouette.exchange.importer.LineRegisterCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import org.apache.commons.lang.StringUtils;
@@ -88,7 +87,6 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             }
 
             ArrayList<String> savedLines = new ArrayList<String>();
-            Integer cpt = 1;
 
             String splitCharacter = parameters.getSplitCharacter();
             context.put(TOTAL_NB_OF_LINES, index.getLength());
@@ -101,22 +99,12 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
                     gtfsRoute.setRouteId(newRouteId.replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
                 }
 
-
-
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
                 GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
                         GtfsRouteParserCommand.class.getName());
                 parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                if (parameters.isRouteSortOrder()) {
-                    parser.setPosition(gtfsRoute.getPosition());
-                } else {
-                    parser.setPosition(cpt);
-                }
-
-                cpt++;
                 chain.add(parser);
-
 
                 // register
                 Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
