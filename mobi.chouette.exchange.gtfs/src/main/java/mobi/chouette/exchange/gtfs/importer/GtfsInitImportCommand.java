@@ -103,6 +103,14 @@ public class GtfsInitImportCommand implements Command, Constant {
 		return result;
 	}
 
+	public void setProviderDAO(ProviderDAO providerDAO) {
+		this.providerDAO = providerDAO;
+	}
+
+	public void setLineDAO(LineDAO lineDAO) {
+		this.lineDAO = lineDAO;
+	}
+
 	public static class DefaultCommandFactory extends CommandFactory {
 
 		@Override
