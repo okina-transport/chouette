@@ -61,7 +61,6 @@ public interface Constant {
 	String EXPORTABLE_DATA = "exportable_data";
 	String SCHEDULED_STOP_POINTS = "scheduled_stop_points";
 	String SHARED_DATA_KEYS = "shared_data_keys";
-	String SHARED_DATA = "shared_data";
 	String METADATA = "metadata";
 	String LINE = "line";
 	String LINE_ID = "line_id";
@@ -75,9 +74,6 @@ public interface Constant {
 	String NULL = "\\N";
 
 	String BUFFER_VJAS = "buffer_vjas";
-
-	String MAP_IDS_VJ_AA = "map_ids_vj_aa";
-	String MAP_IDS_AA_AL = "map_ids_aa_al";
 
 	String CREATION_DATE = "CreationDate";
 
