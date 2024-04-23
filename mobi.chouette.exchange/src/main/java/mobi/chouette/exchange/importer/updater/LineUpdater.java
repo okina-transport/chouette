@@ -117,6 +117,11 @@ public class LineUpdater implements Updater<Line> {
 			oldValue.setKeyValues(newValue.getKeyValues());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setFlexibleLineProperties(newValue.getFlexibleLineProperties());
+			if ((Boolean) context.getOrDefault(SET_NEW_LINES_POS_TO_ZERO, Boolean.FALSE)) {
+				oldValue.setPosition(0);
+			} else {
+				oldValue.setPosition(newValue.getPosition());
+			}
 			oldValue.setDetached(false);
 		} else {
 			twoDatabaseLineOneTest(validationReporter, context, oldValue, newValue, data);
@@ -174,6 +179,9 @@ public class LineUpdater implements Updater<Line> {
 			}
 			if (newValue.getFlexibleLineProperties() != null && !newValue.getFlexibleLineProperties().equals(oldValue.getFlexibleLineProperties())) {
 				oldValue.setFlexibleLineProperties(newValue.getFlexibleLineProperties());
+			}
+			if (newValue.getPosition() != null && !newValue.getPosition().equals(oldValue.getPosition())) {
+				oldValue.setPosition(newValue.getPosition());
 			}
 		}
 

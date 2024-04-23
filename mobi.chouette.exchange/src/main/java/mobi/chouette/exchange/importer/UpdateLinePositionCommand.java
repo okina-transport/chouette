@@ -17,6 +17,7 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Update position of non-deleted lines inside their network.
@@ -38,6 +39,8 @@ public class UpdateLinePositionCommand implements Command {
     @EJB
     NetworkDAO networkDAO;
 
+    private static final Integer ZERO = 0;
+
     @Override
     public boolean execute(Context context) throws Exception {
         List<Network> networks = networkDAO.findAll();
@@ -45,15 +48,19 @@ public class UpdateLinePositionCommand implements Command {
             log.warn("No networks found");
             return true;
         }
+        boolean flush = false;
         for (Network network : networks) {
-            List<Line> lines = lineDAO.findByNetworkIdAndNotDeleted(network.getId());
+            List<Line> lines = lineDAO.findByNetworkId(network.getId());
             if (CollectionUtils.isEmpty(lines)) {
                 log.info("No lines found for network " + network.getName());
                 continue;
             }
+            lines = lines.stream().filter(
+                    line -> !line.getSupprime() && !ZERO.equals(line.getPosition())
+            ).collect(Collectors.toList());
             // sort lines with a position by their position ASC
             // lines without position are then sorted by their published name ASC
-            // eg:
+            // eg:"
             // [
             //  Line{pos=null, name = 'B'},
             //  Line{pos=null, name = 'A'}',
@@ -74,9 +81,12 @@ public class UpdateLinePositionCommand implements Command {
                     log.info(String.format("Update line %d position (old: %d, new: %d)", line.getId(), line.getPosition(), position));
                     line.setPosition(position);
                     lineDAO.update(line);
+                    flush = true;
                 }
                 position++;
             }
+        }
+        if (flush) {
             lineDAO.flush();
         }
         return true;

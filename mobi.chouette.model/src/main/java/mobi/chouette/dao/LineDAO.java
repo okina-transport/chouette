@@ -14,7 +14,7 @@ public interface LineDAO extends GenericDAO<Line> {
 
     List<Line> findByNetworkId(Long networkId);
 
-    List<Line> findByNetworkIdAndNotDeleted(Long networkId);
+    List<Line> findNotDeleted();
 
     List<String> findObjectIdLinesInFirstDataspace(List<Long> ids, String dataspace);
 
