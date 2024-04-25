@@ -118,6 +118,4 @@ public interface Constant {
 	String GTFS_ACCESSIBILITY_MAP = "GTFSAccessibilityMap";
 
 	String GTFS_SELF_REFERENCING_STOPS = "GTFSSelfReferencingStops";
-
-	String SET_NEW_LINES_POS_TO_ZERO = "setNewLinesPosToZero";
 }

@@ -56,7 +56,7 @@ public class UpdateLinePositionCommand implements Command {
                 continue;
             }
             lines = lines.stream().filter(
-                    line -> !line.getSupprime() && !ZERO.equals(line.getPosition())
+                    line -> !line.getSupprime()
             ).collect(Collectors.toList());
             // sort lines with a position by their position ASC
             // lines without position are then sorted by their published name ASC

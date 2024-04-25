@@ -18,7 +18,6 @@ import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.model.importer.FactoryParameters;
@@ -31,7 +30,6 @@ import mobi.chouette.model.util.Referential;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Log4j
@@ -42,9 +40,6 @@ public class GtfsInitImportCommand implements Command, Constant {
 
 	@EJB
 	ProviderDAO providerDAO;
-
-	@EJB
-	LineDAO lineDAO;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -89,7 +84,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 
 
 			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
-			context.put(SET_NEW_LINES_POS_TO_ZERO, CollectionUtils.isNotEmpty(lineDAO.findNotDeleted()) && parameters.isRouteSortOrder());
+
 
 			result = SUCCESS;
 
@@ -105,10 +100,6 @@ public class GtfsInitImportCommand implements Command, Constant {
 
 	public void setProviderDAO(ProviderDAO providerDAO) {
 		this.providerDAO = providerDAO;
-	}
-
-	public void setLineDAO(LineDAO lineDAO) {
-		this.lineDAO = lineDAO;
 	}
 
 	public static class DefaultCommandFactory extends CommandFactory {

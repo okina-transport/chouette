@@ -117,11 +117,7 @@ public class LineUpdater implements Updater<Line> {
 			oldValue.setKeyValues(newValue.getKeyValues());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setFlexibleLineProperties(newValue.getFlexibleLineProperties());
-			if ((Boolean) context.getOrDefault(SET_NEW_LINES_POS_TO_ZERO, Boolean.FALSE)) {
-				oldValue.setPosition(0);
-			} else {
-				oldValue.setPosition(newValue.getPosition());
-			}
+			oldValue.setPosition(newValue.getPosition());
 			oldValue.setDetached(false);
 		} else {
 			twoDatabaseLineOneTest(validationReporter, context, oldValue, newValue, data);
