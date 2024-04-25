@@ -13,7 +13,6 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.JobDataTest;
-import mobi.chouette.exchange.gtfs.exporter.producer.mock.LineDAOMock;
 import mobi.chouette.exchange.gtfs.exporter.producer.mock.ProviderDAOMock;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
@@ -110,7 +109,6 @@ public abstract class AbstractTests implements Constant, ReportConstant {
 		uncompress.execute(context);
 		GtfsInitImportCommand importCommand = new GtfsInitImportCommand();
 		importCommand.setProviderDAO(new ProviderDAOMock());
-		importCommand.setLineDAO(new LineDAOMock());
 		importCommand.execute(context);
 		Command initValidation = CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName());
 		initValidation.execute(context);
