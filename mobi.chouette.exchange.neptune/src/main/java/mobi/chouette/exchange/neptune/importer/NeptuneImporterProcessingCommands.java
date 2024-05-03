@@ -12,12 +12,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
-import mobi.chouette.exchange.importer.CleanRepositoryCommand;
-import mobi.chouette.exchange.importer.ConnectionLinkPersisterCommand;
-import mobi.chouette.exchange.importer.CopyCommand;
-import mobi.chouette.exchange.importer.LineRegisterCommand;
-import mobi.chouette.exchange.importer.UncompressCommand;
-import mobi.chouette.exchange.importer.UpdateLineInfosCommand;
+import mobi.chouette.exchange.importer.*;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
@@ -36,173 +31,184 @@ import java.util.List;
 @Log4j
 public class NeptuneImporterProcessingCommands implements ProcessingCommands, Constant {
 
-	public static class DefaultFactory extends ProcessingCommandsFactory {
+    static {
+        ProcessingCommandsFactory.factories.put(NeptuneImporterProcessingCommands.class.getName(),
+                new DefaultFactory());
+    }
 
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new NeptuneImporterProcessingCommands();
-			return result;
-		}
-	}
+    @Override
+    public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+        List<Command> commands = new ArrayList<>();
+        try {
+            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+                commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
+            }
+            commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
+    }
 
-	static {
-		ProcessingCommandsFactory.factories.put(NeptuneImporterProcessingCommands.class.getName(),
-				new DefaultFactory());
-	}
-
-	@Override
-	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
-		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
-		List<Command> commands = new ArrayList<>();
-		try {
-			if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
-				commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
-			}
-			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
-			commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
-			commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
-			commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
-		} catch (Exception e) {
-			log.error(e, e);
-			throw new RuntimeException("unable to call factories");
-		}
-		return commands;
-	}
-
-	@Override
-	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
-		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
-		ActionReporter reporter = ActionReporter.Factory.getInstance();
-		boolean level3validation = context.get(VALIDATION) != null;
-		List<Command> commands = new ArrayList<>();
-		JobData jobData = (JobData) context.get(JOB_DATA);
-		Path path = Paths.get(jobData.getPathName(), INPUT);
+    @Override
+    public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+        ActionReporter reporter = ActionReporter.Factory.getInstance();
+        boolean level3validation = context.get(VALIDATION) != null;
+        List<Command> commands = new ArrayList<>();
+        JobData jobData = (JobData) context.get(JOB_DATA);
+        Path path = Paths.get(jobData.getPathName(), INPUT);
 
 
-		try {
-			List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");
-			if (!excluded.isEmpty()) {
-				for (Path exclude : excluded) {
-					reporter.setFileState(context, exclude.getFileName().toString(), IO_TYPE.INPUT,FILE_STATE.IGNORED);
-				}
-			}
-			List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
-			context.put(TOTAL_NB_OF_LINES, stream.size());
-			for (Path file : stream) {
-				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-				commands.add(chain);
-				// validation schema
-				String url = file.toUri().toURL().toExternalForm();
-				NeptuneSAXParserCommand schema = (NeptuneSAXParserCommand) CommandFactory.create(initialContext,
-						NeptuneSAXParserCommand.class.getName());
-				schema.setFileURL(url);
-				chain.add(schema);
+        try {
+            List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");
+            if (!excluded.isEmpty()) {
+                for (Path exclude : excluded) {
+                    reporter.setFileState(context, exclude.getFileName().toString(), IO_TYPE.INPUT, FILE_STATE.IGNORED);
+                }
+            }
+            List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
+            context.put(TOTAL_NB_OF_LINES, stream.size());
+            for (Path file : stream) {
+                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+                commands.add(chain);
+                // validation schema
+                String url = file.toUri().toURL().toExternalForm();
+                NeptuneSAXParserCommand schema = (NeptuneSAXParserCommand) CommandFactory.create(initialContext,
+                        NeptuneSAXParserCommand.class.getName());
+                schema.setFileURL(url);
+                chain.add(schema);
 
-				// parser
-				NeptuneParserCommand parser = (NeptuneParserCommand) CommandFactory.create(initialContext,
-						NeptuneParserCommand.class.getName());
-				parser.setFileURL(file.toUri().toURL().toExternalForm());
-				chain.add(parser);
+                // parser
+                NeptuneParserCommand parser = (NeptuneParserCommand) CommandFactory.create(initialContext,
+                        NeptuneParserCommand.class.getName());
+                parser.setFileURL(file.toUri().toURL().toExternalForm());
+                chain.add(parser);
 
-				// extensions
-				NeptuneImportExtensionsCommand extension = (NeptuneImportExtensionsCommand) CommandFactory.create(initialContext,
-						NeptuneImportExtensionsCommand.class.getName());
-				chain.add(extension);
-				
-				// validation
-				Command validation = CommandFactory.create(initialContext, NeptuneValidationCommand.class.getName());
-				chain.add(validation);
+                // extensions
+                NeptuneImportExtensionsCommand extension = (NeptuneImportExtensionsCommand) CommandFactory.create(initialContext,
+                        NeptuneImportExtensionsCommand.class.getName());
+                chain.add(extension);
 
-				// default values
-				Command defaults = CommandFactory.create(initialContext, NeptuneSetDefaultValuesCommand.class.getName());
-				chain.add(defaults);
-				
-				if (withDao && !parameters.isNoSave()) {
+                // validation
+                Command validation = CommandFactory.create(initialContext, NeptuneValidationCommand.class.getName());
+                chain.add(validation);
 
-					// register
-					Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
-					chain.add(register);
+                // default values
+                Command defaults = CommandFactory.create(initialContext, NeptuneSetDefaultValuesCommand.class.getName());
+                chain.add(defaults);
 
-					Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
-					chain.add(copy);
-				}
-				if (level3validation) {
-					// add validation
-					Command validate = CommandFactory.create(initialContext,
-							ImportedLineValidatorCommand.class.getName());
-					chain.add(validate);
-				}
-			}
-			commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
+                if (withDao && !parameters.isNoSave()) {
 
-		} catch (Exception e) {
-			log.error(e, e);
-			throw new RuntimeException("unable to call factories");
-		}
+                    // register
+                    Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
+                    chain.add(register);
 
-		return commands;
-	}
+                    Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
+                    chain.add(copy);
+                }
+                if (level3validation) {
+                    // add validation
+                    Command validate = CommandFactory.create(initialContext,
+                            ImportedLineValidatorCommand.class.getName());
+                    chain.add(validate);
+                }
+            }
+            commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
 
-	@Override
-	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
-		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-		boolean level3validation = context.get(VALIDATION) != null;
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
 
-		List<Command> commands = new ArrayList<>();
-		try {
-			if (level3validation) {
-				// add shared data validation
-				commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));
-			}
+        return commands;
+    }
 
-		} catch (Exception e) {
-			log.error(e, e);
-			throw new RuntimeException("unable to call factories");
-		}
-		return commands;
-	}
+    @Override
+    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        boolean level3validation = context.get(VALIDATION) != null;
 
-	@Override
-	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-		return new ArrayList<>();
-	}
+        List<Command> commands = new ArrayList<>();
+        try {
+            if (level3validation) {
+                // add shared data validation
+                commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));
+            }
 
-	@Override
-	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-		return new ArrayList<>();
-	}
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
+    }
 
-	@Override
-	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-		List<Command> commands = new ArrayList<>();
-		try {
-			commands.add(CommandFactory.create(initialContext, NeptuneDisposeImportCommand.class.getName()));
+    @Override
+    public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
+        return new ArrayList<>();
+    }
 
-		} catch (Exception e) {
-			log.error(e, e);
-			throw new RuntimeException("unable to call factories");
-		}
-		return commands;
-	}
+    @Override
+    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
+        if (!withDao) {
+            return new ArrayList<>();
+        }
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        List<Command> commands = new ArrayList<>();
+        try {
+            commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
+    }
 
-	@Override
-	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+    @Override
+    public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        List<Command> commands = new ArrayList<>();
+        try {
+            commands.add(CommandFactory.create(initialContext, NeptuneDisposeImportCommand.class.getName()));
 
-		List<Command> commands = new ArrayList<>();
-		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
+        return commands;
+    }
 
-		try {
-			commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
-		} catch (Exception e) {
-			log.error(e, e);
-			throw new RuntimeException("unable to call factories");
-		}
+    @Override
+    public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+
+        List<Command> commands = new ArrayList<>();
+        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+
+        try {
+            commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new RuntimeException("unable to call factories");
+        }
 
 
-		return commands;
-	}
+        return commands;
+    }
+
+    public static class DefaultFactory extends ProcessingCommandsFactory {
+
+        @Override
+        protected ProcessingCommands create() throws IOException {
+            ProcessingCommands result = new NeptuneImporterProcessingCommands();
+            return result;
+        }
+    }
 
 }
