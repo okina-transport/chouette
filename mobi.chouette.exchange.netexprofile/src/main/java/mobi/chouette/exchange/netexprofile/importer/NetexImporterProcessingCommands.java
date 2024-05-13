@@ -172,6 +172,12 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
                     .collect(Collectors.toList());
 
 
+            if (lineFilePaths.size() == 0){
+                log.error("#####         This Netex file has no line files. Only common files were detected. Please check your netex file    ######");
+                throw new IllegalArgumentException("No line files detected in Netex");
+            }
+
+
             // profile validation
             if (parameters.isValidateAgainstProfile()) {
 
