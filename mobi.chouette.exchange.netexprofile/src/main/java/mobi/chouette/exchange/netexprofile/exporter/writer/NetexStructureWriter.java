@@ -3,12 +3,14 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.DestinationDisplay;
+import org.rutebanken.netex.model.FlexibleLine;
+import org.rutebanken.netex.model.Line;
+import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.rutebanken.netex.model.TrainNumber;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
@@ -33,7 +35,6 @@ public class NetexStructureWriter extends AbstractNetexWriter {
         writeScheduledStopPointsElement(writer, exportableNetexData, marshaller);
         writePassengerStopAssignmentsElement(writer, exportableNetexData, marshaller);
         writeDestinationDisplaysElement(writer, exportableNetexData, marshaller);
-        writeTrainNumbersElement(writer, exportableNetexData, marshaller);
 
         writer.writeEndElement();
     }
@@ -58,7 +59,7 @@ public class NetexStructureWriter extends AbstractNetexWriter {
         }
     }
 
-    static void writeDirectionsElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
+    static void writeDirectionsElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller){
         try {
             for (org.rutebanken.netex.model.Direction direction : exportableNetexData.getDirections()) {
                 marshaller.marshal(netexFactory.createDirection(direction), writer);
@@ -68,7 +69,7 @@ public class NetexStructureWriter extends AbstractNetexWriter {
         }
     }
 
-    static void writeServiceJourneyPatternsElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
+    static void writeServiceJourneyPatternsElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller){
         try {
             for (org.rutebanken.netex.model.ServiceJourneyPattern serviceJourneyPattern : exportableNetexData.getServiceJourneyPatterns()) {
                 marshaller.marshal(netexFactory.createServiceJourneyPattern(serviceJourneyPattern), writer);
@@ -100,21 +101,9 @@ public class NetexStructureWriter extends AbstractNetexWriter {
 
     static void writeDestinationDisplaysElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
         try {
-            if (!exportableNetexData.getDestinationDisplays().values().isEmpty()) {
+            if (exportableNetexData.getDestinationDisplays().values().size() > 0) {
                 for (DestinationDisplay destinationDisplay : exportableNetexData.getDestinationDisplays().values()) {
                     marshaller.marshal(netexFactory.createDestinationDisplay(destinationDisplay), writer);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static void writeTrainNumbersElement(XMLStreamWriter writer, ExportableNetexData exportableNetexData, Marshaller marshaller) {
-        try {
-            if (CollectionUtils.isNotEmpty(exportableNetexData.getTrainNumbers())) {
-                for (TrainNumber trainNumber : exportableNetexData.getTrainNumbers()) {
-                    marshaller.marshal(netexFactory.createTrainNumber(trainNumber), writer);
                 }
             }
         } catch (Exception e) {
