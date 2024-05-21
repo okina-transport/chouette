@@ -12,23 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.ws.rs.DefaultValue;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +49,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * comment
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -75,7 +59,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set comment <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -85,7 +69,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Transport mode when different from line transport mode
-	 * 
+	 *
 	 * @param transportMode
 	 *            New value
 	 * @return The actual value
@@ -98,7 +82,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Transport sub mode 
-	 * 
+	 *
 	 */
 	@Getter
 	@Setter
@@ -108,7 +92,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * published journey name
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -118,7 +102,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set published journey name <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -129,7 +113,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * published journey identifier
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -139,7 +123,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set published journey identifier <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -150,7 +134,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * facility
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -160,7 +144,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set facility <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -170,7 +154,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * vehicle type identifier
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -180,7 +164,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set vehicle type identifier <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -191,7 +175,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * number
-	 * 
+	 *
 	 * @param number
 	 *            New value
 	 * @return The actual value
@@ -245,13 +229,13 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * flexible service <br/>
-	 * 
+	 *
 	 * <ul>
 	 * <li>null if unknown or inherited from line
 	 * <li>true for flexible service</li>
 	 * <li>false for regular service</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param flexibleService
 	 *            New value
 	 * @return The actual value
@@ -276,7 +260,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * route reference
-	 * 
+	 *
 	 * @param route
 	 *            New value
 	 * @return The actual value
@@ -289,7 +273,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * journey pattern reference
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -299,7 +283,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * set journey pattern reference
-	 * 
+	 *
 	 * @param journeyPattern
 	 */
 	public void setJourneyPattern(JourneyPattern journeyPattern) {
@@ -315,7 +299,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * company reference<br/>
 	 * if different from line company
-	 * 
+	 *
 	 * @param company
 	 *            New value
 	 * @return The actual value
@@ -328,7 +312,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * footnotes refs
-	 * 
+	 *
 	 * @param footnotes
 	 *            New value
 	 * @return The actual value
@@ -354,7 +338,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * timetables
-	 * 
+	 *
 	 * @param timetables
 	 *            New value
 	 * @return The actual value
@@ -367,7 +351,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * vehicle journey at stops : passing times
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -375,10 +359,10 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
 	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<VehicleJourneyAtStop>(0);
-	
+
 	/**
 	 * To distinguish the timesheets journeys and the frequencies ones. Defaults to Timesheet.
-	 * 
+	 *
 	 * @param journeyCategory
 	 *         The new vehicle journey category
 	 * @return The actual vehicle journey category
@@ -389,10 +373,10 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "journey_category")
 	private JourneyCategoryEnum journeyCategory = JourneyCategoryEnum.Timesheet;
-	
+
 	/**
 	 * For frequencies journeys, applicable periods
-	 * 
+	 *
 	 * @param journeyFrequencies
 	 *         The new vehicle journey frequencies
 	 * @return The actual vehicle journey category
@@ -403,10 +387,10 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
 	private List<JourneyFrequency> journeyFrequencies = new ArrayList<JourneyFrequency>(0);
-	
+
 	/**
 	 * list of interchanges where this vehicle journey participates as the feeder
-	 * 
+	 *
 	 */
 	@Getter
 	@Setter
@@ -416,7 +400,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * list of interchanges where this vehicle journey participates as the consumer
-	 * 
+	 *
 	 */
 	@Getter
 	@Setter
@@ -454,5 +438,13 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
 	private AccessibilityAssessment accessibilityAssessment;
+
+	@Getter
+	@Setter
+	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+	@JoinTable(name = "trains_vehicle_journeys",
+			joinColumns = { @JoinColumn(name = "vehicle_journey_id", nullable = false) },
+			inverseJoinColumns = {@JoinColumn(name = "train_id", nullable = false) })
+	private List<Train> trains = new ArrayList<>(0);
 
 }
