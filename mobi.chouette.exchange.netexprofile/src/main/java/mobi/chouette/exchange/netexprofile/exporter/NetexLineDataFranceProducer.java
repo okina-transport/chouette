@@ -37,6 +37,8 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PASSEN
 
 public class NetexLineDataFranceProducer extends NetexProducer implements Constant {
 
+    protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
+    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
     private static OrganisationFranceProducer organisationFranceProducer = new OrganisationFranceProducer();
     private static NetworkFranceProducer networkFranceProducer = new NetworkFranceProducer();
     private static LineFranceProducer lineFranceProducer = new LineFranceProducer();
@@ -47,13 +49,6 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     private static DirectionProducer directionProducer = new DirectionProducer();
     private static ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
     private List<String> alreadyProcessedRouteSections = new ArrayList<>();
-
-
-
-    private static final ObjectFactory netexObjectFactory = new ObjectFactory();
-
-    protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
-
 
     public void produce(Context context) throws Exception {
 
@@ -103,17 +98,18 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     /**
      * On remplace dans les object_id les espaces par rien, les caractères spéciaux par un _
      * On remplace le nom de l'espace de données qui constitue la première partie de l'object id par le defaultCodespacePrefix si il est différent (defaultCodespacePrefix vient du nameNetexOffre dans Okina/Baba)
+     *
      * @param exportableData
      * @param defaultCodespacePrefix
      */
     private void deleteSpacesInIdsAndChangeSpecialCharacters(ExportableData exportableData, String defaultCodespacePrefix) {
-        for(Network network : exportableData.getNetworks()){
+        for (Network network : exportableData.getNetworks()) {
             network.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(network.getObjectId(), defaultCodespacePrefix));
-            for(Line line : network.getLines()){
+            for (Line line : network.getLines()) {
                 line.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getObjectId(), defaultCodespacePrefix));
-                if(line.getAccessibilityAssessment() != null){
+                if (line.getAccessibilityAssessment() != null) {
                     line.getAccessibilityAssessment().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getAccessibilityAssessment().getObjectId(), defaultCodespacePrefix));
-                    if(line.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+                    if (line.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
                         line.getAccessibilityAssessment().getAccessibilityLimitation().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(line.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId(), defaultCodespacePrefix));
                     }
                 }
@@ -124,7 +120,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             route.getLine().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(route.getLine().getObjectId(), defaultCodespacePrefix));
             for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
                 routePoint.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routePoint.getObjectId(), defaultCodespacePrefix));
-                if (routePoint.getScheduledStopPoint() != null){
+                if (routePoint.getScheduledStopPoint() != null) {
                     routePoint.getScheduledStopPoint().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routePoint.getScheduledStopPoint().getObjectId(), defaultCodespacePrefix));
                 }
             }
@@ -139,8 +135,8 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
                 }
             }
 
-            for (RouteSection routeSection : journeyPattern.getRouteSections()){
-                routeSection.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routeSection.getObjectId(),defaultCodespacePrefix));
+            for (RouteSection routeSection : journeyPattern.getRouteSections()) {
+                routeSection.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(routeSection.getObjectId(), defaultCodespacePrefix));
             }
         }
         for (Timetable timetable : exportableData.getTimetables()) {
@@ -148,9 +144,9 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         }
         for (VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             vehicleJourney.setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getObjectId(), defaultCodespacePrefix));
-            if(vehicleJourney.getAccessibilityAssessment() != null){
+            if (vehicleJourney.getAccessibilityAssessment() != null) {
                 vehicleJourney.getAccessibilityAssessment().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getAccessibilityAssessment().getObjectId(), defaultCodespacePrefix));
-                if(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+                if (vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
                     vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().setObjectId(replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId(), defaultCodespacePrefix));
                 }
             }
@@ -165,28 +161,17 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         exportableData.getLine().setObjectId(exportableData.getLine().getObjectId().replace(SANITIZED_REPLACEMENT_CODE, "-"));
     }
 
-    /**
-     * Replace the special replacement code by a dash (-)
-     * ( because when file is imported, semi colons are replaced by a special code)
-     *
-     * @param inputId
-     * @return
-     */
-    private String sanitizeID(String inputId){
-        return inputId.replace(SANITIZED_REPLACEMENT_CODE, "-");
-    }
-
-    private String replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(String objectId, String defaultCodespacePrefix){
+    private String replaceAllSpacesAndSpecialCharacterAndReplaceNameDataSpace(String objectId, String defaultCodespacePrefix) {
         objectId = objectId.replaceAll("\\s+", "");
         objectId = objectId.replaceAll(ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER, "_");
 
         String[] nameDataSpace = objectId.split(":");
-        if(!nameDataSpace[0].equals(defaultCodespacePrefix)){
+        if (!nameDataSpace[0].equals(defaultCodespacePrefix)) {
             objectId = objectId.replace(nameDataSpace[0], defaultCodespacePrefix);
         }
 
         if (objectId.endsWith(SANITIZED_REPLACEMENT_CODE)) {
-            objectId = objectId.replaceFirst(SANITIZED_REPLACEMENT_CODE + "$" , ":");
+            objectId = objectId.replaceFirst(SANITIZED_REPLACEMENT_CODE + "$", ":");
         }
 
         objectId = objectId.replace(SANITIZED_REPLACEMENT_CODE, "-");
@@ -228,7 +213,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
             for (RouteSection routeSection : neptuneJourneyPattern.getRouteSections()) {
 
-                if (!alreadyProcessedRouteSections.contains(routeSection.getObjectId())){
+                if (!alreadyProcessedRouteSections.contains(routeSection.getObjectId())) {
                     org.rutebanken.netex.model.RouteLink routeLink = routeLinkProducer.produce(context, routeSection);
                     exportableNetexData.getRouteLinks().add(routeLink);
                     alreadyProcessedRouteSections.add(routeSection.getObjectId());
@@ -241,18 +226,19 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
         produceAndCollectPassengerStopAssignments(exportableData.getRoutes(), exportableNetexData, configuration);
 
-        List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(vj -> vj.getRoute()).distinct().collect(Collectors.toList());
+        List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(VehicleJourney::getRoute).distinct().collect(Collectors.toList());
         produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             exportableNetexData.getServiceJourneys().add(serviceJourneyFranceProducer.produce(context, vehicleJourney));
         }
+
     }
 
     private void producerAndCollectDirection(List<Route> routes, ExportableNetexData exportableNetexData) {
         for (Route route : routes) {
             for (StopPoint stopPoint : route.getStopPoints()) {
-                if (stopPoint.getPosition().equals(route.getStopPoints().size() - 1)) { ;
+                if (stopPoint.getPosition().equals(route.getStopPoints().size() - 1)) {
                     exportableNetexData.getDirections().add(directionProducer.produce(stopPoint));
                 }
             }

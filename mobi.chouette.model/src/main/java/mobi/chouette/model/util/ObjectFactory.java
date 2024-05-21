@@ -359,4 +359,16 @@ public class ObjectFactory {
 		}
 		return result;
 	}
+
+	public static Train getTrain(Referential referential, String objectId) {
+		Train result = referential.getTrains().get(objectId);
+		if (result == null) {
+			result = new Train();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getTrains().put(objectId, result);
+		}
+		return result;
+	}
+
 }

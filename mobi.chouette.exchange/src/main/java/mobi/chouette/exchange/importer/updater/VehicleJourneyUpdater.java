@@ -99,6 +99,10 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB(beanName = AccessibilityAssessmentUpdater.BEAN_NAME)
 	private Updater<AccessibilityAssessment> accessibilityAssessmentUpdater;
 
+
+	@EJB(beanName = TrainUpdater.BEAN_NAME)
+	private Updater<Train> trainUpdater;
+
 	@EJB
 	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
 
@@ -382,6 +386,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		updateFootnotes(context, oldValue, newValue, cache);
 		updateInterchanges(context, oldValue, newValue);
 		updateAccessibilityAssessment(context, cache, oldValue, newValue);
+		updateTrains(context, oldValue, newValue);
 //		monitor.stop();
 	}
 
@@ -491,6 +496,30 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		}
 
 	}
+
+	private void updateTrains(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
+		Collection<Train> addedTrains = CollectionUtil.substract(newValue.getTrains(),
+				oldValue.getTrains(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		for (Train train : addedTrains) {
+			oldValue.getTrains().add(train);
+		}
+
+		Collection<Pair<Train, Train>> modifiedTrains = CollectionUtil.intersection(
+				oldValue.getTrains(), newValue.getTrains(),
+				NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		for (Pair<Train, Train> pair : modifiedTrains) {
+			trainUpdater.update(context, pair.getLeft(), pair.getRight());
+		}
+
+		Collection<Train> removedTrains = CollectionUtil.substract(oldValue.getTrains(), newValue.getTrains(), NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (Train train : removedTrains) {
+			oldValue.getTrains().remove(train);
+		}
+
+	}
+
 
 	/**
 	 * Test 2-DATABASE-VehicleJourney-2

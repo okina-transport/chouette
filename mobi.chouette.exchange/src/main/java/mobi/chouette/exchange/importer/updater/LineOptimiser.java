@@ -1,46 +1,15 @@
 package mobi.chouette.exchange.importer.updater;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.AccessibilityLimitationDAO;
-import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.ConnectionLinkDAO;
-import mobi.chouette.dao.GroupOfLineDAO;
-import mobi.chouette.dao.JourneyPatternDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.NetworkDAO;
-import mobi.chouette.dao.RouteDAO;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.dao.StopPointDAO;
-import mobi.chouette.dao.TimebandDAO;
-import mobi.chouette.dao.TimetableDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timeband;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.dao.*;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang.StringUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Collection;
+import java.util.List;
 
 @Stateless
 public class LineOptimiser {
@@ -93,6 +62,9 @@ public class LineOptimiser {
 	@EJB
 	private AccessibilityLimitationDAO accessibilityLimitationDAO;
 
+	@EJB
+	private TrainDAO trainDAO;
+
 	public void initialize(Referential cache, Referential referential) {
 
 //		Monitor monitor = MonitorFactory.start("LineOptimiser");
@@ -116,6 +88,7 @@ public class LineOptimiser {
 		initializeAccessibilityLimitation(cache, referential.getAccessibilityLimitations().values());
 
 		initializeTimeband(cache, referential.getTimebands().values());
+		initializeTrains(cache, referential.getTrains().values());
 //		monitor.stop();
 	}
 
@@ -341,7 +314,7 @@ public class LineOptimiser {
 					object = ObjectFactory.getVehicleJourney(cache, item.getObjectId());
 				}
 			}
-		}
+		}	
 	}
 
 	private void initializeTimeband(Referential cache, Collection<Timeband> list) {
@@ -394,4 +367,22 @@ public class LineOptimiser {
 			}
 		}
 	}
+
+	private void initializeTrains(Referential cache, Collection<Train> list) {
+		if (list != null && !list.isEmpty()) {
+			Collection<String> objectIds = UpdaterUtils.getObjectIds(list);
+			List<Train> objects = trainDAO.findByObjectId(objectIds);
+			for (Train object : objects) {
+				cache.getTrains().put(object.getObjectId(), object);
+			}
+
+			for (Train item : list) {
+				Train object = cache.getTrains().get(item.getObjectId());
+				if (object == null) {
+					object = ObjectFactory.getTrain(cache, item.getObjectId());
+				}
+			}
+		}
+	}
+
 }

@@ -7,36 +7,7 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.AccessibilityLimitationDAO;
-import mobi.chouette.dao.BookingArrangementDAO;
-import mobi.chouette.dao.BrandingDAO;
-import mobi.chouette.dao.CategoriesForLinesDAO;
-import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.ConnectionLinkDAO;
-import mobi.chouette.dao.ContactStructureDAO;
-import mobi.chouette.dao.DestinationDisplayDAO;
-import mobi.chouette.dao.FeedInfoDAO;
-import mobi.chouette.dao.FlexibleServicePropertiesDAO;
-import mobi.chouette.dao.FootnoteDAO;
-import mobi.chouette.dao.GroupOfLineDAO;
-import mobi.chouette.dao.InterchangeDAO;
-import mobi.chouette.dao.JourneyFrequencyDAO;
-import mobi.chouette.dao.JourneyPatternDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.NetworkDAO;
-import mobi.chouette.dao.RouteDAO;
-import mobi.chouette.dao.RoutePointDAO;
-import mobi.chouette.dao.RouteSectionDAO;
-import mobi.chouette.dao.ScheduledStopPointDAO;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.dao.StopPointDAO;
-import mobi.chouette.dao.TimebandDAO;
-import mobi.chouette.dao.TimetableDAO;
-import mobi.chouette.dao.VehicleJourneyAtStopDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.dao.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -137,12 +108,8 @@ public class CleanRepositoryCommand implements Command {
 	@EJB
 	FeedInfoDAO feedInfoDAO;
 
-
 	@EJB
-	AccessibilityLimitationDAO accessibilityLimitationDAO;
-
-	@EJB
-	AccessibilityAssessmentDAO accessibilityAssessmentDAO;
+	TrainDAO trainDAO;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -164,6 +131,7 @@ public class CleanRepositoryCommand implements Command {
 			scheduledStopPointDAO.truncate();
 			timetableDAO.truncate();
 			timebandDAO.truncate();
+			trainDAO.truncate();
 			vehicleJourneyDAO.truncate();
 			vehicleJourneyAtStopDAO.truncate();
 			destinationDisplayDAO.truncate();

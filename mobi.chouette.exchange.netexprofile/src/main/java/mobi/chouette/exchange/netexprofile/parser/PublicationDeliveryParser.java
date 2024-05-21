@@ -8,21 +8,18 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
-import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections.CollectionUtils;
-import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.DestinationDisplay;
-
 import org.rutebanken.netex.model.Network;
-import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.ScheduledStopPoint;
-
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.*;
@@ -516,6 +513,9 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<DestinationDisplay> destinationDisplays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.DestinationDisplay.class, members);
 			parseDestinationDisplay(context,destinationDisplays);
 
+			List<TrainNumber> trainNumbers = NetexObjectUtil.getMembers(org.rutebanken.netex.model.TrainNumber.class, members);
+			parseTrainNumbers(context, trainNumbers);
+
 			List<ServiceJourney> journeys = NetexObjectUtil.getMembers(org.rutebanken.netex.model.ServiceJourney.class, members);
 			parseServiceJourney(context,journeys);
 
@@ -531,6 +531,7 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			List<StopPlace> stopPlaces = NetexObjectUtil.getMembers(org.rutebanken.netex.model.StopPlace.class, members);
 			List<Quay> quays = NetexObjectUtil.getMembers(org.rutebanken.netex.model.Quay.class, members);
 			parseStopPlaces(context, stopPlaces, quays);
+
 		}
 	}
 
@@ -933,6 +934,16 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				serviceInterchangeParser.parse(context);
 			}
 
+			List<Object> tmp = timetableFrame.getTrainNumbers().getTrainNumberOrTrainNumberRef();
+			if (CollectionUtils.isNotEmpty(tmp)) {
+				List<TrainNumber> trainNumbers = tmp.stream()
+						.filter(e -> e instanceof TrainNumber)
+						.map(e -> (TrainNumber) e)
+						.collect(Collectors.toList());
+				parseTrainNumbers(context, trainNumbers);
+			}
+
+
 		}
 	}
 
@@ -1060,6 +1071,23 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 			if (validBetween != null) {
 				addValidBetween(context, contextKey, validBetween);
 			}
+		}
+	}
+
+	private void parseTrainNumbers(Context context, List<TrainNumber> trainNumbers) throws Exception {
+		if (CollectionUtils.isEmpty(trainNumbers)) {
+			return;
+		}
+
+		Referential referential = (Referential) context.get(REFERENTIAL);
+
+		for (TrainNumber trainNumber : trainNumbers) {
+			mobi.chouette.model.Train train = ObjectFactory.getTrain(referential, trainNumber.getId());
+			if (trainNumber.getDescription() != null) {
+				train.setDescription(trainNumber.getDescription().getValue());
+			}
+			train.setPublishedName(trainNumber.getForAdvertisement());
+			train.setVersion(trainNumber.getVersion());
 		}
 	}
 

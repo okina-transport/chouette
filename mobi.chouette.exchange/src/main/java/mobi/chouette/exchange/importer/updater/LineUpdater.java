@@ -3,23 +3,10 @@ package mobi.chouette.exchange.importer.updater;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
-import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.FootnoteDAO;
-import mobi.chouette.dao.GroupOfLineDAO;
-import mobi.chouette.dao.NetworkDAO;
-import mobi.chouette.dao.RouteDAO;
-import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.Footnote;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -58,7 +45,7 @@ public class LineUpdater implements Updater<Line> {
 	private RouteDAO routeDAO;
 
 	@EJB(beanName = RouteUpdater.BEAN_NAME)
-	private Updater<Route> routeUpdater;
+	private 	Updater<Route> routeUpdater;
 
 	@EJB
 	private StopAreaDAO stopAreaDAO;
