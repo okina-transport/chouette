@@ -17,7 +17,6 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Update position of non-deleted lines inside their network.
@@ -39,7 +38,13 @@ public class UpdateLinePositionCommand implements Command {
     @EJB
     NetworkDAO networkDAO;
 
-    private static final Integer ZERO = 0;
+    public UpdateLinePositionCommand() {
+    }
+
+    public UpdateLinePositionCommand(LineDAO lineDAO, NetworkDAO networkDAO) {
+        this.lineDAO = lineDAO;
+        this.networkDAO = networkDAO;
+    }
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -50,14 +55,11 @@ public class UpdateLinePositionCommand implements Command {
         }
         boolean flush = false;
         for (Network network : networks) {
-            List<Line> lines = lineDAO.findByNetworkId(network.getId());
+            List<Line> lines = lineDAO.findByNetworkIdNotDeleted(network.getId());
             if (CollectionUtils.isEmpty(lines)) {
-                log.info("No lines found for network " + network.getName());
+                log.info("No activated lines found for network " + network.getName());
                 continue;
             }
-            lines = lines.stream().filter(
-                    line -> !line.getSupprime()
-            ).collect(Collectors.toList());
             // sort lines with a position by their position ASC
             // lines without position are then sorted by their published name ASC
             // eg:"
@@ -65,6 +67,7 @@ public class UpdateLinePositionCommand implements Command {
             //  Line{pos=null, name = 'B'},
             //  Line{pos=null, name = 'A'}',
             //  Line{pos=3, name = 'C'},
+            //  Line{pos=null, name = null},
             //  Line{pos=1, name = 'D'},
             //  ]
             // would be sorted like this
@@ -73,8 +76,9 @@ public class UpdateLinePositionCommand implements Command {
             //  Line{pos=3, name = 'C'},
             //  Line{pos=null, name = 'A'}',
             //  Line{pos=null, name = 'B'},
+            //  Line{pos=null, name = null},
             // ]
-            lines.sort(Comparator.comparing(Line::getPosition, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Line::getPublishedName));
+            lines.sort(Comparator.comparing(Line::getPosition, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Line::getPublishedName, Comparator.nullsLast(Comparator.naturalOrder())));
             Integer position = 1;
             for (Line line : lines) {
                 if (!position.equals(line.getPosition())) {
