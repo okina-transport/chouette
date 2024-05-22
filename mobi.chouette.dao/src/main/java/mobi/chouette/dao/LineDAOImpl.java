@@ -70,6 +70,17 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 	}
 
 	@Override
+	public List<Line> findByNetworkIdNotDeleted(Long networkId) {
+		return em.createQuery("SELECT l " +
+						"              FROM Line l " +
+						"              INNER JOIN l.network n" +
+						"              ON n.id = :networkId" +
+						"              WHERE l.supprime = false", Line.class)
+				.setParameter("networkId", networkId)
+				.getResultList();
+	}
+
+	@Override
 	public List<Line> findNotDeleted() {
 		return em.createQuery("SELECT l " +
 						"              FROM Line l " +
