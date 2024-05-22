@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gis="http://www.opengis.net/gml/3.2" xmlns:siri="http://www.siri.org.uk/siri" version="1.1:FR-NETEX_RESEAU-2.2">
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gis="http://www.opengis.net/gml/3.2"
+                     version="1.1:FR-NETEX_RESEAU-2.2">
   <PublicationTimestamp>2021-11-02T16:39:17Z</PublicationTimestamp>
   <ParticipantRef>LOCGUI11021735DG</ParticipantRef>
   <dataObjects>
@@ -358,6 +359,25 @@
             <DestinationDisplay version="any" id="LOCGUI11021735DG:DestinationDisplay:100_1000107_8F4F0374F12AB161169F15B6A486D12E_lmurgar1_travagu_16-100_1000107_8F4F0374F12AB161169F15B6A486D12E_lmurgar1_travagu_16almurgar1:LOC">
               <FrontText>St-Quentin Gare</FrontText>
             </DestinationDisplay>
+            <TrainNumber version="any" id="FR:TrainNumber:112358">
+              <ForAdvertisement>
+                112358
+              </ForAdvertisement>
+              <Description>
+                Paris - Roubaix
+              </Description>
+            </TrainNumber>
+            <TrainNumber version="any" id="FR:TrainNumber:666">
+              <ForAdvertisement>666</ForAdvertisement>
+              <Description>Nantes - Clisson</Description>
+            </TrainNumber>
+            <TrainNumber
+                    version="any"
+                    id="FR:TrainNumber:987654321">
+              <ForAdvertisement>
+                987654321
+              </ForAdvertisement>
+            </TrainNumber>
           </members>
         </GeneralFrame>
         <GeneralFrame version="any" id="LOCGUI11021735DG:NETEX_HORAIRE-20211102163917Z:LOC">
@@ -440,6 +460,11 @@
                   <LuggageCarriageFacilityList>unknown</LuggageCarriageFacilityList>
                 </ServiceFacilitySet>
               </facilities>
+              <trainNumbers>
+                <TrainNumberRef ref="FR:TrainNumber:112358" />
+                <TrainNumberRef ref="FR:TrainNumber:987654321" />
+                <TrainNumberRef ref="FR:TrainNumber:666" />
+              </trainNumbers>
             </ServiceJourney>
           </members>
         </GeneralFrame>

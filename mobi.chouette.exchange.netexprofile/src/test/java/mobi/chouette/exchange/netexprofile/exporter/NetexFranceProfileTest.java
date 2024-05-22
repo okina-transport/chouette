@@ -6,72 +6,34 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
-import mobi.chouette.model.Company;
 import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.Footnote;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.Period;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
+import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import org.joda.time.LocalDate;
-import org.rutebanken.netex.model.Common_VersionFrameStructure;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DayTypeRefStructure;
-import org.rutebanken.netex.model.Direction;
-import org.rutebanken.netex.model.GeneralFrame;
-import org.rutebanken.netex.model.General_VersionFrameStructure;
-import org.rutebanken.netex.model.JourneyPatternRefStructure;
-import org.rutebanken.netex.model.LineRefStructure;
-import org.rutebanken.netex.model.LocationStructure;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.NoticeRefStructure;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.ServiceJourney;
-import org.rutebanken.netex.model.ServiceJourneyPattern;
-import org.rutebanken.netex.model.StopPointInJourneyPattern;
-import org.rutebanken.netex.model.TimetabledPassingTime;
-import org.rutebanken.netex.model.TypeOfFrameRefStructure;
-import org.rutebanken.netex.validation.NeTExValidator;
+import org.rutebanken.netex.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.*;
@@ -190,6 +152,8 @@ public class NetexFranceProfileTest {
                 checkDestinationDisplay(destinationDisplayList);
             }
 
+            List<TrainNumber> trainNumbers = getTrainNumbers(members);
+            checkTrainNumbers(trainNumbers);
 
 
             /**
@@ -208,6 +172,11 @@ public class NetexFranceProfileTest {
             Assert.assertEquals(serviceJourney.getVersion(), "any", "wrong version");
             Assert.assertEquals(serviceJourney.getId(), "TEST:ServiceJourney:vj1:LOC", "wrong id");
             Assert.assertEquals(serviceJourney.getName().getValue(), "Test vehicle journey name", "wrong name");
+
+            Assert.assertEquals(serviceJourney.getTrainNumbers().getTrainNumberRef().size(), 3, "should have 3 trains");
+            Assert.assertEquals(serviceJourney.getTrainNumbers().getTrainNumberRef().get(0).getRef(), "FR:TrainNumber:1", "wrong ref");
+            Assert.assertEquals(serviceJourney.getTrainNumbers().getTrainNumberRef().get(1).getRef(), "FR:TrainNumber:2", "wrong ref");
+            Assert.assertEquals(serviceJourney.getTrainNumbers().getTrainNumberRef().get(2).getRef(), "FR:TrainNumber:3", "wrong ref");
 
             NoticeAssignment noticeAssignment = (NoticeAssignment) serviceJourney.getNoticeAssignments().getNoticeAssignment_OrNoticeAssignmentView().get(0).getValue();
             Assert.assertEquals(noticeAssignment.getVersion(), "any", "wrong version");
@@ -252,6 +221,38 @@ public class NetexFranceProfileTest {
             Assert.assertEquals(thirdPassingTime.getDepartureTime(), LocalTime.of(7,30,0), "wrong departureTime");
 
         }
+    }
+
+    private static void checkTrainNumbers(List<TrainNumber> trainNumbers) {
+        Assert.assertEquals(trainNumbers.size(), 3, "should have 3 train numbers");
+
+        TrainNumber trainNumberBordeauxMarseille = trainNumbers.get(0);
+        TrainNumber trainNumberMarseilleLyon = trainNumbers.get(1);
+        TrainNumber trainNumberLyonZurich = trainNumbers.get(2);
+
+        Assert.assertEquals(trainNumberBordeauxMarseille.getId(), "FR:TrainNumber:1", "wrong id");
+        Assert.assertEquals(trainNumberBordeauxMarseille.getForAdvertisement(), "357224", "wrong for advertisement");
+        Assert.assertEquals(trainNumberBordeauxMarseille.getDescription().getValue(), "Bordeaux - Marseille", "wrong description");
+        Assert.assertEquals(trainNumberBordeauxMarseille.getVersion(), "any", "wrong version");
+
+        Assert.assertEquals(trainNumberMarseilleLyon.getId(), "FR:TrainNumber:2", "wrong id");
+        Assert.assertEquals(trainNumberMarseilleLyon.getForAdvertisement(), "11997766", "wrong for advertisement");
+        Assert.assertEquals(trainNumberMarseilleLyon.getDescription().getValue(), "Marseille - Lyon", "wrong description");
+        Assert.assertEquals(trainNumberMarseilleLyon.getVersion(), "1.0", "wrong version");
+
+        Assert.assertEquals(trainNumberLyonZurich.getId(), "FR:TrainNumber:3", "wrong id");
+        Assert.assertEquals(trainNumberLyonZurich.getForAdvertisement(), "123698745", "wrong for advertisement");
+        Assert.assertEquals(trainNumberLyonZurich.getDescription().getValue(), "Lyon - Zurich", "wrong description");
+        Assert.assertEquals(trainNumberLyonZurich.getVersion(), "any", "wrong version");
+    }
+
+    private List<org.rutebanken.netex.model.TrainNumber> getTrainNumbers(General_VersionFrameStructure.Members members){
+        return members.getGeneralFrameMemberOrDataManagedObjectOrEntity_Entity().stream()
+                .map(JAXBElement::getValue)
+                .filter(member -> member instanceof org.rutebanken.netex.model.TrainNumber)
+                .map(member -> (org.rutebanken.netex.model.TrainNumber) member)
+                .collect(Collectors.toList());
+
     }
 
     private void checkDirection(List<org.rutebanken.netex.model.Direction> directionList){
@@ -639,6 +640,24 @@ public class NetexFranceProfileTest {
         vehicleJourneyAtStops.add(vehicleJourneyAtStop2);
         vehicleJourneyAtStops.add(vehicleJourneyAtStop3);
 
+        Train trainBordeauxMarseille = new Train();
+        trainBordeauxMarseille.setObjectId("FR:TrainNumber:1");
+        trainBordeauxMarseille.setVersion("any");
+        trainBordeauxMarseille.setDescription("Bordeaux - Marseille");
+        trainBordeauxMarseille.setPublishedName("357224");
+
+        Train trainMarseilleLyon = new Train();
+        trainMarseilleLyon.setVersion("1.0");
+        trainMarseilleLyon.setObjectId("FR:TrainNumber:2");
+        trainMarseilleLyon.setDescription("Marseille - Lyon");
+        trainMarseilleLyon.setPublishedName("11997766");
+
+        Train trainLyonZurich = new Train();
+        trainLyonZurich.setObjectId("FR:TrainNumber:3");
+        trainLyonZurich.setDescription("Lyon - Zurich");
+        trainLyonZurich.setPublishedName("123698745");
+        List<Train> trains = Arrays.asList(trainBordeauxMarseille, trainMarseilleLyon, trainLyonZurich);
+
         VehicleJourney vehicleJourney = new VehicleJourney();
         vehicleJourney.setObjectId("TEST:VehicleJourney:vj1");
         vehicleJourney.setPublishedJourneyName("Test vehicle journey name");
@@ -646,6 +665,7 @@ public class NetexFranceProfileTest {
         vehicleJourney.setVehicleJourneyAtStops(vehicleJourneyAtStops);
         vehicleJourney.setTimetables(timetables);
         vehicleJourney.setRoute(route);
+        vehicleJourney.setTrains(trains);
 
         ArrayList<Footnote> footnotes = new ArrayList<>();
         Footnote footnote = new Footnote();

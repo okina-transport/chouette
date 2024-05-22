@@ -7,17 +7,7 @@ import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
@@ -38,15 +28,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.exchange.netexprofile.Constant.*;
@@ -243,6 +225,23 @@ public class NetexFranceProfileImportTest {
         Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getDepartureTime(),new LocalTime(5,15,0));
         Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getArrivalTime(),new LocalTime(6,15,0));
         Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getDepartureTime(),new LocalTime(6,15,0));
+
+        Assert.assertEquals(someVehicleJourney.getTrains().size(), 3);
+
+        Train train112358 = someVehicleJourney.getTrains().get(0);
+        Train train987654321 = someVehicleJourney.getTrains().get(1);
+        Train train666 = someVehicleJourney.getTrains().get(2);
+
+        Assert.assertEquals(train112358.getObjectId(), "FR:TrainNumber:112358");
+        Assert.assertEquals(train112358.getPublishedName(), "112358");
+        Assert.assertEquals(train112358.getDescription(), "Paris - Roubaix");
+
+        Assert.assertEquals(train987654321.getObjectId(), "FR:TrainNumber:987654321");
+        Assert.assertEquals(train987654321.getPublishedName(), "987654321");
+
+        Assert.assertEquals(train666.getObjectId(), "FR:TrainNumber:666");
+        Assert.assertEquals(train666.getPublishedName(), "666");
+        Assert.assertEquals(train666.getDescription(), "Nantes - Clisson");
     }
 
     private void launchParsing(Context context, String fileName) throws Exception {
