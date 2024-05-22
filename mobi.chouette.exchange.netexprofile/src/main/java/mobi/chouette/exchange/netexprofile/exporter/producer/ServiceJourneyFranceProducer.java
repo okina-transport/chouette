@@ -13,6 +13,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalTime;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AccessibilityLimitation;
@@ -21,6 +22,7 @@ import org.rutebanken.netex.model.*;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 
@@ -171,19 +173,24 @@ public class ServiceJourneyFranceProducer {
 
         List<Train> trains = vehicleJourney.getTrains();
         if (CollectionUtils.isNotEmpty(trains)) {
-           for (Train train : trains) {
-               if (exportableNetexData.getTrainNumbers().stream().noneMatch(trainNumber -> trainNumber.getId().equals(train.getObjectId()))) {
-                   MultilingualString description = netexFactory.createMultilingualString().withValue(train.getDescription());
-                   TrainNumber tn = netexFactory.createTrainNumber()
-                           .withId(train.getObjectId())
-                           .withDescription(description)
-                           .withForAdvertisement(train.getPublishedName())
-                           .withVersion(train.getVersion());
-                   exportableNetexData.getTrainNumbers().add(tn);
-               }
-               TrainNumberRefStructure tnr = netexFactory.createTrainNumberRefStructure().withRef(train.getObjectId()).withVersion(train.getVersion());
-               serviceJourney.setTrainNumbers(netexFactory.createTrainNumberRefs_RelStructure().withTrainNumberRef(tnr));
-           }
+            TrainNumberRefs_RelStructure trainNumberRefs = netexFactory.createTrainNumberRefs_RelStructure();
+            for (Train train : trains) {
+                if (exportableNetexData.getTrainNumbers().stream().noneMatch(trainNumber -> trainNumber.getId().equals(train.getObjectId()))) {
+                    MultilingualString description = null;
+                    if (StringUtils.isNotBlank(train.getDescription())) {
+                        description = netexFactory.createMultilingualString().withValue(train.getDescription());
+                    }
+                    TrainNumber tn = netexFactory.createTrainNumber()
+                            .withId(train.getObjectId())
+                            .withDescription(description)
+                            .withForAdvertisement(train.getPublishedName())
+                            .withVersion(Optional.ofNullable(train.getVersion()).orElse("any"));
+                    exportableNetexData.getTrainNumbers().add(tn);
+                }
+                TrainNumberRefStructure tnr = netexFactory.createTrainNumberRefStructure().withRef(train.getObjectId()).withVersion(train.getVersion());
+                trainNumberRefs.getTrainNumberRef().add(tnr);
+            }
+            serviceJourney.setTrainNumbers(trainNumberRefs);
         }
 
         return serviceJourney;

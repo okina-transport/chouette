@@ -15,6 +15,7 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.Network;
@@ -934,15 +935,16 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 				serviceInterchangeParser.parse(context);
 			}
 
-			List<Object> tmp = timetableFrame.getTrainNumbers().getTrainNumberOrTrainNumberRef();
-			if (CollectionUtils.isNotEmpty(tmp)) {
-				List<TrainNumber> trainNumbers = tmp.stream()
-						.filter(e -> e instanceof TrainNumber)
-						.map(e -> (TrainNumber) e)
-						.collect(Collectors.toList());
-				parseTrainNumbers(context, trainNumbers);
+			if (timetableFrame.getTrainNumbers() != null ) {
+				List<Object> tmp = timetableFrame.getTrainNumbers().getTrainNumberOrTrainNumberRef();
+				if (CollectionUtils.isNotEmpty(tmp)) {
+					List<TrainNumber> trainNumbers = tmp.stream()
+							.filter(e -> e instanceof TrainNumber)
+							.map(e -> (TrainNumber) e)
+							.collect(Collectors.toList());
+					parseTrainNumbers(context, trainNumbers);
+				}
 			}
-
 
 		}
 	}
@@ -1084,10 +1086,10 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		for (TrainNumber trainNumber : trainNumbers) {
 			mobi.chouette.model.Train train = ObjectFactory.getTrain(referential, trainNumber.getId());
 			if (trainNumber.getDescription() != null) {
-				train.setDescription(trainNumber.getDescription().getValue());
+				train.setDescription(StringUtils.trimToNull(trainNumber.getDescription().getValue()));
 			}
-			train.setPublishedName(trainNumber.getForAdvertisement());
-			train.setVersion(trainNumber.getVersion());
+			train.setPublishedName(StringUtils.trimToEmpty(trainNumber.getForAdvertisement()));
+			train.setVersion(StringUtils.trimToNull(trainNumber.getVersion()));
 		}
 	}
 
