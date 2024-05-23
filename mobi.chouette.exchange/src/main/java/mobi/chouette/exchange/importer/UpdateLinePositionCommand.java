@@ -6,6 +6,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.NetworkDAO;
+import mobi.chouette.exchange.LineComparator;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import org.apache.commons.collections.CollectionUtils;
@@ -15,8 +16,8 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Update position of non-deleted lines inside their network.
@@ -60,6 +61,9 @@ public class UpdateLinePositionCommand implements Command {
                 log.info("No activated lines found for network " + network.getName());
                 continue;
             }
+            lines = lines.stream().filter(
+                    line -> !line.getSupprime()
+            ).collect(Collectors.toList());
             // sort lines with a position by their position ASC
             // lines without position are then sorted by their published name ASC
             // eg:"
@@ -78,7 +82,7 @@ public class UpdateLinePositionCommand implements Command {
             //  Line{pos=null, name = 'B'},
             //  Line{pos=null, name = null},
             // ]
-            lines.sort(Comparator.comparing(Line::getPosition, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Line::getPublishedName, Comparator.nullsLast(Comparator.naturalOrder())));
+            lines.sort(new LineComparator());
             Integer position = 1;
             for (Line line : lines) {
                 if (!position.equals(line.getPosition())) {
