@@ -45,7 +45,7 @@ public class LineUpdater implements Updater<Line> {
 	private RouteDAO routeDAO;
 
 	@EJB(beanName = RouteUpdater.BEAN_NAME)
-	private 	Updater<Route> routeUpdater;
+	private Updater<Route> routeUpdater;
 
 	@EJB
 	private StopAreaDAO stopAreaDAO;
