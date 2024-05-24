@@ -2,7 +2,11 @@ package mobi.chouette.exchange;
 
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -154,5 +158,67 @@ public class LineComparatorTest {
         assertTrue(tested.compare(o1, o2) < 0, "Object IDs are different, should return object ID comparison result");
     }
 
+    @Test
+    public void testSorting_withAllKindOfLines_shouldSortCorrectly() {
+        // arrange
+        Network n1 = new Network();
+        n1.setPosition(1);
+
+        Network n2 = new Network();
+        n2.setPosition(2);
+
+        Line l100 = new Line();
+        l100.setNetwork(n1);
+        l100.setPosition(1);
+        l100.setPublishedName("l100");
+        l100.setObjectId("id100");
+
+        Line l76 = new Line();
+        l76.setNetwork(n1);
+        l76.setPosition(2);
+        l76.setPublishedName("l76");
+        l76.setObjectId("id76");
+        
+        Line l3 = new Line();
+        l3.setNetwork(n1);
+        l3.setPosition(null);
+        l3.setPublishedName("l3");
+        l3.setObjectId("id3");
+
+        Line l5 = new Line();
+        l5.setNetwork(n1);
+        l5.setPosition(null);
+        l5.setPublishedName("l5");
+        l5.setObjectId("id5");
+            
+        Line l4 = new Line();
+        l4.setNetwork(n1);
+        l4.setPosition(null);
+        l4.setPublishedName(null);
+        l4.setObjectId("id4");
+
+        Line l8 = new Line();
+        l8.setNetwork(n1);
+        l8.setPosition(null);
+        l8.setPublishedName(null);
+        l8.setObjectId("id8");
+
+        Line l1 = new Line();
+        l1.setNetwork(n2);
+        l1.setPosition(1);
+        l1.setPublishedName("l1");
+        l1.setObjectId("id1");
+
+        List<Line> expected = Arrays.asList(l100, l76, l3, l5, l4, l8, l1);
+
+        // act
+        List<Line> output = Arrays.asList(l1, l3, l4, l5, l8, l76, l100);
+        output.sort(tested);
+
+        // assert
+        Assert.assertEquals(output, expected);
+    }
+
 }
+
 

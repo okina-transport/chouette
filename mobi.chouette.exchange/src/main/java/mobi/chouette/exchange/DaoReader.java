@@ -13,7 +13,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class DaoReader {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public Set<Long> loadLines(String type, List<Long> ids) {
-		Set<Line> lines = new HashSet<>();
+		List<Line> lines = new ArrayList<>();
 		if (ids == null || ids.isEmpty()) {
 			lines.addAll(lineDAO.findAll());
 		} else {
@@ -68,6 +68,7 @@ public class DaoReader {
                 }
             }
 		}
+
 		// ordonnancement des lignes
 		return lines.stream()
 					 .filter(line -> line.getSupprime().equals(false))

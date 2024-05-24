@@ -6,10 +6,12 @@ import java.util.Comparator;
 
 /**
  * Compare lines:
- * - by their network position
- * - if both network position are equals or both network or network position are null, then by their own position
- * - if both position are equals or null then by their published name
- * - if both published name are equal or null then by their objectId
+ * <ul>
+ * <li>by their network position</li>
+ * <li>if both network position are equals or both network or network position are null, then by their own position</li>
+ * <li>if both position are equals or null then by their published name</li>
+ * <li>if both published name are equal or null then by their objectId</li>
+ * </ul>
  */
 public class LineComparator implements Comparator<Line> {
 
