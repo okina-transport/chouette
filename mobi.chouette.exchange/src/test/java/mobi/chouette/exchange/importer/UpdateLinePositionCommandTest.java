@@ -36,7 +36,7 @@ public class UpdateLinePositionCommandTest {
     }
 
     @Test(dataProvider = "nullAndEmptyNetworks")
-    public void test_execute__when_no_networks__updates_no_position(List<Network> networks) throws Exception {
+    public void testExecute_whenNoNetworks_updatesNoPosition(List<Network> networks) throws Exception {
         // arrange
         Mockito.when(networkDAOMock.findAll()).thenReturn(networks);
 
@@ -56,7 +56,7 @@ public class UpdateLinePositionCommandTest {
     }
 
     @Test(dataProvider = "nullAndEmptyLines")
-    public void test_execute__when_no_lines_on_networks__updates_no_position(List<Line> lines) throws Exception {
+    public void testExecute_whenNoLinesOnNetworks__updatesNoPosition(List<Line> lines) throws Exception {
         // arrange
         Network network = new Network();
         network.setId(1L);
@@ -75,7 +75,7 @@ public class UpdateLinePositionCommandTest {
     }
 
     @Test
-    void test_execute__when_positions_are_updated__updates_them_correctly() throws Exception {
+    void testExecute_whenPositionsAreUpdated__updatesThemCorrectly() throws Exception {
         // arrange
         Network n1 = new Network();
         n1.setId(1L);
@@ -143,7 +143,7 @@ public class UpdateLinePositionCommandTest {
     }
 
     @Test
-    void test_execute__when_at_least_one_line_has_no_position_and_no_published_name__do_not_throws_NPE() throws Exception {
+    void testExecute_whenAtLeastOneLineHasNoPositionAndNoPublishedName_doNotThrowNPE() throws Exception {
         // arrange
         Network network = new Network();
         network.setId(1L);
@@ -210,7 +210,7 @@ public class UpdateLinePositionCommandTest {
     }
 
     @Test
-    void test_execute__when_no_line_position_is_updated__do_not_flush() throws Exception {
+    void testExecute_whenNoLinePositionIsUpdated_doNotFlush() throws Exception {
         // arrange
         Network network = new Network();
         network.setId(1L);
