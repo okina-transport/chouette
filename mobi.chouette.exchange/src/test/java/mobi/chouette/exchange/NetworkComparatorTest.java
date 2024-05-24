@@ -15,7 +15,7 @@ public class NetworkComparatorTest {
         n1.setPosition(1);
         Network n2 = new Network();
         n2.setPosition(1);
-        assertEquals(0, tested.compare(n1, n2), "Both networks have the same position, should return 0");
+        assertEquals(tested.compare(n1, n2), 0, "Both networks have the same position, should return 0");
     }
 
     @Test
@@ -24,7 +24,7 @@ public class NetworkComparatorTest {
         n1.setPosition(1);
         Network n2 = new Network();
         n2.setPosition(2);
-        assertEquals(-1, tested.compare(n1, n2), "First network has a lower position, should return -1");
+        assertEquals(tested.compare(n1, n2), -1,"First network has a lower position, should return -1");
     }
 
     @Test
@@ -33,7 +33,7 @@ public class NetworkComparatorTest {
         n1.setPosition(2);
         Network n2 = new Network();
         n2.setPosition(1);
-        assertEquals(1, tested.compare(n1, n2), "Second network has a lower position, should return 1");
+        assertEquals(tested.compare(n1, n2), 1, "Second network has a lower position, should return 1");
     }
 
     @Test
@@ -42,7 +42,7 @@ public class NetworkComparatorTest {
         n1.setPosition(null);
         Network n2 = new Network();
         n2.setPosition(1);
-        assertEquals(1, tested.compare(n1, n2), "First network has a null position, should return 1");
+        assertEquals(tested.compare(n1, n2), 1, "First network has a null position, should return 1");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class NetworkComparatorTest {
         n1.setPosition(2);
         Network n2 = new Network();
         n2.setPosition(null);
-        assertEquals(-1, tested.compare(n1, n2), "Second network has a null position, should return -1");
+        assertEquals(tested.compare(n1, n2), -1, "Second network has a null position, should return -1");
     }
 
 

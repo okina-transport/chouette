@@ -4,6 +4,9 @@ import mobi.chouette.model.Network;
 
 import java.util.Comparator;
 
+/**
+ * Compare networks by their position
+ */
 public class NetworkComparator implements Comparator<Network> {
 
     @Override

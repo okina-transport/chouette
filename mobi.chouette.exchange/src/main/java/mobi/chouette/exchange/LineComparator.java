@@ -5,11 +5,11 @@ import mobi.chouette.model.Line;
 import java.util.Comparator;
 
 /**
- * Compare line this way:
+ * Compare lines:
  * - by their network position
- * - if both network position are equals or both lines network or network position are null, then by their own position
+ * - if both network position are equals or both network or network position are null, then by their own position
  * - if both position are equals or null then by their published name
- * - if both published name are equal or null by then their objectId
+ * - if both published name are equal or null then by their objectId
  */
 public class LineComparator implements Comparator<Line> {
 

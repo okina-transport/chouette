@@ -114,7 +114,6 @@ public class LineComparatorTest {
         o1.setPublishedName("A");
         o1.setObjectId("id1");
 
-        // Création de la ligne avec position null
         Line o2 = new Line();
         o2.setNetwork(new Network());
         o2.getNetwork().setPosition(1);
@@ -154,5 +153,6 @@ public class LineComparatorTest {
 
         assertTrue(tested.compare(o1, o2) < 0, "Object IDs are different, should return object ID comparison result");
     }
+
 }
 
