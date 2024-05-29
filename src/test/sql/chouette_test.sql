@@ -5329,6 +5329,34 @@ ALTER TABLE akt.stop_areas_key_values OWNER TO chouette;
 ALTER TABLE ONLY akt.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES akt.stop_areas(id) ON DELETE CASCADE;
 
+CREATE TABLE IF NOT EXISTS chouette_gui.trains
+(
+    id             bigint                 NOT NULL,
+    published_name character varying(255) NOT NULL,
+    description    character varying(255),
+    version        character varying(255),
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255)
+);
+
+ALTER TABLE ONLY chouette_gui.trains
+    ADD CONSTRAINT trains_pkey PRIMARY KEY (id);
+
+CREATE SEQUENCE chouette_gui.train_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE IF NOT EXISTS chouette_gui.trains_vehicle_journeys
+(
+    train_id           bigint NOT NULL,
+    vehicle_journey_id bigint NOT NULL
+);
+
 
 -- TOC entry 4251 (class 0 OID 0)
 -- Dependencies: 8

@@ -76,6 +76,7 @@
 		<class>mobi.chouette.model.StopArea</class>
 		<class>mobi.chouette.model.Timeband</class>
 		<class>mobi.chouette.model.Timetable</class>
+		<class>mobi.chouette.model.Train</class>
 		<class>mobi.chouette.model.VehicleJourneyAtStop</class>
 		<class>mobi.chouette.model.VehicleJourney</class>
 		<class>mobi.chouette.model.Variations</class>

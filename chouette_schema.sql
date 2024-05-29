@@ -2922,6 +2922,39 @@ ALTER TABLE ONLY journey_frequencies
 ALTER TABLE ONLY journey_frequencies
     ADD CONSTRAINT journey_frequencies_timeband_fkey FOREIGN KEY (timeband_id) REFERENCES timebands(id) ON DELETE CASCADE;
 
+CREATE TABLE IF NOT EXISTS trains
+(
+    id             bigint                 NOT NULL,
+    published_name character varying(255) NOT NULL,
+    description    character varying(255),
+    version        character varying(255),
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255)
+);
+
+ALTER TABLE ONLY trains
+    ADD CONSTRAINT trains_pkey PRIMARY KEY (id);
+
+CREATE SEQUENCE train_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE IF NOT EXISTS trains_vehicle_journeys
+(
+    train_id           bigint NOT NULL,
+    vehicle_journey_id bigint NOT NULL
+);
+
+ALTER TABLE trains_vehicle_journeys
+    ADD CONSTRAINT fk_trains_trains_vehicle_journeys FOREIGN KEY (train_id) REFERENCES trains (id);
+ALTER TABLE trains_vehicle_journeys
+    ADD CONSTRAINT fk_vehicle_journeys_trains_vehicle_journeys FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys (id);
+
 -- -- sch variations
 -- CREATE TABLE variations (
 --     id bigint NOT NULL DEFAULT nextval('variations_id_seq'::regclass),
