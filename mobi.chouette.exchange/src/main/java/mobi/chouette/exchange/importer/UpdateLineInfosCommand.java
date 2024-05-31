@@ -9,13 +9,9 @@ import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.parameters.CleanModeEnum;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
 import org.joda.time.LocalDateTime;
@@ -51,6 +47,7 @@ public class UpdateLineInfosCommand implements Command, Constant {
     @Override
     public boolean execute(Context context) throws Exception {
         deleteUnusedPMR();
+        AbstractImportParameter parameters = (AbstractImportParameter) context.get(CONFIGURATION);
         lineDAO.findAll().forEach(line -> {
             List<VehicleJourney> vehicleJourneyList = line.getRoutes().stream()
                     .map((Route::getJourneyPatterns))
@@ -61,8 +58,11 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
             long nbVehicleJourney = vehicleJourneyList.size();
             Line lineToUpdate = lineDAO.find(line.getId());
-
-            manageTAD(vehicleJourneyList, lineToUpdate);
+            if (!parameters.isKeepBoardingAlighting() || !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+                // TAD data is lost during purge as tables vehicle_journey_at_stops and stop_points are truncated
+                // do not update line TAD when import purge and keepBoardingAlighting is on to keep line TAD data
+                manageTAD(vehicleJourneyList, lineToUpdate);
+            }
             manageBike(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
             managePMR(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
 
