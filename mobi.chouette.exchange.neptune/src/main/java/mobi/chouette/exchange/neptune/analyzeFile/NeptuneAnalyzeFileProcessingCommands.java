@@ -16,22 +16,11 @@ import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
-import mobi.chouette.exchange.importer.CleanRepositoryCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneBrokenRouteFixerCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneComplianceCheckerCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneImportExtensionsCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.exchange.neptune.importer.NeptuneInitImportCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneParserCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneSAXParserCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneSetDefaultValuesCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneTimeTablePeriodFixerCommand;
-import mobi.chouette.exchange.neptune.importer.NeptuneValidationCommand;
+import mobi.chouette.exchange.neptune.importer.*;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -63,9 +52,6 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
         NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
         List<Command> commands = new ArrayList<>();
         try {
-            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
-                commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
-            }
             commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, NeptuneComplianceCheckerCommand.class.getName()));
@@ -73,8 +59,6 @@ public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands,
             commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
 
             context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
-
-
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");
