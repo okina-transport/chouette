@@ -56,6 +56,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
         try {
             Chain initChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
             if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+                context.put(CLEAR_FOR_IMPORT, Boolean.TRUE);
                 initChain.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
             }
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
