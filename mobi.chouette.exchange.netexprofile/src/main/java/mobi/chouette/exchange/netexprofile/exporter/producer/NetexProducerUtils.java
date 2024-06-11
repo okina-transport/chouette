@@ -5,33 +5,18 @@ import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.Footnote;
+import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneIdentifiedObject;
-import mobi.chouette.model.NeptuneObject;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.AccessibilityLimitation;
-import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.rutebanken.netex.model.AccessibilityLimitations_RelStructure;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.EntityInVersionStructure;
-import org.rutebanken.netex.model.FlexibleLineRefStructure;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
-import org.rutebanken.netex.model.LineRefStructure;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
-import org.rutebanken.netex.model.VersionOfObjectRefStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
@@ -40,11 +25,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static mobi.chouette.common.Constant.NETEX_VALID_PREFIX;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.LOC;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.OBJECT_ID_SPLIT_CHAR;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.OBJECT_ID_SPLIT_DASH;
+import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.*;
 
 @Log4j
 public class NetexProducerUtils {
@@ -77,10 +59,8 @@ public class NetexProducerUtils {
 
     @SuppressWarnings("unchecked")
     public static List<DayOfWeekEnumeration> toDayOfWeekEnumeration(List<DayTypeEnum> dayTypeEnums) {
-        EnumSet actualDaysOfWeek = EnumSet.noneOf(DayTypeEnum.class);
-        for (DayTypeEnum dayTypeEnum : dayTypeEnums) {
-            actualDaysOfWeek.add(dayTypeEnum);
-        }
+        EnumSet<DayTypeEnum> actualDaysOfWeek = EnumSet.noneOf(DayTypeEnum.class);
+        actualDaysOfWeek.addAll(dayTypeEnums);
 
         if (actualDaysOfWeek.isEmpty()) {
             return Collections.EMPTY_LIST;
@@ -161,7 +141,7 @@ public class NetexProducerUtils {
         return dayOfWeekEnumerations;
     }
 
-    private static AtomicInteger idCounter = new AtomicInteger(0);
+    private static final AtomicInteger idCounter = new AtomicInteger(0);
 
     public static String netexId(String objectIdPrefix, String elementName, String objectIdSuffix) {
         return objectIdPrefix + OBJECT_ID_SPLIT_CHAR + elementName + OBJECT_ID_SPLIT_CHAR + objectIdSuffix;
@@ -332,24 +312,22 @@ public class NetexProducerUtils {
     }
 
     public static JAXBElement<? extends LineRefStructure> createLineIDFMRef(Line neptuneLine, ObjectFactory netexFactory) {
-        if (Boolean.TRUE.equals(neptuneLine.getFlexibleService())) {
-            FlexibleLineRefStructure lineRefStruct = netexFactory.createFlexibleLineRefStructure();
-            if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR) || neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
-                lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
-            } else {
-                lineRefStruct.setRef(neptuneLine.getObjectId());
-            }
-            lineRefStruct.setVersionRef("any");
-            return netexFactory.createFlexibleLineRef(lineRefStruct);
-        }
-        LineRefStructure lineRefStruct = netexFactory.createLineRefStructure();
-        if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR) || neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
-            lineRefStruct.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+        boolean isFlexibleService = Boolean.TRUE.equals(neptuneLine.getFlexibleService());
+        LineRefStructure lrs;
+        if (isFlexibleService) {
+            lrs = netexFactory.createFlexibleLineRefStructure();
         } else {
-            lineRefStruct.setRef(neptuneLine.getObjectId());
+            lrs = netexFactory.createLineRefStructure();
         }
-        lineRefStruct.setVersionRef("any");
-        return netexFactory.createLineRef(lineRefStruct);
+        if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
+            lrs.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
+        } else {
+            lrs.setRef(neptuneLine.getObjectId());
+        }
+        if (isFlexibleService) {
+            return netexFactory.createFlexibleLineRef((FlexibleLineRefStructure) lrs);
+        }
+        return netexFactory.createLineRef(lrs);
     }
 
     public static void populateIdAndVersion(NeptuneIdentifiedObject source, EntityInVersionStructure destination) {
