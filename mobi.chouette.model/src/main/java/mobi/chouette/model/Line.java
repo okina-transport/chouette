@@ -11,34 +11,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mobi.chouette.model.type.BikeAccessEnum;
-import mobi.chouette.model.type.TadEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
-import mobi.chouette.model.type.UserNeedEnum;
+import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.ws.rs.DefaultValue;
 import java.util.ArrayList;
 import java.util.List;
@@ -361,6 +340,9 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	 * @param network New value
 	 */
 	public void setNetwork(Network network) {
+		if (this.network == network) {
+			return;
+		}
 		if (this.network != null) {
 			this.network.getLines().remove(this);
 		}
@@ -386,6 +368,9 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	 * @param company New value
 	 */
 	public void setCompany(Company company) {
+		if (this.company == company) {
+			return;
+		}
 		if (this.company != null) {
 			this.company.getLines().remove(this);
 		}
@@ -526,6 +511,7 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 		if (o == null || getClass() != o.getClass()) return false;
 		Line l = (Line) o;
 
+		if(!StringUtils.equals(this.getObjectId(), 		 	 l.getObjectId()))			 return false;
 		if(!StringUtils.equals(this.getName(),               l.getName()))               return false;
 		if(!StringUtils.equals(this.getNumber(),             l.getNumber()))             return false;
 		if(!StringUtils.equals(this.getPublishedName(),      l.getPublishedName()))      return false;
