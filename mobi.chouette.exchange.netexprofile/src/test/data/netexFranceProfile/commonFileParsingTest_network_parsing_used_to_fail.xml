@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.1:FR-NETEX_COMMUN-2.2">
+  <PublicationTimestamp>2021-11-02T16:39:17Z</PublicationTimestamp>
+  <ParticipantRef>LOCGUI11021735DG</ParticipantRef>
+  <dataObjects>
+    <GeneralFrame version="any" id="LOCGUI11021735DG:GeneralFrame:NETEX_COMMUN-20211102163917Z:LOC">
+      <TypeOfFrameRef ref="FR:TypeOfFrame:NETEX_COMMUN:">version="1.1:FR-NETEX_COMMUN-2.2"</TypeOfFrameRef>
+      <members>
+        <Network id="FR:Network::0128dbd0-8448-48b0-bbdf-1b3c68856193:" version="any">
+          <Name>TER Auvergne - Rhône-Alpes</Name>
+          <groupsOfLines>
+            <GroupOfLines id="FR:GroupOfLines::add29dd9-3c06-4761-b5ff-751ca1516ba5:" version="any">
+              <Name>RHIN-RHONE</Name>
+              <members>
+                <LineRef ref="FR:Line::19ea029b-6782-421a-8481-7470f5718e47:"></LineRef>
+                <LineRef ref="FR:Line::4FA25873-A63A-4A2D-B62F-EF950E45D8A9:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::e4a156e7-1b45-42f8-95f0-51cb9920711e:" version="any">
+              <Name>Cars sans réservation</Name>
+              <members>
+                <LineRef ref="FR:Line::8ba8a419-03e7-45ba-aef8-33b50dc5179b:"></LineRef>
+                <LineRef ref="FR:Line::b262568e-13b4-4352-bcf6-2b290ec3644f:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::3c04b952-e273-4665-b3b6-d481f343b1cd:" version="any">
+              <Name>Cars sans réservation</Name>
+              <members>
+                <LineRef ref="FR:Line::8ba8a419-03e7-45ba-aef8-33b50dc5179b:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::3C3707DD-87E1-4538-B2E7-80D1B08595D5:" version="any">
+              <Name>RENNES/NANTES/TOURS-LYON TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::3544567F-7F17-4253-85BB-D1E6A7B27A9A:"></LineRef>
+                <LineRef ref="FR:Line::6CC8BBE5-9508-49DB-95CD-797616EA49C6:"></LineRef>
+                <LineRef ref="FR:Line::8753D4FA-06CF-49A8-B412-13F55FD4A1A8:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::61FC6DE6-E1EE-498B-B85C-144E1E4E44CD:" version="any">
+              <Name>PARIS-MEDITERRANEE TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::1C9BA26B-7D92-4D0E-86EF-895FB80E10BF:"></LineRef>
+                <LineRef ref="FR:Line::8EDA0FF6-311A-4C83-8C18-63D890856B43:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::6E9A46E7-AB51-499E-9FE4-132A6E140487:" version="any">
+              <Name>RHIN-RHONE MED TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::237820F0-01B1-49D5-AB3A-3ACA662E322E:"></LineRef>
+                <LineRef ref="FR:Line::2AA7BAB5-03F9-465F-A91C-947819FBBB7D:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::A09ACD81-7ED4-467C-B658-41E733F2E06D:" version="any">
+              <Name>PARIS-LYON/ST ETIENNE TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::5B76AFB9-244D-4AC6-9720-8142DC7F6A91:"></LineRef>
+                <LineRef ref="FR:Line::7B14F95D-1FA0-4908-B4C6-18EB63888CD7:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::bbdd85c1-a5af-4590-8299-17d10e05ed05:" version="any">
+              <Name>PARIS-ALPES TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::1E753DF8-B3B7-4FFE-BF59-46FC27595D6E:"></LineRef>
+                <LineRef ref="FR:Line::2239CF74-2DDE-4ECF-9A3F-022E65221125:"></LineRef>
+                <LineRef ref="FR:Line::4767DC65-0993-4961-B6EC-E5BF6DFFB291:"></LineRef>
+                <LineRef ref="FR:Line::5af9eaad-75f1-4fdd-a67b-a7aea5d19625:"></LineRef>
+                <LineRef ref="FR:Line::60faff89-b743-4b4b-a86b-3c0537769bfa:"></LineRef>
+                <LineRef ref="FR:Line::D9F206DE-37B5-4299-A71A-5B4201D0B9F9:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::C6989D25-5C60-4916-8CA7-BAD04729D800:" version="any">
+              <Name>OUIGO NORD</Name>
+              <members>
+                <LineRef ref="FR:Line::CEF7AF34-67BB-4735-B487-128F1E5EA4FA:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::C9AEDF6A-38DE-42CB-B059-1F9CF4D3F807:" version="any">
+              <Name>OUIGO SUD EST</Name>
+              <members>
+                <LineRef ref="FR:Line::7B6D24C9-C97E-4983-9E87-29A881C982D9:"></LineRef>
+                <LineRef ref="FR:Line::7FADFAB2-C52C-4C0F-A4AF-8E15C7C8C9F8:"></LineRef>
+                <LineRef ref="FR:Line::D1E5AD07-58C1-456A-B4E2-928E91061B0B:"></LineRef>
+                <LineRef ref="FR:Line::EB6C44B3-0091-46B2-94A4-A3CC5B1CA889:"></LineRef>
+                <LineRef ref="FR:Line::eed1f4f9-faf0-4ff5-a0a9-54e6e17ca1b4:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::2BE071B4-3049-44DB-B2A9-BE38E5AE62FE:" version="any">
+              <Name>KRONO</Name>
+              <members>
+                <LineRef ref="FR:Line::16895F67-B9EB-4357-94FE-46096C3CD885:"></LineRef>
+                <LineRef ref="FR:Line::909FBFB9-815C-4864-AD80-788517B591D6:"></LineRef>
+                <LineRef ref="FR:Line::BE24F24C-E7CC-4414-861B-B805F852213D:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::A73BD8EA-7868-4329-88EA-F30EC760903D:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::21C006C7-F1F5-410B-B9EF-F3FC9980E808:"></LineRef>
+                <LineRef ref="FR:Line::339BB070-8140-43DB-A443-4A9C5883F81B:"></LineRef>
+                <LineRef ref="FR:Line::E787EB35-6D67-48A0-A641-FEC921895C71:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::5A11E152-D55B-4890-9EF3-9240424FA0C7:" version="any">
+              <Name>LEX</Name>
+              <members>
+                <LineRef ref="FR:Line::608A9B0B-6DF0-475B-82BA-E9792D7972A5:"></LineRef>
+                <LineRef ref="FR:Line::7EF9EA42-DEB3-4717-ABDF-2E1B8BC66BFA:"></LineRef>
+                <LineRef ref="FR:Line::E937D19D-BA51-4EC8-9C8E-6B20FD5D6FF3:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::7740F6C8-6DE0-479C-9D0E-814286C557CB:" version="any">
+              <Name>KRONO</Name>
+              <members>
+                <LineRef ref="FR:Line::2993074B-2B66-490B-B4C2-5593D87237FB:"></LineRef>
+                <LineRef ref="FR:Line::29d0576e-eb5c-4cf1-b8fe-149eeaa6a347:"></LineRef>
+                <LineRef ref="FR:Line::3E4DA822-E4FA-4B43-A7E9-B8B655161197:"></LineRef>
+                <LineRef ref="FR:Line::5B616F3E-D726-494F-80C2-7EB8355C3177:"></LineRef>
+                <LineRef ref="FR:Line::5CE372B6-CE7D-4780-B4F8-F5979FED5405:"></LineRef>
+                <LineRef ref="FR:Line::6F1D7ABC-B729-498A-B3BD-DE55587C60E2:"></LineRef>
+                <LineRef ref="FR:Line::872509D5-9DC9-4F24-8BB0-3716CA6C6F27:"></LineRef>
+                <LineRef ref="FR:Line::B231BDC9-525A-4096-882F-6EFB9C25B27A:"></LineRef>
+                <LineRef ref="FR:Line::C333995A-51A2-4A1C-ABC7-55A7460AB17B:"></LineRef>
+                <LineRef ref="FR:Line::D02BC35E-F58E-45E7-968F-42B8AB630E6E:"></LineRef>
+                <LineRef ref="FR:Line::D79097CD-B3F9-4C30-8676-74078751808C:"></LineRef>
+                <LineRef ref="FR:Line::F28D551A-A369-44D2-A99B-0E546CDBEC87:"></LineRef>
+                <LineRef ref="FR:Line::caef5104-9fa8-453f-92ae-6d9b4c3b5df4:"></LineRef>
+                <LineRef ref="FR:Line::d1bc94ff-90a2-45c6-9617-258fb5f8f54a:"></LineRef>
+                <LineRef ref="FR:Line::fa2002df-4eab-4035-87a0-4c030f916558:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::CA2FEA5B-AC62-4711-8607-6C330AF8356F:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::02534A5F-903C-454E-A24F-E6E2E23B3CBF:"></LineRef>
+                <LineRef ref="FR:Line::0452A577-8D48-4B21-936A-8A975381A1DA:"></LineRef>
+                <LineRef ref="FR:Line::066313D8-0983-4B8F-8339-20A3BF96D614:"></LineRef>
+                <LineRef ref="FR:Line::2295DCB3-5ABB-4028-8431-F6E4F94D0299:"></LineRef>
+                <LineRef ref="FR:Line::323800B4-9274-423F-B8E2-9DFD1BC27DBC:"></LineRef>
+                <LineRef ref="FR:Line::405e834a-2838-4aba-b495-c55dd67d221a:"></LineRef>
+                <LineRef ref="FR:Line::58F8B7CA-CAB5-4D3F-B85B-95DCB0294FEC:"></LineRef>
+                <LineRef ref="FR:Line::5C7E6571-E713-456B-9CC6-C22814EB3809:"></LineRef>
+                <LineRef ref="FR:Line::600460FA-9605-4E84-B034-559354045FF1:"></LineRef>
+                <LineRef ref="FR:Line::6A73FB31-69FE-4B0C-A440-2AFC4D7F8084:"></LineRef>
+                <LineRef ref="FR:Line::84DC7868-DB96-46DB-B9DE-470D51CED21C:"></LineRef>
+                <LineRef ref="FR:Line::990301c3-14d2-4ac3-b839-9f452ebd7f65:"></LineRef>
+                <LineRef ref="FR:Line::9B891546-602E-47F3-BDBD-79097E163E9C:"></LineRef>
+                <LineRef ref="FR:Line::A57CFA44-0C60-40FC-AAA6-D0624CF259FE:"></LineRef>
+                <LineRef ref="FR:Line::AFC81FD4-2ACF-4BD1-96D0-E02D47FFBB4B:"></LineRef>
+                <LineRef ref="FR:Line::BD427EAB-2FA4-46A5-84D0-6ADB50D00346:"></LineRef>
+                <LineRef ref="FR:Line::F2A0FD4C-FE66-40BD-9F08-FC20FF6133FC:"></LineRef>
+                <LineRef ref="FR:Line::F7110AB1-B407-43CF-9614-12BAB42C22DC:"></LineRef>
+                <LineRef ref="FR:Line::FF20CA46-D0ED-49F0-95B3-59FFC379C6D0:"></LineRef>
+                <LineRef ref="FR:Line::e2062de0-0109-435e-afdd-90f43699c2ff:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::FE44DCE2-96BE-4D74-B7D1-60A2A25DE48D:" version="any">
+              <Name>CITI</Name>
+              <members>
+                <LineRef ref="FR:Line::00F7208C-CEBC-4521-A792-6EC3ABB65811:"></LineRef>
+                <LineRef ref="FR:Line::05262D94-C964-4568-8E04-C711D058B31D:"></LineRef>
+                <LineRef ref="FR:Line::05C666F4-3B26-4DB6-A4A8-F3C6D6150B76:"></LineRef>
+                <LineRef ref="FR:Line::06C24CB9-71E3-4CC4-BB31-E6285EB38AE1:"></LineRef>
+                <LineRef ref="FR:Line::071CBAF9-7286-48EB-8849-4C25E035D1E0:"></LineRef>
+                <LineRef ref="FR:Line::1C9277F1-D8AC-4D6F-9DAD-E2A807CBC4FA:"></LineRef>
+                <LineRef ref="FR:Line::284A09C9-9352-4B2A-B4B8-331497D889A9:"></LineRef>
+                <LineRef ref="FR:Line::2DF95135-3422-4DBA-9B8B-B9D470AC18EC:"></LineRef>
+                <LineRef ref="FR:Line::421CAAD2-E505-425C-81AA-9E984B306F7D:"></LineRef>
+                <LineRef ref="FR:Line::45E281C7-AC50-4A23-9B9F-F73234118E78:"></LineRef>
+                <LineRef ref="FR:Line::6349C213-7B19-4078-BF2B-43CBECDA9545:"></LineRef>
+                <LineRef ref="FR:Line::84762773-6B8B-4442-9CC3-2B637DB175D6:"></LineRef>
+                <LineRef ref="FR:Line::BAED427A-994D-4D73-B568-A7553E01CD3C:"></LineRef>
+                <LineRef ref="FR:Line::BE0A8D1F-C84D-4D75-87C8-D89DF19D1D40:"></LineRef>
+                <LineRef ref="FR:Line::BF117DF3-52D4-480E-BA33-EE64D381EB84:"></LineRef>
+                <LineRef ref="FR:Line::C1C06C47-A859-4002-95DC-2CB31676E8F2:"></LineRef>
+                <LineRef ref="FR:Line::C38BE1F5-2484-47F9-9837-A27F17D1138F:"></LineRef>
+                <LineRef ref="FR:Line::CE3BDFA1-8C2E-4088-82BD-B59FD309E3B4:"></LineRef>
+                <LineRef ref="FR:Line::D9E3C2B3-FD86-4C45-9998-2922E320C3A2:"></LineRef>
+                <LineRef ref="FR:Line::DAF77CAA-444E-43F9-A7EC-1FFEF4C462CD:"></LineRef>
+                <LineRef ref="FR:Line::DBB29EA6-8495-479C-B033-926E252847F8:"></LineRef>
+                <LineRef ref="FR:Line::E1BFD103-F172-4366-A1A6-EA4E9C95C93C:"></LineRef>
+                <LineRef ref="FR:Line::F1E656A7-A8BE-4DEC-875D-FC15D17580CC:"></LineRef>
+                <LineRef ref="FR:Line::F4B0CFE6-18E1-4D06-A749-805E6E29BD07:"></LineRef>
+                <LineRef ref="FR:Line::FAC858B2-B613-40BA-9423-E079D6979A0C:"></LineRef>
+                <LineRef ref="FR:Line::a6442ac3-6f55-438e-92b9-bc368cfaff20:"></LineRef>
+                <LineRef ref="FR:Line::ff177a26-1548-4497-b111-55a3044e9b94:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::A064D976-48C9-4201-8449-138F439B7436:" version="any">
+              <Name>FRANCFORT-MARSEILLE</Name>
+              <members>
+                <LineRef ref="FR:Line::884A662A-9CC9-4133-94A5-88B4AE5206FD:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::D996EBD1-098E-48DC-B6FC-83008BE98318:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::a48af794-a699-4b7b-b4ad-d2e81b314aee:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::247713C2-DA7A-4FA9-A713-F5CF43AF700A:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::11F076F8-55AD-4273-8679-AB5D0FBE8F9E:"></LineRef>
+                <LineRef ref="FR:Line::C740EC91-0E03-4C5E-BA50-463B09FEE5E4:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::06598CF4-7431-4874-90BE-3C4790BFA763:" version="any">
+              <Name>KRONO</Name>
+              <members>
+                <LineRef ref="FR:Line::27A3C9CC-526E-4121-8CF9-7C00D4652BCC:"></LineRef>
+                <LineRef ref="FR:Line::B10C45A0-C32C-4232-85F2-4BB81B810084:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::965D1DC7-E1A0-4026-B331-3C2FDD498230:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::560BC1BD-AE16-4EAE-B2A2-F57BCD2E271B:"></LineRef>
+                <LineRef ref="FR:Line::58FC3A74-C0EE-43AD-98F7-313645A935BF:"></LineRef>
+                <LineRef ref="FR:Line::9E8A0A7B-FC96-452D-B101-08ACAC5E1547:"></LineRef>
+                <LineRef ref="FR:Line::AA458197-5792-4FC6-A6CA-4B6EA3876108:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::efcba18c-faf7-49ac-b6b9-3dc1027a649a:" version="any">
+              <Name>Accord de commercialisation</Name>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::4AC00527-155E-44B0-84C6-49A1E079B6DD:" version="any">
+              <Name>PROXI</Name>
+              <members>
+                <LineRef ref="FR:Line::7DACE850-CDD7-46C7-91BC-3D031A6A0F01:"></LineRef>
+                <LineRef ref="FR:Line::8C1C1A08-8854-4535-A188-D047BD6F341C:"></LineRef>
+                <LineRef ref="FR:Line::8E9E1A26-30D4-49B7-8B37-D439E17FFC20:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::d59f7641-7392-48c7-a1cb-db08b93cc42e:" version="any">
+              <Name>PARIS-CLERMONT-FERRAND</Name>
+              <members>
+                <LineRef ref="FR:Line::cfa40ffd-5af4-49b0-99a9-99857ba5f7ff:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::fde0ac1d-88ca-486f-a4f9-1b14f3b4a89b:" version="any">
+              <Name>Cars sans réservation</Name>
+              <members>
+                <LineRef ref="FR:Line::b262568e-13b4-4352-bcf6-2b290ec3644f:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::cdb1b5ee-040c-4af2-8a32-b8dd62d19c3f:" version="any">
+              <Name>IC ECO PARIS-NANTES</Name>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::fc570ada-0ba8-4d61-ab93-720526ae7434:" version="any">
+              <Name>IC ECO PARIS-LA ROCHELLE</Name>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::4E592A6E-A9BC-4D3D-8B72-68128358B339:" version="any">
+              <Name>PARIS ITALIE TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::2FFF7F96-0EBC-4AA1-B417-38EBD492057E:"></LineRef>
+              </members>
+            </GroupOfLines>
+            <GroupOfLines id="FR:GroupOfLines::68C111FC-FAED-4DB4-BE10-CF858434637B:" version="any">
+              <Name>LILLE-LYON TGV</Name>
+              <members>
+                <LineRef ref="FR:Line::58E6B1CC-5FD9-4B7D-93CA-05062BA23E9C:"></LineRef>
+                <LineRef ref="FR:Line::A6C76228-9224-4C48-8B92-80FC80F093E2:"></LineRef>
+              </members>
+            </GroupOfLines>
+          </groupsOfLines>
+        </Network>
+      </members>
+    </GeneralFrame>
+  </dataObjects>
+</PublicationDelivery>

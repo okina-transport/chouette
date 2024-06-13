@@ -154,6 +154,31 @@ public class NetexFranceProfileImportTest {
 
     }
 
+    @Test(groups = { "parseCommonFile" }, description = "common file should be parsed")
+    public void test_netex_common_file_parser_commands__when_common_file_network_parsing_was_incorrect__is_now_correct() throws Exception {
+        // this common file used to crash on PROD
+        // after parsing it line 19ea029b-6782-421a-8481-7470f5718e47 did not belong to any network
+        // whereas it should be on network TER Auvergne - Rhône-Alpes
+
+        // Arrange
+        String testFileName = "commonFileParsingTest_network_parsing_used_to_fail.xml";
+        Context importContext = initContext();
+
+        // Act
+        launchParsing(importContext, testFileName);
+
+        // Assert
+        Referential referential = (Referential) importContext.get(REFERENTIAL);
+        Map<String, Network> networks = referential.getSharedPTNetworks();
+        Assert.assertEquals(networks.size(),1, "one network is parsed");
+        Network terAURANetwork = (Network) networks.values().toArray()[0];
+        Assert.assertNotNull(terAURANetwork);
+        Assert.assertEquals(terAURANetwork.getName(), "TER Auvergne - Rhône-Alpes", "network name is correct");
+        Assert.assertEquals(terAURANetwork.getLines().size(),113, "all lines are parsed");
+        Assert.assertTrue(terAURANetwork.getLines().stream().anyMatch(l -> l.getObjectId().contains("19ea029b-6782-421a-8481-7470f5718e47")), "line 19ea029b-6782-421a-8481-7470f5718e47 belongs to network");
+    }
+
+
     @Test(groups = { "parseLineFile" }, description = "line file should be parsed")
     public void verifyLineFileParsing() throws Exception {
 
