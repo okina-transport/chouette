@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -66,7 +67,11 @@ public class JaxbNeptuneFileConverter {
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		//todo switch to run neptune local
 		//schema = schemaFactory.newSchema(new File("/tmp/xsd/neptune.xsd"));
-		schema = schemaFactory.newSchema(getClass().getClassLoader().getResource("xsd/neptune.xsd"));
+		URL schemaFile = getClass().getClassLoader().getResource("xsd/neptune.xsd");
+		if (schemaFile == null){
+			log.error("Unable to find neptune xsd file");
+		}
+		schema = schemaFactory.newSchema(schemaFile);
 	}
 
 	public void write(ChouettePTNetworkType rootObject, File file) throws JAXBException, IOException {
