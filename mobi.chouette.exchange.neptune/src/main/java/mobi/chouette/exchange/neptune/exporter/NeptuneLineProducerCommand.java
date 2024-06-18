@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.neptune.exporter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.naming.InitialContext;
 import javax.xml.bind.MarshalException;
@@ -10,6 +11,7 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.AlternativeRegistrationNumberDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.exchange.exporter.SharedDataKeys;
 import mobi.chouette.exchange.neptune.Constant;
@@ -17,6 +19,7 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.AlternativeRegistrationNumber;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 
@@ -28,140 +31,162 @@ import org.xml.sax.SAXParseException;
 @Log4j
 public class NeptuneLineProducerCommand implements Command, Constant {
 
-	public static final String COMMAND = "NeptuneLineProducerCommand";
+    public static final String COMMAND = "NeptuneLineProducerCommand";
 
-	private ScheduledStopPointDAO scheduledStopPointDAO;
+    private ScheduledStopPointDAO scheduledStopPointDAO;
 
-	public boolean execute(Context context) throws Exception {
+    private AlternativeRegistrationNumberDAO alternativeRegistrationNumberDAO;
 
-		boolean result = ERROR;
-		Monitor monitor = MonitorFactory.start(COMMAND);
-		ActionReporter reporter = ActionReporter.Factory.getInstance();
+    public boolean execute(Context context) throws Exception {
 
-		try {
+        boolean result = ERROR;
+        Monitor monitor = MonitorFactory.start(COMMAND);
+        ActionReporter reporter = ActionReporter.Factory.getInstance();
 
-			Line line = (Line) context.get(LINE);
-			NeptuneExportParameters configuration = (NeptuneExportParameters) context.get(CONFIGURATION);
+        try {
 
-			ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
-			if (collection == null) {
-				collection = new ExportableData();
-				context.put(EXPORTABLE_DATA, collection);
-			} else {
-				collection.clear();
-			}
+            Line line = (Line) context.get(LINE);
+            NeptuneExportParameters configuration = (NeptuneExportParameters) context.get(CONFIGURATION);
 
-			SharedDataKeys sharedData = (SharedDataKeys) context.get(SHARED_DATA_KEYS);
-			if (sharedData == null) {
-				sharedData = new SharedDataKeys();
-				context.put(SHARED_DATA_KEYS, sharedData);
-			}
-			LocalDate startDate = null;
-			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
-			}
+            ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
+            if (collection == null) {
+                collection = new ExportableData();
+                context.put(EXPORTABLE_DATA, collection);
+            } else {
+                collection.clear();
+            }
 
-			LocalDate endDate = null;
-			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
-			}
+            SharedDataKeys sharedData = (SharedDataKeys) context.get(SHARED_DATA_KEYS);
+            if (sharedData == null) {
+                sharedData = new SharedDataKeys();
+                context.put(SHARED_DATA_KEYS, sharedData);
+            }
+            LocalDate startDate = null;
+            if (configuration.getStartDate() != null) {
+                startDate = new LocalDate(configuration.getStartDate());
+            }
 
-			NeptuneDataCollector collector = new NeptuneDataCollector();
-			collector.setScheduledStopPointDAO(scheduledStopPointDAO);
+            LocalDate endDate = null;
+            if (configuration.getEndDate() != null) {
+                endDate = new LocalDate(configuration.getEndDate());
+            }
 
-			boolean cont = (collector.collect(collection, line, startDate, endDate));
-			reporter.addObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(line),
-					OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.JOURNEY_PATTERN,
-					collection.getJourneyPatterns().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ROUTE, collection
-					.getRoutes().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.VEHICLE_JOURNEY,
-					collection.getVehicleJourneys().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.CONNECTION_LINK,
-					collection.getConnectionLinks().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.TIMETABLE,
-					collection.getTimetables().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ACCESS_POINT,
-					collection.getAccessPoints().size());
-			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.STOP_AREA,
-					collection.getStopAreas().size());
+            NeptuneDataCollector collector = new NeptuneDataCollector();
+            collector.setScheduledStopPointDAO(scheduledStopPointDAO);
+            handleAlternativeRegistrationNumber(line);
+            boolean cont = (collector.collect(collection, line, startDate, endDate));
+            reporter.addObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(line),
+                    OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 0);
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.JOURNEY_PATTERN,
+                    collection.getJourneyPatterns().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ROUTE, collection
+                    .getRoutes().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.VEHICLE_JOURNEY,
+                    collection.getVehicleJourneys().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.CONNECTION_LINK,
+                    collection.getConnectionLinks().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.TIMETABLE,
+                    collection.getTimetables().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ACCESS_POINT,
+                    collection.getAccessPoints().size());
+            reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.STOP_AREA,
+                    collection.getStopAreas().size());
 
-			if (cont) {
-				try {
-					ChouettePTNetworkProducer producer = new ChouettePTNetworkProducer();
-					producer.produce(context);
+            if (cont) {
+                try {
+                    ChouettePTNetworkProducer producer = new ChouettePTNetworkProducer();
+                    producer.produce(context);
 
-					reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 1);
-					// merge lineStats to global ones
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.NETWORK, "networks", OBJECT_STATE.OK,
-							IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.NETWORK, OBJECT_TYPE.NETWORK,
-							sharedData.getNetworkIds().size());
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK,
-							IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY,
-							sharedData.getCompanyIds().size());
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, "connection links",
-							OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK,
-							OBJECT_TYPE.CONNECTION_LINK, sharedData.getConnectionLinkIds().size());
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.ACCESS_POINT, "access points",
-							OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.ACCESS_POINT,
-							OBJECT_TYPE.ACCESS_POINT, sharedData.getAccessPointIds().size());
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, "stop areas", OBJECT_STATE.OK,
-							IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA,
-							sharedData.getStopAreaIds().size());
-					reporter.addObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, "calendars", OBJECT_STATE.OK,
-							IO_TYPE.OUTPUT);
-					reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE,
-							sharedData.getTimetableIds().size());
-					result = SUCCESS;
-				} catch (MarshalException e) {
-					if (e.getCause() != null && e.getCause() instanceof SAXParseException) {
-						log.error(e.getCause().getMessage());
-						reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
-								ActionReporter.ERROR_CODE.INVALID_FORMAT, e.getCause().getMessage());
-					} else {
-						log.error(e.getMessage());
-						reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
-								ActionReporter.ERROR_CODE.INVALID_FORMAT, e.getMessage());
-					}
-				}
+                    reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 1);
+                    // merge lineStats to global ones
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.NETWORK, "networks", OBJECT_STATE.OK,
+                            IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.NETWORK, OBJECT_TYPE.NETWORK,
+                            sharedData.getNetworkIds().size());
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK,
+                            IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY,
+                            sharedData.getCompanyIds().size());
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, "connection links",
+                            OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK,
+                            OBJECT_TYPE.CONNECTION_LINK, sharedData.getConnectionLinkIds().size());
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.ACCESS_POINT, "access points",
+                            OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.ACCESS_POINT,
+                            OBJECT_TYPE.ACCESS_POINT, sharedData.getAccessPointIds().size());
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, "stop areas", OBJECT_STATE.OK,
+                            IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA,
+                            sharedData.getStopAreaIds().size());
+                    reporter.addObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, "calendars", OBJECT_STATE.OK,
+                            IO_TYPE.OUTPUT);
+                    reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE,
+                            sharedData.getTimetableIds().size());
+                    result = SUCCESS;
+                } catch (MarshalException e) {
+                    if (e.getCause() != null && e.getCause() instanceof SAXParseException) {
+                        log.error(e.getCause().getMessage());
+                        reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
+                                ActionReporter.ERROR_CODE.INVALID_FORMAT, e.getCause().getMessage());
+                    } else {
+                        log.error(e.getMessage());
+                        reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
+                                ActionReporter.ERROR_CODE.INVALID_FORMAT, e.getMessage());
+                    }
+                }
 
-			} else {
-				reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
-						ActionReporter.ERROR_CODE.NO_DATA_ON_PERIOD, "no data on period");
-			}
+            } else {
+                reporter.addErrorToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE,
+                        ActionReporter.ERROR_CODE.NO_DATA_ON_PERIOD, "no data on period");
+            }
 
-		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-		}
+        } finally {
+            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public ScheduledStopPointDAO getScheduledStopPointDAO() {
-		return scheduledStopPointDAO;
-	}
+    private void handleAlternativeRegistrationNumber(Line line) {
 
-	public void setScheduledStopPointDAO(ScheduledStopPointDAO scheduledStopPointDAO) {
-		this.scheduledStopPointDAO = scheduledStopPointDAO;
-	}
+        if (line.getCompany() == null || line.getCompany().getRegistrationNumber() == null) {
+            return;
+        }
 
+        String originalRegistrationNumber = line.getCompany().getRegistrationNumber();
+        Optional<AlternativeRegistrationNumber> foundAlternativeOpt = alternativeRegistrationNumberDAO.findByOriginalRegistrationNumber(line.getCompany().getRegistrationNumber());
 
-	public static class DefaultCommandFactory extends CommandFactory {
+        foundAlternativeOpt.ifPresent(foundAlternative -> {
+            line.getCompany().setRegistrationNumber(foundAlternative.getAlternativeRegistrationNumber());
+            log.info("Replacing registration number " + originalRegistrationNumber + " with alternative registration number :" + line.getCompany().getRegistrationNumber());
 
-		@Override
-		protected Command create(InitialContext context) throws IOException {
-			return new NeptuneLineProducerCommand();
-		}
-	}
+        });
 
-	static {
-		CommandFactory.factories.put(NeptuneLineProducerCommand.class.getName(), new DefaultCommandFactory());
-	}
+    }
+
+    public ScheduledStopPointDAO getScheduledStopPointDAO() {
+        return scheduledStopPointDAO;
+    }
+
+    public void setScheduledStopPointDAO(ScheduledStopPointDAO scheduledStopPointDAO) {
+        this.scheduledStopPointDAO = scheduledStopPointDAO;
+    }
+
+    public void setAlternativeRegistrationNumberDAO(AlternativeRegistrationNumberDAO alternativeRegistrationNumberDAO) {
+        this.alternativeRegistrationNumberDAO = alternativeRegistrationNumberDAO;
+    }
+
+    public static class DefaultCommandFactory extends CommandFactory {
+
+        @Override
+        protected Command create(InitialContext context) throws IOException {
+            return new NeptuneLineProducerCommand();
+        }
+    }
+
+    static {
+        CommandFactory.factories.put(NeptuneLineProducerCommand.class.getName(), new DefaultCommandFactory());
+    }
 }

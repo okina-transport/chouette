@@ -16,6 +16,7 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.AlternativeRegistrationNumberDAO;
 import mobi.chouette.dao.CleanUpDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.ScheduledStopPointDAO;
@@ -41,6 +42,9 @@ public class DaoNeptuneLineProducerCommand implements Command, Constant {
 	private ScheduledStopPointDAO scheduledStopPointDAO;
 
 	@EJB
+	private AlternativeRegistrationNumberDAO alternativeRegistrationNumberDAO;
+
+	@EJB
 	CleanUpDAO cleanUpDAO;
 
 	@Override
@@ -61,6 +65,7 @@ public class DaoNeptuneLineProducerCommand implements Command, Constant {
 			
 			Command export = CommandFactory.create(initialContext, NeptuneLineProducerCommand.class.getName());
 			((NeptuneLineProducerCommand) export).setScheduledStopPointDAO(scheduledStopPointDAO);
+			((NeptuneLineProducerCommand) export).setAlternativeRegistrationNumberDAO(alternativeRegistrationNumberDAO);
 
 			context.put(LINE, line);
 			result = export.execute(context);
