@@ -447,4 +447,11 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 			inverseJoinColumns = {@JoinColumn(name = "train_id", nullable = false) })
 	private List<Train> trains = new ArrayList<>(0);
 
+
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "branding_id")
+	private Branding branding;
+
 }

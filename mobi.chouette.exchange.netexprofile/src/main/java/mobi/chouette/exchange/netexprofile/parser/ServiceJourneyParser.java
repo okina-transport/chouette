@@ -24,9 +24,7 @@ import org.rutebanken.netex.model.FlexibleServiceProperties;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -42,6 +40,8 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		JourneysInFrame_RelStructure journeyStructs = (JourneysInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
+
 
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney();
 
@@ -53,6 +53,18 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
 
 			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
+
+
+			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
+				String brandingRef = serviceJourney.getBrandingRef().getRef();
+				if (brandingRefMap.containsKey(brandingRef)){
+					brandingRefMap.get(brandingRef).add(serviceJourneyId);
+				}else{
+					Set<String> journeyIdsByBrand = new HashSet<>();
+					journeyIdsByBrand.add(serviceJourneyId);
+					brandingRefMap.put(brandingRef, journeyIdsByBrand);
+				}
+			}
 
 			VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential,serviceJourneyId);
 

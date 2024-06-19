@@ -59,6 +59,7 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(VALIDATION_DATA, new ValidationData());
 			context.put(OPTIMIZED, false);
 			context.put(FILE_TO_REFERENTIAL_STOP_ID_MAP, new HashMap<String, String>());
+			context.put(BRANDING_REF_MAP, new HashMap<String, Set<String>>());
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
 			context.put(STREAM_TO_CLOSE, new ArrayList<>());
 			context.put(DETECT_CHANGED_TRIPS,parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));

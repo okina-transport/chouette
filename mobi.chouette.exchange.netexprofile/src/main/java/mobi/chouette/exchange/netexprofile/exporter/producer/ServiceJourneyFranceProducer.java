@@ -89,6 +89,13 @@ public class ServiceJourneyFranceProducer {
             serviceJourney = netexFactory.createServiceJourney();
         }
 
+        if (vehicleJourney.getBranding() != null){
+            BrandingRefStructure brandingRef = new BrandingRefStructure();
+            brandingRef.setRef(vehicleJourney.getBranding().getName());
+            serviceJourney.setBrandingRef(brandingRef);
+        }
+
+
         NetexProducerUtils.populateIdAndVersion(vehicleJourney, serviceJourney);
 
         serviceJourney.setName(ConversionUtil.getMultiLingualString(vehicleJourney.getPublishedJourneyName()));

@@ -147,6 +147,17 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         return nbModifiedLines;
     }
 
+    @Override
+    public long updateBrandingId(Long brandingId, List<String> objectIds) {
+        String sql = "UPDATE vehicle_journeys SET branding_id = :brandId WHERE objectid IN (:objectIdList)";
+        long nbModifiedLines = em.createNativeQuery(sql)
+                .setParameter("brandId", brandingId)
+                .setParameter("objectIdList", objectIds)
+                .executeUpdate();
+
+        return nbModifiedLines;
+    }
+
     public long updateDefaultAccessibility(Long defaultAccessibilityId){
 
         String sql = "UPDATE vehicle_journeys SET accessibility_assessment_id = :accessId WHERE accessibility_assessment_id IS NULL";
