@@ -151,18 +151,28 @@ public class NeptuneLineProducerCommand implements Command, Constant {
 
     private void handleAlternativeRegistrationNumber(Line line) {
 
-        if (line.getCompany() == null || line.getCompany().getRegistrationNumber() == null) {
-            return;
+        if (line.getCompany() != null && line.getCompany().getRegistrationNumber() != null) {
+            String originalRegistrationNumber = line.getCompany().getRegistrationNumber();
+            Optional<AlternativeRegistrationNumber> foundAlternativeOpt = alternativeRegistrationNumberDAO.findByOriginalRegistrationNumber(originalRegistrationNumber);
+
+            foundAlternativeOpt.ifPresent(foundAlternative -> {
+                line.getCompany().setRegistrationNumber(foundAlternative.getAlternativeRegistrationNumber());
+                log.info("Replacing registration number for line company " + originalRegistrationNumber + " with alternative registration number :" + line.getCompany().getRegistrationNumber());
+
+            });
         }
 
-        String originalRegistrationNumber = line.getCompany().getRegistrationNumber();
-        Optional<AlternativeRegistrationNumber> foundAlternativeOpt = alternativeRegistrationNumberDAO.findByOriginalRegistrationNumber(line.getCompany().getRegistrationNumber());
+        if (line.getNetwork() != null && line.getNetwork().getCompany() != null && line.getNetwork().getCompany().getRegistrationNumber() != null){
+            String originalRegistrationNumber = line.getNetwork().getCompany().getRegistrationNumber();
+            Optional<AlternativeRegistrationNumber> foundAlternativeOpt = alternativeRegistrationNumberDAO.findByOriginalRegistrationNumber(originalRegistrationNumber);
+            foundAlternativeOpt.ifPresent(foundAlternative -> {
+                line.getNetwork().getCompany().setRegistrationNumber(foundAlternative.getAlternativeRegistrationNumber());
+                log.info("Replacing registration number for network company" + originalRegistrationNumber + " with alternative registration number :" +  line.getNetwork().getCompany().getRegistrationNumber());
 
-        foundAlternativeOpt.ifPresent(foundAlternative -> {
-            line.getCompany().setRegistrationNumber(foundAlternative.getAlternativeRegistrationNumber());
-            log.info("Replacing registration number " + originalRegistrationNumber + " with alternative registration number :" + line.getCompany().getRegistrationNumber());
+            });
+        }
 
-        });
+
 
     }
 
