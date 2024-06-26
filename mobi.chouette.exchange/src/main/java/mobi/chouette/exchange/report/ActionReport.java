@@ -22,15 +22,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @XmlRootElement(name = "action_report")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"progression", "result", "zip_files", "files", "failure", "objects", "collections"})
+@XmlType(propOrder = {"progression", "result", "zip_files", "files", "filesInError", "failure", "objects", "collections"})
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -48,6 +44,9 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 
 	@XmlElement(name = "files")
 	private List<FileReport> files = new ArrayList<>();
+
+	@XmlElement(name ="filesInError")
+	private List<FileError> filesInError = new ArrayList<>();
 
 	@XmlElement(name = "failure")
 	private ActionError failure;
@@ -199,6 +198,19 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 			for (FileReport file : files) {
 				array.put(file.toJson());
 			}
+
+			JSONArray arrayError = new JSONArray();
+			for (FileReport file : files) {
+				if (file.getStatus().equals(ActionReporter.FILE_STATE.ERROR) && file.getErrors() != null) {
+					for (FileError error : file.getErrors()) {
+						filesInError.add(new FileError(error.getCode(), error.getDescription()));
+					}
+				}
+			}
+			actionReport.put("filesInError", arrayError);
+			for (FileError fileError : filesInError) {
+				arrayError.put(fileError.toJson());
+			}
 		}
 		if (!objects.isEmpty()) {
 			JSONArray array = new JSONArray();
@@ -257,8 +269,23 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 			map.put("zip_files", zips);
 		if (failure != null)
 			map.put("failure", failure);
-		if (!files.isEmpty())
+		if (!files.isEmpty()) {
 			map.put("files", files);
+
+			for (FileReport file : files) {
+				if (file.getStatus().equals(ActionReporter.FILE_STATE.ERROR) && file.getErrors() != null) {
+					for (FileError error : file.getErrors()) {
+						if (!filesInError.contains(error)) {
+							filesInError.add(error);
+						}
+					}
+				}
+			}
+
+			if (!filesInError.isEmpty()) {
+				map.put("filesInError", filesInError);
+			}
+		}
 		if (!objects.isEmpty())
 			map.put("objects", objects.values());
 		if (!collections.isEmpty())
