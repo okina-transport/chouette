@@ -1876,6 +1876,7 @@ CREATE TABLE chouette_gui.vehicle_journeys (
                                   service_alteration character varying(255),
                                   flexible_service_properties_id bigint,
                                   bikes_allowed boolean,
+                                  branding_id bigint,
                                   accessibility_assessment_id bigint
 );
 
@@ -4655,6 +4656,7 @@ CREATE TABLE sky.vehicle_journeys (
                                                service_alteration character varying(255),
                                                flexible_service_properties_id bigint,
                                                bikes_allowed boolean,
+                                               branding_id bigint,
                                                accessibility_assessment_id bigint
 );
 
@@ -4764,6 +4766,7 @@ CREATE TABLE rut.vehicle_journeys (
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
                                       bikes_allowed boolean,
+                                      branding_id bigint,
                                       accessibility_assessment_id bigint
 );
 
@@ -4875,6 +4878,7 @@ CREATE TABLE nri.vehicle_journeys (
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
                                       bikes_allowed boolean,
+                                      branding_id bigint,
                                       accessibility_assessment_id bigint
 );
 
@@ -4985,6 +4989,7 @@ CREATE TABLE tro.vehicle_journeys (
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
                                       bikes_allowed boolean,
+                                      branding_id bigint,
                                       accessibility_assessment_id bigint
 );
 
@@ -5096,6 +5101,7 @@ CREATE TABLE akt.vehicle_journeys (
                                       service_alteration character varying(255),
                                       flexible_service_properties_id bigint,
                                       bikes_allowed boolean,
+                                      branding_id bigint,
                                       accessibility_assessment_id bigint
 );
 
