@@ -54,6 +54,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "files")
     private List<FileReport> files = new ArrayList<>();
 
+    @XmlElement(name = "filesInError")
+    private List<FileError> filesInError = new ArrayList<>();
+
     @XmlElement(name = "lines")
     private List<String> lines = new ArrayList<>();
 
@@ -226,8 +229,24 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         analyzeReportMap.put("exploitation_period",explorationPeriodMap);
 
 
-        if (!files.isEmpty())
+        if (!files.isEmpty()) {
             analyzeReportMap.put("files", files);
+
+            for (FileReport file : files) {
+                if (file.getStatus().equals(ActionReporter.FILE_STATE.ERROR) && file.getErrors() != null) {
+                    for (FileError error : file.getErrors()) {
+                        if (!filesInError.contains(error)) {
+                            filesInError.add(error);
+                        }
+                    }
+                }
+            }
+
+            if (!filesInError.isEmpty()) {
+                analyzeReportMap.put("filesInError", filesInError);
+            }
+        }
+
 
         if (!lines.isEmpty())
             analyzeReportMap.put("lines", buildLinesList());
