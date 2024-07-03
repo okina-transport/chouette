@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.importer.updater;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
@@ -22,6 +16,11 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Collection;
+import java.util.List;
 
 @Stateless(name = RouteUpdater.BEAN_NAME)
 public class RouteUpdater implements Updater<Route> {
@@ -168,6 +167,8 @@ public class RouteUpdater implements Updater<Route> {
 			stopPoint.setRoute(null);
 			stopPointDAO.delete(stopPoint);
 		}
+
+		stopPointDAO.flush();
 
 		// RoutePoint
 		Collection<RoutePoint> addedRoutePoint = CollectionUtil.substract(newValue.getRoutePoints(),
