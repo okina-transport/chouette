@@ -167,7 +167,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
         String[] nameDataSpace = objectId.split(":");
         if (!nameDataSpace[0].equals(defaultCodespacePrefix)) {
-            objectId = objectId.replace(nameDataSpace[0], defaultCodespacePrefix);
+            objectId = objectId.replaceFirst(nameDataSpace[0], defaultCodespacePrefix);
         }
 
         if (objectId.endsWith(SANITIZED_REPLACEMENT_CODE)) {
