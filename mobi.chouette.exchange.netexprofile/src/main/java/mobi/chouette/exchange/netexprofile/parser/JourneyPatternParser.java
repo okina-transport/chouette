@@ -264,13 +264,13 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
         }
 
-        Route chouetteRoute = chouetteJourneyPattern.getRoute();
-
-        if (chouetteRoute != null){
-            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
-            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
-            chouetteRoute.setFilled(true);
-        }
+//        Route chouetteRoute = chouetteJourneyPattern.getRoute();
+//
+//        if (chouetteRoute != null){
+//            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
+//            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
+//            chouetteRoute.setFilled(true);
+//        }
 
     }
 
