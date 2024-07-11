@@ -5,6 +5,7 @@ public class FactoryParameters {
     private String splitCharacter;
     private String linePrefixToRemove;
     private String commercialPointIdPrefixToRemove;
+    private Boolean isRemoveParentStations;
 
     public String getSplitCharacter() {
         return splitCharacter;
@@ -28,5 +29,13 @@ public class FactoryParameters {
 
     public void setCommercialPointIdPrefixToRemove(String commercialPointIdPrefixToRemove) {
         this.commercialPointIdPrefixToRemove = commercialPointIdPrefixToRemove;
+    }
+
+    public Boolean getRemoveParentStations() {
+        return isRemoveParentStations;
+    }
+
+    public void setRemoveParentStations(Boolean removeParentStations) {
+        isRemoveParentStations = removeParentStations;
     }
 }
