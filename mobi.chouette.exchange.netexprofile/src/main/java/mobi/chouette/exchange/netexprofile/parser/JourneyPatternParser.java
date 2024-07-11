@@ -80,7 +80,6 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             }
 
             parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern);
-
             parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
             chouetteJourneyPattern.setFilled(true);
             initRouteSections(referential, chouetteJourneyPattern);
@@ -167,9 +166,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
     }
 
     private void parseStopPointsInJourneyPattern(Context context, Referential referential, org.rutebanken.netex.model.JourneyPattern_VersionStructure netexJourneyPattern,
-                                                 mobi.chouette.model.JourneyPattern chouetteJourneyPattern) throws Exception {
-
-
+                                                 mobi.chouette.model.JourneyPattern chouetteJourneyPattern) {
         if (netexJourneyPattern.getPointsInSequence() == null) {
             handleEmptyPointsInSequence(context, netexJourneyPattern);
             return;
@@ -264,13 +261,13 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
         }
 
-        Route chouetteRoute = chouetteJourneyPattern.getRoute();
-
-        if (chouetteRoute != null){
-            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
-            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
-            chouetteRoute.setFilled(true);
-        }
+//        Route chouetteRoute = chouetteJourneyPattern.getRoute();
+//
+//        if (chouetteRoute != null){
+//            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
+//            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
+//            chouetteRoute.setFilled(true);
+//        }
 
     }
 
