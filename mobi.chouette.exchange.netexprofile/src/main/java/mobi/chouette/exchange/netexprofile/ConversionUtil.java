@@ -1,45 +1,8 @@
 package mobi.chouette.exchange.netexprofile;
 
-import java.math.BigInteger;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.OffsetTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.type.BookingAccessEnum;
-import mobi.chouette.model.type.BookingMethodEnum;
-import mobi.chouette.model.type.DayTypeEnum;
-import mobi.chouette.model.type.FlexibleLineTypeEnum;
-import mobi.chouette.model.type.FlexibleServiceTypeEnum;
-import mobi.chouette.model.type.PurchaseMomentEnum;
-import mobi.chouette.model.type.PurchaseWhenEnum;
-import mobi.chouette.model.type.ServiceAlterationEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
+import mobi.chouette.model.type.*;
 import org.apache.commons.lang.StringUtils;
-import org.rutebanken.netex.model.AirSubmodeEnumeration;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.BookingAccessEnumeration;
-import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.BusSubmodeEnumeration;
-import org.rutebanken.netex.model.CoachSubmodeEnumeration;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.FlexibleServiceEnumeration;
-import org.rutebanken.netex.model.MetroSubmodeEnumeration;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.PurchaseMomentEnumeration;
-import org.rutebanken.netex.model.PurchaseWhenEnumeration;
-import org.rutebanken.netex.model.RailSubmodeEnumeration;
-import org.rutebanken.netex.model.ServiceAlterationEnumeration;
-import org.rutebanken.netex.model.TelecabinSubmodeEnumeration;
-import org.rutebanken.netex.model.TramSubmodeEnumeration;
-import org.rutebanken.netex.model.TransportSubmodeStructure;
-import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
@@ -177,20 +140,32 @@ public class ConversionUtil {
 				 */
 				case AirportLinkBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.AIRPORT_LINK_BUS);
+				case DedicatedLaneBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.DEDICATED_LANE_BUS);
+				case DemandAndResponseBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.DEMAND_AND_RESPONSE_BUS);
 				case ExpressBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.EXPRESS_BUS);
+				case HighFrequencyBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.HIGH_FREQUENCY_BUS);
 				case LocalBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.LOCAL_BUS);
+				case MobilityBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.MOBILITY_BUS);
 				case NightBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.NIGHT_BUS);
 				case RailReplacementBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.RAIL_REPLACEMENT_BUS);
 				case RegionalBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.REGIONAL_BUS);
+				case SchoolAndPublicServiceBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.SCHOOL_AND_PUBLIC_SERVICE_BUS);
 				case SchoolBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.SCHOOL_BUS);
 				case ShuttleBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.SHUTTLE_BUS);
+				case SpecialNeedsBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.SPECIAL_NEEDS_BUS);
 				case SightseeingBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.SIGHTSEEING_BUS);
 

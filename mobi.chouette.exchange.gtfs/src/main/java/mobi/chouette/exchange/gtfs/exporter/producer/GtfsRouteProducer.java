@@ -38,7 +38,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
    private GtfsRoute route = new GtfsRoute();
 
-   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams)
+   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams)
    {
       route.setRouteId(generateCustomRouteId(toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
        if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
@@ -105,39 +105,11 @@ public class GtfsRouteProducer extends AbstractProducer
 
       if (neptuneObject.getTransportModeName() != null)
       {
-         if(useTPEGRouteTypes) {
-        	 route.setRouteType(RouteTypeEnum.from(neptuneObject.getTransportModeName(), neptuneObject.getTransportSubModeName()));
+         if(useExtendedGtfsRouteTypes) {
+        	 route.setRouteType(RouteTypeEnum.fromTransportModeAndSubMode(neptuneObject.getTransportModeName(), neptuneObject.getTransportSubModeName()));
          } else {
-    	  
-             switch (neptuneObject.getTransportModeName())
-             {
-             case Tram:
-                route.setRouteType(RouteTypeEnum.Tram);
-                break;
-             case Metro:
-                route.setRouteType(RouteTypeEnum.Subway);
-                break;
-             case Rail:
-                route.setRouteType(RouteTypeEnum.Rail);
-                break;
-             case Water:
-             case Ferry:
-                route.setRouteType(RouteTypeEnum.Ferry);
-                break;
-             case Funicular:
-            	 route.setRouteType(RouteTypeEnum.Funicular);
-                 break;
-             case Cableway:
-            	 route.setRouteType(RouteTypeEnum.Gondola);
-                 break;
-             case TrolleyBus:
-             case Coach:
-             case Bus:
-             default:
-                route.setRouteType(RouteTypeEnum.Bus);
-             }
+             route.setRouteType(RouteTypeEnum.fromTransportMode(neptuneObject.getTransportModeName()));
          }
-      
       }
       else
       {

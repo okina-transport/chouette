@@ -29,21 +29,13 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.util.NamingUtil;
 import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -162,7 +154,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 			}
 			if (hasVj) {
 				IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
-				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseTpegHvt(),idParams);
+				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseExtendedGtfsRouteTypes(),idParams);
 				hasLine = true;
 				if (metadata != null) {
 					metadata.getResources().add(

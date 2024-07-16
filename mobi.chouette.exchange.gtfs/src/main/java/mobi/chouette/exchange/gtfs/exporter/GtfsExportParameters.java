@@ -9,18 +9,13 @@ import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.parameters.AbstractExportParameter;
 import org.apache.log4j.Logger;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "gtfs-export")
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useTpegHvt","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility"})
-
+@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useExtendedGtfsRouteTypes","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility"})
 public class GtfsExportParameters  extends AbstractExportParameter {
 		
 	@Getter @Setter
@@ -36,8 +31,8 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	private boolean keepOriginalId = false;
 	
 	@Getter @Setter
-	@XmlElement(name = "use_tpeg_hvt",required = false)
-	private boolean useTpegHvt = false;
+	@XmlElement(name = "use_extended_gtfs_route_types",required = false)
+	private boolean useExtendedGtfsRouteTypes = false;
 
 	@Getter @Setter
 	@XmlElement(name = "exported_filename",required = false)
