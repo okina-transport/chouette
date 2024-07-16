@@ -225,7 +225,7 @@ public enum RouteTypeEnum {
     }
 
     public static RouteTypeEnum fromTransportModeAndSubMode(TransportModeNameEnum transportMode, TransportSubModeNameEnum subMode) {
-        if (transportMode != null && subMode != null) {
+        if (transportMode != null) {
             for (RouteTypeEnum rte : RouteTypeEnum.values()) {
                 if (rte.transportMode == transportMode && rte.subMode == subMode) {
                     return rte;
