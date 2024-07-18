@@ -267,7 +267,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("stopPlacesWithoutQuay", buildStringList(stopPlacesWithoutQuay, "stopId"));
         }
 
-        if (selfReferencingStops != null && selfReferencingStops.size() >0){
+        if (selfReferencingStops != null && !selfReferencingStops.isEmpty()){
             canLaunchImport = false;
             analyzeReportMap.put("selfReferencingStops", buildStringList(selfReferencingStops, "stopId"));
         }

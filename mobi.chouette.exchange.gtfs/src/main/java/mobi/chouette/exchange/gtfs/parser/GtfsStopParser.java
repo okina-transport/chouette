@@ -32,6 +32,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 	
 	@Override
 	public void validate(Context context) throws Exception {
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
 		gtfsValidationReporter.getExceptions().clear();
@@ -81,7 +82,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			parser.setWithValidation(true);
 			for (GtfsStop bean : parser) {
 				try {
-					if (bean.getStopId().equals(bean.getParentStation())){
+					if (!parameters.isRemoveParentStations() && bean.getParentStation() != null && bean.getStopId().equals(bean.getParentStation().replaceFirst("^"+parameters.getCommercialPointIdPrefixToRemove(),"").trim())){
 						selfReferencingStops.add(bean.getStopId());
 					}
 
