@@ -399,7 +399,7 @@ public class JobServiceManager {
 				String linePrefix = line.objectIdPrefix();
 				String objectIdToWrite = netexPrefixMap.containsKey(linePrefix) ? line.getObjectId().replace(linePrefix + ":", netexPrefixMap.get(linePrefix) + ":") : line.getObjectId();
 				boolean isFlexible = !TadEnum.NO_TAD.equals(line.getTad());
-				writer.write(objectIdToWrite + "," + isFlexible +  "\n");
+				writer.write(objectIdToWrite + "," + isFlexible + "," + line.getName() + "\n");
 			}
 		} catch (IOException e) {
 		log.error("Error while trying to write line file", e);
