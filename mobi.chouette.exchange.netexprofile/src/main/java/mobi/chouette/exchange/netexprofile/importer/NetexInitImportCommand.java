@@ -8,7 +8,9 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.CodespaceDAO;
+import mobi.chouette.dao.NetworkDAO;
 import mobi.chouette.exchange.netexprofile.Constant;
+import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidator;
 import mobi.chouette.exchange.netexprofile.importer.validation.NetexProfileValidatorFactory;
 import mobi.chouette.exchange.netexprofile.importer.validation.france.FranceCalendarNetexProfileValidator;
@@ -21,7 +23,11 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.model.Codespace;
+import mobi.chouette.model.Network;
+import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -41,15 +47,23 @@ public class NetexInitImportCommand implements Command, Constant {
 	@EJB
 	private CodespaceDAO codespaceDAO;
 
+	@EJB
+	private NetworkDAO networkDAO;
+
+	public NetexInitImportCommand() {}
+
+	public NetexInitImportCommand(CodespaceDAO codespaceDAO, NetworkDAO networkDAO) {
+		this.codespaceDAO = codespaceDAO;
+		this.networkDAO = networkDAO;
+	}
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public boolean execute(Context context) throws Exception {
-		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
 		try {
 			NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
-
 
 			NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 			context.put(IMPORTER, importer);
@@ -63,6 +77,26 @@ public class NetexInitImportCommand implements Command, Constant {
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new NetexprofileErrorCodeConverter());
 			context.put(STREAM_TO_CLOSE, new ArrayList<>());
 			context.put(DETECT_CHANGED_TRIPS,parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+
+			if (parameters.isUseTargetNetwork()) {
+				if (StringUtils.isBlank(parameters.getTargetNetwork())) {
+					log.error("Import parameters useTargetNetwork is true but targetNetwork is blank");
+					throw new IllegalArgumentException("Import parameters useTargetNetwork is true but targetNetwork is blank");
+				}
+				List<Network> networks = networkDAO.findByNameAndNotSupprime(parameters.getTargetNetwork());
+				Referential referential = (Referential) context.get(REFERENTIAL);
+				Network targetNetwork;
+				if (CollectionUtils.isEmpty(networks)) {
+					String objectId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network", UUID.randomUUID().toString());
+					targetNetwork = ObjectFactory.getPTNetwork(referential, objectId);
+					targetNetwork.setName(parameters.getTargetNetwork());
+				} else {
+					log.info(String.format("Network with name %s found in database", parameters.getTargetNetwork()));
+					targetNetwork = networks.get(0);
+				}
+				log.info(String.format(String.format("Will import all lines on network %s", parameters.getTargetNetwork())));
+				context.put(TARGET_NETWORK_OBJECT_ID, targetNetwork.getObjectId());
+			}
 
 			Map<String, NetexProfileValidator> availableProfileValidators = new HashMap<>();
 
@@ -104,15 +138,13 @@ public class NetexInitImportCommand implements Command, Constant {
 					IO_TYPE.INPUT);
 			reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.TIMETABLE, "calendars", ActionReporter.OBJECT_STATE.OK, IO_TYPE.INPUT);
 
-			result = SUCCESS;
+			return SUCCESS;
 		} catch (Exception e) {
 			log.error(e, e);
 			throw e;
 		} finally {
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
-
-		return result;
 	}
 
 

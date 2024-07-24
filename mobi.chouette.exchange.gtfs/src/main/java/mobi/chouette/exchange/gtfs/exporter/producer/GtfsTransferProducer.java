@@ -9,6 +9,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -86,13 +87,13 @@ public class GtfsTransferProducer extends AbstractProducer {
 		}
 
 		if (neptuneObject.getFeederVehicleJourney()!=null) {
-			transfer.setFromTripId(toGtfsId(neptuneObject.getFeederVehicleJourney().getObjectId(), prefix, keepOriginalId));
+			transfer.setFromTripId(ObjectIdUtil.toGtfsId(neptuneObject.getFeederVehicleJourney().getObjectId(), prefix, keepOriginalId));
 		}
 //		transfer.setFromRouteId(
 //				toGtfsId(neptuneObject.getFeederVehicleJourney().getRoute().getLine().getObjectId(), prefix, keepOriginalId));
 
 		if (neptuneObject.getConsumerVehicleJourney()!=null) {
-			transfer.setToTripId(toGtfsId(neptuneObject.getConsumerVehicleJourney().getObjectId(), prefix, keepOriginalId));
+			transfer.setToTripId(ObjectIdUtil.toGtfsId(neptuneObject.getConsumerVehicleJourney().getObjectId(), prefix, keepOriginalId));
 		}
 //		transfer.setToRouteId(
 //				toGtfsId(neptuneObject.getConsumerVehicleJourney().getRoute().getLine().getObjectId(), prefix, keepOriginalId));

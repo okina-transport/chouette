@@ -3,8 +3,6 @@ package mobi.chouette.exchange.netexprofile;
 public interface Constant extends mobi.chouette.common.Constant {
 
 	String ID = "id";
-	String VERSION = "version";
-	String REF = "ref";
 	String NAME = "Name";
 	String NETEX_FILE_PATHS = "netex_file_paths";
 	String NETEX_REFERENTIAL = "netex_referential";
@@ -21,12 +19,11 @@ public interface Constant extends mobi.chouette.common.Constant {
 	String PARSING_CONTEXT_LINE_ID = "parsing_context_line_id";
 	String NETEX_PROFILE_VALIDATORS = "netex_profile_validators";
 	String EXPORTABLE_NETEX_DATA = "exportable_netex_data";
-	String NEPTUNE_FOOTNOTES = "neptune_footnotes";
 	String MARSHALLER = "marshaller";
+	String TARGET_NETWORK_OBJECT_ID = "target_network_object_id";
 	
 	
 	String NETEX_NAMESPACE = "http://www.netex.org.uk/netex";
 	String SIRI_NAMESPACE = "http://www.siri.org.uk/siri";
 	String OPENGIS_NAMESPACE = "http://www.opengis.net/gml/3.2";
-
 }

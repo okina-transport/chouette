@@ -8,15 +8,8 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -25,7 +18,6 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.CopyUtil;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -33,6 +25,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
@@ -62,7 +56,7 @@ AbstractProducer
 
       if (reduced == null) return false;
 
-      String serviceId = toGtfsId(reduced.getObjectId(), prefix, keepOriginalId);
+      String serviceId = ObjectIdUtil.toGtfsId(reduced.getObjectId(), prefix, keepOriginalId);
 
       if (!isEmpty(reduced.getPeriods()))
       {
@@ -320,10 +314,10 @@ AbstractProducer
           for(int i = 0;i<timetables.size();i++) {
         	  if(i ==0) {
         		  // Keep full id
-                  key += toGtfsId(timetables.get(i).getObjectId(), prefix, true);
+                  key += ObjectIdUtil.toGtfsId(timetables.get(i).getObjectId(), prefix, true);
         	  } else {
         		  // Only keep remaining parts
-                  key += "-"+toGtfsId(timetables.get(i).getObjectId(), prefix, false);
+                  key += "-"+ObjectIdUtil.toGtfsId(timetables.get(i).getObjectId(), prefix, false);
         	  }
           }
 
@@ -336,7 +330,7 @@ AbstractProducer
       } else {
           for (Timetable timetable : timetables)
           {
-             key += "-"+toGtfsId(timetable.getObjectId(), prefix, keepOriginalId);
+             key += "-"+ObjectIdUtil.toGtfsId(timetable.getObjectId(), prefix, keepOriginalId);
           }
           // Trim leading dash
           key = key.substring(1);

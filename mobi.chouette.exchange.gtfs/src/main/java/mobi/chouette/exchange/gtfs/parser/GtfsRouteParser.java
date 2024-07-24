@@ -4,15 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.NetworksNames;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
+import mobi.chouette.exchange.gtfs.model.importer.AbstractRouteById.FIELDS;
 import mobi.chouette.exchange.gtfs.model.importer.AgencyById;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
-import mobi.chouette.exchange.gtfs.model.importer.AbstractRouteById.FIELDS;
 import mobi.chouette.exchange.gtfs.validation.Constant;
 import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
@@ -24,13 +25,11 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Log4j
 public class GtfsRouteParser implements Parser, Validator, Constant {
@@ -187,7 +186,7 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         Index<GtfsRoute> routes = importer.getRouteById();
         GtfsRoute gtfsRoute = routes.getValue(gtfsRouteId);
 
-        String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, gtfsRouteId);
+        String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY, gtfsRouteId);
         Line line = ObjectFactory.getLine(referential, lineId);
 
         convert(context, gtfsRoute, line);
@@ -198,17 +197,17 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
             agencyId = configuration.getReferentialName();
         }
 
-        String operatorId = AbstractConverter.composeObjectId(configuration,
+        String operatorId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                 Company.OPERATOR_KEY, agencyId + "o");
         Company operator = ObjectFactory.getCompany(referential, operatorId);
         line.setCompany(operator);
 
         // PTNetwork
-        String ptNetworkId = AbstractConverter.composeObjectId(configuration,
+        String ptNetworkId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                 Network.PTNETWORK_KEY, agencyId);
         Network ptNetwork = ObjectFactory.getPTNetwork(referential, ptNetworkId);
         if (ptNetwork.getCompany() == null) {
-            String authorityId = AbstractConverter.composeObjectId(configuration,
+            String authorityId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     Company.AUTHORITY_KEY, agencyId);
             Company authority = ObjectFactory.getCompany(referential, authorityId);
             ptNetwork.setCompany(authority);
@@ -232,11 +231,11 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 
         NetworksNames networksNames = new NetworksNames();
 
-        line.setName(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteLongName()));
+        line.setName(StringUtils.trimToNull(gtfsRoute.getRouteLongName()));
 
-        line.setNumber(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteShortName()));
+        line.setNumber(StringUtils.trimToNull(gtfsRoute.getRouteShortName()));
 
-        line.setPublishedName(AbstractConverter.getNonEmptyTrimedString(gtfsRoute.getRouteLongName()));
+        line.setPublishedName(StringUtils.trimToNull(gtfsRoute.getRouteLongName()));
 
         if (line.getName() == null) {
             line.setName(line.getNumber());

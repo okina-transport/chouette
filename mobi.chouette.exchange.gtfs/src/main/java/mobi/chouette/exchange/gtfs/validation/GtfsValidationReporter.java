@@ -1,12 +1,13 @@
 package mobi.chouette.exchange.gtfs.validation;
 
 //import java.util.HashSet;
+
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.importer.*;
-import mobi.chouette.exchange.gtfs.parser.AbstractConverter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.FILE_ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
@@ -85,7 +86,7 @@ public class GtfsValidationReporter implements Constant{
 			if (gtfsRouteId != null)
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
+				String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
 						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}
@@ -105,7 +106,7 @@ public class GtfsValidationReporter implements Constant{
 			if (gtfsRouteId != null)
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
+				String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
 						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}
@@ -121,7 +122,7 @@ public class GtfsValidationReporter implements Constant{
 			if (gtfsRouteId != null)
 			{
 				GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-				String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY,
+				String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
 						gtfsRouteId);
 			    loc.getPath().add(loc.new Path(Line.class.getSimpleName(),lineId));
 			}

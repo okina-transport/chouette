@@ -1,23 +1,22 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.GroupOfLineValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
+import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -43,7 +42,7 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 		while (xpp.nextTag() == XmlPullParser.START_TAG) {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.GROUPOFLINE_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.GROUPOFLINE_KEY, objectId);
 				groupOfLine = ObjectFactory.getGroupOfLine(referential,
 						objectId);
 				groupOfLine.setFilled(true);
@@ -61,7 +60,7 @@ public class GroupOfLineParser implements Parser, Constant, JsonExtension {
 				groupOfLine.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("lineId")) {
 				String lineId = ParserUtils.getText(xpp.nextText());
-				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineId);
+				String lineObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.LINE_KEY, lineId);
 				Line line = ObjectFactory.getLine(referential, lineObjectId);
 				groupOfLine.addLine(line);
 				validator.addLineId(context, objectId, lineObjectId);

@@ -1,28 +1,23 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.StopPointValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-
+import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -49,7 +44,7 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.STOPPOINT_KEY, objectId);
 				stopPoint = ObjectFactory.getStopPoint(referential, objectId);
 				stopPoint.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -72,11 +67,11 @@ public class StopPointParser implements Parser, Constant, JsonExtension {
 				scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
 			} else if (xpp.getName().equals("lineIdShortcut")) {
 				String lineIdShortcut = ParserUtils.getText(xpp.nextText());
-				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineIdShortcut);
+				String lineObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.LINE_KEY, lineIdShortcut);
 				validator.addLineIdShortcut(context, objectId, lineObjectId);
 			} else if (xpp.getName().equals("ptNetworkIdShortcut")) {
 				String ptNetworkIdShortcut = ParserUtils.getText(xpp.nextText());
-				String ptNetworkObjectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, ptNetworkIdShortcut);
+				String ptNetworkObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.PTNETWORK_KEY, ptNetworkIdShortcut);
 				validator.addPtNetworkIdShortcut(context, objectId, ptNetworkObjectId);
 			} else if (xpp.getName().equals("longLatType")) {
 				LongLatTypeEnum longLatType = ParserUtils.getEnum(LongLatTypeEnum.class, xpp.nextText());

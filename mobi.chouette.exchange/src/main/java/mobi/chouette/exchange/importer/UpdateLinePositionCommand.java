@@ -17,7 +17,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Update position of non-deleted lines inside their network.
@@ -61,9 +60,6 @@ public class UpdateLinePositionCommand implements Command {
                 log.info("No activated lines found for network " + network.getName());
                 continue;
             }
-            lines = lines.stream().filter(
-                    line -> !line.getSupprime()
-            ).collect(Collectors.toList());
             // sort lines with a position by their position ASC
             // lines without position are then sorted by their published name ASC
             // eg:"

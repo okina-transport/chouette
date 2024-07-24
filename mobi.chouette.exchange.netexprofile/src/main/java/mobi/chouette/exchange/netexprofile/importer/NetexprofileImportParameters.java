@@ -12,51 +12,54 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"parseSiteFrames", "validateAgainstSchema", "validateAgainstProfile", "continueOnLineErrors", "cleanOnErrors", "objectIdPrefix", "importMode", "netexImportLayouts", "netexImportColors"})
+@XmlType(propOrder = {
+		"parseSiteFrames",
+		"validateAgainstSchema",
+		"validateAgainstProfile",
+		"continueOnLineErrors",
+		"cleanOnErrors",
+		"objectIdPrefix",
+		"importMode",
+		"netexImportLayouts",
+		"netexImportColors",
+		"useTargetNetwork",
+		"targetNetwork",
+})
+@Getter
+@Setter
 public class NetexprofileImportParameters extends AbstractImportParameter {
 
-	@Getter
-	@Setter
-	@XmlElement(name = "parse_site_frames", required = false)
+	@XmlElement(name = "parse_site_frames")
 	private boolean parseSiteFrames = true;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "validate_against_schema", required = false)
+	@XmlElement(name = "validate_against_schema")
 	private boolean validateAgainstSchema = true;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "validate_against_profile", required = false)
+	@XmlElement(name = "validate_against_profile")
 	private boolean validateAgainstProfile = true;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "continue_on_line_errors", required = false)
+	@XmlElement(name = "continue_on_line_errors")
 	private boolean continueOnLineErrors = false;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "clean_on_error", required = false)
+	@XmlElement(name = "clean_on_error")
 	private boolean cleanOnErrors = false;
 	
-	@Getter@Setter
 	@XmlElement(name = "object_id_prefix", required=true)
 	private String objectIdPrefix;
 
-	@Getter@Setter
 	@XmlElement(name = "import_mode", required=true)
 	private String importMode;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "netex_import_layouts", defaultValue = "false")
 	private boolean netexImportLayouts = false;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "netex_import_colors", defaultValue = "false")
 	private boolean netexImportColors = false;
 
+	@XmlElement(name = "use_target_network")
+	private boolean useTargetNetwork;
+
+	@XmlElement(name = "target_network")
+	private String targetNetwork;
 
 }

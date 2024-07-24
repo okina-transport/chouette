@@ -2,6 +2,7 @@ package mobi.chouette.exchange.gtfs.parser;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsStop;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
@@ -19,6 +20,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +137,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 
 			if (gtfsStop.getLocationType() != GtfsStop.LocationType.Access) {
 				// Since we do not parse Access, only Station and Stop remains.
-				String objectId = AbstractConverter.toStopAreaId(configuration,
+				String objectId = ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
 						gtfsStop.getLocationType() == LocationType.Station ? "StopPlace" : "Quay", gtfsStop.getStopId());
 
 				StopArea stopArea = ObjectFactory.getStopArea(referential, objectId);
@@ -176,10 +178,10 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		stopArea.setLatitude(gtfsStop.getStopLat());
 		stopArea.setLongitude(gtfsStop.getStopLon());
 		stopArea.setLongLatType(LongLatTypeEnum.WGS84);
-		stopArea.setName(AbstractConverter.getNonEmptyTrimedString(gtfsStop.getStopName()));
+		stopArea.setName(StringUtils.trimToNull(gtfsStop.getStopName()));
 
 		stopArea.setUrl(AbstractConverter.toString(gtfsStop.getStopUrl()));
-		stopArea.setComment(AbstractConverter.getNonEmptyTrimedString(gtfsStop.getStopDesc()));
+		stopArea.setComment(StringUtils.trimToNull(gtfsStop.getStopDesc()));
 		stopArea.setTimeZone(AbstractConverter.toString(gtfsStop.getStopTimezone()));
 		stopArea.setFareCode(0);
 		stopArea.setOriginalStopId(gtfsStop.getStopId());
@@ -188,7 +190,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 
 			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),"").trim());
-			if (AbstractConverter.getNonEmptyTrimedString(gtfsStop.getParentStation()) != null) {
+			if (StringUtils.trimToNull(gtfsStop.getParentStation()) != null) {
 				// TODO report
 			}
 		} else {
@@ -198,7 +200,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			}
 			stopArea.setAreaType(ChouetteAreaEnum.BoardingPosition);
 			if (gtfsStop.getParentStation() != null && !configuration.isRemoveParentStations()) {
-				String parentId = AbstractConverter.toStopAreaId(configuration,
+				String parentId = ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
 						"StopPlace", gtfsStop.getParentStation());
 				StopArea parent = ObjectFactory.getStopArea(referential, parentId);
 				stopArea.setParent(parent);
@@ -236,7 +238,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		stopArea.setFilled(true);
 
 		if(gtfsStop.getZoneId() != null){
-			stopArea.setZoneId(AbstractConverter.composeObjectId(configuration, "TariffZone", gtfsStop.getZoneId()));
+			stopArea.setZoneId(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "TariffZone", gtfsStop.getZoneId()));
 		}
 	}
 

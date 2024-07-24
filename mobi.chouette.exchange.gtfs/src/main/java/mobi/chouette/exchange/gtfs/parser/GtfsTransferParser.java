@@ -2,6 +2,7 @@ package mobi.chouette.exchange.gtfs.parser;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
@@ -18,7 +19,6 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.LocalDateTime;
@@ -114,7 +114,7 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 			if(StringUtils.trimToNull(gtfsTransfer.getFromRouteId()) == null && StringUtils.trimToNull(gtfsTransfer.getToRouteId()) == null
 					&& StringUtils.trimToNull(gtfsTransfer.getFromTripId()) == null && StringUtils.trimToNull(gtfsTransfer.getToTripId()) == null) {
 				// Treat as conneciton link
-				String objectId = AbstractConverter.composeObjectId(configuration,
+				String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
 						ConnectionLink.CONNECTIONLINK_KEY, gtfsTransfer.getFromStopId() + "_" + gtfsTransfer.getToStopId()
 				);
 				ConnectionLink connectionLink = ObjectFactory.getConnectionLink(referential, objectId);
@@ -135,17 +135,17 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : fromStopId;
 		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : toStopId;
 
-		StopArea startOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialFromId));
+		StopArea startOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialFromId));
 		if(startOfLink == null) {
 			// Create between quays by default
 			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : fromStopId;
-			startOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quayFromId));
+			startOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quayFromId));
 		}
 		
-		StopArea endOfLink = referential.getSharedStopAreas().get(AbstractConverter.composeObjectId(configuration, "StopPlace", commercialToStopId));
+		StopArea endOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialToStopId));
 		if(endOfLink == null) {
 			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : toStopId;
-			endOfLink = ObjectFactory.getStopArea(referential, AbstractConverter.toStopAreaId(configuration, "Quay", quaytoId));
+			endOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quaytoId));
 		}
 
 		

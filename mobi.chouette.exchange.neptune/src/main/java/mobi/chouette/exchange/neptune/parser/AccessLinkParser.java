@@ -1,12 +1,9 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -23,11 +20,13 @@ import mobi.chouette.model.type.LinkOrientationEnum;
 import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.joda.time.Duration;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class AccessLinkParser implements Parser, Constant {
@@ -51,7 +50,7 @@ public class AccessLinkParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 			    objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.ACCESSLINK_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.ACCESSLINK_KEY, objectId);
 				accessLink = ObjectFactory.getAccessLink(referential, objectId);
 				accessLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -75,7 +74,7 @@ public class AccessLinkParser implements Parser, Constant {
 					accessLink
 							.setLinkOrientation(LinkOrientationEnum.StopAreaToAccessPoint);
 				} else {
-					linkId = AbstractConverter.composeObjectId(configuration, Line.ACCESSPOINT_KEY, linkId);
+					linkId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.ACCESSPOINT_KEY, linkId);
 					if (referential.getAccessPoints().containsKey(linkId)) {
 						AccessPoint accessPoint = ObjectFactory.getAccessPoint(
 								referential, linkId);
@@ -93,7 +92,7 @@ public class AccessLinkParser implements Parser, Constant {
 							linkId);
 					accessLink.setStopArea(stopArea);
 				} else{
-					linkId = AbstractConverter.composeObjectId(configuration, Line.ACCESSPOINT_KEY, linkId);
+					linkId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.ACCESSPOINT_KEY, linkId);
 					if (referential.getAccessPoints().containsKey(linkId)) {
 						AccessPoint accessPoint = ObjectFactory.getAccessPoint(
 								referential, linkId);

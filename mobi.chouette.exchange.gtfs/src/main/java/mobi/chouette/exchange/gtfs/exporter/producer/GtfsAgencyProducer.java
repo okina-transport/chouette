@@ -9,6 +9,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.Company;
@@ -44,7 +45,7 @@ public class GtfsAgencyProducer extends AbstractProducer
 
    public boolean save(Company neptuneObject, String prefix, TimeZone timeZone, boolean keepOriginalId)
    {
-      String companyObjectId = toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);
+      String companyObjectId = ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);
       companyObjectId = companyObjectId.replaceAll(COLON_REPLACEMENT_CODE, ":");
       agency.setAgencyId(companyObjectId);
 

@@ -1,10 +1,9 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -19,10 +18,11 @@ import mobi.chouette.model.type.AccessPointTypeEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
 
 @Log4j
 public class AccessPointParser implements Parser, Constant {
@@ -47,7 +47,7 @@ public class AccessPointParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.ACCESSPOINT_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.ACCESSPOINT_KEY, objectId);
 				accessPoint = ObjectFactory.getAccessPoint(referential,
 						objectId);
 				accessPoint.setFilled(true);

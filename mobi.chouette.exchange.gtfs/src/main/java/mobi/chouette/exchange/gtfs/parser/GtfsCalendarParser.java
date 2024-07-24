@@ -1,12 +1,8 @@
 package mobi.chouette.exchange.gtfs.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
@@ -26,6 +22,11 @@ import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Log4j
 public class GtfsCalendarParser implements Parser, Validator, Constant {
@@ -186,7 +187,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 		if (importer.hasCalendarImporter()) {
 			for (GtfsCalendar gtfsCalendar : importer.getCalendarByService()) {
 
-				String objectId = AbstractConverter.composeObjectId(configuration,
+				String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
 						Timetable.TIMETABLE_KEY, gtfsCalendar.getServiceId());
 				Timetable timetable = ObjectFactory.getTimetable(referential, objectId);
 				convert(context, gtfsCalendar, timetable);
@@ -197,7 +198,7 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 
 			for (String serviceId : importer.getCalendarDateByService().keys()) {
 
-				String objectId = AbstractConverter.composeObjectId(configuration,
+				String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
 						Timetable.TIMETABLE_KEY, serviceId);
 
 				Timetable timetable = referential.getTimetables().get(objectId);

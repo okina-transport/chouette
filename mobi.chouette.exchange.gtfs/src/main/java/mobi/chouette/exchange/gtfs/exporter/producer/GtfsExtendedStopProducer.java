@@ -8,14 +8,15 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import java.util.Collection;
-import java.util.TimeZone;
-
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsStop;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.WheelchairBoardingType;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
+
+import java.util.Collection;
+import java.util.TimeZone;
 
 /**
  * convert Timetable to Gtfs Calendar and CalendarDate
@@ -45,7 +46,7 @@ public class GtfsExtendedStopProducer extends
       // stop.setLocationType(GtfsStop.STATION);
       else
          return false; // StopPlaces and ITL type not available
-      stop.setStopId(toGtfsId(neptuneObject.getObjectId(),prefix,keepOriginalId));
+      stop.setStopId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(),prefix,keepOriginalId));
       if (neptuneObject.getName() == null)
       {
 //         GtfsReportItem item = new GtfsReportItem(
@@ -95,7 +96,7 @@ public class GtfsExtendedStopProducer extends
       {
          if (neptuneObject.getParent() != null && validParents.contains(neptuneObject.getParent()))
          {
-            stop.setParentStation(toGtfsId(neptuneObject.getParent()
+            stop.setParentStation(ObjectIdUtil.toGtfsId(neptuneObject.getParent()
                   .getObjectId(),prefix,keepOriginalId));
          }
       }

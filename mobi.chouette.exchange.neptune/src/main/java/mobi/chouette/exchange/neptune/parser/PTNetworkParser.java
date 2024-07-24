@@ -3,6 +3,7 @@ package mobi.chouette.exchange.neptune.parser;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -15,7 +16,6 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
@@ -43,7 +43,7 @@ public class PTNetworkParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.PTNETWORK_KEY, objectId);
 				network = ObjectFactory.getPTNetwork(referential, objectId);
 				network.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -81,7 +81,7 @@ public class PTNetworkParser implements Parser, Constant {
 				network.setComment(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("lineId")) {
 				String lineId = ParserUtils.getText(xpp.nextText());
-				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineId);
+				String lineObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.LINE_KEY, lineId);
 				validator.addLineId(context, objectId, lineObjectId);
 			} else {
 				XPPUtil.skipSubTree(log, xpp);

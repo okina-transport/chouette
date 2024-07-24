@@ -1,11 +1,12 @@
 package mobi.chouette.exchange.gtfs.exporter.producer.mock;
 
-import java.awt.Color;
-import java.net.URL;
-import java.util.Collection;
-
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.exporter.producer.AbstractProducer;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+
+import java.awt.*;
+import java.net.URL;
+import java.util.Collection;
 
 public class GtfsDummyProducer extends AbstractProducer
 {
@@ -17,7 +18,7 @@ public class GtfsDummyProducer extends AbstractProducer
    
    public String toGtfsIdWrapper(String neptuneId, String prefix, boolean keepOriginalId)
    {
-      return toGtfsId(neptuneId, prefix, keepOriginalId);
+      return ObjectIdUtil.toGtfsId(neptuneId, prefix, keepOriginalId);
    }
    
    public Color getColorWrapper(String color)

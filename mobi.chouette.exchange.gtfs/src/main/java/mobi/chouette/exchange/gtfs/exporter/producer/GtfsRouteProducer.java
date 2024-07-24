@@ -9,6 +9,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.RouteTypeEnum;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -40,7 +41,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
    public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams)
    {
-      route.setRouteId(generateCustomRouteId(toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
+      route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
        if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
            route.setRouteId(route.getRouteId().replace(":Line:", ":FlexibleLine:"));
        }
@@ -63,7 +64,7 @@ public class GtfsRouteProducer extends AbstractProducer
        } else {
            agencyId = c.getObjectId();
        }
-       route.setAgencyId(toGtfsId(agencyId, prefix, keepOriginalId));
+       route.setAgencyId(ObjectIdUtil.toGtfsId(agencyId, prefix, keepOriginalId));
        if(c != null && OrganisationTypeEnum.Operator.equals(c.getOrganisationType()) && agencyId.endsWith("o")){
            route.setAgencyId(StringUtils.chop(route.getAgencyId()));
        }
