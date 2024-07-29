@@ -27,21 +27,12 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
+import mobi.chouette.model.*;
 import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  *
@@ -121,7 +112,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext();) {
 			StopArea stop = iterator.next();
 
-			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix,
+			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix,
 					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility()))
 			{
 				iterator.remove();
@@ -133,7 +124,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 		for (StopArea stop : physicalStops) {
-			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseTpegHvt(), idParams, prefix,
+			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix,
 					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility());
 			if (metadata != null && stop.hasCoordinates()) {
 				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),

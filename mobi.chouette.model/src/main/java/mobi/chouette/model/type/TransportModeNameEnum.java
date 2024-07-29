@@ -23,6 +23,4 @@ public enum TransportModeNameEnum
    Bicycle,
    //
    Other
-   
-   
 }

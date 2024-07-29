@@ -1,35 +1,30 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.AccessibilityAssessment;
-import mobi.chouette.model.AccessibilityLimitation;
-import mobi.chouette.model.type.LimitationStatusEnum;
-import org.joda.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.JsonExtension;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.model.TransportModeNameEnum;
 import mobi.chouette.exchange.neptune.validation.LineValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
+import mobi.chouette.model.*;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
+import org.joda.time.LocalDateTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class LineParser implements Parser, Constant, JsonExtension {
@@ -58,7 +53,7 @@ public class LineParser implements Parser, Constant, JsonExtension {
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
 				objectId = objectId.replaceFirst("^" + configuration.getLinePrefixToRemove(),"");
-				objectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.LINE_KEY, objectId);
 				incomingLineList.add(objectId);
 				line = ObjectFactory.getLine(referential, objectId);
 				line.setFilled(true);
@@ -85,17 +80,17 @@ public class LineParser implements Parser, Constant, JsonExtension {
 				convertNeptuneTransportModeToInternalModel(line,value);
 			} else if (xpp.getName().equals("lineEnd")) {
 				String lineEnd = ParserUtils.getText(xpp.nextText());
-				lineEnd = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, lineEnd);
+				lineEnd = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.STOPPOINT_KEY, lineEnd);
 				validator.addLineEnd(context, objectId, lineEnd);
 			} else if (xpp.getName().equals("routeId")) {
 				String routeId = ParserUtils.getText(xpp.nextText());
-				String routeObjectId = AbstractConverter.composeObjectId(configuration, Line.ROUTE_KEY, routeId);
+				String routeObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.ROUTE_KEY, routeId);
 				validator.addRouteId(context, objectId, routeObjectId);
 				Route route = ObjectFactory.getRoute(referential, routeObjectId);
 				route.setLine(line);
 			} else if (xpp.getName().equals("ptNetworkIdShortcut")) {
 				String ptNetworkIdShortcut = ParserUtils.getText(xpp.nextText());
-				String networkObjectId = AbstractConverter.composeObjectId(configuration, Line.PTNETWORK_KEY, ptNetworkIdShortcut);
+				String networkObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.PTNETWORK_KEY, ptNetworkIdShortcut);
 				validator.addPtNetworkIdShortcut(context, objectId, networkObjectId);
 			} else if (xpp.getName().equals("registration")) {
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
@@ -110,11 +105,11 @@ public class LineParser implements Parser, Constant, JsonExtension {
 			} else if (xpp.getName().equals("LineExtension")) {
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
 					if (xpp.getName().equals("mobilityRestrictedSuitability")) {
-						String objectIdAccessibilityAssessment = AbstractConverter.composeObjectId(configuration,
+						String objectIdAccessibilityAssessment = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(),
 								AccessibilityAssessment.ACCESSIBILITYASSESSMENT_KEY, "line_" + objectId.split(":")[2]);
 						AccessibilityAssessment accessibilityAssessment = ObjectFactory.getAccessibilityAssessment(referential, objectIdAccessibilityAssessment);
 
-						String objectIdAccessibilityLimitation = AbstractConverter.composeObjectId(configuration,
+						String objectIdAccessibilityLimitation = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(),
 								AccessibilityLimitation.ACCESSIBILITYLIMITATION_KEY, "line_" + objectId.split(":")[2]);
 						AccessibilityLimitation accessibilityLimitation = ObjectFactory.getAccessibilityLimitation(referential, objectIdAccessibilityLimitation);
 

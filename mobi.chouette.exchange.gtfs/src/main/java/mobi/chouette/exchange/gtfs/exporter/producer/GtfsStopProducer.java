@@ -34,12 +34,12 @@ public class GtfsStopProducer extends AbstractProducer {
 		super(exporter);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams, String schemaPrefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String schemaPrefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
 		String stopId = GtfsStopUtils.getNewStopId(neptuneObject, idParams, keepOriginalId, schemaPrefix);
-		return save(neptuneObject, validParents, keepOriginalId, useTPEGRouteTypes, stopId, idParams, schemaPrefix, exportCommercialPoints, googleMapsCompatibility);
+		return save(neptuneObject, validParents, keepOriginalId, useExtendedGtfsRouteTypes, stopId, idParams, schemaPrefix, exportCommercialPoints, googleMapsCompatibility);
 	}
 
-	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useTPEGRouteTypes, String newStopId, IdParameters idParams, String prefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
+	public boolean save(StopArea neptuneObject, Collection<StopArea> validParents, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, String newStopId, IdParameters idParams, String prefix, Boolean exportCommercialPoints, Boolean googleMapsCompatibility) {
 		Optional<StopArea> parent = Optional.ofNullable(neptuneObject.getParent());
 		if (validParents != null && !validParents.isEmpty() && parent.isPresent()) {
 			if (parent.get().getObjectId().equals(neptuneObject.getObjectId())) {
@@ -131,37 +131,10 @@ public class GtfsStopProducer extends AbstractProducer {
 		
 	      if (neptuneObject.getTransportModeName() != null)
 	      {
-	         if (useTPEGRouteTypes) {
-	        	 stop.setVehicleType(RouteTypeEnum.from(neptuneObject.getTransportModeName(), null));
+	         if (useExtendedGtfsRouteTypes) {
+	        	 stop.setVehicleType(RouteTypeEnum.fromTransportModeAndSubMode(neptuneObject.getTransportModeName(), neptuneObject.getTransportSubMode()));
 	         } else {
-	    	  
-	             switch (neptuneObject.getTransportModeName())
-	             {
-	             case Tram:
-	                stop.setVehicleType(RouteTypeEnum.Tram);
-	                break;
-	             case Metro:
-	                stop.setVehicleType(RouteTypeEnum.Subway);
-	                break;
-	             case Rail:
-	                stop.setVehicleType(RouteTypeEnum.Rail);
-	                break;
-	             case Water:
-	             case Ferry:
-	                stop.setVehicleType(RouteTypeEnum.Ferry);
-	                break;
-	             case Funicular:
-	            	 stop.setVehicleType(RouteTypeEnum.Funicular);
-	            	 break;
-	             case Cableway:
-	            	 stop.setVehicleType(RouteTypeEnum.Gondola);
-	            	 break;
-	             case TrolleyBus:
-	             case Coach:
-	             case Bus:
-	             default:
-	                stop.setVehicleType(RouteTypeEnum.Bus);
-	             }
+				 stop.setVehicleType(RouteTypeEnum.fromTransportMode(neptuneObject.getTransportModeName()));
 	         }
 	      
 	      }

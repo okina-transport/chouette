@@ -10,27 +10,15 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
-import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTrip;
+import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.JourneyFrequency;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import org.joda.time.LocalTime;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -78,7 +66,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		int departureOffset = 0;
 		int arrivalOffset = 0;
 
-		String tripId = toGtfsId(vj.getObjectId(), prefix, keepOriginalId).replaceAll(Constant.COLON_REPLACEMENT_CODE, ":");
+		String tripId = ObjectIdUtil.toGtfsId(vj.getObjectId(), prefix, keepOriginalId).replaceAll(Constant.COLON_REPLACEMENT_CODE, ":");
 		time.setTripId(tripId);
 		float distance = (float) 0.0;
 		List<RouteSection> routeSections = vj.getJourneyPattern().getRouteSections();
@@ -266,12 +254,12 @@ public class GtfsTripProducer extends AbstractProducer {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
-		String tripId = toGtfsId(vj.getObjectId(), schemaPrefix, keepOriginalId).replace(Constant.COLON_REPLACEMENT_CODE, ":");
+		String tripId = ObjectIdUtil.toGtfsId(vj.getObjectId(), schemaPrefix, keepOriginalId).replace(Constant.COLON_REPLACEMENT_CODE, ":");
 		trip.setTripId(tripId);
 
 		JourneyPattern jp = vj.getJourneyPattern();
 		if (jp.getSectionStatus() == SectionStatusEnum.Completed && jp.getRouteSections().size() != 0) {
-			String shapeId = toGtfsId(jp.getObjectId(), schemaPrefix, keepOriginalId);
+			String shapeId = ObjectIdUtil.toGtfsId(jp.getObjectId(), schemaPrefix, keepOriginalId);
 			trip.setShapeId(shapeId);
 		}
 		else
@@ -280,7 +268,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		}
 		Route route = vj.getRoute();
 		Line line = route.getLine();
-		trip.setRouteId(generateCustomRouteId(toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
+		trip.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
 		if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(line.getTad())){
 			trip.setRouteId(trip.getRouteId().replace(":Line:", ":FlexibleLine:"));
 		}

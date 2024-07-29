@@ -2,6 +2,7 @@ package mobi.chouette.exchange.gtfs.parser;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.NetworksNames;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
@@ -116,12 +117,12 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 
 
 			// Create both as operator and as authority
-			String objectIdOperator = AbstractConverter.composeObjectId(configuration, Company.OPERATOR_KEY,
+			String objectIdOperator = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.OPERATOR_KEY,
 					gtfsAgency.getAgencyId()+"o");
 			Company operator = ObjectFactory.getCompany(referential, objectIdOperator);
 			convert(context, gtfsAgency, operator, OrganisationTypeEnum.Operator);
 
-			String objectIdAuthority = AbstractConverter.composeObjectId(configuration, Company.AUTHORITY_KEY,
+			String objectIdAuthority = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.AUTHORITY_KEY,
 					gtfsAgency.getAgencyId());
 			Company authority = ObjectFactory.getCompany(referential, objectIdAuthority);
 			convert(context, gtfsAgency, authority, OrganisationTypeEnum.Authority);
@@ -132,15 +133,15 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
         NetworksNames networksNames = new NetworksNames();
         if(networksNames.getPrefixInList(configuration.getObjectIdPrefix())){
-            company.setName(AbstractConverter.getNonEmptyTrimedString(gtfsAgency.getAgencyName()));
+            company.setName(StringUtils.trimToNull(gtfsAgency.getAgencyName()));
         }
         else{
         	String companyName = networksNames.getNetworkName(configuration.getObjectIdPrefix());
-        	if(!StringUtils.isEmpty( gtfsAgency.getAgencyName())) companyName = AbstractConverter.getNonEmptyTrimedString(gtfsAgency.getAgencyName());
+        	if(!StringUtils.isEmpty( gtfsAgency.getAgencyName())) companyName = StringUtils.trimToNull(gtfsAgency.getAgencyName());
             company.setName(companyName);
         }
 		company.setUrl(AbstractConverter.toString(gtfsAgency.getAgencyUrl()));
-		company.setPhone(AbstractConverter.getNonEmptyTrimedString(gtfsAgency.getAgencyPhone()));
+		company.setPhone(StringUtils.trimToNull(gtfsAgency.getAgencyPhone()));
 		String[] token = company.getObjectId().split(":");
 		company.setRegistrationNumber(token[2]);
 		company.setTimeZone(AbstractConverter.toString(gtfsAgency.getAgencyTimezone()));

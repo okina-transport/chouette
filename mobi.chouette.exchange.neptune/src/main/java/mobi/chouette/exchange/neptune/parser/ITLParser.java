@@ -2,6 +2,7 @@ package mobi.chouette.exchange.neptune.parser;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -14,7 +15,6 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -44,7 +44,7 @@ public class ITLParser implements Parser, Constant {
 				if (line != null) line.addRoutingConstraint(stopArea);
 			} else if (xpp.getName().equals("lineIdShortCut")) {
 				String lineIdShortCut = ParserUtils.getText(xpp.nextText());
-				String lineObjectId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, lineIdShortCut);
+				String lineObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.LINE_KEY, lineIdShortCut);
 				validator.addLineId(context, objectId, lineObjectId);
 			} else if (xpp.getName().equals("name")) {
 				String name = ParserUtils.getText(xpp.nextText());

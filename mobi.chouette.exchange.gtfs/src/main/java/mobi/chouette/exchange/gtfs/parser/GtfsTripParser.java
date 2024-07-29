@@ -9,40 +9,20 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.DirectionType;
-import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
-import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
-import mobi.chouette.exchange.gtfs.model.importer.Index;
-import mobi.chouette.exchange.gtfs.model.importer.RouteById;
-import mobi.chouette.exchange.gtfs.model.importer.ShapeById;
-import mobi.chouette.exchange.gtfs.model.importer.StopById;
-import mobi.chouette.exchange.gtfs.model.importer.StopTimeByTrip;
+import mobi.chouette.exchange.gtfs.model.importer.*;
 import mobi.chouette.exchange.gtfs.validation.Constant;
 import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.Interchange;
-import mobi.chouette.model.JourneyFrequency;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RoutePoint;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timeband;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
@@ -560,7 +540,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             if (!hasTimes)
                 continue;
 
-            String objectId = AbstractConverter.composeObjectId(configuration,
+            String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     VehicleJourney.VEHICLEJOURNEY_KEY, gtfsTrip.getTripId());
             VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, objectId);
 
@@ -624,7 +604,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             vehicleJourney.getVehicleJourneyAtStops().sort(VEHICLE_JOURNEY_AT_STOP_COMPARATOR);
 
             // Timetable
-            String timetableId = AbstractConverter.composeObjectId(configuration,
+            String timetableId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     Timetable.TIMETABLE_KEY, gtfsTrip.getServiceId());
 
             Timetable timetable = ObjectFactory.getTimetable(referential, timetableId);
@@ -711,7 +691,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     interchange.setGuaranteed(Boolean.TRUE);
                 }
 
-                String feederStopAreaId = AbstractConverter.composeObjectId(configuration,
+                String feederStopAreaId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                         "Quay", gtfsTransfer.getFromStopId());
 
                 // find stoppoint for this journey
@@ -742,7 +722,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                     interchange.setGuaranteed(Boolean.TRUE);
                 }
 
-                String consumerStopAreaId = AbstractConverter.composeObjectId(configuration,
+                String consumerStopAreaId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                         "Quay", gtfsTransfer.getToStopId());
 
 
@@ -775,7 +755,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsTransfer.getFromTripId(),
                 gtfsTransfer.getToTripId(),
         }, "_");
-        String objectId = AbstractConverter.composeObjectId(configuration,
+        String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                 Interchange.INTERCHANGE_KEY, partialId);
         Interchange interchange = ObjectFactory.getInterchange(referential, objectId);
         return interchange;
@@ -824,14 +804,14 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         for (GtfsFrequency frequency : importer.getFrequencyByTrip().values(gtfsTrip.getTripId())) {
             vehicleJourney.setJourneyCategory(JourneyCategoryEnum.Frequency);
 
-            String timeBandObjectId = AbstractConverter.composeObjectId(configuration,
+            String timeBandObjectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     Timeband.TIMETABLE_KEY, gtfsTrip.getTripId() + "-" + count++);
             Timeband timeband = ObjectFactory.getTimeband(referential, timeBandObjectId);
             timeband.setName(getTimebandName(frequency));
             timeband.setStartTime(frequency.getStartTime().getTime());
             timeband.setEndTime(frequency.getEndTime().getTime());
 
-            String journeyFrequencyObjectId = AbstractConverter.composeObjectId(configuration,
+            String journeyFrequencyObjectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     "HeadwayJourney", gtfsTrip.getTripId() + "-" + count++);
 
             JourneyFrequency journeyFrequency = new JourneyFrequency();
@@ -961,11 +941,11 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             // Create a forced DestinationDisplay
             // Use JourneyPattern->PublishedName
 
-            String stopPointId = AbstractConverter.extractOriginalId(departureStopPoint.getObjectId());
-            String journeyPatternId = AbstractConverter.extractOriginalId(jp.getObjectId());
+            String stopPointId = ObjectIdUtil.extractOriginalId(departureStopPoint.getObjectId());
+            String journeyPatternId = ObjectIdUtil.extractOriginalId(jp.getObjectId());
 
             DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential,
-                    AbstractConverter.composeObjectId(configuration,
+                    ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                             DestinationDisplay.DESTINATIONDISPLAY_KEY, journeyPatternId + "-" + stopPointId));
 
             if (jp.getArrivalStopPoint() != null && jp.getArrivalStopPoint().getScheduledStopPoint() != null &&
@@ -1140,9 +1120,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
      * @return
      */
     private Route createRoute(Referential referential, GtfsImportParameters configuration, GtfsTrip gtfsTrip, String objectIdKey) {
-        String lineId = AbstractConverter.composeObjectId(configuration, Line.LINE_KEY, gtfsTrip.getRouteId());
+        String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY, gtfsTrip.getRouteId());
         Line line = ObjectFactory.getLine(referential, lineId);
-        String routeId = AbstractConverter.composeObjectId(configuration, Route.ROUTE_KEY, objectIdKey);
+        String routeId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Route.ROUTE_KEY, objectIdKey);
         Route route = ObjectFactory.getRoute(referential, routeId);
         route.setLine(line);
         PTDirectionEnum wayBack = gtfsTrip.getDirectionId().equals(DirectionType.Outbound) ? PTDirectionEnum.A : PTDirectionEnum.R;
@@ -1156,7 +1136,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 
-        String vjasObjectId = AbstractConverter.composeObjectId(configuration,
+        String vjasObjectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                 ObjectIdTypes.VEHICLE_JOURNEY_AT_STOP_KEY, UUID.randomUUID().toString());
 
         vehicleJourneyAtStop.setObjectId(vjasObjectId);
@@ -1244,7 +1224,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             StopPoint stopPoint = ObjectFactory.getStopPoint(referential, stopKey);
 
-            String stopAreaId = AbstractConverter.toStopAreaId(configuration,
+            String stopAreaId = ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                     "Quay", wrapper.stopId);
             StopArea stopArea = ObjectFactory.getStopArea(referential, stopAreaId);
 
@@ -1266,7 +1246,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             if (wrapper.stopHeadsign != null) {
                 DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential,
-                        AbstractConverter.composeObjectId(configuration,
+                        ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                                 DestinationDisplay.DESTINATIONDISPLAY_KEY, stopKey));
                 destinationDisplay.setFrontText(wrapper.stopHeadsign);
                 destinationDisplay.setName(wrapper.stopHeadsign);

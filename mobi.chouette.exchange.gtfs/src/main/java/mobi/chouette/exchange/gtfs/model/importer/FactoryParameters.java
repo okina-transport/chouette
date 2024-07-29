@@ -1,32 +1,25 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import lombok.Getter;
+import lombok.Setter;
+import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
+
+@Getter
+@Setter
 public class FactoryParameters {
 
     private String splitCharacter;
     private String linePrefixToRemove;
     private String commercialPointIdPrefixToRemove;
+    private Boolean removeParentStations;
 
-    public String getSplitCharacter() {
-        return splitCharacter;
+    public FactoryParameters() {}
+
+    public FactoryParameters(GtfsImportParameters configuration) {
+        this.splitCharacter = configuration.getSplitCharacter();
+        this.linePrefixToRemove = configuration.getLinePrefixToRemove();
+        this.commercialPointIdPrefixToRemove = configuration.getCommercialPointIdPrefixToRemove();
+        this.removeParentStations = configuration.isRemoveParentStations();
     }
 
-    public void setSplitCharacter(String splitCharacter) {
-        this.splitCharacter = splitCharacter;
-    }
-
-    public String getLinePrefixToRemove() {
-        return linePrefixToRemove;
-    }
-
-    public void setLinePrefixToRemove(String linePrefixToRemove) {
-        this.linePrefixToRemove = linePrefixToRemove;
-    }
-
-    public String getCommercialPointIdPrefixToRemove() {
-        return commercialPointIdPrefixToRemove;
-    }
-
-    public void setCommercialPointIdPrefixToRemove(String commercialPointIdPrefixToRemove) {
-        this.commercialPointIdPrefixToRemove = commercialPointIdPrefixToRemove;
-    }
 }

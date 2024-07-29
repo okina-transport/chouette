@@ -1,12 +1,10 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -19,7 +17,6 @@ import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.validation.AreaCentroidValidator;
 import mobi.chouette.exchange.neptune.validation.StopAreaValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.Line;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.SimpleObjectReference;
 import mobi.chouette.model.StopArea;
@@ -30,11 +27,13 @@ import mobi.chouette.model.type.UserNeedEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
@@ -183,7 +182,7 @@ public class ChouetteAreaParser implements Parser, Constant, JsonExtension {
 				String containsId = ParserUtils.getText(xpp.nextText());
 				String containsObjectId;
 				if ( containsId.contains(ObjectIdTypes.STOPPOINT_KEY)){
-					containsObjectId = AbstractConverter.composeObjectId(configuration, ObjectIdTypes.STOPPOINT_KEY, containsId);
+					containsObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), ObjectIdTypes.STOPPOINT_KEY, containsId);
 				}else{
 					containsObjectId = containsId;
 				}

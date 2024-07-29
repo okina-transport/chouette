@@ -9,6 +9,7 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.RouteTypeEnum;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -38,9 +39,9 @@ public class GtfsRouteProducer extends AbstractProducer
 
    private GtfsRoute route = new GtfsRoute();
 
-   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useTPEGRouteTypes, IdParameters idParams)
+   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams)
    {
-      route.setRouteId(generateCustomRouteId(toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
+      route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
        if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
            route.setRouteId(route.getRouteId().replace(":Line:", ":FlexibleLine:"));
        }
@@ -63,7 +64,7 @@ public class GtfsRouteProducer extends AbstractProducer
        } else {
            agencyId = c.getObjectId();
        }
-       route.setAgencyId(toGtfsId(agencyId, prefix, keepOriginalId));
+       route.setAgencyId(ObjectIdUtil.toGtfsId(agencyId, prefix, keepOriginalId));
        if(c != null && OrganisationTypeEnum.Operator.equals(c.getOrganisationType()) && agencyId.endsWith("o")){
            route.setAgencyId(StringUtils.chop(route.getAgencyId()));
        }
@@ -105,39 +106,11 @@ public class GtfsRouteProducer extends AbstractProducer
 
       if (neptuneObject.getTransportModeName() != null)
       {
-         if(useTPEGRouteTypes) {
-        	 route.setRouteType(RouteTypeEnum.from(neptuneObject.getTransportModeName(), neptuneObject.getTransportSubModeName()));
+         if(useExtendedGtfsRouteTypes) {
+        	 route.setRouteType(RouteTypeEnum.fromTransportModeAndSubMode(neptuneObject.getTransportModeName(), neptuneObject.getTransportSubModeName()));
          } else {
-    	  
-             switch (neptuneObject.getTransportModeName())
-             {
-             case Tram:
-                route.setRouteType(RouteTypeEnum.Tram);
-                break;
-             case Metro:
-                route.setRouteType(RouteTypeEnum.Subway);
-                break;
-             case Rail:
-                route.setRouteType(RouteTypeEnum.Rail);
-                break;
-             case Water:
-             case Ferry:
-                route.setRouteType(RouteTypeEnum.Ferry);
-                break;
-             case Funicular:
-            	 route.setRouteType(RouteTypeEnum.Funicular);
-                 break;
-             case Cableway:
-            	 route.setRouteType(RouteTypeEnum.Gondola);
-                 break;
-             case TrolleyBus:
-             case Coach:
-             case Bus:
-             default:
-                route.setRouteType(RouteTypeEnum.Bus);
-             }
+             route.setRouteType(RouteTypeEnum.fromTransportMode(neptuneObject.getTransportModeName()));
          }
-      
       }
       else
       {

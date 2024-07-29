@@ -3,6 +3,7 @@ package mobi.chouette.exchange.neptune.parser;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -10,15 +11,10 @@ import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.validation.TimetableValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
@@ -48,7 +44,7 @@ public class TimetableParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.TIMETABLE_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.TIMETABLE_KEY, objectId);
 				timetable = ObjectFactory.getTimetable(referential, objectId);
 				timetable.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -87,7 +83,7 @@ public class TimetableParser implements Parser, Constant {
 				timetable.addPeriod(period);
 			} else if (xpp.getName().equals("vehicleJourneyId")) {
 				String vehicleJourneyId = ParserUtils.getText(xpp.nextText());
-				String vehicleJourneyObjectId = AbstractConverter.composeObjectId(configuration, Line.VEHICLEJOURNEY_KEY, vehicleJourneyId);
+				String vehicleJourneyObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.VEHICLEJOURNEY_KEY, vehicleJourneyId);
 				VehicleJourney vehicleJourney = ObjectFactory
 						.getVehicleJourney(referential, vehicleJourneyObjectId);
 				timetable.addVehicleJourney(vehicleJourney);

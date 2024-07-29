@@ -1,14 +1,13 @@
 package mobi.chouette.exchange.hub.exporter.producer;
 
-import java.util.Collection;
-
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.hub.model.HubObject;
 import mobi.chouette.exchange.hub.model.exporter.HubExporterInterface;
 import mobi.chouette.model.NeptuneIdentifiedObject;
-
 import org.joda.time.LocalTime;
+
+import java.util.Collection;
 
 @Log4j
 public abstract class AbstractProducer {

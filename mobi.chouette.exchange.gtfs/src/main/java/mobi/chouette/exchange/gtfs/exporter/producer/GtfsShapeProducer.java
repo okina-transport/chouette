@@ -8,19 +8,19 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
-import java.math.BigDecimal;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsShape;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.RouteSection;
 import mobi.chouette.model.type.SectionStatusEnum;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import java.math.BigDecimal;
 
 /**
  * convert JourneyPattern's RouteSections to Shapes
@@ -47,7 +47,7 @@ public class GtfsShapeProducer extends AbstractProducer
 	   float distance = (float) 0.0;
 
 	   for (RouteSection rs : neptuneObject.getRouteSections() ) {
-		   shape.setShapeId(toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId));
+		   shape.setShapeId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId));
 		   if (rs == null)
 		   {
 		      continue;

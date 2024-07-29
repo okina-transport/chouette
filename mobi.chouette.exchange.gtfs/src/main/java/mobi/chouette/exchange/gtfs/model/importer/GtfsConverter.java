@@ -1,10 +1,5 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
-import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.TimeZone;
-
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate.ExceptionType;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.WheelchairBoardingType;
@@ -14,13 +9,17 @@ import mobi.chouette.exchange.gtfs.model.GtfsTrip.BikesAllowedType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.DirectionType;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip.WheelchairAccessibleType;
 import mobi.chouette.exchange.gtfs.model.RouteTypeEnum;
-
 import mobi.chouette.model.type.DropOffTypeEnum;
 import mobi.chouette.model.type.PickUpTypeEnum;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.TimeZone;
 
 public interface GtfsConverter {
 
@@ -341,7 +340,7 @@ public interface GtfsConverter {
 
 		@Override
 		protected String convertTo(RouteTypeEnum input) throws Exception {
-			return Integer.toString(input.value());
+			return Integer.toString(input.getValue());
 		}
 	};
 

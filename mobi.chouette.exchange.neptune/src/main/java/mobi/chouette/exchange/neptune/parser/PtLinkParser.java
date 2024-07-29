@@ -1,27 +1,26 @@
 package mobi.chouette.exchange.neptune.parser;
 
-import java.math.BigDecimal;
-
-import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
-import mobi.chouette.model.Line;
-import org.joda.time.LocalDateTime;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.XPPUtil;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.ParserUtils;
 import mobi.chouette.exchange.neptune.Constant;
+import mobi.chouette.exchange.neptune.importer.NeptuneImportParameters;
 import mobi.chouette.exchange.neptune.model.NeptuneObjectFactory;
 import mobi.chouette.exchange.neptune.model.PTLink;
 import mobi.chouette.exchange.neptune.validation.PtLinkValidator;
 import mobi.chouette.exchange.validation.ValidatorFactory;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
+import org.joda.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
+
+import java.math.BigDecimal;
 
 @Log4j
 public class PtLinkParser implements Parser, Constant {
@@ -47,7 +46,7 @@ public class PtLinkParser implements Parser, Constant {
 
 			if (xpp.getName().equals("objectId")) {
 				objectId = ParserUtils.getText(xpp.nextText());
-				objectId = AbstractConverter.composeObjectId(configuration, Line.PTLINK_KEY, objectId);
+				objectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.PTLINK_KEY, objectId);
 				ptLink = factory.getPTLink(objectId);
 				ptLink.setFilled(true);
 			} else if (xpp.getName().equals("objectVersion")) {
@@ -60,14 +59,14 @@ public class PtLinkParser implements Parser, Constant {
 				ptLink.setCreatorId(ParserUtils.getText(xpp.nextText()));
 			} else if (xpp.getName().equals("startOfLink")) {
 				String startOfLinkId = ParserUtils.getText(xpp.nextText());
-				String startOfLinkObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, startOfLinkId);
+				String startOfLinkObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.STOPPOINT_KEY, startOfLinkId);
 				StopPoint startOfLink = ObjectFactory.getStopPoint(referential,
 						startOfLinkObjectId);
 				ptLink.setStartOfLink(startOfLink);
 				validator.addStartOfLinkId(context, objectId, startOfLinkObjectId);
 			} else if (xpp.getName().equals("endOfLink")) {
 				String endOfLinkId = ParserUtils.getText(xpp.nextText());
-				String endOfLinkObjectId = AbstractConverter.composeObjectId(configuration, Line.STOPPOINT_KEY, endOfLinkId);
+				String endOfLinkObjectId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Line.STOPPOINT_KEY, endOfLinkId);
 				StopPoint endOfLink = ObjectFactory.getStopPoint(referential,
 						endOfLinkObjectId);
 				ptLink.setEndOfLink(endOfLink);

@@ -10,6 +10,7 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.util.NetexObjectUtil;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
+import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
@@ -180,8 +181,13 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 		}
 
 		// post processing
-		// sortStopPoints(referential);
-		// updateBoardingAlighting(referential);
+		 sortStopPoints(referential);
+	}
+
+	private void sortStopPoints(Referential referential) {
+		for(Route route : referential.getRoutes().values()){
+			route.getStopPoints().sort(STOP_POINT_POSITION_COMPARATOR);
+		}
 	}
 
 

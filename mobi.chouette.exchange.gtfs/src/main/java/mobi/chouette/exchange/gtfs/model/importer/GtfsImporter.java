@@ -162,6 +162,11 @@ public class GtfsImporter {
 	}
 
 	@SuppressWarnings("unchecked")
+	public FactoryParameters getFactoryParameters() {
+		return _factoryParameters;
+	}
+
+	@SuppressWarnings("unchecked")
 	public Index<GtfsStopTime> getStopTimeByTrip() {
 		return getImporter(INDEX.STOP_TIME_BY_TRIP.name(),
 				StopTimeByTrip.FILENAME, StopTimeByTrip.class);

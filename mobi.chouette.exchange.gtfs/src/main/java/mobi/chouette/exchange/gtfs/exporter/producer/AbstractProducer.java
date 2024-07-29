@@ -23,25 +23,6 @@ public abstract class AbstractProducer
       this.exporter = exporter;
    }
 
-   static protected String toGtfsId(String neptuneId, String prefix, boolean keepOriginal)
-   {
-      if (keepOriginal) {
-         if(StringUtils.isNotEmpty(prefix)){
-            String[] neptuneIdStrings = neptuneId.split(":");
-            return prefix + ":" + neptuneIdStrings[1] + ":" + neptuneIdStrings[2];
-         }
-         return neptuneId;
-      } else {
-         String[] tokens = neptuneId.split(":");
-         if (tokens.length == 1)
-            return tokens[0];
-         else if (tokens[0].equalsIgnoreCase(prefix))
-            return tokens[2];
-         else
-            return tokens[2];
-      }
-   }
-
    static protected boolean isEmpty(String s)
    {
       return s == null || s.trim().isEmpty();
