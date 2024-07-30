@@ -104,7 +104,7 @@ public class GtfsAgencyOverloadCommand implements Command {
     }
 
     private Optional<Company> lookForCompanyForCompanyByNameAndActive(String targetNetwork) {
-        List<Company> companies = companyDAO.findByNameAndActive(targetNetwork);
+        List<Company> companies = companyDAO.findByName(targetNetwork);
         if (CollectionUtils.isNotEmpty(companies)) {
             // company with same name exists in database
             log.info(String.format("Found company with name %s in database", targetNetwork));

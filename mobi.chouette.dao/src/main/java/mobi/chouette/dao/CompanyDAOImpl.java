@@ -26,4 +26,10 @@ public class CompanyDAOImpl extends GenericDAOImpl<Company> implements CompanyDA
 				.getResultList();
 	}
 
+	@Override
+	public List<Company> findByName(String name) {
+		return em.createQuery("SELECT c FROM Company c WHERE c.name = :name", Company.class)
+				.setParameter("name", name)
+				.getResultList();
+	}
 }

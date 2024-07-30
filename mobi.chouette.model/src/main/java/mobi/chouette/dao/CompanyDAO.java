@@ -7,4 +7,6 @@ import java.util.List;
 public interface CompanyDAO extends GenericDAO<Company> {
 
         List<Company> findByNameAndActive(String name);
+
+        List<Company> findByName(String name);
 }
