@@ -83,7 +83,8 @@ public class NetexInitImportCommand implements Command, Constant {
 					log.error("Import parameters useTargetNetwork is true but targetNetwork is blank");
 					throw new IllegalArgumentException("Import parameters useTargetNetwork is true but targetNetwork is blank");
 				}
-				List<Network> networks = networkDAO.findByNameAndNotSupprime(parameters.getTargetNetwork());
+
+				List<Network> networks = networkDAO.findByName(parameters.getTargetNetwork());
 				Referential referential = (Referential) context.get(REFERENTIAL);
 				Network targetNetwork;
 				if (CollectionUtils.isEmpty(networks)) {

@@ -165,6 +165,14 @@ public class LineRegisterCommand implements Command {
 				if(oldValue.getCategoriesForLine() == null){
 					oldValue.setCategoriesForLine(categoriesForLinesDAO.find(0L));
 				}
+
+				/* reactivate the line and network if they are deactivated,
+				** provided that the line network is not null and is also deactivated */
+				if (newValue.getObjectId().equals(oldValue.getObjectId()) && oldValue.getNetwork() != null && oldValue.getNetwork().getSupprime()) {
+					oldValue.setSupprime(false);
+					oldValue.getNetwork().setSupprime(false);
+				}
+
 				searchEmptyOriginalStopIds(referential,oldValue);
 				lineDAO.create(oldValue);
 

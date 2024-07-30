@@ -25,4 +25,11 @@ public class NetworkDAOImpl extends GenericDAOImpl<Network> implements NetworkDA
 				.setParameter("name", name)
 				.getResultList();
 	}
+
+	@Override
+	public List<Network> findByName(String name) {
+		return em.createQuery("SELECT n FROM Network n WHERE n.name = :name", Network.class)
+				.setParameter("name", name)
+				.getResultList();
+	}
 }
