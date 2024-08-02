@@ -79,7 +79,7 @@ public class NetexInitImportCommandTest {
 
 
         context.put(Constant.CONFIGURATION, parameters);
-        Mockito.when(networkDAOMock.findByNameAndNotSupprime(TARGET_NETWORK)).thenReturn(Collections.singletonList(databaseNetwork));
+        Mockito.when(networkDAOMock.findByName(TARGET_NETWORK)).thenReturn(Collections.singletonList(databaseNetwork));
 
         // act
         tested.execute(context);
@@ -103,7 +103,7 @@ public class NetexInitImportCommandTest {
 
 
         context.put(Constant.CONFIGURATION, parameters);
-        Mockito.when(networkDAOMock.findByNameAndNotSupprime(TARGET_NETWORK)).thenReturn(null);
+        Mockito.when(networkDAOMock.findByName(TARGET_NETWORK)).thenReturn(null);
 
         // act
         tested.execute(context);

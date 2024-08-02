@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface NetworkDAO extends GenericDAO<Network> {
 
-    List<Network> findByNameAndNotSupprime(String name);
-
     List<Network> findByName(String name);
+
 }

@@ -125,7 +125,7 @@ public class GtfsAgencyOverloadCommandTest {
     public void test__when_company_with_name_equal_to_target_network_exists__agency_txt_is_generated_properly(List<Company> companiesByName) throws Exception {
         // arrange
         Context context = getContext();
-        Mockito.when(companyDAOMock.findByNameAndActive(TARGET_NETWORK)).thenReturn(companiesByName);
+        Mockito.when(companyDAOMock.findByName(TARGET_NETWORK)).thenReturn(companiesByName);
 
         // act
         tested.execute(context);
@@ -147,7 +147,7 @@ public class GtfsAgencyOverloadCommandTest {
     public void test__when_company_with_name_equal_to_target_network_exists__routes_txt_is_generated_properly(List<Company> companiesByName) throws Exception {
         // arrange
         Context context = getContext();
-        Mockito.when(companyDAOMock.findByNameAndActive(TARGET_NETWORK)).thenReturn(companiesByName);
+        Mockito.when(companyDAOMock.findByName(TARGET_NETWORK)).thenReturn(companiesByName);
 
         // act
         tested.execute(context);
@@ -185,7 +185,7 @@ public class GtfsAgencyOverloadCommandTest {
     public void test__when_no_company_with_name_equal_to_target_network_exists__agency_txt_is_generated_properly() throws Exception {
         // arrange
         Context context = getContext();
-        Mockito.when(companyDAOMock.findByNameAndActive(TARGET_NETWORK)).thenReturn(null);
+        Mockito.when(companyDAOMock.findByName(TARGET_NETWORK)).thenReturn(null);
 
         // act
         tested.execute(context);
@@ -204,7 +204,7 @@ public class GtfsAgencyOverloadCommandTest {
     public void test__when_no_company_with_name_equal_to_target_network_exists__routes_txt_is_generated_properly() throws Exception {
         // arrange
         Context context = getContext();
-        Mockito.when(companyDAOMock.findByNameAndActive(TARGET_NETWORK)).thenReturn(null);
+        Mockito.when(companyDAOMock.findByName(TARGET_NETWORK)).thenReturn(null);
 
         // act
         tested.execute(context);
