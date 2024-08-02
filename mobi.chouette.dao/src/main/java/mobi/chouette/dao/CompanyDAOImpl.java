@@ -20,13 +20,6 @@ public class CompanyDAOImpl extends GenericDAOImpl<Company> implements CompanyDA
 	}
 
 	@Override
-	public List<Company> findByNameAndActive(String name) {
-		return em.createQuery("SELECT c FROM Company c WHERE c.name = :name and c.active = true ", Company.class)
-				.setParameter("name", name)
-				.getResultList();
-	}
-
-	@Override
 	public List<Company> findByName(String name) {
 		return em.createQuery("SELECT c FROM Company c WHERE c.name = :name", Company.class)
 				.setParameter("name", name)
