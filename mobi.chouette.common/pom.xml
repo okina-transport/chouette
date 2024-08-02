@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-    <version>3.5.4_MOBIITI</version>
+    <version>3.5.4_MOBIITI-sans-jettison</version>
 	</parent>
 	<artifactId>mobi.chouette.common</artifactId>
 	<packaging>ejb</packaging>
@@ -95,19 +95,5 @@
 		<!-- Modules Dependencies -->
 
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ejb-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Dependencies>org.codehaus.jettison</Dependencies>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+
 </project>
