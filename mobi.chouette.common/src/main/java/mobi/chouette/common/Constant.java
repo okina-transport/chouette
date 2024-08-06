@@ -109,6 +109,8 @@ public interface Constant {
 
 	String SCHEDULE_STOP_POINT_STOP_AREA_NULL = "scheduleStopPointInStopAreaRefNull";
 
+	String WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN = "wrongStopPointOrderInJourneyPattern";
+
 	String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
 
 	String MULTIMODAL_STOP_PLACES = "multimodalStopPlaces";

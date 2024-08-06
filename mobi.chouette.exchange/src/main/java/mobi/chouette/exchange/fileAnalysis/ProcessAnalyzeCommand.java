@@ -41,6 +41,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRouteLinksUsedMutipleTimesInTheSameFile;
     private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint;
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
+    private Map<String, Set<Map<String, List<Map<String, List<String>>>>>> wrongStopPointOrderInJourneyPattern;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
     private Map<String, String> originalIdMap = new HashMap<>();
@@ -102,6 +103,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongRouteLinksUsedMutipleTimesInTheSameFile = analyzeReport.getWrongRouteLinksUsedMutipleTimesInTheSameFile();
         wrongRouteLinksUsedSameFromAndToScheduledStopPoint = analyzeReport.getWrongRouteLinksUsedSameFromAndToScheduledStopPoint();
         wrongRefStopAreaInScheduleStopPoint = analyzeReport.getWrongRefStopAreaInScheduleStopPoint();
+        wrongStopPointOrderInJourneyPattern = analyzeReport.getWrongStopPointOrderInJourneyPattern();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -114,6 +116,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsRouteLinksUsedMutipleTimesInTheSameFile(context);
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
         containsStopAreaRefNullScheduleStopPoint(context);
+        containsStopPointInJourneyPattern(context);
         checkRouteLinksIfNeeded(context, newValue);
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
@@ -346,7 +349,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         }
     }
 
+    private void containsStopPointInJourneyPattern(Context context) {
+        List<Map<String, List<Map<String, List<String>>>>> result = (List<Map<String, List<Map<String, List<String>>>>>) context.get(WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN);
 
+        if (result != null) {
+            Set<Map<String, List<Map<String, List<String>>>>> mapResult = new HashSet<>(result);
+            wrongStopPointOrderInJourneyPattern.put(currentFileName, mapResult);
+        }
+    }
 
     /**
      * recover all data of stopAreas and write analysis results into analyzeReport     *

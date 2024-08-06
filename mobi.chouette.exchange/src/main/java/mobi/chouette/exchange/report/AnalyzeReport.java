@@ -6,16 +6,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mobi.chouette.common.Constant;
-import mobi.chouette.model.CalendarDay;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Timetable;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -122,6 +116,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
     @XmlElement(name = "wrongRefStopAreaInScheduleStopPoint")
     private  Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint = new HashMap<>();
+
+    @XmlElement(name = "wrongStopPointOrderInJourneyPattern")
+    private Map<String, Set<Map<String, List<Map<String, List<String>>>>>> wrongStopPointOrderInJourneyPattern = new HashMap<>();
 
     @XmlElement(name = "changedTrips")
     private Map<String, Pair<String, String>> changedTrips = new HashMap<>();
@@ -326,6 +323,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("wrongRouteLinksUsedSameFromAndToScheduledStopPoint", buildMapList(wrongRouteLinksUsedSameFromAndToScheduledStopPoint,"fileName","routeLinks"));
         }
 
+        if (!wrongStopPointOrderInJourneyPattern.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongStopPointOrderInJourneyPattern", buildWrongStopPointOrderInJourneyPattern());
+        }
+
         if (!modifiedTimetables.isEmpty()) {
             analyzeReportMap.put("modifiedTimetables", buildModifiedTimeTables());
         }
@@ -478,6 +480,23 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             wrongRouteLinkMap.put("routeLinks", wrongRouteLinkEntry.getKey());
             wrongRouteLinkMap.put("fileNames", wrongRouteLinkEntry.getValue());
             resultList.add(wrongRouteLinkMap);
+        }
+        return resultList;
+    }
+
+    private List<Object> buildWrongStopPointOrderInJourneyPattern() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Set<Map<String, List<Map<String, List<String>>>>>> entry : wrongStopPointOrderInJourneyPattern.entrySet()) {
+            for (Map<String, List<Map<String, List<String>>>> entryValues : entry.getValue()) {
+                for (Map.Entry<String, List<Map<String, List<String>>>> wrongJourneyPattern : entryValues.entrySet()) {
+                    Map<String,Object> wrongList = new HashMap<>();
+                    wrongList.put("fileName", entry.getKey());
+                    wrongList.put("journeyPatternsInError", wrongJourneyPattern.getKey());
+                    wrongList.put("stopPointsInError", wrongJourneyPattern.getValue());
+                    resultList.add(wrongList);
+                }
+            }
         }
         return resultList;
     }
