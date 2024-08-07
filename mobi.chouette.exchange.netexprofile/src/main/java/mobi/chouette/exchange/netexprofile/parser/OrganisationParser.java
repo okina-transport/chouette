@@ -55,6 +55,10 @@ public class OrganisationParser implements Parser, Constant {
 				// TODO à revoir pour changement de profil
 //				company.setCode(organisationStruct.getPublicCode());
 			}
+
+			if(organisationStruct.getPrivateCode() != null){
+				company.setPrivateCode(organisationStruct.getPrivateCode().getValue());
+			}
 			
 			// Find type of organisation
 			OrganisationTypeEnumeration organisationTypeEnumeration = null;

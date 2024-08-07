@@ -173,6 +173,16 @@ public class Company extends NeptuneIdentifiedObject {
 	private String code;
 
 	/**
+	 * organization private_code <br/>
+	 * usually fixed by Transport Authority
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@Column(name = "private_code")
+	private String privateCode;
+
+	/**
 	 * set organization code <br/>
 	 * truncated to 255 characters if too long
 	 * 
@@ -181,6 +191,17 @@ public class Company extends NeptuneIdentifiedObject {
 	 */
 	public void setCode(String value) {
 		code = StringUtils.abbreviate(value, 255);
+	}
+
+	/**
+	 * set organization private_code <br/>
+	 * truncated to 255 characters if too long
+	 *
+	 * @param value
+	 *            New value
+	 */
+	public void setPrivateCode(String value) {
+		privateCode = StringUtils.abbreviate(value, 255);
 	}
 
 	/**

@@ -79,6 +79,10 @@ public class CompanyUpdater implements Updater<Company> {
 				&& !newValue.getCode().equals(oldValue.getCode())) {
 			oldValue.setCode(newValue.getCode());
 		}
+		if (newValue.getPrivateCode() != null
+				&& !newValue.getPrivateCode().equals(oldValue.getPrivateCode())) {
+			oldValue.setPrivateCode((newValue.getPrivateCode()));
+		}
 		if (newValue.getPhone() != null
 				&& !newValue.getPhone().equals(oldValue.getPhone())) {
 			oldValue.setPhone(newValue.getPhone());
