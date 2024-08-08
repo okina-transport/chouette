@@ -37,7 +37,6 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
         Referential referential = (Referential) context.get(REFERENTIAL);
         JourneyPatternsInFrame_RelStructure journeyPatternStruct = (JourneyPatternsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 
-//        List<Map<StopPoint, List<String>>> wrongStopPointsOrderList = new ArrayList<>();
         List<Map<String, List<Map<String, List<String>>>>> wrongStopPointsOrderList = new ArrayList<>();
 
         for (JAXBElement<?> journeyPatternElement : journeyPatternStruct.getJourneyPattern_OrJourneyPatternView()) {
