@@ -230,7 +230,8 @@ CREATE TABLE companies (
     time_zone character varying(255),
     branding_id bigint,
     lang character varying(255),
-    fare_url character varying(255)
+    fare_url character varying(255),
+    private_code character varying(255),
 );
 
 
