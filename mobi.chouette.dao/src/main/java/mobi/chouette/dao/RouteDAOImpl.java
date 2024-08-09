@@ -1,14 +1,13 @@
 package mobi.chouette.dao;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import mobi.chouette.core.CoreException;
 import mobi.chouette.core.CoreExceptionCode;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.type.PTDirectionEnum;
 
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Stateless

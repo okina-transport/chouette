@@ -1,10 +1,10 @@
 package mobi.chouette.dao;
 
-import java.util.List;
-
 import mobi.chouette.core.CoreException;
 import mobi.chouette.model.SearchAddressFeatures;
 import mobi.chouette.model.StopArea;
+
+import java.util.List;
 
 public interface StopAreaDAO extends GenericDAO<StopArea> {
 

@@ -1,41 +1,36 @@
 package mobi.chouette.ws;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Color;
+import mobi.chouette.common.Constant;
+import mobi.chouette.common.ContenerChecker;
+import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.chain.Command;
+import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.exchange.TestDescription;
+import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
+import mobi.chouette.model.iev.Job;
+import mobi.chouette.model.iev.Stat;
+import mobi.chouette.service.JobService;
+import mobi.chouette.service.JobServiceManager;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.naming.InitialContext;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.Constant;
-import mobi.chouette.common.ContenerChecker;
-import mobi.chouette.common.PropertyNames;
-import mobi.chouette.exchange.TestDescription;
-import mobi.chouette.model.iev.Job;
-import mobi.chouette.model.iev.Stat;
-import mobi.chouette.service.JobService;
-import mobi.chouette.service.JobServiceManager;
-
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Path("/admin")
 @Log4j
@@ -160,6 +155,24 @@ public class RestAdmin implements Constant {
 			log.info(Color.BLUE + "Finished exportLineIds" + Color.NORMAL);
 		} catch (Exception ex) {
 			log.error("removeOldJobs failed with exception:" + ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GET
+	@Path("/export_line_and_route_ids")
+	public void exportLineAndRouteIds() {
+		log.info(Color.BLUE + "Call Admin exportLineAndRouteIds"+ Color.NORMAL);
+		if (!"true".equals(System.getenv("INEO_SIC_ENABLED"))) {
+			log.warn("Env variable INEO_SIC_ENABLED not set to 'true', abort");
+			return;
+		}
+		try {
+			InitialContext initialContext = new InitialContext();
+			Command c = CommandFactory.create(initialContext, ExportLineAndRouteIdsCommand.class.getName());
+			c.execute(new mobi.chouette.common.Context());
+		} catch (Exception e) {
+			log.error("Error exporting line and route ids", e);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		}
 	}

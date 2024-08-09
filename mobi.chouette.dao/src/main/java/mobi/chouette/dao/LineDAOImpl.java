@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,6 +87,16 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 						"              FROM Line l " +
 						"              WHERE l.supprime = false", Line.class)
 				.getResultList();
+	}
+
+	@Override
+	@Transactional(Transactional.TxType.REQUIRES_NEW)
+	public List<Line> findNotDeletedInNewTransaction() {
+		List<Line> lines = findNotDeleted();
+		for (Line line : lines) {
+			Hibernate.initialize(line.getRoutes());
+		}
+		return lines;
 	}
 
 	@Override

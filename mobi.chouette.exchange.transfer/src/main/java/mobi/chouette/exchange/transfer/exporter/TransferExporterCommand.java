@@ -1,16 +1,7 @@
 package mobi.chouette.exchange.transfer.exporter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -19,17 +10,22 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.CommandCancelledException;
 import mobi.chouette.exchange.ProgressionCommand;
 import mobi.chouette.exchange.exporter.AbstractExporterCommand;
+import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ReportConstant;
 import mobi.chouette.exchange.transfer.Constant;
-import mobi.chouette.model.Line;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.JobService;
 import mobi.chouette.service.JobServiceManager;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 @Log4j
 @Stateless(name = TransferExporterCommand.COMMAND)
@@ -82,6 +78,10 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 
 			Command postTransfer = CommandFactory.create(initialContext, PostTransferCleanup.class.getName());
 			postTransfer.execute(context);
+
+			Command exportLineAndRouteIds = CommandFactory.create(initialContext,
+					ExportLineAndRouteIdsCommand.class.getName());
+			exportLineAndRouteIds.execute(context);
 
 			result = SUCCESS;
 

@@ -18,6 +18,8 @@ public interface LineDAO extends GenericDAO<Line> {
 
     List<Line> findNotDeleted();
 
+    List<Line> findNotDeletedInNewTransaction();
+
     List<String> findObjectIdLinesInFirstDataspace(List<Long> ids, String dataspace);
 
     String removeDeletedLines() throws CoreException;
