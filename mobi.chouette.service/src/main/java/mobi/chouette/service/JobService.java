@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -119,7 +120,8 @@ public class JobService implements JobData, ServiceConstants {
 
             JSONUtil.toJSON(filePath(ACTION_PARAMETERS_FILE), parameters.getConfiguration());
             if (parameters.getConfiguration() != null) {
-                fileStore.writeFile(filePath(ACTION_PARAMETERS_FILE), new ByteArrayInputStream(JSONUtil.toJSON(parameters.getConfiguration()).getBytes()));
+                fileStore.writeFile(filePath(ACTION_PARAMETERS_FILE),
+                        new ByteArrayInputStream(JSONUtil.toJSON(parameters.getConfiguration()).getBytes(StandardCharsets.UTF_8)));
                 addLink(MediaType.APPLICATION_JSON, Link.ACTION_PARAMETERS_REL);
             }
 

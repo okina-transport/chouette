@@ -85,7 +85,7 @@ public class GtfsAgencyOverloadCommand implements Command {
 
         Monitor monitor = MonitorFactory.start(GtfsAgencyOverloadCommand.COMMAND);
         try {
-            Optional<Company> optionalCompany = lookForCompanyForCompanyByNameAndActive(parameters.getTargetNetwork());
+            Optional<Company> optionalCompany = lookForCompanyForCompanyByName(parameters.getTargetNetwork());
             Company newCompany = optionalCompany.orElseGet(() -> generateNewCompany(parameters));
             generateNewGtfsFiles(context, newCompany);
         } finally {
@@ -103,7 +103,7 @@ public class GtfsAgencyOverloadCommand implements Command {
         return company;
     }
 
-    private Optional<Company> lookForCompanyForCompanyByNameAndActive(String targetNetwork) {
+    private Optional<Company> lookForCompanyForCompanyByName(String targetNetwork) {
         List<Company> companies = companyDAO.findByName(targetNetwork);
         if (CollectionUtils.isNotEmpty(companies)) {
             // company with same name exists in database
