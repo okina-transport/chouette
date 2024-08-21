@@ -41,7 +41,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRouteLinksUsedMutipleTimesInTheSameFile;
     private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint;
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
-    private Map<String, Set<Map<String, List<Map<String, List<String>>>>>> wrongStopPointOrderInJourneyPattern;
+    private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
     private Map<String, String> originalIdMap = new HashMap<>();
@@ -350,11 +350,17 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     }
 
     private void containsStopPointInJourneyPattern(Context context) {
-        List<Map<String, List<Map<String, List<String>>>>> result = (List<Map<String, List<Map<String, List<String>>>>>) context.get(WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN);
+        List<Map<String, Map<String, String>>> result = (List<Map<String, Map<String, String>>>) context.get(WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN);
 
         if (result != null) {
-            Set<Map<String, List<Map<String, List<String>>>>> mapResult = new HashSet<>(result);
-            wrongStopPointOrderInJourneyPattern.put(currentFileName, mapResult);
+            // Pour éviter les doublons
+            for (Map<String, Map<String, String>> entry : result) {
+                boolean exists = wrongStopPointOrderInJourneyPattern.stream()
+                        .anyMatch(e -> e.equals(entry));
+                if (!exists) {
+                    wrongStopPointOrderInJourneyPattern.add(entry);
+                }
+            }
         }
     }
 

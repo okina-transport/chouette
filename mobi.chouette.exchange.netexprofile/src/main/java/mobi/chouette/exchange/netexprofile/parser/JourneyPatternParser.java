@@ -40,7 +40,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
         List<Map<String, List<Map<String, List<String>>>>> wrongStopPointsOrderList = new ArrayList<>();
 
         for (JAXBElement<?> journeyPatternElement : journeyPatternStruct.getJourneyPattern_OrJourneyPatternView()) {
-            JourneyPattern_VersionStructure netexJourneyPattern = (org.rutebanken.netex.model.JourneyPattern_VersionStructure) journeyPatternElement.getValue();
+            JourneyPattern_VersionStructure netexJourneyPattern = (JourneyPattern_VersionStructure) journeyPatternElement.getValue();
 
             String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context, "JourneyPattern", netexJourneyPattern.getId());
             mobi.chouette.model.JourneyPattern chouetteJourneyPattern = ObjectFactory.getJourneyPattern(referential, journeyPatternId);
@@ -60,7 +60,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
                     String destinationDisplayRef = netexJourneyPattern.getDestinationDisplayRef().getRef();
                     mobi.chouette.model.DestinationDisplay chouetteDestinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayRef);
                     chouetteJourneyPattern.setName(chouetteDestinationDisplay.getFrontText());
-                }else{
+                } else {
                     chouetteJourneyPattern.setName(route.getName());
                 }
             }
@@ -75,9 +75,13 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
                 chouetteJourneyPattern.setDestinationDisplay(destinationDisplay);
             }
 
-            Map<String, List<Map<String, List<String>>>> toADdList = new HashMap<>();
-            toADdList.putIfAbsent(chouetteJourneyPattern.getObjectId(), parseStopPointsInJourneyPattern(context, referential, (JourneyPattern_VersionStructure) journeyPatternElement.getValue(), chouetteJourneyPattern));
-            wrongStopPointsOrderList.add(toADdList);
+            Map<String, List<Map<String, List<String>>>> toAddList = new HashMap<>();
+            List<Map<String, List<String>>> wrongOrders = parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern);
+
+            if (!wrongOrders.isEmpty()) {
+                toAddList.put(chouetteJourneyPattern.getObjectId(), wrongOrders);
+                wrongStopPointsOrderList.add(toAddList);
+            }
 
             parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
             chouetteJourneyPattern.setFilled(true);
@@ -97,61 +101,156 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
      * @param stopPointList The list of maps containing StopPoints and their associated integer lists.
      */
     private void mergeWrongStopPointsOrderAndSetContext(Context context, List<Map<String, List<Map<String, List<String>>>>> stopPointList) {
-        // A map to hold aggregated results by JourneyPattern key
-        Map<String, Map<String, Set<String>>> aggregatedResult = new HashMap<>();
+        Map<String, List<String>> stopPointOrders = new HashMap<>();
+        Map<String, List<String>> jpList = new HashMap<>();
 
-        // Iterate over each JourneyPattern map in the provided list
-        for (Map<String, List<Map<String, List<String>>>> journeyPatternMap : stopPointList) {
-            // Iterate over each entry in the JourneyPattern map
-            for (Map.Entry<String, List<Map<String, List<String>>>> journeyPatternEntry : journeyPatternMap.entrySet()) {
-                String journeyPatternKey = journeyPatternEntry.getKey();
-                List<Map<String, List<String>>> stopPointsMaps = journeyPatternEntry.getValue();
+        collectStopPointOrders(stopPointList, stopPointOrders, jpList);
+        List<Map<String, Map<String, String>>> result = processStopPointOrders(context, stopPointOrders, jpList);
 
-                if (stopPointsMaps.size() > 0 ) {
-                    // Initialize the map for StopPoints if it's not present
-                    aggregatedResult.putIfAbsent(journeyPatternKey, new HashMap<>());
-
-                    // Iterate over each map in the list of StopPoint maps
-                    for (Map<String, List<String>> stopPointMap : stopPointsMaps) {
-                        // Iterate over each entry in the StopPoint map
-                        for (Map.Entry<String, List<String>> entry : stopPointMap.entrySet()) {
-                            String stopPoint = entry.getKey();
-                            List<String> value = entry.getValue();
-
-                            // Merge lists for the same StopPoint, avoiding duplicates
-                            aggregatedResult.get(journeyPatternKey).merge(stopPoint, new HashSet<>(value), (oldSet, newSet) -> {
-                                oldSet.addAll(newSet);
-                                return oldSet;
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        // Convert the aggregatedResult to the required structure
-        List<Map<String, List<Map<String, List<String>>>>> result = aggregatedResult.entrySet().stream()
-                .map(entry -> {
-                    Map<String, List<Map<String, List<String>>>> journeyPatternMap = new HashMap<>();
-
-                    List<Map<String, List<String>>> stopPointListForJourneyPattern = entry.getValue().entrySet().stream()
-                            .map(stopPointEntry -> {
-                                Map<String, List<String>> stopPointMap = new HashMap<>();
-                                stopPointMap.put(stopPointEntry.getKey(), new ArrayList<>(stopPointEntry.getValue()));
-                                return stopPointMap;
-                            })
-                            .collect(Collectors.toList());
-
-                    journeyPatternMap.put(entry.getKey(), stopPointListForJourneyPattern);
-                    return journeyPatternMap;
-                })
-                .collect(Collectors.toList());
-
-        // Set the result in the context if it's not empty
         if (!result.isEmpty()) {
             context.put(WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN, result);
         }
     }
+
+    /**
+     * Collects all stop point orders and associated journey patterns.
+     *
+     * @param stopPointList    The list of stop points with their associated orders and journey patterns.
+     * @param stopPointOrders  The map where stop point IDs will be associated with their orders.
+     * @param jpList           The map where stop point IDs will be associated with their journey patterns.
+     */
+    private void collectStopPointOrders(
+            List<Map<String, List<Map<String, List<String>>>>> stopPointList,
+            Map<String, List<String>> stopPointOrders,
+            Map<String, List<String>> jpList) {
+
+        for (Map<String, List<Map<String, List<String>>>> journeyPatternMap : stopPointList) {
+            for (Map.Entry<String, List<Map<String, List<String>>>> entry : journeyPatternMap.entrySet()) {
+                String journeyPatternId = entry.getKey();
+                List<Map<String, List<String>>> stopPoints = entry.getValue();
+
+                for (Map<String, List<String>> stopPointMap : stopPoints) {
+                    for (Map.Entry<String, List<String>> stopPointEntry : stopPointMap.entrySet()) {
+                        String stopPointId = stopPointEntry.getKey();
+                        List<String> orders = stopPointEntry.getValue();
+
+                        stopPointOrders.computeIfAbsent(stopPointId, k -> new ArrayList<>()).addAll(orders);
+                        jpList.computeIfAbsent(stopPointId, k -> new ArrayList<>()).add(journeyPatternId);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Processes stop point orders to identify and document incorrect orders.
+     *
+     * @param context          The context where results will be stored.
+     * @param stopPointOrders  The map of stop point orders to process.
+     * @param jpList           The map of journey patterns associated with each stop point.
+     * @return                 A list of result maps documenting incorrect stop point orders.
+     */
+    private List<Map<String, Map<String, String>>> processStopPointOrders(
+            Context context,
+            Map<String, List<String>> stopPointOrders,
+            Map<String, List<String>> jpList) {
+
+        List<Map<String, Map<String, String>>> result = new ArrayList<>();
+
+        for (Map.Entry<String, List<String>> stopPointEntry : stopPointOrders.entrySet()) {
+            String stopPointId = stopPointEntry.getKey();
+            List<String> orders = stopPointEntry.getValue();
+
+            if (!allValuesIdentical(orders)) {
+                Map<String, Long> orderCounts = orders.stream()
+                        .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+                String mainOrderFound = Collections.max(orderCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+                Long mainOrderCount = orderCounts.get(mainOrderFound);
+
+                Map<String, String> orderDetails = createOrderDetails(context, stopPointId, mainOrderFound, mainOrderCount, jpList, orderCounts);
+
+                if (!resultContainsDuplicate(result, stopPointId, orderDetails)) {
+                    Map<String, Map<String, String>> resultMap = new HashMap<>();
+                    resultMap.put(stopPointId, orderDetails);
+                    result.add(resultMap);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates the details map for a stop point order, including main and incorrect orders.
+     *
+     * @param context          The context containing the file name.
+     * @param stopPointId      The ID of the stop point.
+     * @param mainOrderFound   The main order that was found.
+     * @param mainOrderCount   The count of the main order occurrences.
+     * @param jpList           The list of journey patterns associated with the stop point.
+     * @param orderCounts      The counts of all orders associated with the stop point.
+     * @return                 A map containing the order details for the stop point.
+     */
+    private Map<String, String> createOrderDetails(
+            Context context,
+            String stopPointId,
+            String mainOrderFound,
+            Long mainOrderCount,
+            Map<String, List<String>> jpList,
+            Map<String, Long> orderCounts) {
+
+        Map<String, String> orderDetails = new HashMap<>();
+        orderDetails.put("fileName", context.get("file_name").toString());
+        orderDetails.put("stopPointId", stopPointId);
+        orderDetails.put("mainOrderFound", mainOrderFound);
+        orderDetails.put("mainOrderFoundCount", mainOrderCount.toString());
+
+        for (Map.Entry<String, List<String>> jp : jpList.entrySet()) {
+            if (jp.getKey().equals(stopPointId)) {
+                orderDetails.put("journeyPatternList", jp.getValue().toString());
+            }
+        }
+
+        for (Map.Entry<String, Long> countEntry : orderCounts.entrySet()) {
+            if (!countEntry.getKey().equals(mainOrderFound)) {
+                orderDetails.put("wrongOrder", countEntry.getKey());
+                orderDetails.put("wrongOrderCount", countEntry.getValue().toString());
+            }
+        }
+
+        return orderDetails;
+    }
+
+    /**
+     * Checks if a result map already contains a specific stop point with the given details.
+     *
+     * @param result           The list of result maps.
+     * @param stopPointId      The stop point ID to check for.
+     * @param orderDetails     The order details to compare.
+     * @return                 True if the result already contains the stop point with these details, false otherwise.
+     */
+    private boolean resultContainsDuplicate(
+            List<Map<String, Map<String, String>>> result,
+            String stopPointId,
+            Map<String, String> orderDetails) {
+
+        Map<String, Map<String, String>> resultMap = new HashMap<>();
+        resultMap.put(stopPointId, orderDetails);
+
+        return result.stream().anyMatch(map -> map.equals(resultMap));
+    }
+
+    /**
+     * Checks if all values in a list are identical.
+     *
+     * @param values  The list of values to check.
+     * @return        True if all values are identical, false otherwise.
+     */
+    private boolean allValuesIdentical(List<String> values) {
+        return values.stream().distinct().count() <= 1;
+    }
+
 
     /**
      * Recover all routeSections of a journey pattern and set it to the journey pattern
@@ -232,7 +331,7 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
     }
 
     private List<Map<String, List<String>>> parseStopPointsInJourneyPattern(Context context, Referential referential, JourneyPattern_VersionStructure netexJourneyPattern,
-                                                            JourneyPattern chouetteJourneyPattern) {
+                                                                            JourneyPattern chouetteJourneyPattern) {
         if (netexJourneyPattern.getPointsInSequence() == null) {
             handleEmptyPointsInSequence(context, netexJourneyPattern);
             return new ArrayList<>();
@@ -256,20 +355,12 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
             stopPointInJourneyPattern.setScheduledStopPoint(scheduledStopPoint);
 
-            // Check if the position of stopPointInJourneyPattern is not null and if it does not match the order of pointInPattern
+            // Check and compare the order
             if (stopPointInJourneyPattern.getPosition() != null && !pointInPattern.getOrder().equals(stopPointInJourneyPattern.getPosition())) {
-                List<String> integerList = new ArrayList<>();
-//                integerList.add(chouetteJourneyPattern.getObjectId());
-                if (!wrongStopPointsOrder.containsValue(pointInPattern.getOrder().intValue())) {
-                    integerList.add(pointInPattern.getOrder().toString());
-                }
-                if (!wrongStopPointsOrder.containsValue(stopPointInJourneyPattern.getPosition())) {
-                    integerList.add(stopPointInJourneyPattern.getPosition().toString());
-                }
-                wrongStopPointsOrder.put(stopPointInJourneyPattern.getObjectId(), integerList);
-                wrongStopPointsOrderList.add(wrongStopPointsOrder);
-            }
-            else {
+                List<String> orders = wrongStopPointsOrder.computeIfAbsent(stopPointInJourneyPattern.getObjectId(), k -> new ArrayList<>());
+                orders.add(pointInPattern.getOrder().toString());
+                orders.add(stopPointInJourneyPattern.getPosition().toString());
+            } else {
                 stopPointInJourneyPattern.setPosition(pointInPattern.getOrder().intValue());
             }
 
@@ -298,8 +389,6 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
                 String destinationDisplayId = pointInPattern.getDestinationDisplayRef().getRef();
                 DestinationDisplay destinationDisplay = ObjectFactory.getDestinationDisplay(referential, destinationDisplayId);
 
-                // HACK TODO HACK
-                // Remove Line/PublicCode from DestinationDisplay if FrontText starts with it
                 String lineNumber = referential.getLines().values().iterator().next().getNumber();
                 if (destinationDisplay.getFrontText().startsWith(lineNumber + " ")) {
                     String modifiedDestinationDisplayId = destinationDisplayId + "-NOLINENUMBER";
@@ -316,26 +405,10 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
                     stopPointInJourneyPattern.setDestinationDisplay(destinationDisplay);
                 }
             }
+        }
 
-/*			if (pointInPattern.getBookingArrangements()!=null) {
-				BookingArrangementsStructure netexBookingArrangement = pointInPattern.getBookingArrangements();
-				BookingArrangement bookingArrangement = new BookingArrangement();
-				if (netexBookingArrangement.getBookingNote() != null) {
-					bookingArrangement.setBookingNote(netexBookingArrangement.getBookingNote().getValue());
-				}
-				bookingArrangement.setBookingAccess(NetexParserUtils.toBookingAccess(netexBookingArrangement.getBookingAccess()));
-				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexBookingArrangement.getBookWhen()));
-				bookingArrangement.setBuyWhen(netexBookingArrangement.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
-				bookingArrangement.setBookingMethods(netexBookingArrangement.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexBookingArrangement.getLatestBookingTime()));
-				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexBookingArrangement.getMinimumBookingPeriod()));
-
-				bookingArrangement.setBookingContact(contactStructureParser.parse(netexBookingArrangement.getBookingContact()));
-
-				stopPointInJourneyPattern.setBookingArrangement(bookingArrangement);
-			}*/
-
-            chouetteJourneyPattern.addStopPoint(stopPointInJourneyPattern);
+        if (!wrongStopPointsOrder.isEmpty()) {
+            wrongStopPointsOrderList.add(wrongStopPointsOrder);
         }
 
         List<StopPoint> patternStopPoints = chouetteJourneyPattern.getStopPoints();
@@ -344,14 +417,6 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             chouetteJourneyPattern.setDepartureStopPoint(patternStopPoints.get(0));
             chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
         }
-
-//        Route chouetteRoute = chouetteJourneyPattern.getRoute();
-//
-//        if (chouetteRoute != null){
-//            chouetteRoute.getStopPoints().forEach(stopPoint -> stopPoint.setPosition(chouetteRoute.getStopPoints().indexOf(stopPoint)));
-//            chouetteRoute.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
-//            chouetteRoute.setFilled(true);
-//        }
 
         return wrongStopPointsOrderList;
     }
