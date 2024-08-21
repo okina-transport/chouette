@@ -118,7 +118,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     private  Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint = new HashMap<>();
 
     @XmlElement(name = "wrongStopPointOrderInJourneyPattern")
-    private Map<String, Set<Map<String, List<Map<String, List<String>>>>>> wrongStopPointOrderInJourneyPattern = new HashMap<>();
+    private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern = new ArrayList<>();
 
     @XmlElement(name = "changedTrips")
     private Map<String, Pair<String, String>> changedTrips = new HashMap<>();
@@ -484,21 +484,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         return resultList;
     }
 
-    private List<Object> buildWrongStopPointOrderInJourneyPattern() {
-        List<Object> resultList = new ArrayList<>();
-
-        for (Map.Entry<String, Set<Map<String, List<Map<String, List<String>>>>>> entry : wrongStopPointOrderInJourneyPattern.entrySet()) {
-            for (Map<String, List<Map<String, List<String>>>> entryValues : entry.getValue()) {
-                for (Map.Entry<String, List<Map<String, List<String>>>> wrongJourneyPattern : entryValues.entrySet()) {
-                    Map<String,Object> wrongList = new HashMap<>();
-                    wrongList.put("fileName", entry.getKey());
-                    wrongList.put("journeyPatternsInError", wrongJourneyPattern.getKey());
-                    wrongList.put("stopPointsInError", wrongJourneyPattern.getValue());
-                    resultList.add(wrongList);
-                }
-            }
-        }
-        return resultList;
+    private List<Map<String, Map<String, String>>> buildWrongStopPointOrderInJourneyPattern() {
+        Set<Map<String, Map<String, String>>> uniqueSet = new HashSet<>(wrongStopPointOrderInJourneyPattern);
+        return new ArrayList<>(uniqueSet);
     }
 
     private List<Object> buildMissingRouteLinksList() {
