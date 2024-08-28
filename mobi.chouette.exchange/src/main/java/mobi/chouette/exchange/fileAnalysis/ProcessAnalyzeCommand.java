@@ -42,6 +42,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRouteLinksUsedSameFromAndToScheduledStopPoint;
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
     private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern;
+    private Map<String, Set<String>> wrongScheduleStopPointCoordinates;
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
     private Map<String, String> originalIdMap = new HashMap<>();
@@ -65,8 +66,6 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             return vas1.getDepartureTime().compareTo(vas2.getDepartureTime());
         }
     };
-
-
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -104,6 +103,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongRouteLinksUsedSameFromAndToScheduledStopPoint = analyzeReport.getWrongRouteLinksUsedSameFromAndToScheduledStopPoint();
         wrongRefStopAreaInScheduleStopPoint = analyzeReport.getWrongRefStopAreaInScheduleStopPoint();
         wrongStopPointOrderInJourneyPattern = analyzeReport.getWrongStopPointOrderInJourneyPattern();
+        wrongScheduleStopPointCoordinates = analyzeReport.getWrongScheduleStopPointCoordinates();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -117,6 +117,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
         containsStopAreaRefNullScheduleStopPoint(context);
         containsStopPointInJourneyPattern(context);
+        constainsStopAreaWrongCoordinatesScheduleStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
@@ -361,6 +362,15 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
                     wrongStopPointOrderInJourneyPattern.add(entry);
                 }
             }
+        }
+    }
+
+    private void constainsStopAreaWrongCoordinatesScheduleStopPoint(Context context) {
+        List<String> result = (List<String>) context.get(WRONG_SCHEDULE_STOP_POINT_COORDINATES);
+
+        if (result != null) {
+            Set<String> stopAreas = new HashSet<>(result);
+            wrongScheduleStopPointCoordinates.put(currentFileName, stopAreas);
         }
     }
 

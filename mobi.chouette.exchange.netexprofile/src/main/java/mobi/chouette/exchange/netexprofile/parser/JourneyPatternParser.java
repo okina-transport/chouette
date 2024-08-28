@@ -21,6 +21,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,14 +76,14 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
                 chouetteJourneyPattern.setDestinationDisplay(destinationDisplay);
             }
 
-            Map<String, List<Map<String, List<String>>>> toAddList = new HashMap<>();
-            List<Map<String, List<String>>> wrongOrders = parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern);
-
+            List<Map<String, List<String>>> wrongOrders = parseStopPointsToFindAndCorrectStopPointOrder(context, referential, netexJourneyPattern);
             if (!wrongOrders.isEmpty()) {
-                toAddList.put(chouetteJourneyPattern.getObjectId(), wrongOrders);
-                wrongStopPointsOrderList.add(toAddList);
+                Map<String, List<Map<String, List<String>>>> finalWrongOrdersMap = new HashMap<>();
+                finalWrongOrdersMap.put(chouetteJourneyPattern.getObjectId(), wrongOrders);
+                wrongStopPointsOrderList.add(finalWrongOrdersMap);
             }
 
+            parseStopPointsInJourneyPattern(context, referential, netexJourneyPattern, chouetteJourneyPattern);
             parseServiceLinksInJourneyPattern(referential, netexJourneyPattern, chouetteJourneyPattern);
             chouetteJourneyPattern.setFilled(true);
             initRouteSections(referential, chouetteJourneyPattern);
@@ -330,12 +331,20 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 
     }
 
-    private List<Map<String, List<String>>> parseStopPointsInJourneyPattern(Context context, Referential referential, JourneyPattern_VersionStructure netexJourneyPattern,
-                                                                            JourneyPattern chouetteJourneyPattern) {
-        if (netexJourneyPattern.getPointsInSequence() == null) {
-            handleEmptyPointsInSequence(context, netexJourneyPattern);
-            return new ArrayList<>();
-        }
+    /**
+     * Finds stop points with incorrect order in the journey pattern and updates their positions if needed.
+     *
+     * This method iterates over the stop points in the provided journey pattern and checks if their order matches
+     * their position. If an incorrect order is found, it adds the discrepancies to a list.
+     *
+     * @param context The context containing necessary configurations and objects for parsing.
+     * @param referential The referential object containing the stop points and other related data.
+     * @param netexJourneyPattern The journey pattern structure containing the stop points sequence.
+     * @return A list of maps containing stop points with incorrect orders and their expected positions.
+     */
+    private List<Map<String, List<String>>> parseStopPointsToFindAndCorrectStopPointOrder(Context context,
+                                                                                          Referential referential,
+                                                                                          JourneyPattern_VersionStructure netexJourneyPattern) {
 
         List<PointInLinkSequence_VersionedChildStructure> pointsInLinkSequence = netexJourneyPattern.getPointsInSequence()
                 .getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern();
@@ -349,11 +358,6 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
 
             String stopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "StopPoint", pointInPattern.getId());
             StopPoint stopPointInJourneyPattern = ObjectFactory.getStopPoint(referential, stopPointId);
-            ScheduledStopPointRefStructure scheduledStopPointRef = pointInPattern.getScheduledStopPointRef().getValue();
-            String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "ScheduledStopPoint", scheduledStopPointRef.getRef());
-
-            ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
-            stopPointInJourneyPattern.setScheduledStopPoint(scheduledStopPoint);
 
             // Check and compare the order
             if (stopPointInJourneyPattern.getPosition() != null && !pointInPattern.getOrder().equals(stopPointInJourneyPattern.getPosition())) {
@@ -363,6 +367,40 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             } else {
                 stopPointInJourneyPattern.setPosition(pointInPattern.getOrder().intValue());
             }
+        }
+
+        if (!wrongStopPointsOrder.isEmpty()) {
+            wrongStopPointsOrderList.add(wrongStopPointsOrder);
+        }
+
+        return wrongStopPointsOrderList;
+    }
+
+    private void parseStopPointsInJourneyPattern(Context context,
+                                                 Referential referential,
+                                                 JourneyPattern_VersionStructure netexJourneyPattern,
+                                                 JourneyPattern chouetteJourneyPattern) {
+        if (netexJourneyPattern.getPointsInSequence() == null) {
+            handleEmptyPointsInSequence(context, netexJourneyPattern);
+            return;
+        }
+
+        List<PointInLinkSequence_VersionedChildStructure> pointsInLinkSequence = netexJourneyPattern.getPointsInSequence()
+                .getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern();
+
+        for (int i = 0; i < pointsInLinkSequence.size(); i++) {
+            PointInLinkSequence_VersionedChildStructure pointInSequence = pointsInLinkSequence.get(i);
+            StopPointInJourneyPattern pointInPattern = (StopPointInJourneyPattern) pointInSequence;
+
+            String stopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "StopPoint", pointInPattern.getId());
+            StopPoint stopPointInJourneyPattern = ObjectFactory.getStopPoint(referential, stopPointId);
+            ScheduledStopPointRefStructure scheduledStopPointRef = pointInPattern.getScheduledStopPointRef().getValue();
+            String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context, "ScheduledStopPoint", scheduledStopPointRef.getRef());
+
+            ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
+            stopPointInJourneyPattern.setScheduledStopPoint(scheduledStopPoint);
+
+            checkAndRecordInvalidStopPointCoordinates(context, scheduledStopPoint, stopPointId);
 
             stopPointInJourneyPattern.setObjectVersion(NetexParserUtils.getVersion(pointInPattern.getVersion()));
 
@@ -407,19 +445,44 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
             }
         }
 
-        if (!wrongStopPointsOrder.isEmpty()) {
-            wrongStopPointsOrderList.add(wrongStopPointsOrder);
-        }
-
         List<StopPoint> patternStopPoints = chouetteJourneyPattern.getStopPoints();
         if (CollectionUtils.isNotEmpty(patternStopPoints)) {
             chouetteJourneyPattern.getStopPoints().sort(Comparator.comparingInt(StopPoint::getPosition));
             chouetteJourneyPattern.setDepartureStopPoint(patternStopPoints.get(0));
             chouetteJourneyPattern.setArrivalStopPoint(patternStopPoints.get(patternStopPoints.size() - 1));
         }
-
-        return wrongStopPointsOrderList;
     }
+
+    /**
+     * Checks if the given scheduled stop point has invalid coordinates (longitude and latitude set to zero).
+     * If the coordinates are invalid, the stop point ID is recorded in the context under the key for
+     * wrong schedule stop point coordinates.
+     *
+     * @param context The context containing necessary configurations and objects for parsing.
+     * @param scheduledStopPoint The scheduled stop point to be checked for invalid coordinates.
+     * @param stopPointId The ID of the stop point to be recorded if the coordinates are invalid.
+     */
+    private void checkAndRecordInvalidStopPointCoordinates(Context context,
+                                                           ScheduledStopPoint scheduledStopPoint,
+                                                           String stopPointId) {
+        if (scheduledStopPoint != null &&
+                scheduledStopPoint.getContainedInStopAreaRef() != null &&
+                scheduledStopPoint.getContainedInStopAreaRef().getObject() != null &&
+                scheduledStopPoint.getContainedInStopAreaRef().getObject().getLongitude().equals(BigDecimal.ZERO) &&
+                scheduledStopPoint.getContainedInStopAreaRef().getObject().getLatitude().equals(BigDecimal.ZERO)) {
+
+            List<String> wrongStopPointCoordinatesList = (List<String>) context.get(WRONG_SCHEDULE_STOP_POINT_COORDINATES);
+            if (wrongStopPointCoordinatesList != null) {
+                wrongStopPointCoordinatesList.add(stopPointId);
+                context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCoordinatesList);
+            } else {
+                List<String> wrongStopPointCreateList = new ArrayList<>();
+                wrongStopPointCreateList.add(stopPointId);
+                context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCreateList);
+            }
+        }
+    }
+
 
     private void handleEmptyPointsInSequence(Context context, JourneyPattern_VersionStructure netexJourneyPattern) {
 

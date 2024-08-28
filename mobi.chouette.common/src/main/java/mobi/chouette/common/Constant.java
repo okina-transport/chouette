@@ -108,7 +108,7 @@ public interface Constant {
 	String ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT = "routeLinksUsedSameFromAndToScheduledStopPoint";
 
 	String SCHEDULE_STOP_POINT_STOP_AREA_NULL = "scheduleStopPointInStopAreaRefNull";
-
+	String WRONG_SCHEDULE_STOP_POINT_COORDINATES = "wrongScheduleStopPointCoordinates";
 	String WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN = "wrongStopPointOrderInJourneyPattern";
 
 	String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";

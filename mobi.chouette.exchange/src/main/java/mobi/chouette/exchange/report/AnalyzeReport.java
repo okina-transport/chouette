@@ -120,6 +120,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "wrongStopPointOrderInJourneyPattern")
     private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern = new ArrayList<>();
 
+    @XmlElement(name = "wrongScheduleStopPointCoordinates")
+    private Map<String, Set<String>> wrongScheduleStopPointCoordinates = new HashMap<>();
+
     @XmlElement(name = "changedTrips")
     private Map<String, Pair<String, String>> changedTrips = new HashMap<>();
 
@@ -328,6 +331,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("wrongStopPointOrderInJourneyPattern", buildWrongStopPointOrderInJourneyPattern());
         }
 
+        if (!wrongScheduleStopPointCoordinates.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("wrongScheduleStopPointCoordinates", buildWrongScheduleStopPointCoordinates());
+        }
+
         if (!modifiedTimetables.isEmpty()) {
             analyzeReportMap.put("modifiedTimetables", buildModifiedTimeTables());
         }
@@ -489,11 +497,22 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         return new ArrayList<>(uniqueSet);
     }
 
+    private List<Object> buildWrongScheduleStopPointCoordinates() {
+        List<Object> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, Set<String>> entry : wrongScheduleStopPointCoordinates.entrySet()) {
+            Map<String,Object> mapResult = new HashMap<>();
+            mapResult.put("stopPoints", entry.getValue());
+            mapResult.put("fileName", entry.getKey());
+            resultList.add(mapResult);
+        }
+        return resultList;
+    }
+
     private List<Object> buildMissingRouteLinksList() {
         List<Object> resultList = new ArrayList<>();
 
         for (Map.Entry<String, Set<String>> missingRouteLinkEntry : missingRouteLinks.entrySet()) {
-
             Map<String,Object> missingLinkMap = new HashMap<>();
             missingLinkMap.put("fileName", missingRouteLinkEntry.getKey());
             missingLinkMap.put("routeLinks", missingRouteLinkEntry.getValue());
