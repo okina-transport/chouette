@@ -36,6 +36,7 @@ import java.util.Arrays;
 		"routeSortOrder",
 		"useTargetNetwork",
 		"targetNetwork",
+		"renameRoutesAfterMerge",
 })
 @Getter
 @Setter
@@ -103,6 +104,9 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
 	@XmlElement(name = "target_network")
 	private String targetNetwork = "";
+
+	@XmlElement(name = "rename_routes_after_merge", defaultValue = "false")
+	private boolean renameRoutesAfterMerge = false;
 
 	public boolean isValid(Logger log, String[] allowedTypes)
 	{

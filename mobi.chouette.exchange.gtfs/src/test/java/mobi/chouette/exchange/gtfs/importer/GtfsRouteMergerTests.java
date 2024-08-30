@@ -12,17 +12,8 @@ import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.DummyChecker;
 import mobi.chouette.exchange.gtfs.GtfsTestsUtils;
 import mobi.chouette.exchange.gtfs.JobDataTest;
-import mobi.chouette.exchange.importer.RouteMergerCommand;
 import mobi.chouette.exchange.report.ReportConstant;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
@@ -92,7 +83,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
         List<JavaArchive> modules = new ArrayList<>();
         for (File file : files) {
             if (file.getName().startsWith("mobi.chouette.exchange")) {
-                String name = file.getName().split("\\-")[0] + ".jar";
+                String name = file.getName().split("\\-")[0]+".jar";
 
                 JavaArchive archive = ShrinkWrap
                         .create(ZipImporter.class, name)
@@ -111,7 +102,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
         }
         for (File file : filesDao) {
             if (file.getName().startsWith("mobi.chouette.dao")) {
-                String name = file.getName().split("\\-")[0] + ".jar";
+                String name = file.getName().split("\\-")[0]+".jar";
 
                 JavaArchive archive = ShrinkWrap
                         .create(ZipImporter.class, name)
@@ -125,6 +116,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
                     jars.add(file);
             }
         }
+
 
 
         final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war").addAsWebInfResource("postgres-ds.xml")
@@ -218,23 +210,46 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
         Assert.assertEquals(routes.size(), 1, "Routes should be merged");
     }
 
+    @Test
+    public void test_whenRenameAfterMergeIsTrue_thenRenamesRouteCorrectly() throws Exception {
+        ContextHolder.setContext("chouette_gui"); // set tenant s
+        init();
+
+        cleanAllRoutes();
+
+        createTripFromPattern("A-B-C-D", 9);
+        // createTripFromPattern("A-B-E", 10);
+        createTripFromPattern("B-C-D", 11);
+        createTripFromPattern("B-C-E", 12);
+        launchMerge(true);
+
+        List<Route> routes = routeDAO.findAll();
+        Assert.assertEquals(routes.size(), 1, "Routes should be merged");
+        Assert.assertEquals(routes.get(0).getName(), "A / B -> D / E",  "route name should contain all start stops " +
+                "and last stops");
+    }
 
     private void launchMerge() throws Exception {
-        Command mergeCommand = (Command) CommandFactory.create(initialContext, RouteMergerCommand.class.getName());
+        launchMerge(false);
+    }
+
+    private void launchMerge(boolean renameRoutesAfterMerge) throws Exception {
+        Command mergeCommand = CommandFactory.create(initialContext, RouteMergerCommand.class.getName());
 
         Context context = initValidatorContext();
-        mergeCommand.execute(context);
 
+        GtfsImportParameters params = new GtfsImportParameters();
+        params.setRenameRoutesAfterMerge(renameRoutesAfterMerge);
+
+        context.put(CONFIGURATION, params);
+
+        mergeCommand.execute(context);
     }
 
     protected Context initValidatorContext() {
         init();
         ContextHolder.setContext("chouette_gui"); // set tenant schema
-
-        Context context = new Context();
-
-        return context;
-
+        return new Context();
     }
 
     private void cleanAllRoutes() {
@@ -274,7 +289,7 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
 
             ScheduledStopPoint scheduledStopPoint = new ScheduledStopPoint();
             scheduledStopPoint.setObjectId(NETEX_VALID_PREFIX + ":Scheduled:" + tripPattern + "_" + currentPosition);
-            scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(stopArea));
+            scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(stopArea));
 
             stopPoint.setScheduledStopPoint(scheduledStopPoint);
 
