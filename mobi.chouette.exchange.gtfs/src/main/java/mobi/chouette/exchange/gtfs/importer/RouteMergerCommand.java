@@ -90,11 +90,10 @@ public class RouteMergerCommand implements Command {
      *      Rename routes with all journey pattern departure and arrival stop names (eg: "A / B -> C / D")
      */
     private void launchMergeForLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum, boolean renameRoutesAfterMerge) {
-        int nbMerge = -1;
-        do {
-            // executed at least once
+        int nbMerge = 0;
+        while (mergeLineAndDirection(lineId, ptDirectionEnum)) {
             nbMerge++;
-        } while (mergeLineAndDirection(lineId, ptDirectionEnum));
+        }
         if (nbMerge == 0 || !renameRoutesAfterMerge) {
             return;
         }
