@@ -7,6 +7,8 @@ public enum OSRMProfile {
     DRIVING,
     TRAM,
     BUS,
-    RAIL
+    RAIL,
+    AIR,
+    FERRY
 }
 

@@ -9,10 +9,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.CategoriesForLinesDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.importer.updater.LineOptimiser;
 import mobi.chouette.exchange.importer.updater.LineUpdater;
 import mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater;
@@ -24,17 +21,9 @@ import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
+import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -43,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -171,6 +161,14 @@ public class LineRegisterCommand implements Command {
 				if (newValue.getObjectId().equals(oldValue.getObjectId()) && oldValue.getNetwork() != null && oldValue.getNetwork().getSupprime()) {
 					oldValue.setSupprime(false);
 					oldValue.getNetwork().setSupprime(false);
+				}
+
+				if (newValue.getAccessibilityAssessment() != null && !Objects.equals(oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment())) {
+					oldValue.setAccessibilityAssessment(newValue.getAccessibilityAssessment());
+
+					if (newValue.getAccessibilityAssessment().getAccessibilityLimitation() != null && !Objects.equals(oldValue.getAccessibilityAssessment().getAccessibilityLimitation(), newValue.getAccessibilityAssessment().getAccessibilityLimitation())) {
+						oldValue.getAccessibilityAssessment().setAccessibilityLimitation(newValue.getAccessibilityAssessment().getAccessibilityLimitation());
+					}
 				}
 
 				searchEmptyOriginalStopIds(referential,oldValue);

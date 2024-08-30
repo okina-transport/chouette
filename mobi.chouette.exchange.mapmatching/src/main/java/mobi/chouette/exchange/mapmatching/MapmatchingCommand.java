@@ -272,26 +272,35 @@ public class MapmatchingCommand implements Command, Constant {
             int indexStart = listStopPoints.indexOf(departureStopPoint);
             int indexNext = listStopPoints.indexOf(arrivalStopPoint);
 
-            // Inscription en base des interStop
-            ProfileOSRMInterStopJourneyPattern profileInterStopJP = getInterStopInformations(
-                    osrmResponseMultiLines,
-                    // On refait la requête OSRM entre les deux arrêts choisis pour déterminer le geoJson correspondant
-                    stopPointDeparture,
-                    stopPointArrival,
-                    indexStart,
-                    indexNext,
-                    profile.getProfileOSRMInterStopJourneyPatternList()
-            );
+            RouteSection routeSection = new RouteSection();
+            if (OSRMProfile.AIR.equals(osrmProfile) || OSRMProfile.FERRY.equals(osrmProfile)){
+                try {
+                    routeSection.setDistance(BigDecimal.valueOf(osrmResponseSection.getJSONArray(ROUTES).getJSONObject(0).getDouble("distance")));
+                } catch (JSONException e) {
+                    log.error("Error while setting distance for air section",e);
+                }
 
-            profile.addProfileInterStop(profileInterStopJP);
+            }else{
+                // Inscription en base des interStop
+                ProfileOSRMInterStopJourneyPattern profileInterStopJP = getInterStopInformations(
+                        osrmResponseMultiLines,
+                        // On refait la requête OSRM entre les deux arrêts choisis pour déterminer le geoJson correspondant
+                        stopPointDeparture,
+                        stopPointArrival,
+                        indexStart,
+                        indexNext,
+                        profile.getProfileOSRMInterStopJourneyPatternList()
+                );
+                profile.addProfileInterStop(profileInterStopJP);
+                routeSection.setDistance(BigDecimal.valueOf(profileInterStopJP.getDistance()));
+            }
+
             profileOSRMJourneyPatternDAO.update(profile);
 
-            RouteSection routeSection = new RouteSection();
             routeSection.setDeparture(stopPointDeparture.getScheduledStopPoint().getContainedInStopAreaRef().getObject());
             routeSection.setArrival(stopPointArrival.getScheduledStopPoint().getContainedInStopAreaRef().getObject());
             routeSection.setInputGeometry(osrmSectionLine);
             routeSection.setProcessedGeometry(osrmSectionLine);
-            routeSection.setDistance(BigDecimal.valueOf(profileInterStopJP.getDistance()));
             // "Fais moi confiance Hibernate, cet objet avec cet id existe". Ainsi Hibernate chargea l'objet de manière ultralight, juste avec son id
             ScheduledStopPoint scheduledStopPoint1 = routeSectionDAO.getEm().getReference(ScheduledStopPoint.class, stopPointDeparture.getScheduledStopPoint().getId());
             ScheduledStopPoint scheduledStopPoint2 = routeSectionDAO.getEm().getReference(ScheduledStopPoint.class, stopPointArrival.getScheduledStopPoint().getId());
@@ -382,7 +391,14 @@ public class MapmatchingCommand implements Command, Constant {
             case Rail:
                 return OSRMProfile.RAIL;
             case Bus:
+            case Coach:
                 return OSRMProfile.BUS;
+            case Air:
+            case Funicular:
+                return OSRMProfile.AIR;
+            case Ferry:
+            case Water:
+                return OSRMProfile.FERRY;
             default:
                 return OSRMProfile.DRIVING;
         }

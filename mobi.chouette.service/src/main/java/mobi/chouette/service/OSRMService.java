@@ -118,13 +118,17 @@ public class OSRMService {
     }
 
     public JSONObject getPointsRoute(OSRMProfile profile, List<LatLng> points) throws Exception {
-        Map<String, String> params = new HashMap<>();
-        params.put("alternatives", "false");
-        params.put("steps", "true");
-        params.put("annotations", "true");
-        params.put("geometries", "geojson");
-        params.put("overview", "full");
-        return getRoute(profile, points, params);
+        if (OSRMProfile.AIR.equals(profile) || OSRMProfile.FERRY.equals(profile)){
+            return FakeOSRMService.getStraightRoute( points);
+        }else {
+            Map<String, String> params = new HashMap<>();
+            params.put("alternatives", "false");
+            params.put("steps", "true");
+            params.put("annotations", "true");
+            params.put("geometries", "geojson");
+            params.put("overview", "full");
+            return getRoute(profile, points, params);
+        }
     }
 
     public JSONObject getTrip(OSRMProfile profile, List<LatLng> points) throws Exception {
