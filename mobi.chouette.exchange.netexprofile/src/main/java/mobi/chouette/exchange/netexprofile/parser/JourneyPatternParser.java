@@ -12,6 +12,7 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.ScheduledStopPoint;
+import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
@@ -465,20 +466,26 @@ public class JourneyPatternParser extends NetexParser implements Parser, Constan
     private void checkAndRecordInvalidStopPointCoordinates(Context context,
                                                            ScheduledStopPoint scheduledStopPoint,
                                                            String stopPointId) {
-        if (scheduledStopPoint != null &&
-                scheduledStopPoint.getContainedInStopAreaRef() != null &&
-                scheduledStopPoint.getContainedInStopAreaRef().getObject() != null &&
-                scheduledStopPoint.getContainedInStopAreaRef().getObject().getLongitude().equals(BigDecimal.ZERO) &&
-                scheduledStopPoint.getContainedInStopAreaRef().getObject().getLatitude().equals(BigDecimal.ZERO)) {
+        if (scheduledStopPoint != null) {
+            ObjectReference<StopArea> stopAreaObject = scheduledStopPoint.getContainedInStopAreaRef();
+            StopArea stopArea = stopAreaObject != null ? stopAreaObject.getObject() : null;
 
-            List<String> wrongStopPointCoordinatesList = (List<String>) context.get(WRONG_SCHEDULE_STOP_POINT_COORDINATES);
-            if (wrongStopPointCoordinatesList != null) {
-                wrongStopPointCoordinatesList.add(stopPointId);
-                context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCoordinatesList);
-            } else {
-                List<String> wrongStopPointCreateList = new ArrayList<>();
-                wrongStopPointCreateList.add(stopPointId);
-                context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCreateList);
+            if (stopArea != null) {
+                BigDecimal longitude = stopArea.getLongitude();
+                BigDecimal latitude = stopArea.getLatitude();
+
+                if (BigDecimal.ZERO.equals(longitude) && BigDecimal.ZERO.equals(latitude)) {
+
+                    List<String> wrongStopPointCoordinatesList = (List<String>) context.get(WRONG_SCHEDULE_STOP_POINT_COORDINATES);
+                    if (wrongStopPointCoordinatesList != null) {
+                        wrongStopPointCoordinatesList.add(stopPointId);
+                        context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCoordinatesList);
+                    } else {
+                        List<String> wrongStopPointCreateList = new ArrayList<>();
+                        wrongStopPointCreateList.add(stopPointId);
+                        context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCreateList);
+                    }
+                }
             }
         }
     }
