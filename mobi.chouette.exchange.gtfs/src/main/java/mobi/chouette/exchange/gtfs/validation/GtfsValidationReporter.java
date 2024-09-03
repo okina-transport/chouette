@@ -17,10 +17,10 @@ import mobi.chouette.model.*;
 import java.util.Set;
 
 @Log4j
+@Getter
 public class GtfsValidationReporter implements Constant {
 
-    @Getter
-    private Set<GtfsException> exceptions = new GtfsExceptionsHashSet<GtfsException>();
+    private Set<GtfsException> exceptions = new GtfsExceptionsHashSet<>();
 
     public GtfsValidationReporter(Context context) {
         ValidationReporter reporter = ValidationReporter.Factory.getInstance();
@@ -31,6 +31,7 @@ public class GtfsValidationReporter implements Constant {
 
         reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 4, "E", "W", "E", "W");
         reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 7, "E", "W", "W", "E", "E", "E", "E");
+        reporter.addItemToValidationReport(context, "2-GTFS-", "StopTime", 1, "E");
         reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W", "W", "W", "W");
 
         reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
@@ -45,7 +46,7 @@ public class GtfsValidationReporter implements Constant {
         ActionReporter reporter = ActionReporter.Factory.getInstance();
         ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
         String name = name(filenameInfo);
-        String checkPointName = checkPointName(name, GtfsException.ERROR.SYSTEM);
+        String checkPointName = checkPointName(GtfsException.ERROR.SYSTEM);
 
         if (filenameInfo != null && filenameInfo.indexOf('.') > 0) {
             reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.FILE_NOT_FOUND, "A problem occured while reading the file \"" + filenameInfo + "\" (" + checkPointName + ") : "
@@ -70,63 +71,60 @@ public class GtfsValidationReporter implements Constant {
 
     private DataLocation buildDataLocation(Context context, DataLocation loc, String gtfsRouteId) {
         String fileName = loc.getFilename();
-        if (fileName.equals(RouteById.FILENAME)) {
-            if (gtfsRouteId != null) {
-                GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-                String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
-                        gtfsRouteId);
-                loc.getPath().add(loc.new Path(Line.class.getSimpleName(), lineId));
-            }
-        } else if (fileName.equals(AgencyById.FILENAME)) {
-            loc.getPath().add(loc.new Path(Company.class.getSimpleName(), ""));
-        } else if (fileName.equals(StopById.FILENAME)) {
-            loc.getPath().add(loc.new Path(StopArea.class.getSimpleName(), ""));
-
-        } else if (fileName.equals(TripById.FILENAME)) {
-            loc.getPath().add(loc.new Path(VehicleJourney.class.getSimpleName(), ""));
-            if (gtfsRouteId != null) {
-                GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-                String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
-                        gtfsRouteId);
-                loc.getPath().add(loc.new Path(Line.class.getSimpleName(), lineId));
-            }
-
-        } else if (fileName.equals(CalendarByService.FILENAME) || fileName.equals(CalendarDateByService.FILENAME)) {
-            loc.getPath().add(loc.new Path(Timetable.class.getSimpleName(), ""));
-
-        } else if (fileName.equals(ShapeById.FILENAME)) {
-            if (gtfsRouteId != null) {
-                GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-                String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
-                        gtfsRouteId);
-                loc.getPath().add(loc.new Path(Line.class.getSimpleName(), lineId));
-            }
-
-        } else if (fileName.equals(TransferByFromStop.FILENAME)) {
-            loc.getPath().add(loc.new Path(ConnectionLink.class.getSimpleName(), ""));
-
+        switch (fileName) {
+            case RouteById.FILENAME:
+            case ShapeById.FILENAME:
+                if (gtfsRouteId != null) {
+                    GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
+                    String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
+                            gtfsRouteId);
+                    loc.getPath().add(loc.new Path(Line.class.getSimpleName(), lineId));
+                }
+                break;
+            case AgencyById.FILENAME:
+                loc.getPath().add(loc.new Path(Company.class.getSimpleName(), ""));
+                break;
+            case StopById.FILENAME:
+                loc.getPath().add(loc.new Path(StopArea.class.getSimpleName(), ""));
+                break;
+            case TripById.FILENAME:
+                loc.getPath().add(loc.new Path(VehicleJourney.class.getSimpleName(), ""));
+                if (gtfsRouteId != null) {
+                    GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
+                    String lineId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Line.LINE_KEY,
+                            gtfsRouteId);
+                    loc.getPath().add(loc.new Path(Line.class.getSimpleName(), lineId));
+                }
+                break;
+            case CalendarByService.FILENAME:
+            case CalendarDateByService.FILENAME:
+                loc.getPath().add(loc.new Path(Timetable.class.getSimpleName(), ""));
+                break;
+            case TransferByFromStop.FILENAME:
+                loc.getPath().add(loc.new Path(ConnectionLink.class.getSimpleName(), ""));
+                break;
         }
         return loc;
     }
 
-    public void reportError(Context context, String routeId, GtfsException ex, String filenameInfo) throws Exception {
+    public void reportError(Context context, String routeId, GtfsException ex, String filenameInfo) {
         if (!exceptions.add(ex))
             return;
         ActionReporter reporter = ActionReporter.Factory.getInstance();
         ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
         String name = name(filenameInfo);
-        String filenameInfo2 = "";
-        String checkPointName = "";
-        String fieldName = "";
-        String fieldName2 = "";
-        String value = "";
+        String filenameInfo2;
+        String checkPointName;
+        String fieldName;
+        String fieldName2;
+        String value;
 
         // log.error(ex);
 
         switch (ex.getError()) {
             case INVALID_HEADER_FILE_FORMAT:
                 // 1-GTFS-CSV-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.INVALID_HEADER_FILE_FORMAT);
+                checkPointName = checkPointName(GtfsException.ERROR.INVALID_HEADER_FILE_FORMAT);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The first line in file \"" + filenameInfo + "\" must comply with CSV (rule " + checkPointName
                                 + ")");
@@ -137,7 +135,7 @@ public class GtfsValidationReporter implements Constant {
 
             case EMPTY_HEADER_FIELD:
                 // 1-GTFS-CSV-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.EMPTY_HEADER_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.EMPTY_HEADER_FIELD);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "Header fields in file \"" + filenameInfo + "\" could not be empty (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, 1, ex.getColumn()), filenameInfo);
@@ -147,7 +145,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_HEADER_FIELD:
                 // 1-GTFS-CSV-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_HEADER_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_HEADER_FIELD);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The header fields in file \"" + filenameInfo + "\" could not be duplicated (rule "
                                 + checkPointName + ")");
@@ -158,7 +156,7 @@ public class GtfsValidationReporter implements Constant {
 
             case INVALID_FILE_FORMAT:
                 // 1-GTFS-CSV-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.INVALID_FILE_FORMAT);
+                checkPointName = checkPointName(GtfsException.ERROR.INVALID_FILE_FORMAT);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "Line number " + ex.getId() + " in file \"" + filenameInfo + "\" must comply with CSV (rule "
                                 + checkPointName + ")");
@@ -170,7 +168,7 @@ public class GtfsValidationReporter implements Constant {
 
             case HTML_TAG_IN_HEADER_FIELD:
                 // 1-GTFS-CSV-6
-                checkPointName = checkPointName(name, GtfsException.ERROR.HTML_TAG_IN_HEADER_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.HTML_TAG_IN_HEADER_FIELD);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "HTML tags in field names are not allowed (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
@@ -182,14 +180,14 @@ public class GtfsValidationReporter implements Constant {
             case EXTRA_SPACE_IN_HEADER_FIELD: // Don't throw an exception at this
                 // level
                 // 1-GTFS-CSV-7
-                checkPointName = checkPointName(name, GtfsException.ERROR.EXTRA_SPACE_IN_HEADER_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.EXTRA_SPACE_IN_HEADER_FIELD);
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
                         ex.getValue(), ex.getField());
                 break;
 
             case MISSING_FILE:
                 // 1-GTFS-Common-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_FILE);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_FILE);
                 reporter.addFileReport(context, filenameInfo, IO_TYPE.INPUT);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.FILE_NOT_FOUND,
                         "The file \"" + filenameInfo + "\" must be provided (rule " + checkPointName + ")");
@@ -200,7 +198,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_FILES:
                 // 1-GTFS-Common-1-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_FILES);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_FILES);
                 filenameInfo = "calendar.txt";
                 filenameInfo2 = "calendar_dates.txt";
                 reporter.addFileReport(context, filenameInfo, IO_TYPE.INPUT);
@@ -214,7 +212,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_OPTIONAL_FILE:
                 // 1-GTFS-Common-1-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_OPTIONAL_FILE);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_OPTIONAL_FILE);
                 reporter.addFileReport(context, filenameInfo, IO_TYPE.INPUT);
                 reporter.setFileState(context, filenameInfo, IO_TYPE.INPUT, FILE_STATE.IGNORED);
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo), filenameInfo);
@@ -222,7 +220,7 @@ public class GtfsValidationReporter implements Constant {
 
             case UNUSED_FILE:
                 // 1-GTFS-Common-1-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.UNUSED_FILE);
+                checkPointName = checkPointName(GtfsException.ERROR.UNUSED_FILE);
                 reporter.addFileReport(context, filenameInfo, IO_TYPE.INPUT);
                 reporter.setFileState(context, filenameInfo, IO_TYPE.INPUT, FILE_STATE.IGNORED);
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo), filenameInfo);
@@ -231,7 +229,7 @@ public class GtfsValidationReporter implements Constant {
             case FILE_WITH_NO_ENTRY: // 1-GTFS-Agency-11, 1-GTFS-Stop-12,
                 // 1-GTFS-Route-11 error
                 // 1-GTFS-Common-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.FILE_WITH_NO_ENTRY);
+                checkPointName = checkPointName(GtfsException.ERROR.FILE_WITH_NO_ENTRY);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The file \"" + filenameInfo + "\" must contain at least one entry (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), 0), "");
@@ -242,7 +240,7 @@ public class GtfsValidationReporter implements Constant {
             case FILES_WITH_NO_ENTRY: // 1-GTFS-Agency-11, 1-GTFS-Stop-12,
                 // 1-GTFS-Route-11 error
                 // 1-GTFS-Common-2-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.FILES_WITH_NO_ENTRY);
+                checkPointName = checkPointName(GtfsException.ERROR.FILES_WITH_NO_ENTRY);
                 filenameInfo = "calendar.txt";
                 filenameInfo2 = "calendar_dates.txt";
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
@@ -257,7 +255,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_FIELD:
                 // 1-GTFS-Common-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_FIELD);
                 fieldName = ex.getField();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The field \"" + fieldName + "\" must be unique (rule " + checkPointName + ")");
@@ -275,7 +273,7 @@ public class GtfsValidationReporter implements Constant {
                 // 1-GTFS-CalendarDate-2,
                 // 1-GTFS-Transfer-1 error
                 // 1-GTFS-Common-3-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_REQUIRED_FIELDS);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_REQUIRED_FIELDS);
                 fieldName = ex.getField();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The column \"" + fieldName + "\" of file \"" + filenameInfo + "\" must be provided (rule "
@@ -288,7 +286,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_REQUIRED_FIELDS2:
                 // 1-GTFS-Common-3-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_REQUIRED_FIELDS2);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_REQUIRED_FIELDS2);
                 fieldName = ex.getField();
                 fieldName2 = fieldName.replaceFirst("long", "short");
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
@@ -300,7 +298,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_OPTIONAL_FIELD:
                 // 1-GTFS-Common-3-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_OPTIONAL_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_OPTIONAL_FIELD);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "Optional field is not present (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
@@ -314,14 +312,14 @@ public class GtfsValidationReporter implements Constant {
                 // 1-GTFS-CalendarDate-7, 1-GTFS-Transfer-6
                 // info
                 // 1-GTFS-Common-3-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.EXTRA_HEADER_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.EXTRA_HEADER_FIELD);
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
                         ex.getField());
                 break;
 
             case MISSING_REQUIRED_VALUES:
                 // 1-GTFS-Common-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_REQUIRED_VALUES);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_REQUIRED_VALUES);
                 fieldName = ex.getField();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The value \"" + fieldName + "\" must be provided (rule " + checkPointName + ")");
@@ -331,7 +329,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_FIELD:
                 // 1-GTFS-Common-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_FIELD);
                 fieldName = ex.getField();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "The file \"" + filenameInfo + "\" must provide a non empty \"" + name + "_id\" for each " + name
@@ -344,7 +342,7 @@ public class GtfsValidationReporter implements Constant {
                 // name);
             case MISSING_REQUIRED_VALUES2:
                 // 1-GTFS-Common-4-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_REQUIRED_VALUES2);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_REQUIRED_VALUES2);
                 fieldName = ex.getField();
                 fieldName2 = fieldName.replaceFirst("long", "short");
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
@@ -356,7 +354,7 @@ public class GtfsValidationReporter implements Constant {
 
             case ALL_DAYS_ARE_INVALID:
                 // 1-GTFS-Calendar-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.ALL_DAYS_ARE_INVALID);
+                checkPointName = checkPointName(GtfsException.ERROR.ALL_DAYS_ARE_INVALID);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "At least one day must be valid (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
@@ -365,7 +363,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_DEFAULT_KEY_FIELD:
                 // 1-GTFS-Common-4-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_DEFAULT_KEY_FIELD);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_DEFAULT_KEY_FIELD);
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "At most only one Agency can have default value \"agency_id\" (rule " + checkPointName + ")");
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
@@ -374,7 +372,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DEFAULT_VALUE:
                 // 1-GTFS-Common-4-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.DEFAULT_VALUE);
+                checkPointName = checkPointName(GtfsException.ERROR.DEFAULT_VALUE);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         fieldName);
@@ -382,7 +380,7 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_ARRIVAL_TIME:
                 // 1-GTFS-Common-4-6
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_ARRIVAL_TIME);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_ARRIVAL_TIME);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, "1", buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         fieldName);
@@ -390,14 +388,14 @@ public class GtfsValidationReporter implements Constant {
 
             case MISSING_DEPARTURE_TIME:
                 // 1-GTFS-Common-4-6
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_DEPARTURE_TIME);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_DEPARTURE_TIME);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, "2", buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         fieldName);
                 break;
             case MISSING_TRANSFER_TIME:
                 // 1-GTFS-Common-4-6
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_TRANSFER_TIME);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_TRANSFER_TIME);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, "3", buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         fieldName);
@@ -405,7 +403,7 @@ public class GtfsValidationReporter implements Constant {
 
             case START_DATE_AFTER_END_DATE:
                 // 1-GTFS-Calendar-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.START_DATE_AFTER_END_DATE);
+                checkPointName = checkPointName(GtfsException.ERROR.START_DATE_AFTER_END_DATE);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         fieldName);
@@ -413,7 +411,7 @@ public class GtfsValidationReporter implements Constant {
 
             case INVALID_FORMAT:
                 // 1-GTFS-Common-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.INVALID_FORMAT);
+                checkPointName = checkPointName(GtfsException.ERROR.INVALID_FORMAT);
                 fieldName = ex.getField();
                 value = ex.getValue();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
@@ -424,7 +422,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_STOP_SEQUENCE:
                 // 2-GTFS-Common-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getField()), routeId), ex.getValue(),
                         ex.getField());
@@ -434,7 +432,7 @@ public class GtfsValidationReporter implements Constant {
 
             case UNREFERENCED_ID:
                 // 2-GTFS-Common-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.UNREFERENCED_ID);
+                checkPointName = checkPointName(GtfsException.ERROR.UNREFERENCED_ID);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, fieldName, ex.getId(),
                         ex.getColumn(), ex.getCode()), routeId), ex.getValue(), ex.getField());
@@ -442,7 +440,7 @@ public class GtfsValidationReporter implements Constant {
 
             case UNUSED_ID:
                 // 2-GTFS-Common-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.UNUSED_ID);
+                checkPointName = checkPointName(GtfsException.ERROR.UNUSED_ID);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()), routeId),
                         ex.getValue(), fieldName);
@@ -450,7 +448,7 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_DOUBLE_KEY:
                 // 2-GTFS-Common-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_DOUBLE_KEY);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_DOUBLE_KEY);
                 fieldName = ex.getField();
                 reporter.addFileErrorInReport(context, filenameInfo, FILE_ERROR_CODE.INVALID_FORMAT,
                         "Duplicate (" + fieldName + ") values (rule " + checkPointName + ")");
@@ -462,28 +460,28 @@ public class GtfsValidationReporter implements Constant {
 
             case SHARED_VALUE:
                 // 2-GTFS-Common-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.SHARED_VALUE);
+                checkPointName = checkPointName(GtfsException.ERROR.SHARED_VALUE);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue(), ex.getField());
                 break;
 
             case BAD_REFERENCED_ID:
                 // 2-GTFS-Stop-1
-                checkPointName = checkPointName(name, GtfsException.ERROR.BAD_REFERENCED_ID);
+                checkPointName = checkPointName(GtfsException.ERROR.BAD_REFERENCED_ID);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 break;
 
             case NO_LOCATION_TYPE:
                 // 2-GTFS-Stop-2
-                checkPointName = checkPointName(name, GtfsException.ERROR.NO_LOCATION_TYPE);
+                checkPointName = checkPointName(GtfsException.ERROR.NO_LOCATION_TYPE);
                 validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo,
                         filenameInfo, ex.getId(), ex.getColumn(), ex.getField()), routeId));
                 break;
 
             case BAD_VALUE:
                 // 2-GTFS-Stop-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.BAD_VALUE);
+                checkPointName = checkPointName(GtfsException.ERROR.BAD_VALUE);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
 //			throw ex;
@@ -491,21 +489,21 @@ public class GtfsValidationReporter implements Constant {
 
             case NO_PARENT_FOR_STATION:
                 // 2-GTFS-Stop-4
-                checkPointName = checkPointName(name, GtfsException.ERROR.NO_PARENT_FOR_STATION);
+                checkPointName = checkPointName(GtfsException.ERROR.NO_PARENT_FOR_STATION);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 break;
 
             case COORDINATES_STOP_0_0:
                 // 2-GTFS-Stop-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.COORDINATES_STOP_0_0);
+                checkPointName = checkPointName(GtfsException.ERROR.COORDINATES_STOP_0_0);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 throw ex;
 
             case PREFIX_REMOVAL_ERROR:
                 // 2-GTFS-Stop-6
-                checkPointName = checkPointName(name, GtfsException.ERROR.PREFIX_REMOVAL_ERROR);
+                checkPointName = checkPointName(GtfsException.ERROR.PREFIX_REMOVAL_ERROR);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue(), fieldName);
@@ -513,14 +511,14 @@ public class GtfsValidationReporter implements Constant {
 
             case DUPLICATE_ROUTE_NAMES:
                 // 2-GTFS-Route-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.DUPLICATE_ROUTE_NAMES);
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_ROUTE_NAMES);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 break;
 
             case CONTAINS_ROUTE_NAMES:
                 // 2-GTFS-Route-8
-                checkPointName = checkPointName(name, GtfsException.ERROR.CONTAINS_ROUTE_NAMES);
+                checkPointName = checkPointName(GtfsException.ERROR.CONTAINS_ROUTE_NAMES);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue(),
                         ex.getRefValue());
@@ -528,28 +526,28 @@ public class GtfsValidationReporter implements Constant {
 
             case BAD_COLOR:
                 // 2-GTFS-Route-9
-                checkPointName = checkPointName(name, GtfsException.ERROR.BAD_COLOR);
+                checkPointName = checkPointName(GtfsException.ERROR.BAD_COLOR);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), "");
                 break;
 
             case INVERSE_DUPLICATE_ROUTE_NAMES:
                 // 2-GTFS-Route-11
-                checkPointName = checkPointName(name, GtfsException.ERROR.INVERSE_DUPLICATE_ROUTE_NAMES);
+                checkPointName = checkPointName(GtfsException.ERROR.INVERSE_DUPLICATE_ROUTE_NAMES);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 break;
 
             case MISSING_ROUTE_SHORT_NAME:
                 // 1-GTFS-Route-3
-                checkPointName = checkPointName(name, GtfsException.ERROR.MISSING_ROUTE_SHORT_NAME);
+                checkPointName = checkPointName(GtfsException.ERROR.MISSING_ROUTE_SHORT_NAME);
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
                 break;
 
             case NOT_ENOUGH_ROUTE_POINTS:
                 // 2-GTFS-Route-5
-                checkPointName = checkPointName(name, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
+                checkPointName = checkPointName(GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
                 fieldName = ex.getField();
                 validationReporter.addCheckPointReportError(context, checkPointName,
                         buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue(), fieldName);
@@ -557,10 +555,19 @@ public class GtfsValidationReporter implements Constant {
 
             case TRANSPORT_MODE_MISMATCH:
                 //2-GTFS-Stop-7
-                checkPointName = checkPointName(name, GtfsException.ERROR.TRANSPORT_MODE_MISMATCH);
+                checkPointName = checkPointName(GtfsException.ERROR.TRANSPORT_MODE_MISMATCH);
                 validationReporter.addCheckPointReportError(context, checkPointName, new DataLocation(filenameInfo, ex.getId(), ex.getColumn()),
                         ex.getField());
                 break;
+
+            case DUPLICATE_CONSECUTIVE_STOP_TIME:
+                // 2-GTFS-StopTime-1
+                checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_CONSECUTIVE_STOP_TIME);
+                validationReporter.addCheckPointReportError(context, checkPointName,
+                        buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getField()), routeId), ex.getValue(),
+                        ex.getField());
+                throw ex;
+
             case MISSING_FOREIGN_KEY: // THIS CAN NEVER OCCUR !
             case SYSTEM: // THIS CAN NEVER OCCUR !
             default:
@@ -568,7 +575,7 @@ public class GtfsValidationReporter implements Constant {
         }
     }
 
-    private String checkPointName(String name, mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR errorName) {
+    private String checkPointName(mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR errorName) {
         switch (errorName) {
             case SYSTEM:
                 return GTFS_1_GTFS_CSV_1;
@@ -638,34 +645,36 @@ public class GtfsValidationReporter implements Constant {
             case MISSING_ROUTE_SHORT_NAME:
                 return GTFS_1_GTFS_Route_3;
 
-		case BAD_REFERENCED_ID:
-			return GTFS_2_GTFS_Stop_1;
-		case NO_LOCATION_TYPE:
-			return GTFS_2_GTFS_Stop_2;
-		case BAD_VALUE:
-			return GTFS_2_GTFS_Stop_3;
-		case NO_PARENT_FOR_STATION:
-			return GTFS_2_GTFS_Stop_4;
-        case COORDINATES_STOP_0_0:
-            return GTFS_2_GTFS_Stop_5;
-		case DUPLICATE_ROUTE_NAMES:
-			return GTFS_2_GTFS_Route_1;
-		case CONTAINS_ROUTE_NAMES:
-			return GTFS_2_GTFS_Route_2;
-		case BAD_COLOR:
-			return GTFS_2_GTFS_Route_3;
-		case INVERSE_DUPLICATE_ROUTE_NAMES:
-			return GTFS_2_GTFS_Route_4;
-		case PREFIX_REMOVAL_ERROR:
-			return GTFS_2_GTFS_Stop_6;
-		case NOT_ENOUGH_ROUTE_POINTS:
-			return GTFS_3_Route_6;
-		case TRANSPORT_MODE_MISMATCH:
-			return GTFS_2_GTFS_Stop_7;
-		default:
-			return null;
-		}
-	}
+            case BAD_REFERENCED_ID:
+                return GTFS_2_GTFS_Stop_1;
+            case NO_LOCATION_TYPE:
+                return GTFS_2_GTFS_Stop_2;
+            case BAD_VALUE:
+                return GTFS_2_GTFS_Stop_3;
+            case NO_PARENT_FOR_STATION:
+                return GTFS_2_GTFS_Stop_4;
+            case COORDINATES_STOP_0_0:
+                return GTFS_2_GTFS_Stop_5;
+            case DUPLICATE_ROUTE_NAMES:
+                return GTFS_2_GTFS_Route_1;
+            case CONTAINS_ROUTE_NAMES:
+                return GTFS_2_GTFS_Route_2;
+            case BAD_COLOR:
+                return GTFS_2_GTFS_Route_3;
+            case INVERSE_DUPLICATE_ROUTE_NAMES:
+                return GTFS_2_GTFS_Route_4;
+            case PREFIX_REMOVAL_ERROR:
+                return GTFS_2_GTFS_Stop_6;
+            case NOT_ENOUGH_ROUTE_POINTS:
+                return GTFS_3_Route_6;
+            case TRANSPORT_MODE_MISMATCH:
+                return GTFS_2_GTFS_Stop_7;
+            case DUPLICATE_CONSECUTIVE_STOP_TIME:
+                return GTFS_2_GTFS_StopTime_1;
+            default:
+                return null;
+        }
+    }
 
     private String capitalize(String name) {
         // CSV, CalendarDate, StopTime
@@ -717,7 +726,7 @@ public class GtfsValidationReporter implements Constant {
 
     public void validate(Context context, String filenameInfo,
                          mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR errorCode) {
-        String checkPointName = checkPointName(name(filenameInfo), errorCode);
+        String checkPointName = checkPointName(errorCode);
         validate(context, filenameInfo, checkPointName);
     }
 

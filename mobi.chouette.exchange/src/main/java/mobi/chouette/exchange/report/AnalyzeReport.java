@@ -6,26 +6,18 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mobi.chouette.common.Constant;
-import mobi.chouette.model.*;
+import mobi.chouette.model.CalendarDay;
+import mobi.chouette.model.Period;
+import mobi.chouette.model.StopArea;
+import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -125,6 +117,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
     @XmlElement(name = "changedTrips")
     private Map<String, Pair<String, String>> changedTrips = new HashMap<>();
+
+    @XmlElement(name = "duplicateConsecutiveStopTimes")
+    private List<String> duplicateConsecutiveStopTimes = new ArrayList<>();
 
     @XmlTransient
     private Date date = new Date(0);
@@ -369,6 +364,10 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("wrongRefStopAreaInScheduleStopPoint", buildMapList(wrongRefStopAreaInScheduleStopPoint,"file_name", "stopArea"));
         }
 
+        if (!duplicateConsecutiveStopTimes.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("duplicateConsecutiveStopTimes", duplicateConsecutiveStopTimes);
+        }
 
 
         analyzeReportMap.put("canLaunchImport", canLaunchImport);

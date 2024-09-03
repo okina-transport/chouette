@@ -1,12 +1,12 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.EqualsAndHashCode;
 
 @ToString
-//@EqualsAndHashCode(callSuper=false, exclude={"id", "value"})
 @EqualsAndHashCode(callSuper = false)
+@Getter
 public class GtfsException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
@@ -62,27 +62,17 @@ public class GtfsException extends RuntimeException {
 		PREFIX_REMOVAL_ERROR,
 		NOT_ENOUGH_ROUTE_POINTS,
 		DUPLICATE_IMPORTED_ID,
-		TRANSPORT_MODE_MISMATCH
+		TRANSPORT_MODE_MISMATCH,
+		DUPLICATE_CONSECUTIVE_STOP_TIME,
 	}
 
-	@Getter
-	private String path;
-	@Getter
-	private Integer id;
-	@Getter
-	private Integer column = new Integer(-1);
-	@Getter
-	private String field;
-	@Getter
-	private ERROR error;
-
-	@Getter
-	private String code;
-
-	@Getter
-	private String value;
-
-	@Getter
+	private final String path;
+	private final Integer id;
+	private Integer column = -1;
+	private final String field;
+	private final ERROR error;
+	private final String code;
+	private final String value;
 	private String refValue;
 
 	public GtfsException(Context context) {

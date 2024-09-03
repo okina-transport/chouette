@@ -1,14 +1,5 @@
 package mobi.chouette.exchange.gtfs.validation;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
@@ -26,12 +17,19 @@ import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.Reporter;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public abstract class AbstractTests implements Constant, ReportConstant {
 
@@ -67,8 +65,11 @@ public abstract class AbstractTests implements Constant, ReportConstant {
 		context.put(INITIAL_CONTEXT, initialContext);
 		context.put(REPORT, new ActionReport());
 		context.put(VALIDATION_REPORT, new ValidationReport());
-		GtfsImportParameters configuration = new GtfsImportParameters();
-		context.put(CONFIGURATION, configuration);
+		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);;
+		if (configuration == null) {
+			configuration = new GtfsImportParameters();
+			context.put(CONFIGURATION, configuration);
+		}
 		configuration.setName("name");
 		configuration.setUserName("userName");
 		configuration.setNoSave(true);
@@ -142,8 +143,6 @@ public abstract class AbstractTests implements Constant, ReportConstant {
 	/**
 	 * @param log
 	 * @param mandatoryTest
-	 * @param importReport
-	 * @param valReport
 	 * @param state
 	 * @return
 	 */
