@@ -3,10 +3,13 @@ package mobi.chouette.exchange.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.*;
+import mobi.chouette.common.Color;
+import mobi.chouette.common.ContenerChecker;
+import mobi.chouette.common.Context;
+import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.dao.VehicleJourneyAtStopDAO;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
 import javax.annotation.Resource;
@@ -33,7 +36,7 @@ public class CopyCommand implements Command {
 	public static final String COMMAND = "CopyCommand";
 
 	@EJB 
-	private VehicleJourneyDAO vehicleJourneyDAO;
+	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
 
 	@EJB 
 	private ContenerChecker checker;
@@ -44,11 +47,6 @@ public class CopyCommand implements Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
-
-		JobData jobData = (JobData) context.get(JOB_DATA);
-
-
-
 		String sMaxCopy = System.getProperty(checker.getContext()+ PropertyNames.MAX_COPY_BY_JOB, "5");
 		int maxCopy = Integer.parseInt(sMaxCopy);
 
@@ -65,10 +63,7 @@ public class CopyCommand implements Command {
 				}
 				while (futures.size() >= maxCopy)
 				{
-					for (Iterator<Future<Void>> iterator = futures.iterator(); iterator.hasNext();) {
-						Future<Void> future = iterator.next();
-						if (future.isDone()) iterator.remove();
-					}
+                    futures.removeIf(Future::isDone);
 					if (futures.size() >= maxCopy)
 					{
 						for (Iterator<Future<Void>> iterator = futures.iterator(); iterator.hasNext();) {
@@ -112,7 +107,7 @@ public class CopyCommand implements Command {
 			LocalDateTime start = LocalDateTime.now();
 			Monitor monitor = MonitorFactory.start(COMMAND);
 			ContextHolder.setContext(schema);
-			vehicleJourneyDAO.copy(bufferVjas);
+			vehicleJourneyAtStopDAO.copy(bufferVjas);
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			ContextHolder.setContext(null);
 			log.info("VehicleJourneyAtStop copy ended successfully");

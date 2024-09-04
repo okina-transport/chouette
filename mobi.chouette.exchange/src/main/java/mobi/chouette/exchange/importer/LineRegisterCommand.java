@@ -9,12 +9,11 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.*;
-import mobi.chouette.exchange.importer.updater.LineOptimiser;
-import mobi.chouette.exchange.importer.updater.LineUpdater;
-import mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater;
-import mobi.chouette.exchange.importer.updater.StopAreaIdMapper;
-import mobi.chouette.exchange.importer.updater.Updater;
+import mobi.chouette.dao.AccessPointDAO;
+import mobi.chouette.dao.CategoriesForLinesDAO;
+import mobi.chouette.dao.LineDAO;
+import mobi.chouette.dao.VehicleJourneyAtStopDAO;
+import mobi.chouette.exchange.importer.updater.*;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
@@ -23,7 +22,6 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -32,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -43,8 +40,8 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
-
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 @Stateless(name = LineRegisterCommand.COMMAND)
@@ -65,7 +62,7 @@ public class LineRegisterCommand implements Command {
 	private ContenerChecker checker;
 
 	@EJB
-	private VehicleJourneyDAO vehicleJourneyDAO;
+	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
 
 	@EJB
 	private CategoriesForLinesDAO categoriesForLinesDAO;
@@ -182,7 +179,10 @@ public class LineRegisterCommand implements Command {
 					Monitor wMonitor = MonitorFactory.start("prepareCopy");
 					StringWriter bufferVjas = new StringWriter(1024);
 
-					final List<String> vehicleJourneysToDelete = new ArrayList<>(referential.getVehicleJourneys().keySet());
+					final List<String> vjObjectIdsToDelete =
+							referential.getVehicleJourneys().values().stream()
+									.map(VehicleJourney::getObjectId)
+									.collect(Collectors.toList());
 
 					for (VehicleJourney vj : referential.getVehicleJourneys().values()) {
 						VehicleJourney vehicleJourney = cache.getVehicleJourneys().get(vj.getObjectId());
@@ -196,7 +196,7 @@ public class LineRegisterCommand implements Command {
 							writeVjas(bufferVjas, vehicleJourney, stopPoint, vehicleJourneyAtStop, importParameter.isKeepBoardingAlighting());
 						}
 					}
-					vehicleJourneyDAO.deleteChildren(vehicleJourneysToDelete);
+					vehicleJourneyAtStopDAO.deleteByVehicleJourneyObjectIds(vjObjectIdsToDelete);
 					context.put(BUFFER_VJAS, bufferVjas.toString());
 					wMonitor.stop();
 				}
