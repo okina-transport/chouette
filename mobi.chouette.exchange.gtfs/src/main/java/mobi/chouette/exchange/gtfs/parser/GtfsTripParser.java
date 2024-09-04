@@ -22,12 +22,14 @@ import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
+import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
@@ -37,6 +39,7 @@ import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -44,7 +47,6 @@ import java.util.stream.StreamSupport;
 public class GtfsTripParser implements Parser, Validator, Constant {
 
     private static final Comparator<OrderedCoordinate> COORDINATE_SORTER = new OrderedCoordinateComparator();
-    private String quayIdPrefixToRemove;
 
     @Getter
     @Setter
@@ -72,7 +74,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
         GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
-        Set<String> stopIds = new HashSet<String>();
+        Set<String> stopIds = new HashSet<>();
 
         // stop_times.txt
         // log.info("validating stop_times");
@@ -102,7 +104,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.validateUnknownError(context);
             }
 
-            if (!stopTimeParser.getErrors().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(stopTimeParser.getErrors())) {
                 gtfsValidationReporter.reportErrors(context, stopTimeParser.getErrors(), GTFS_STOP_TIMES_FILE);
                 stopTimeParser.getErrors().clear();
             }
@@ -140,57 +142,99 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
             // contrôle de la séquence
             stopTimeParser.setWithValidation(false);
-            {
-                Iterable<String> tripIds = stopTimeParser.keys();
 
-                Map<Integer, Integer> stopSequences = new HashMap<>();
-                boolean enoughStopTimes = true;
-                for (String tripId : tripIds) {
-                    stopSequences.clear();
-                    Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
+            Iterable<String> tripIds = stopTimeParser.keys();
 
-                    if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
-                        enoughStopTimes = false;
-                        gtfsValidationReporter.reportError(
-                                context,
-                                new GtfsException(stopTimeParser.getPath(), stopTimeParser.getValue(tripId).getId(),
-                                        stopTimeParser.getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()),
-                                        StopTimeByTrip.FIELDS.trip_id.name() + "," + StopTimeByTrip.FIELDS.stop_sequence.name(),
-                                        GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS, null, tripId), GTFS_STOP_TIMES_FILE);
+            Map<Integer, Integer> stopSequences = new HashMap<>();
+            boolean enoughStopTimes = true;
+            boolean duplicateConsecutiveStops = false;
+            GtfsImportParameters params = (GtfsImportParameters) context.get(CONFIGURATION);
+            for (String tripId : tripIds) {
+                stopSequences.clear();
+                Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
+
+
+                if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
+                    enoughStopTimes = false;
+                    gtfsValidationReporter.reportError(
+                            context,
+                            new GtfsException(stopTimeParser.getPath(), stopTimeParser.getValue(tripId).getId(),
+                                    stopTimeParser.getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()),
+                                    StopTimeByTrip.FIELDS.trip_id.name() + "," + StopTimeByTrip.FIELDS.stop_sequence.name(),
+                                    GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS, null, tripId), GTFS_STOP_TIMES_FILE);
+                }
+
+                List<GtfsStopTime> tripIdStopTimes = new ArrayList<>();
+
+                for (GtfsStopTime bean : stopTimes) {
+                    Integer stopSequence = bean.getStopSequence();
+                    if (params.isRoutesReorganization()) {
+                        GtfsStopTime tmp = new GtfsStopTime(bean.getTripId(), null, null, bean.getStopId(), stopSequence, null, null
+                                , null, null, null);
+                        tmp.setId(bean.getId());
+                        tripIdStopTimes.add(tmp);
                     }
-
-                    for (GtfsStopTime bean : stopTimes) {
-                        Integer stopSequence = bean.getStopSequence();
-                        if (stopSequence != null) {
-                            if (stopSequences.containsKey(stopSequence)) {
-                                gtfsValidationReporter.reportError(
-                                        context,
-                                        new GtfsException(stopTimeParser.getPath(), bean.getId(), stopTimeParser
-                                                .getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()),
-                                                StopTimeByTrip.FIELDS.trip_id.name() + ","
-                                                        + StopTimeByTrip.FIELDS.stop_sequence.name(),
-                                                GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE, null, tripId + ","
-                                                + stopSequence), GTFS_STOP_TIMES_FILE);
-                            } else {
-                                stopSequences.put(stopSequence, bean.getId());
-                                gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE,
-                                        GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE);
-                            }
+                    if (stopSequence != null) {
+                        if (stopSequences.containsKey(stopSequence)) {
+                            gtfsValidationReporter.reportError(
+                                    context,
+                                    new GtfsException(stopTimeParser.getPath(), bean.getId(), stopTimeParser
+                                            .getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()),
+                                            StopTimeByTrip.FIELDS.trip_id.name() + ","
+                                                    + StopTimeByTrip.FIELDS.stop_sequence.name(),
+                                            GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE, null, tripId + ","
+                                            + stopSequence), GTFS_STOP_TIMES_FILE);
+                        } else {
+                            stopSequences.put(stopSequence, bean.getId());
+                            gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE,
+                                    GtfsException.ERROR.DUPLICATE_STOP_SEQUENCE);
                         }
                     }
                 }
+                AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
 
-                if (enoughStopTimes) {
-                    gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
+                // check that there is not 2 identical consecutive stops when route reorganization is on
+                if (params.isRoutesReorganization()) {
+                    tripIdStopTimes = tripIdStopTimes.stream().sorted(Comparator.comparingInt(GtfsStopTime::getStopSequence)).collect(Collectors.toList());
+                    String prevStopId = "";
+                    for (GtfsStopTime stopTime : tripIdStopTimes) {
+                        if (prevStopId.equals(stopTime.getStopId())) {
+                            String stopTimePrimaryKey = stopTime.getTripId() + "," + stopTime.getStopSequence();
+                            analyzeReport.getDuplicateConsecutiveStopTimes().add(stopTimePrimaryKey);
+                            // identical consecutive stops break route reorganization algorithm therefore we reject it
+                            // (this is a GTFS error to have 0.0 distance between 2 consecutive stops anyway)
+                            gtfsValidationReporter.reportError(
+                                    context,
+                                    new GtfsException(
+                                            stopTimeParser.getPath(),
+                                            stopTime.getId(),
+                                            stopTimeParser.getIndex(StopTimeByTrip.FIELDS.stop_id.name()),
+                                            StopTimeByTrip.FIELDS.trip_id.name() + ", " + StopTimeByTrip.FIELDS.stop_sequence.name(),
+                                            GtfsException.ERROR.DUPLICATE_CONSECUTIVE_STOP_TIME,
+                                            null,
+                                            stopTimePrimaryKey), GTFS_STOP_TIMES_FILE);
+                            duplicateConsecutiveStops = true;
+                        }
+                        prevStopId = stopTime.getStopId();
+                    }
                 }
 
             }
+
+            if (enoughStopTimes) {
+                gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
+            }
+
+            if (!duplicateConsecutiveStops) {
+                gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.DUPLICATE_CONSECUTIVE_STOP_TIME);
+            }
+
             int i = 1;
-            boolean unsuedId = true;
+            boolean unusedId = true;
             for (GtfsStop bean : importer.getStopById()) {
                 if (LocationType.Stop.equals(bean.getLocationType())) {
                     if (stopIds.add(bean.getStopId())) {
-                        unsuedId = false;
+                        unusedId = false;
                         gtfsValidationReporter.reportError(context, new GtfsException(GTFS_STOPS_FILE, i,
                                         StopById.FIELDS.stop_id.name(), GtfsException.ERROR.UNUSED_ID, null, bean.getStopId()),
                                 GTFS_STOPS_FILE);
@@ -198,8 +242,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 }
                 i++;
             }
-            if (unsuedId)
+
+            if (unusedId) {
                 gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, GtfsException.ERROR.UNUSED_ID);
+            }
 
             for (GtfsException ex: gtfsValidationReporter.getExceptions()) {
                 if (ex.isFatal()) {
@@ -249,7 +295,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.validateUnknownError(context);
             }
 
-            if (!shapeParser.getErrors().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(shapeParser.getErrors())) {
                 gtfsValidationReporter.reportErrors(context, shapeParser.getErrors(), GTFS_SHAPES_FILE);
                 shapeParser.getErrors().clear();
             }
@@ -358,7 +404,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.validateUnknownError(context);
             }
 
-            if (!tripParser.getErrors().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(tripParser.getErrors())) {
                 gtfsValidationReporter.reportErrors(context, tripParser.getErrors(), GTFS_TRIPS_FILE);
                 tripParser.getErrors().clear();
             }
@@ -453,7 +499,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.validateUnknownError(context);
             }
 
-            if (!frequencyParser.getErrors().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(frequencyParser.getErrors())) {
                 gtfsValidationReporter.reportErrors(context, frequencyParser.getErrors(), GTFS_FREQUENCIES_FILE);
                 frequencyParser.getErrors().clear();
             }
@@ -503,7 +549,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-        quayIdPrefixToRemove = configuration.getQuayIdPrefixToRemove();
+        String quayIdPrefixToRemove = configuration.getQuayIdPrefixToRemove();
 
         Map<String, JourneyPattern> journeyPatternByStopSequence = new HashMap<>();
 
@@ -579,7 +625,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             for (GtfsStopTime gtfsStopTime : importer.getStopTimeByTrip().values(gtfsTrip.getTripId())) {
 
-                String stopId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ?  gtfsStopTime.getStopId().replaceFirst("^"+quayIdPrefixToRemove,"").trim() : gtfsStopTime.getStopId();
+                String stopId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ?  gtfsStopTime.getStopId().replaceFirst("^"+ quayIdPrefixToRemove,"").trim() : gtfsStopTime.getStopId();
 
                 VehicleJourneyAtStopWrapper vehicleJourneyAtStop = new VehicleJourneyAtStopWrapper(
                         stopId, gtfsStopTime.getStopSequence(), gtfsStopTime.getShapeDistTraveled(), gtfsStopTime.getDropOffType(), gtfsStopTime.getPickupType(), gtfsStopTime.getStopHeadsign());
@@ -652,10 +698,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
     /**
      * Creation of object id (route and journey pattern)
-     * @param gtfsTrip
-     * @param vehicleJourney
-     * @return
-     * @throws NoSuchAlgorithmException
      */
     private StringBuilder createObjectIdKeyUsedForJourneyPatternAndRoute(GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) throws NoSuchAlgorithmException {
         StringBuilder objectIdKey = new StringBuilder();
@@ -757,8 +799,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         }, "_");
         String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
                 Interchange.INTERCHANGE_KEY, partialId);
-        Interchange interchange = ObjectFactory.getInterchange(referential, objectId);
-        return interchange;
+        return ObjectFactory.getInterchange(referential, objectId);
     }
 
     protected void createInterchangeName(Interchange interchange) {
@@ -847,7 +888,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
     private JourneyPattern createJourneyPattern(Referential referential,
                                                 GtfsImportParameters configuration, GtfsTrip gtfsTrip, GtfsImporter importer,
-                                                VehicleJourney vehicleJourney, String objectIdKey, Map<String, JourneyPattern> journeyPatternByStopSequence, Integer position) throws NoSuchAlgorithmException {
+                                                VehicleJourney vehicleJourney, String objectIdKey, Map<String, JourneyPattern> journeyPatternByStopSequence, Integer position) {
         JourneyPattern journeyPattern;
 
         // Route

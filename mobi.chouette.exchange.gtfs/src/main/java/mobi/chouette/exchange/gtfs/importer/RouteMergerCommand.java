@@ -122,8 +122,13 @@ public class RouteMergerCommand implements Command {
 
 
         List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
-        List<Route> orderedRoutes = sortByNumberOfStops(routes);
+        routes = routes.stream().filter(r -> CollectionUtils.isNotEmpty(r.getStopPoints())).collect(Collectors.toList());
 
+        if (CollectionUtils.isEmpty(routes) || routes.size() == 1) {
+            return false;
+        }
+
+        List<Route> orderedRoutes = sortByNumberOfStops(routes);
 
         for (Route currentRouteTryingToMerge : orderedRoutes) {
 
