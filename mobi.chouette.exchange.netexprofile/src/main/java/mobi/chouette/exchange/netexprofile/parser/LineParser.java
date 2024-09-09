@@ -136,7 +136,7 @@ public class LineParser implements Parser, Constant {
 				newAccess.setObjectId(accessibilityAssessmentId);
 
 				newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
-				if (accessibilityAssessment.getLimitations() != null && accessibilityAssessment.getLimitations().getAccessibilityLimitation() != null) {
+				if (accessibilityAssessment.getLimitations() != null) {
 					newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
 				}
 				chouetteLine.setAccessibilityAssessment(newAccess);
