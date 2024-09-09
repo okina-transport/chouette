@@ -128,19 +128,15 @@ public class LineParser implements Parser, Constant {
 
 			chouetteLine.setFilled(true);
 
-			if (((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment() != null) {
-				AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
-				mobi.chouette.model.AccessibilityAssessment newAccess = new mobi.chouette.model.AccessibilityAssessment();
+			AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
+			mobi.chouette.model.AccessibilityAssessment newAccess = new mobi.chouette.model.AccessibilityAssessment();
 
-				String accessibilityAssessmentId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYASSESSMENT_KEY, accessibilityAssessment.getId());
-				newAccess.setObjectId(accessibilityAssessmentId);
+			String accessibilityAssessmentId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYASSESSMENT_KEY, accessibilityAssessment.getId());
+			newAccess.setObjectId(accessibilityAssessmentId);
 
-				newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
-				if (accessibilityAssessment.getLimitations() != null) {
-					newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
-				}
-				chouetteLine.setAccessibilityAssessment(newAccess);
-			}
+			newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
+			newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
+			chouetteLine.setAccessibilityAssessment(newAccess);
 
 			if (netexLine instanceof FlexibleLine) {
 				chouetteLine.setFlexibleService(true);
