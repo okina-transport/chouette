@@ -160,13 +160,13 @@ public class LineRegisterCommand implements Command {
 					oldValue.getNetwork().setSupprime(false);
 				}
 
-//				if (!Objects.equals(oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment())) {
-//					oldValue.setAccessibilityAssessment(newValue.getAccessibilityAssessment());
-//				}
-//
-//				if (!Objects.equals(oldValue.getAccessibilityAssessment().getAccessibilityLimitation(), newValue.getAccessibilityAssessment().getAccessibilityLimitation())) {
-//					oldValue.getAccessibilityAssessment().setAccessibilityLimitation(newValue.getAccessibilityAssessment().getAccessibilityLimitation());
-//				}
+				if (newValue.getAccessibilityAssessment() != null && !Objects.equals(oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment())) {
+					oldValue.setAccessibilityAssessment(newValue.getAccessibilityAssessment());
+
+					if (newValue.getAccessibilityAssessment().getAccessibilityLimitation() != null && !Objects.equals(oldValue.getAccessibilityAssessment().getAccessibilityLimitation(), newValue.getAccessibilityAssessment().getAccessibilityLimitation())) {
+						oldValue.getAccessibilityAssessment().setAccessibilityLimitation(newValue.getAccessibilityAssessment().getAccessibilityLimitation());
+					}
+				}
 
 				searchEmptyOriginalStopIds(referential,oldValue);
 				lineDAO.create(oldValue);
