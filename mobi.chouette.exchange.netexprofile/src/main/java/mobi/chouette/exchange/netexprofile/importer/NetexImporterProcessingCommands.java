@@ -329,6 +329,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 
         try {
+            context.putIfAbsent(IS_NETEX_IMPORTER, true);
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
         } catch (Exception e) {
             log.error(e, e);

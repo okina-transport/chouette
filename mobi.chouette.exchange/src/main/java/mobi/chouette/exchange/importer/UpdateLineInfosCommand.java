@@ -58,9 +58,12 @@ public class UpdateLineInfosCommand implements Command, Constant {
 
             // Update VehicleJourney Accessibility
             for (VehicleJourney vehicleJourney : vehicleJourneyList) {
-                if (vehicleJourney.getAccessibilityAssessment() == null && line.getAccessibilityAssessment() != null && line.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
+                if (vehicleJourney.getAccessibilityAssessment() == null && line.getAccessibilityAssessment() != null) {
                     vehicleJourney.setAccessibilityAssessment(line.getAccessibilityAssessment());
-                    vehicleJourney.getAccessibilityAssessment().setAccessibilityLimitation(line.getAccessibilityAssessment().getAccessibilityLimitation());
+                    if (line.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
+                        vehicleJourney.getAccessibilityAssessment().setAccessibilityLimitation(line.getAccessibilityAssessment().getAccessibilityLimitation());
+                    }
+                    vehicleJourneyDAO.update(vehicleJourney);
                 }
             }
 
@@ -72,7 +75,10 @@ public class UpdateLineInfosCommand implements Command, Constant {
                 manageTAD(vehicleJourneyList, lineToUpdate);
             }
             manageBike(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
-            managePMR(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
+
+            if (!context.get(IS_NETEX_IMPORTER).equals(true)) {
+                managePMR(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
+            }
 
             lineDAO.update(lineToUpdate);
         });
@@ -110,7 +116,6 @@ public class UpdateLineInfosCommand implements Command, Constant {
             accessibilityLimitation = accessibilityAssessment.getAccessibilityLimitation();
         }
 
-
         int nbVehicleJourneyWithPMR = (int) vehicleJourneyList.stream()
                 .filter(vehicleJourney -> vehicleJourney.getAccessibilityAssessment() != null
                         && vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null
@@ -130,7 +135,6 @@ public class UpdateLineInfosCommand implements Command, Constant {
         accessibilityAssessment.setAccessibilityLimitation(accessibilityLimitation);
         accessibilityAssessmentDAO.create(accessibilityAssessment);
         lineToUpdate.setAccessibilityAssessment(accessibilityAssessment);
-
     }
 
     private void manageBike(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {

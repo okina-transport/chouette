@@ -160,8 +160,10 @@ public class LineRegisterCommand implements Command {
 					oldValue.getNetwork().setSupprime(false);
 				}
 
-				if (newValue.getAccessibilityAssessment() != null && !Objects.equals(oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment())) {
-					oldValue.setAccessibilityAssessment(newValue.getAccessibilityAssessment());
+				if (newValue.getAccessibilityAssessment() != null) {
+					if (!Objects.equals(oldValue.getAccessibilityAssessment(), newValue.getAccessibilityAssessment())) {
+						oldValue.setAccessibilityAssessment(newValue.getAccessibilityAssessment());
+					}
 
 					if (newValue.getAccessibilityAssessment().getAccessibilityLimitation() != null && !Objects.equals(oldValue.getAccessibilityAssessment().getAccessibilityLimitation(), newValue.getAccessibilityAssessment().getAccessibilityLimitation())) {
 						oldValue.getAccessibilityAssessment().setAccessibilityLimitation(newValue.getAccessibilityAssessment().getAccessibilityLimitation());
