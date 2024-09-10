@@ -30,6 +30,9 @@ import mobi.chouette.model.util.Referential;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 
+import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYASSESSMENT_KEY;
+import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYLIMITATION_KEY;
+
 @Log4j
 public class LineParser implements Parser, Constant {
 
@@ -127,9 +130,12 @@ public class LineParser implements Parser, Constant {
 
 			AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
 			mobi.chouette.model.AccessibilityAssessment newAccess = new mobi.chouette.model.AccessibilityAssessment();
-			newAccess.setObjectId(accessibilityAssessment.getId());
+
+			String accessibilityAssessmentId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYASSESSMENT_KEY, accessibilityAssessment.getId());
+			newAccess.setObjectId(accessibilityAssessmentId);
+
 			newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
-			newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment));
+			newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
 			chouetteLine.setAccessibilityAssessment(newAccess);
 
 			if (netexLine instanceof FlexibleLine) {
@@ -158,28 +164,26 @@ public class LineParser implements Parser, Constant {
 		}
 	}
 
-	public AccessibilityLimitation convertToChouetteAccessibilityLimitation(org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment) {
+	public AccessibilityLimitation convertToChouetteAccessibilityLimitation(org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment,
+																			Context context) {
 		AccessibilityLimitation chouetteLimitation = new AccessibilityLimitation();
+		org.rutebanken.netex.model.AccessibilityLimitation netexLimitation = accessibilityAssessment.getLimitations().getAccessibilityLimitation();
 
-		String limitObjId = null;
-		if (accessibilityAssessment.getLimitations().getAccessibilityLimitation().getId() != null) {
-			limitObjId = accessibilityAssessment.getLimitations().getAccessibilityLimitation().getId();
+		String limitationId;
+		if (netexLimitation.getId() != null) {
+			limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, netexLimitation.getId());
 		} else {
-			limitObjId = accessibilityAssessment.getId().replace("Assessment", "Limitation");
+			limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, accessibilityAssessment.getId());
 		}
 
-		chouetteLimitation.setObjectId(limitObjId);
+		chouetteLimitation.setObjectId(limitationId);
 
-		org.rutebanken.netex.model.AccessibilityLimitation netexLimitation = accessibilityAssessment.getLimitations().getAccessibilityLimitation();
-		// Copier chaque propriété, par exemple :
 		chouetteLimitation.setWheelchairAccess(netexLimitation.getWheelchairAccess());
 		chouetteLimitation.setStepFreeAccess(netexLimitation.getStepFreeAccess());
 		chouetteLimitation.setEscalatorFreeAccess(netexLimitation.getEscalatorFreeAccess());
 		chouetteLimitation.setLiftFreeAccess(netexLimitation.getLiftFreeAccess());
 		chouetteLimitation.setAudibleSignalsAvailable(netexLimitation.getAudibleSignalsAvailable());
 		chouetteLimitation.setVisualSignsAvailable(netexLimitation.getVisualSignsAvailable());
-		// Ajouter ici d'autres propriétés si nécessaire
-
 		return chouetteLimitation;
 	}
 
