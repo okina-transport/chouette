@@ -87,6 +87,7 @@ public interface Constant {
 	String IMPORTED_ID = "imported-id";
 	String SELECTED_ID = "selected-id";
 	String NETEX_VALID_PREFIX = System.getenv("NETEX_VALID_PREFIX");
+	String IS_NETEX_IMPORTER = "is_netex_importer";
 	String COLON_REPLACEMENT_CODE="##3A##";
 
 	String SANITIZED_REPLACEMENT_CODE="__3A__";

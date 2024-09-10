@@ -20,6 +20,7 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
+import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
 import org.rutebanken.netex.model.*;
 
@@ -91,6 +92,12 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 			if (serviceJourney.getPrivateCode() != null) {
 				vehicleJourney.setPrivateCode(serviceJourney.getPrivateCode().getValue());
+			}
+
+			if (serviceJourney.getAccessibilityAssessment() != null) {
+				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
+				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
+				vehicleJourney.setAccessibilityAssessment(newAccess);
 			}
 
 			if (serviceJourney.getJourneyPatternRef() != null) {
@@ -183,7 +190,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				}
 			}
 			vehicleJourney.setFilled(true);
-
 		}
 	}
 

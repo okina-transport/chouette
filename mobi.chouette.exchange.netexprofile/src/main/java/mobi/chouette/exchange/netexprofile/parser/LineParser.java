@@ -130,15 +130,7 @@ public class LineParser implements Parser, Constant {
 
 			if (((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment() != null) {
 				AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
-				mobi.chouette.model.AccessibilityAssessment newAccess = new mobi.chouette.model.AccessibilityAssessment();
-
-				String accessibilityAssessmentId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYASSESSMENT_KEY, accessibilityAssessment.getId());
-				newAccess.setObjectId(accessibilityAssessmentId);
-
-				newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
-				if (accessibilityAssessment.getLimitations() != null && accessibilityAssessment.getLimitations().getAccessibilityLimitation() != null) {
-					newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
-				}
+				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
 				chouetteLine.setAccessibilityAssessment(newAccess);
 			}
 
@@ -167,30 +159,6 @@ public class LineParser implements Parser, Constant {
 
 		}
 	}
-
-	public AccessibilityLimitation convertToChouetteAccessibilityLimitation(org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment,
-																			Context context) {
-		AccessibilityLimitation chouetteLimitation = new AccessibilityLimitation();
-		org.rutebanken.netex.model.AccessibilityLimitation netexLimitation = accessibilityAssessment.getLimitations().getAccessibilityLimitation();
-
-		String limitationId;
-		if (netexLimitation.getId() != null) {
-			limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, netexLimitation.getId());
-		} else {
-			limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, accessibilityAssessment.getId());
-		}
-
-		chouetteLimitation.setObjectId(limitationId);
-
-		chouetteLimitation.setWheelchairAccess(netexLimitation.getWheelchairAccess());
-		chouetteLimitation.setStepFreeAccess(netexLimitation.getStepFreeAccess());
-		chouetteLimitation.setEscalatorFreeAccess(netexLimitation.getEscalatorFreeAccess());
-		chouetteLimitation.setLiftFreeAccess(netexLimitation.getLiftFreeAccess());
-		chouetteLimitation.setAudibleSignalsAvailable(netexLimitation.getAudibleSignalsAvailable());
-		chouetteLimitation.setVisualSignsAvailable(netexLimitation.getVisualSignsAvailable());
-		return chouetteLimitation;
-	}
-
 
 	/**
 	 * Read referential and try to find which network is associated to a line

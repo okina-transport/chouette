@@ -2,12 +2,17 @@ package mobi.chouette.exchange.netexprofile.importer.util;
 
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
+import mobi.chouette.model.AccessibilityAssessment;
+import mobi.chouette.model.AccessibilityLimitation;
+import mobi.chouette.model.type.LimitationStatusEnum;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
 import static mobi.chouette.common.Constant.CONFIGURATION;
+import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYASSESSMENT_KEY;
+import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYLIMITATION_KEY;
 
 public class NetexImportUtil {
 
@@ -67,5 +72,38 @@ public class NetexImportUtil {
         return inputString.replace(":",COLON_REPLACEMENT_CODE);
     }
 
+    public static AccessibilityAssessment convertToChouetteAccessibilityAssessment(org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment,
+                                                                                   Context context) {
+        AccessibilityAssessment newAccess = new AccessibilityAssessment();
+        String accessibilityAssessmentId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYASSESSMENT_KEY, accessibilityAssessment.getId());
+        newAccess.setObjectId(accessibilityAssessmentId);
+        newAccess.setMobilityImpairedAccess(LimitationStatusEnum.fromValue(accessibilityAssessment.getMobilityImpairedAccess().value()));
 
+        if (accessibilityAssessment.getLimitations() != null && accessibilityAssessment.getLimitations().getAccessibilityLimitation() != null) {
+            newAccess.setAccessibilityLimitation(convertToChouetteAccessibilityLimitation(accessibilityAssessment, context));
+        }
+        return newAccess;
+    }
+
+    private static AccessibilityLimitation convertToChouetteAccessibilityLimitation(org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment,
+                                                                                   Context context) {
+        AccessibilityLimitation chouetteLimitation = new AccessibilityLimitation();
+        org.rutebanken.netex.model.AccessibilityLimitation netexLimitation = accessibilityAssessment.getLimitations().getAccessibilityLimitation();
+
+        String limitationId;
+        if (netexLimitation.getId() != null) {
+            limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, netexLimitation.getId());
+        } else {
+            limitationId = NetexImportUtil.composeObjectIdFromNetexId(context, ACCESSIBILITYLIMITATION_KEY, accessibilityAssessment.getId());
+        }
+
+        chouetteLimitation.setObjectId(limitationId);
+        chouetteLimitation.setWheelchairAccess(netexLimitation.getWheelchairAccess());
+        chouetteLimitation.setStepFreeAccess(netexLimitation.getStepFreeAccess());
+        chouetteLimitation.setEscalatorFreeAccess(netexLimitation.getEscalatorFreeAccess());
+        chouetteLimitation.setLiftFreeAccess(netexLimitation.getLiftFreeAccess());
+        chouetteLimitation.setAudibleSignalsAvailable(netexLimitation.getAudibleSignalsAvailable());
+        chouetteLimitation.setVisualSignsAvailable(netexLimitation.getVisualSignsAvailable());
+        return chouetteLimitation;
+    }
 }
