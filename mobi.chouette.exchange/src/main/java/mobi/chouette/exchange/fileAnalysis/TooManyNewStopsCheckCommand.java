@@ -59,6 +59,11 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
                                     stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId().replace(":",COLON_REPLACEMENT_CODE))
                             )
                     )
+                    .filter(stopInAnalyzeReport -> analyzeReport.getStops().stream()
+                            .noneMatch(stop ->
+                                    stop.getOriginalStopId().equals(stopInAnalyzeReport.getOriginalStopId())
+                            )
+                    )
                     .collect(Collectors.toList()));
         }
 
