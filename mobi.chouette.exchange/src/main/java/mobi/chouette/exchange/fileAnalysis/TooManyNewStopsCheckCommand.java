@@ -51,21 +51,15 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
                     .map(stopArea -> stopArea.getOriginalStopId().replace(":",COLON_REPLACEMENT_CODE))
                     .collect(Collectors.toList());
 
-            List<StopArea> subListStopAreasAlreadyInDB = stopAreaDAO.findByOriginalIds(stopAreaOriginalIdList);
-            if (subListStopAreasAlreadyInDB.isEmpty()) {
-                subListStopAreasAlreadyInDB.addAll(
-                        stopAreaDAO.findByObjectId(stopAreaOriginalIdList.stream()
-                                .map(stop -> stop.replace("##3A##", ":"))
-                                .collect(Collectors.toList())
-                        )
-                );
-            }
+            List<StopArea> subListStopAreasAlreadyInDB = stopAreaDAO.findByObjectId(stopAreaOriginalIdList.stream()
+                    .map(stop -> stop.replace(COLON_REPLACEMENT_CODE, ":"))
+                    .collect(Collectors.toList()));
 
             newStops.addAll(stopAreasIncoming.stream()
                     .filter(incomingStopArea -> subListStopAreasAlreadyInDB.stream()
                             .noneMatch(stopAreaInDB ->
                                     stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId().replace(":",COLON_REPLACEMENT_CODE)) ||
-                                    stopAreaInDB.getObjectId().equals(incomingStopArea.getObjectId())
+                                            stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId())
                             )
                     )
                     .collect(Collectors.toList()));
