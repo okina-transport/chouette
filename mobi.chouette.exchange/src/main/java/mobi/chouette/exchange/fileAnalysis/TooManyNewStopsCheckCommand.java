@@ -48,24 +48,30 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
 
         for (List<StopArea> stopAreasIncoming : list) {
             List<String> stopAreaOriginalIdList = stopAreasIncoming.stream()
-                    .map(stopArea -> stopArea.getOriginalStopId().replace(":",COLON_REPLACEMENT_CODE))
+                    .map(stopArea -> stopArea.getOriginalStopId().replace(":", COLON_REPLACEMENT_CODE))
                     .collect(Collectors.toList());
 
             List<StopArea> subListStopAreasAlreadyInDB = stopAreaDAO.findByObjectId(stopAreaOriginalIdList.stream()
                     .map(stop -> stop.replace(COLON_REPLACEMENT_CODE, ":"))
                     .collect(Collectors.toList()));
 
-            newStops.addAll(stopAreasIncoming.stream()
+            List<StopArea> filteredNewStops = stopAreasIncoming.stream()
                     .filter(incomingStopArea -> subListStopAreasAlreadyInDB.stream()
                             .noneMatch(stopAreaInDB ->
-                                    stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId().replace(":",COLON_REPLACEMENT_CODE)) ||
+                                    stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId().replace(":", COLON_REPLACEMENT_CODE)) ||
                                             stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId())
                             )
                     )
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+
+            newStops.addAll(filteredNewStops);
         }
 
+        // Ajout des nouveaux stops au rapport d'analyse
         analyzeReport.getNewStops().addAll(newStops);
+
+        // Suppression des nouveaux stops de la liste des stops dans le rapport d'analyse
+        analyzeReport.getStops().removeAll(newStops);
 
         if (!analyzeReport.getStops().isEmpty() && !analyzeReport.getNewStops().isEmpty()) {
             List<StopArea> allStopAreas = stopAreaDAO.findAll();
