@@ -21,7 +21,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         this.em = em;
     }
 
-    public long updateAcessibilityId(Long accessibilityId, List<String> objectIds){
+    public long updateAccessibilityId(Long accessibilityId, List<String> objectIds){
         return em.createNativeQuery("UPDATE vehicle_journeys SET accessibility_assessment_id = :accessId WHERE objectid IN (:objectIdList)")
                             .setParameter("accessId", accessibilityId)
                             .setParameter("objectIdList", objectIds)

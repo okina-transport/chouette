@@ -331,6 +331,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
         try {
             context.putIfAbsent(IS_NETEX_IMPORTER, true);
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+            commands.add(CommandFactory.create(initialContext, NetexAccessibilityCommand.class.getName()));
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException("unable to call factories");

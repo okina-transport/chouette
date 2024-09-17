@@ -43,6 +43,12 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
 
+		Map<AccessibilityAssessment, List<VehicleJourney>> accessibilityMap =
+				(Map<AccessibilityAssessment, List<VehicleJourney>>) context.get(NETEX_ACCESSIBILITY_MAP);
+		if (accessibilityMap == null) {
+			accessibilityMap = new HashMap<>();
+			context.put(NETEX_ACCESSIBILITY_MAP, accessibilityMap);
+		}
 
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney();
 
@@ -54,7 +60,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
 
 			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
-
 
 			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
 				String brandingRef = serviceJourney.getBrandingRef().getRef();
@@ -77,6 +82,25 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				vehicleJourney = vehicleJourneyWithVersion;
 			}
 
+			if (serviceJourney.getAccessibilityAssessment() != null) {
+				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
+				boolean found = false;
+
+				for (Map.Entry<AccessibilityAssessment, List<VehicleJourney>> entry : accessibilityMap.entrySet()) {
+					if (entry.getKey().equals(accessibilityAssessment)) {
+						entry.getValue().add(vehicleJourney);
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					List<VehicleJourney> serviceJourneyList = new ArrayList<>();
+					serviceJourneyList.add(vehicleJourney);
+					accessibilityMap.put(accessibilityAssessment, serviceJourneyList);
+				}
+			}
+
 			DayTypeRefs_RelStructure dayTypes = serviceJourney.getDayTypes();
 			if (dayTypes != null) {
 				for (JAXBElement<? extends DayTypeRefStructure> dayType : dayTypes.getDayTypeRef()) {
@@ -94,11 +118,11 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				vehicleJourney.setPrivateCode(serviceJourney.getPrivateCode().getValue());
 			}
 
-			if (serviceJourney.getAccessibilityAssessment() != null) {
-				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
-				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
-				vehicleJourney.setAccessibilityAssessment(newAccess);
-			}
+//			if (serviceJourney.getAccessibilityAssessment() != null) {
+//				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
+//				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
+//				vehicleJourney.setAccessibilityAssessment(newAccess);
+//			}
 
 			if (serviceJourney.getJourneyPatternRef() != null) {
 				JourneyPatternRefStructure patternRefStruct = serviceJourney.getJourneyPatternRef().getValue();

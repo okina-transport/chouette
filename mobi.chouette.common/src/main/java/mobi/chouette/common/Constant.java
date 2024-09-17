@@ -121,5 +121,7 @@ public interface Constant {
 
 	String GTFS_ACCESSIBILITY_MAP = "GTFSAccessibilityMap";
 
+	String NETEX_ACCESSIBILITY_MAP = "NetexAccessibilityMap";
+
 	String GTFS_SELF_REFERENCING_STOPS = "GTFSSelfReferencingStops";
 }
