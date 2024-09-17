@@ -52,21 +52,18 @@ public class NetexAccessibilityCommand implements Command, Constant {
         for (Map.Entry<AccessibilityAssessment, List<VehicleJourney>> entry : accessibilityMap.entrySet()) {
             AccessibilityAssessment accessibilityAssessment = entry.getKey();
             if (accessibilityAssessment != null) {
-                mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
-
+                mobi.chouette.model.AccessibilityAssessment chouetteAccessibilityAssessment = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
                 List<VehicleJourney> vehicleJourneys = entry.getValue();
-
-                mobi.chouette.model.AccessibilityAssessment existingAccessibility =
-                        accessibilityAssessmentDAO.findByObjectId(newAccess.getObjectId());
+                mobi.chouette.model.AccessibilityAssessment existingAccessibility = accessibilityAssessmentDAO.findByAttributes(chouetteAccessibilityAssessment);
 
                 if (existingAccessibility == null) {
-                    accessibilityAssessmentDAO.create(newAccess);
-                    existingAccessibility = newAccess;
+                    accessibilityAssessmentDAO.create(chouetteAccessibilityAssessment);
+                    accessibilityAssessmentDAO.flush();
+                    existingAccessibility = chouetteAccessibilityAssessment;
                 }
 
                 updateVehicleJourneysWithAccessibility(existingAccessibility.getId(), vehicleJourneys);
             }
-
         }
 
         LocalDateTime end = LocalDateTime.now();
@@ -78,7 +75,7 @@ public class NetexAccessibilityCommand implements Command, Constant {
     }
 
     private void updateVehicleJourneysWithAccessibility(Long accessibilityId, List<VehicleJourney> vehicleJourneys) {
-        List<String> listIds = vehicleJourneys.stream().map(vj -> String.valueOf(vj.getId())).collect(Collectors.toList());
+        List<String> listIds = vehicleJourneys.stream().map(vj -> String.valueOf(vj.getObjectId())).collect(Collectors.toList());
         long updatedLines = vehicleJourneyDAO.updateAccessibilityId(accessibilityId, listIds);
         log.info("Updated vehicle journeys for accessibility " + accessibilityId + ": " + updatedLines);
     }
