@@ -77,7 +77,7 @@ public class AccessibilityCommand implements Command, Constant {
 
     private void updateIdsByBatch(Long id, List<String> objectIds) {
         for (List<String> batch : Lists.partition(objectIds, 30000)) {
-            long updatedlines = vehicleJourneyDAO.updateAcessibilityId(id, batch);
+            long updatedlines = vehicleJourneyDAO.updateAccessibilityId(id, batch);
             log.info("Accessibility - updated vehicle journeys:" + updatedlines);
         }
     }

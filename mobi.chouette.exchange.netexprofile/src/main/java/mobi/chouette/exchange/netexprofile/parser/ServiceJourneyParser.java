@@ -3,6 +3,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -43,6 +44,12 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
 
+		Map<AccessibilityAssessment, List<VehicleJourney>> accessibilityMap =
+				(Map<AccessibilityAssessment, List<VehicleJourney>>) context.get(NETEX_ACCESSIBILITY_MAP);
+		if (accessibilityMap == null) {
+			accessibilityMap = new HashMap<>();
+			context.put(NETEX_ACCESSIBILITY_MAP, accessibilityMap);
+		}
 
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney();
 
@@ -54,7 +61,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
 
 			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
-
 
 			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
 				String brandingRef = serviceJourney.getBrandingRef().getRef();
@@ -92,12 +98,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 			if (serviceJourney.getPrivateCode() != null) {
 				vehicleJourney.setPrivateCode(serviceJourney.getPrivateCode().getValue());
-			}
-
-			if (serviceJourney.getAccessibilityAssessment() != null) {
-				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
-				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
-				vehicleJourney.setAccessibilityAssessment(newAccess);
 			}
 
 			if (serviceJourney.getJourneyPatternRef() != null) {
@@ -190,7 +190,38 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				}
 			}
 			vehicleJourney.setFilled(true);
+
+			if (serviceJourney.getAccessibilityAssessment() != null) {
+				AccessibilityAssessment accessibilityAssessment = serviceJourney.getAccessibilityAssessment();
+				boolean found = false;
+
+				for (Map.Entry<AccessibilityAssessment, List<VehicleJourney>> entry : accessibilityMap.entrySet()) {
+					if (compareAccessibilityAssessments(entry.getKey(), accessibilityAssessment)) {
+						entry.getValue().add(vehicleJourney);
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					List<VehicleJourney> serviceJourneyList = new ArrayList<>();
+					serviceJourneyList.add(vehicleJourney);
+					accessibilityMap.put(accessibilityAssessment, serviceJourneyList);
+				}
+			}
 		}
+	}
+
+	private boolean compareAccessibilityAssessments(AccessibilityAssessment a1, AccessibilityAssessment a2) {
+		if (a1 == null || a2 == null) return false;
+
+		return a1.getLimitations().getAccessibilityLimitation().getWheelchairAccess() == a2.getLimitations().getAccessibilityLimitation().getWheelchairAccess() &&
+				a1.getLimitations().getAccessibilityLimitation().getVisualSignsAvailable() == a2.getLimitations().getAccessibilityLimitation().getVisualSignsAvailable() &&
+				a1.getLimitations().getAccessibilityLimitation().getStepFreeAccess() == a2.getLimitations().getAccessibilityLimitation().getStepFreeAccess() &&
+				a1.getLimitations().getAccessibilityLimitation().getLiftFreeAccess() == a2.getLimitations().getAccessibilityLimitation().getLiftFreeAccess() &&
+				a1.getLimitations().getAccessibilityLimitation().getEscalatorFreeAccess() == a2.getLimitations().getAccessibilityLimitation().getEscalatorFreeAccess() &&
+				a1.getLimitations().getAccessibilityLimitation().getAudibleSignalsAvailable() == a2.getLimitations().getAccessibilityLimitation().getAudibleSignalsAvailable() &&
+				a1.getMobilityImpairedAccess() == a2.getMobilityImpairedAccess();
 	}
 
 	private void parseTimetabledPassingTimes(Context context, Referential referential, ServiceJourney serviceJourney, VehicleJourney vehicleJourney) {
