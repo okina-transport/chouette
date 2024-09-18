@@ -3,6 +3,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
+import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -203,17 +204,6 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				}
 
 				if (!found) {
-					Integer accessibilityCounter = (Integer) context.get("ACCESSIBILITY_COUNTER");
-					if (accessibilityCounter == null) {
-						accessibilityCounter = 1;
-					}
-
-					accessibilityAssessment.setId(NetexImportUtil.composeObjectIdFromNetexId(context, "AccessibilityAssessment", String.valueOf(accessibilityCounter)));
-					accessibilityAssessment.getLimitations().getAccessibilityLimitation().setId(NetexImportUtil.composeObjectIdFromNetexId(context, "AccessibilityLimitation", String.valueOf(accessibilityCounter)));
-
-					accessibilityCounter++;
-					context.put("ACCESSIBILITY_COUNTER", accessibilityCounter);
-
 					List<VehicleJourney> serviceJourneyList = new ArrayList<>();
 					serviceJourneyList.add(vehicleJourney);
 					accessibilityMap.put(accessibilityAssessment, serviceJourneyList);

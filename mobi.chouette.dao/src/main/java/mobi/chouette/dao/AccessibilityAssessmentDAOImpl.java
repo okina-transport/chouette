@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 
 @Stateless(name = "AccessibilityAssessmentDAO")
@@ -54,10 +55,16 @@ public class AccessibilityAssessmentDAOImpl extends GenericDAOImpl<Accessibility
                     .setParameter("escalatorFreeAccess", accessibilityAssessment.getAccessibilityLimitation().getEscalatorFreeAccess())
                     .setParameter("audibleSignalsAvailable", accessibilityAssessment.getAccessibilityLimitation().getAudibleSignalsAvailable())
                     .setParameter("mobilityImpairedAccess", accessibilityAssessment.getMobilityImpairedAccess())
-                    .getSingleResult();
+                    .getResultList().stream().findFirst().orElse(null);
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<String> findAllAccessibilityAssessmentObjectIds() {
+        String jpql = "SELECT a.objectId FROM AccessibilityAssessment a";
+        return em.createQuery(jpql, String.class).getResultList();
     }
 
 }
