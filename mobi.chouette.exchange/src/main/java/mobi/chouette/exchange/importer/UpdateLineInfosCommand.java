@@ -76,7 +76,7 @@ public class UpdateLineInfosCommand implements Command, Constant {
             }
             manageBike(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
 
-            if (!context.get(IS_NETEX_IMPORTER).equals(true)) {
+            if (context.containsKey(IS_NETEX_IMPORTER) && !context.get(IS_NETEX_IMPORTER).equals(true)) {
                 managePMR(vehicleJourneyList, nbVehicleJourney, lineToUpdate);
             }
 
