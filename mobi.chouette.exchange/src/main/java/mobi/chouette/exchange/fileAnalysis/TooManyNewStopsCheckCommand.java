@@ -47,25 +47,37 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
         List<StopArea> newStops = new ArrayList<>();
 
         for (List<StopArea> stopAreasIncoming : list) {
+            // Liste des identifiants d'origine des stops incoming, avec remplacement de ":" par le code
             List<String> stopAreaOriginalIdList = stopAreasIncoming.stream()
                     .map(stopArea -> stopArea.getOriginalStopId().replace(":", COLON_REPLACEMENT_CODE))
                     .collect(Collectors.toList());
 
+            // Recherche des stops déjà en base de données
             List<StopArea> subListStopAreasAlreadyInDB = stopAreaDAO.findByObjectId(stopAreaOriginalIdList.stream()
                     .map(stop -> stop.replace(COLON_REPLACEMENT_CODE, ":"))
                     .collect(Collectors.toList()));
 
+            // Si la liste des stops en base est nulle ou vide, on récupère tous les stops de la base
+            if (subListStopAreasAlreadyInDB == null || subListStopAreasAlreadyInDB.isEmpty()) {
+                subListStopAreasAlreadyInDB = stopAreaDAO.findAll();
+            }
+
+            List<StopArea> finalSubListStopAreasAlreadyInDB = subListStopAreasAlreadyInDB;
             List<StopArea> filteredNewStops = stopAreasIncoming.stream()
-                    .filter(incomingStopArea -> subListStopAreasAlreadyInDB.stream()
-                            .noneMatch(stopAreaInDB ->
-                                    stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId().replace(":", COLON_REPLACEMENT_CODE)) ||
-                                            stopAreaInDB.getOriginalStopId().equals(incomingStopArea.getOriginalStopId())
-                            )
+                    .filter(incomingStopArea -> finalSubListStopAreasAlreadyInDB.stream()
+                            .noneMatch(stopAreaInDB -> {
+                                String cleanedOriginalStopId = stopAreaInDB.getOriginalStopId().replace("COM_", "");
+
+                                return cleanedOriginalStopId.equals(incomingStopArea.getOriginalStopId().replace(":", COLON_REPLACEMENT_CODE)) ||
+                                        cleanedOriginalStopId.equals(incomingStopArea.getOriginalStopId()) ||
+                                        cleanedOriginalStopId.contains(incomingStopArea.getOriginalStopId());
+                            })
                     )
                     .collect(Collectors.toList());
 
             newStops.addAll(filteredNewStops);
         }
+
 
         // Ajout des nouveaux stops au rapport d'analyse
         analyzeReport.getNewStops().addAll(newStops);
