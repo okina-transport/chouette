@@ -56,17 +56,6 @@ public class UpdateLineInfosCommand implements Command, Constant {
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
 
-            // Update VehicleJourney Accessibility
-            for (VehicleJourney vehicleJourney : vehicleJourneyList) {
-                if (vehicleJourney.getAccessibilityAssessment() == null && line.getAccessibilityAssessment() != null) {
-                    vehicleJourney.setAccessibilityAssessment(line.getAccessibilityAssessment());
-                    if (line.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
-                        vehicleJourney.getAccessibilityAssessment().setAccessibilityLimitation(line.getAccessibilityAssessment().getAccessibilityLimitation());
-                    }
-                    vehicleJourneyDAO.update(vehicleJourney);
-                }
-            }
-
             long nbVehicleJourney = vehicleJourneyList.size();
             Line lineToUpdate = lineDAO.find(line.getId());
             if (!parameters.isKeepBoardingAlighting() || !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
