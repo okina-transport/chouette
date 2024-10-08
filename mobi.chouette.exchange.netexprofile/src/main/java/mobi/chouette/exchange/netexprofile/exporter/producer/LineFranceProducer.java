@@ -7,17 +7,16 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
-import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.type.TadEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.FlexibleLine;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.GroupOfLinesRefStructure;
+import org.rutebanken.netex.model.KeyListStructure;
+import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.PresentationStructure;
@@ -28,8 +27,7 @@ import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GROUP_OF_LINES;
+
 
 public class LineFranceProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Line_VersionStructure, mobi.chouette.model.Line> {
 
@@ -107,6 +105,19 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         }
 
         netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues()));
+
+        if (neptuneLine.getPosition() != null) {
+            KeyValueStructure netexKeyValue = new KeyValueStructure();
+            netexKeyValue.setKey("route_sort_order");
+            netexKeyValue.setValue(String.valueOf(neptuneLine.getPosition()));
+
+            if (CollectionUtils.isNotEmpty(neptuneLine.getKeyValues())) {
+                netexLine.getKeyList().getKeyValue().add(netexKeyValue);
+            } else {
+                netexLine.setKeyList(new KeyListStructure().withKeyValue(netexKeyValue));
+            }
+        }
+
         NoticeProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, exportableNetexData.getNoticeAssignmentsTimetableFrame(), neptuneLine.getFootnotes(), neptuneLine);
 
         return netexLine;
