@@ -88,133 +88,23 @@ public class NetexParserUtils extends ParserUtils {
     public static TransportSubModeNameEnum toTransportSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
         if (subModeStructure != null) {
             if (subModeStructure.getAirSubmode() != null) {
-                AirSubmodeEnumeration mode = subModeStructure.getAirSubmode();
-                switch (mode) {
-                    case DOMESTIC_FLIGHT:
-                        return TransportSubModeNameEnum.DomesticFlight;
-                    case HELICOPTER_SERVICE:
-                        return TransportSubModeNameEnum.HelicopterService;
-                    case INTERCONTINENTAL_FLIGHT:
-                        return TransportSubModeNameEnum.InternationalFlight;
-                    default:
-                        log.error("Unsupported air sub mode " + mode);
-                }
+                return getAirSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getBusSubmode() != null) {
-                BusSubmodeEnumeration mode = subModeStructure.getBusSubmode();
-                switch (mode) {
-                    case AIRPORT_LINK_BUS:
-                        return TransportSubModeNameEnum.AirportLinkBus;
-                    case EXPRESS_BUS:
-                        return TransportSubModeNameEnum.ExpressBus;
-                    case LOCAL_BUS:
-                        return TransportSubModeNameEnum.LocalBus;
-                    case NIGHT_BUS:
-                        return TransportSubModeNameEnum.NightBus;
-                    case RAIL_REPLACEMENT_BUS:
-                        return TransportSubModeNameEnum.RailReplacementBus;
-                    case REGIONAL_BUS:
-                        return TransportSubModeNameEnum.RegionalBus;
-                    case SCHOOL_BUS:
-                        return TransportSubModeNameEnum.SchoolBus;
-                    case SHUTTLE_BUS:
-                        return TransportSubModeNameEnum.ShuttleBus;
-                    case SIGHTSEEING_BUS:
-                        return TransportSubModeNameEnum.SightseeingBus;
-                    default:
-                        log.error("Unsupported bus sub mode " + mode);
-                }
+                return getBusSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getCoachSubmode() != null) {
-                CoachSubmodeEnumeration mode = subModeStructure.getCoachSubmode();
-                switch (mode) {
-                    case TOURIST_COACH:
-                        return TransportSubModeNameEnum.TouristCoach;
-                    case INTERNATIONAL_COACH:
-                        return TransportSubModeNameEnum.InternationalCoach;
-                    case NATIONAL_COACH:
-                        return TransportSubModeNameEnum.NationalCoach;
-                    default:
-                        log.error("Unsupported coach sub mode " + mode);
-                }
+                return getCoachSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getFunicularSubmode() != null) {
-                FunicularSubmodeEnumeration mode = subModeStructure.getFunicularSubmode();
-                switch (mode) {
-                    case FUNICULAR:
-                        return TransportSubModeNameEnum.Funicular;
-                    default:
-                        log.error("Unsupported funicular sub mode " + mode);
-                }
+                return getFunicularSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getMetroSubmode() != null) {
-                MetroSubmodeEnumeration mode = subModeStructure.getMetroSubmode();
-                switch (mode) {
-                    case METRO:
-                        return TransportSubModeNameEnum.Metro;
-                    default:
-                        log.error("Unsupported metro sub mode " + mode);
-                }
+                return getMetroSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getRailSubmode() != null) {
-                RailSubmodeEnumeration mode = subModeStructure.getRailSubmode();
-                switch (mode) {
-                    // TODO à revoir pour changement de profil
-//					case INTERNATIONAL:
-//						return TransportSubModeNameEnum.International;
-                    case INTERREGIONAL_RAIL:
-                        return TransportSubModeNameEnum.InterregionalRail;
-                    case LOCAL:
-                        return TransportSubModeNameEnum.Local;
-                    case LONG_DISTANCE:
-                        return TransportSubModeNameEnum.LongDistance;
-                    case NIGHT_RAIL:
-                        return TransportSubModeNameEnum.NightRail;
-                    case REGIONAL_RAIL:
-                        return TransportSubModeNameEnum.RegionalRail;
-                    case TOURIST_RAILWAY:
-                        return TransportSubModeNameEnum.TouristRailway;
-                    // TODO à revoir pour changement de profil
-//					case AIRPORT_LINK_RAIL:
-//						return TransportSubModeNameEnum.AirportLinkRail;
-                    default:
-                        log.error("Unsupported rail sub mode " + mode);
-                }
+                return getRailSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getTelecabinSubmode() != null) {
-                TelecabinSubmodeEnumeration mode = subModeStructure.getTelecabinSubmode();
-                switch (mode) {
-                    case TELECABIN:
-                        return TransportSubModeNameEnum.Telecabin;
-                    default:
-                        log.error("Unsupported telecabin sub mode " + mode);
-                }
+                return getTelecabinSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getTramSubmode() != null) {
-                TramSubmodeEnumeration mode = subModeStructure.getTramSubmode();
-                switch (mode) {
-                    case LOCAL_TRAM:
-                        return TransportSubModeNameEnum.LocalTram;
-                    case CITY_TRAM:
-                        return TransportSubModeNameEnum.CityTram;
-                    default:
-                        log.error("Unsupported tram sub mode " + mode);
-                }
+                return getTramSubModeNameEnum(subModeStructure);
             } else if (subModeStructure.getWaterSubmode() != null) {
-                WaterSubmodeEnumeration mode = subModeStructure.getWaterSubmode();
-                switch (mode) {
-                    case HIGH_SPEED_PASSENGER_SERVICE:
-                        return TransportSubModeNameEnum.HighSpeedPassengerService;
-                    case HIGH_SPEED_VEHICLE_SERVICE:
-                        return TransportSubModeNameEnum.HighSpeedVehicleService;
-                    case INTERNATIONAL_CAR_FERRY:
-                        return TransportSubModeNameEnum.InternationalCarFerry;
-                    case INTERNATIONAL_PASSENGER_FERRY:
-                        return TransportSubModeNameEnum.InternationalPassengerFerry;
-                    case LOCAL_CAR_FERRY:
-                        return TransportSubModeNameEnum.LocalCarFerry;
-                    case LOCAL_PASSENGER_FERRY:
-                        return TransportSubModeNameEnum.LocalPassengerFerry;
-                    case NATIONAL_CAR_FERRY:
-                        return TransportSubModeNameEnum.NationalCarFerry;
-                    case SIGHTSEEING_SERVICE:
-                        return TransportSubModeNameEnum.SightseeingService;
-                    default:
-                        log.error("Unsupported water sub mode " + mode);
-                }
+                return getWaterSubModeNameEnum(subModeStructure);
             }
 
         }
@@ -514,6 +404,279 @@ public class NetexParserUtils extends ParserUtils {
                 return FlexibleServiceTypeEnum.notFlexible;
             case OTHER:
                 return FlexibleServiceTypeEnum.other;
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getWaterSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        WaterSubmodeEnumeration mode = subModeStructure.getWaterSubmode();
+        switch (mode) {
+            case AIRPORT_BOAT_LINK:
+                return TransportSubModeNameEnum.AirportBoatLink;
+            case CABLE_FERRY:
+                return TransportSubModeNameEnum.CableFerry;
+            case CANAL_BARGE:
+                return TransportSubModeNameEnum.CanalBarge;
+            case HIGH_SPEED_PASSENGER_SERVICE:
+                return TransportSubModeNameEnum.HighSpeedPassengerService;
+            case HIGH_SPEED_VEHICLE_SERVICE:
+                return TransportSubModeNameEnum.HighSpeedVehicleService;
+            case INTERNATIONAL_CAR_FERRY:
+                return TransportSubModeNameEnum.InternationalCarFerry;
+            case INTERNATIONAL_PASSENGER_FERRY:
+                return TransportSubModeNameEnum.InternationalPassengerFerry;
+            case LOCAL_CAR_FERRY:
+                return TransportSubModeNameEnum.LocalCarFerry;
+            case LOCAL_PASSENGER_FERRY:
+                return TransportSubModeNameEnum.LocalPassengerFerry;
+            case NATIONAL_CAR_FERRY:
+                return TransportSubModeNameEnum.NationalCarFerry;
+            case NATIONAL_PASSENGER_FERRY:
+                return TransportSubModeNameEnum.NationalPassengerFerry;
+            case POST_BOAT:
+                return TransportSubModeNameEnum.PostBoat;
+            case REGIONAL_CAR_FERRY:
+                return TransportSubModeNameEnum.RegionalCarFerry;
+            case REGIONAL_PASSENGER_FERRY:
+                return TransportSubModeNameEnum.RegionalPassengerFerry;
+            case RIVER_BUS:
+                return TransportSubModeNameEnum.RiverBus;
+            case ROAD_FERRY_LINK:
+                return TransportSubModeNameEnum.RoadFerryLink;
+            case SCHEDULED_FERRY:
+                return TransportSubModeNameEnum.ScheduledFerry;
+            case SCHOOL_BOAT:
+                return TransportSubModeNameEnum.SchoolBoat;
+            case SHUTTLE_FERRY_SERVICE:
+                return TransportSubModeNameEnum.ShuttleFerryService;
+            case SIGHTSEEING_SERVICE:
+                return TransportSubModeNameEnum.SightseeingService;
+            case TRAIN_FERRY:
+                return TransportSubModeNameEnum.TrainFerry;
+            default:
+                log.error("Unsupported water sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getTramSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        TramSubmodeEnumeration mode = subModeStructure.getTramSubmode();
+        switch (mode) {
+            case CITY_TRAM:
+                return TransportSubModeNameEnum.CityTram;
+            case LOCAL_TRAM:
+                return TransportSubModeNameEnum.LocalTram;
+            case REGIONAL_TRAM:
+                return TransportSubModeNameEnum.RegionalTram;
+            case SHUTTLE_TRAM:
+                return TransportSubModeNameEnum.ShuttleTram;
+            case SIGHTSEEING_TRAM:
+                return TransportSubModeNameEnum.SightseeingTram;
+            case TRAIN_TRAM:
+                return TransportSubModeNameEnum.TrainTram;
+            default:
+                log.error("Unsupported tram sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getTelecabinSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        TelecabinSubmodeEnumeration mode = subModeStructure.getTelecabinSubmode();
+        switch (mode) {
+            case CABLE_CAR:
+                return TransportSubModeNameEnum.CableCar;
+            case CHAIR_LIFT:
+                return TransportSubModeNameEnum.ChairLift;
+            case DRAG_LIFT:
+                return TransportSubModeNameEnum.DragLift;
+            case LIFT:
+                return TransportSubModeNameEnum.Lift;
+            case TELECABIN:
+                return TransportSubModeNameEnum.Telecabin;
+            case TELECABIN_LINK:
+                return TransportSubModeNameEnum.TelecabinLink;
+            default:
+                log.error("Unsupported telecabin sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getRailSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        RailSubmodeEnumeration mode = subModeStructure.getRailSubmode();
+        switch (mode) {
+            case AIRPORT_LINK_RAIL:
+                return TransportSubModeNameEnum.AirportLinkRail;
+            case CAR_TRANSPORT_RAIL_SERVICE:
+                return TransportSubModeNameEnum.CarTransportRailService;
+            case CROSS_COUNTRY_RAIL:
+                return TransportSubModeNameEnum.CrossCountryRail;
+            case HIGH_SPEED_RAIL:
+                return TransportSubModeNameEnum.HighSpeedRail;
+            case INTERNATIONAL:
+                return TransportSubModeNameEnum.International;
+            case INTERREGIONAL_RAIL:
+                return TransportSubModeNameEnum.InterregionalRail;
+            case LOCAL:
+                return TransportSubModeNameEnum.Local;
+            case LONG_DISTANCE:
+                return TransportSubModeNameEnum.LongDistance;
+            case NIGHT_RAIL:
+                return TransportSubModeNameEnum.NightRail;
+            case RACK_AND_PINION_RAILWAY:
+                return TransportSubModeNameEnum.RackAndPinionRailway;
+            case RAIL_SHUTTLE:
+                return TransportSubModeNameEnum.RailShuttle;
+            case REGIONAL_RAIL:
+                return TransportSubModeNameEnum.RegionalRail;
+            case REPLACEMENT_RAIL_SERVICE:
+                return TransportSubModeNameEnum.ReplacementRailService;
+            case SLEEPER_RAIL_SERVICE:
+                return TransportSubModeNameEnum.SleeperRailService;
+            case SPECIAL_TRAIN:
+                return TransportSubModeNameEnum.SpecialTrain;
+            case SUBURBAN_RAILWAY:
+                return TransportSubModeNameEnum.SuburbanRailway;
+            case TOURIST_RAILWAY:
+                return TransportSubModeNameEnum.TouristRailway;
+            default:
+                log.error("Unsupported rail sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getMetroSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        MetroSubmodeEnumeration mode = subModeStructure.getMetroSubmode();
+        switch (mode) {
+            case METRO:
+                return TransportSubModeNameEnum.Metro;
+            case TUBE:
+                return TransportSubModeNameEnum.Tube;
+            case URBAN_RAILWAY:
+                return TransportSubModeNameEnum.UrbanRailway;
+            default:
+                log.error("Unsupported metro sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getFunicularSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        FunicularSubmodeEnumeration mode = subModeStructure.getFunicularSubmode();
+        switch (mode) {
+            case ALL_FUNICULAR_SERVICES:
+                return TransportSubModeNameEnum.AllFunicularServices;
+            case FUNICULAR:
+                return TransportSubModeNameEnum.Funicular;
+            case STREET_CABLE_CAR:
+                return TransportSubModeNameEnum.StreetCableCar;
+            default:
+                log.error("Unsupported funicular sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getCoachSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        CoachSubmodeEnumeration mode = subModeStructure.getCoachSubmode();
+        switch (mode) {
+            case COMMUTER_COACH:
+                return TransportSubModeNameEnum.CommuterCoach;
+            case INTERNATIONAL_COACH:
+                return TransportSubModeNameEnum.InternationalCoach;
+            case NATIONAL_COACH:
+                return TransportSubModeNameEnum.NationalCoach;
+            case REGIONAL_COACH:
+                return TransportSubModeNameEnum.RegionalCoach;
+            case SCHOOL_COACH:
+                return TransportSubModeNameEnum.SchoolCoach;
+            case SHUTTLE_COACH:
+                return TransportSubModeNameEnum.ShuttleCoach;
+            case SIGHTSEEING_COACH:
+                return TransportSubModeNameEnum.SightseeingCoach;
+            case SPECIAL_COACH:
+                return TransportSubModeNameEnum.SpecialCoach;
+            case TOURIST_COACH:
+                return TransportSubModeNameEnum.TouristCoach;
+            default:
+                log.error("Unsupported coach sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getBusSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        BusSubmodeEnumeration mode = subModeStructure.getBusSubmode();
+        switch (mode) {
+            case AIRPORT_LINK_BUS:
+                return TransportSubModeNameEnum.AirportLinkBus;
+            case DEDICATED_LANE_BUS:
+                return TransportSubModeNameEnum.DedicatedLaneBus;
+            case DEMAND_AND_RESPONSE_BUS:
+                return TransportSubModeNameEnum.DemandAndResponseBus;
+            case EXPRESS_BUS:
+                return TransportSubModeNameEnum.ExpressBus;
+            case HIGH_FREQUENCY_BUS:
+                return TransportSubModeNameEnum.HighFrequencyBus;
+            case LOCAL_BUS:
+                return TransportSubModeNameEnum.LocalBus;
+            case MOBILITY_BUS:
+                return TransportSubModeNameEnum.MobilityBus;
+            case MOBILITY_BUS_FOR_REGISTERED_DISABLED:
+                return TransportSubModeNameEnum.MobilityBusForRegisteredDisabled;
+            case NIGHT_BUS:
+                return TransportSubModeNameEnum.NightBus;
+            case POST_BUS:
+                return TransportSubModeNameEnum.PostBus;
+            case RAIL_REPLACEMENT_BUS:
+                return TransportSubModeNameEnum.RailReplacementBus;
+            case REGIONAL_BUS:
+                return TransportSubModeNameEnum.RegionalBus;
+            case SCHOOL_BUS:
+                return TransportSubModeNameEnum.SchoolBus;
+            case SCHOOL_AND_PUBLIC_SERVICE_BUS:
+                return TransportSubModeNameEnum.SchoolAndPublicServiceBus;
+            case SHUTTLE_BUS:
+                return TransportSubModeNameEnum.ShuttleBus;
+            case SIGHTSEEING_BUS:
+                return TransportSubModeNameEnum.SightseeingBus;
+            case SPECIAL_NEEDS_BUS:
+                return TransportSubModeNameEnum.SpecialNeedsBus;
+            default:
+                log.error("Unsupported bus sub mode " + mode);
+        }
+        return null;
+    }
+
+    protected static TransportSubModeNameEnum getAirSubModeNameEnum(TransportSubmodeStructure subModeStructure) {
+        AirSubmodeEnumeration mode = subModeStructure.getAirSubmode();
+        switch (mode) {
+            case AIRSHIP_SERVICE:
+                return TransportSubModeNameEnum.AirshipService;
+            case DOMESTIC_CHARTER_FLIGHT:
+                return TransportSubModeNameEnum.DomesticCharterFlight;
+            case DOMESTIC_FLIGHT:
+                return TransportSubModeNameEnum.DomesticFlight;
+            case DOMESTIC_SCHEDULED_FLIGHT:
+                return TransportSubModeNameEnum.DomesticScheduledFlight;
+            case HELICOPTER_SERVICE:
+                return TransportSubModeNameEnum.HelicopterService;
+            case INTERCONTINENTAL_CHARTER_FLIGHT:
+                return TransportSubModeNameEnum.IntercontinentalCharterFlight;
+            case INTERCONTINENTAL_FLIGHT:
+                return TransportSubModeNameEnum.IntercontinentalFlight;
+            case INTERNATIONAL_CHARTER_FLIGHT:
+                return TransportSubModeNameEnum.InternationalCharterFligth;
+            case INTERNATIONAL_FLIGHT:
+                return TransportSubModeNameEnum.InternationalFlight;
+            case ROUND_TRIP_CHARTER_FLIGHT:
+                return TransportSubModeNameEnum.RoundTripCharterFlight;
+            case SCHENGEN_AREA_FLIGHT:
+                return TransportSubModeNameEnum.SchengenAreaFlight;
+            case SHORT_HAUL_INTERNATIONAL_FLIGHT:
+                return TransportSubModeNameEnum.ShortHaulInternationalFlight;
+            case SHUTTLE_FLIGHT:
+                return TransportSubModeNameEnum.ShuttleFlight;
+            case SIGHTSEEING_FLIGHT:
+                return TransportSubModeNameEnum.SightseeingFlight;
+            default:
+                log.error("Unsupported air sub mode " + mode);
         }
         return null;
     }
