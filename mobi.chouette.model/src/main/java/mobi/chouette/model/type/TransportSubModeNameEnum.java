@@ -1,6 +1,7 @@
 package mobi.chouette.model.type;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 public enum TransportSubModeNameEnum {
 
@@ -14,54 +15,79 @@ public enum TransportSubModeNameEnum {
     HighFrequencyBus,
     LocalBus,
     MobilityBus,
+    MobilityBusForRegisteredDisabled,
     NightBus,
+    PostBus,
     RailReplacementBus,
     RegionalBus,
     SchoolAndPublicServiceBus,
     SchoolBus,
     ShuttleBus,
-    SpecialNeedsBus,
     SightseeingBus,
+    SpecialNeedsBus,
 
     /**
      * Tram sub modes
      */
     LocalTram,
     CityTram,
+    RegionalTram,
+    ShuttleTram,
+    SightseeingTram,
+    TrainTram,
 
     /**
      * Rail sub modes
      */
+    AirportLinkRail,
+    CarTransportRailService,
+    CrossCountryRail,
+    HighSpeedRail,
     International,
     InterregionalRail,
     Local,
     LongDistance,
     NightRail,
-    RegionalRail,
-    TouristRailway,
-    AirportLinkRail,
-    HighSpeedRail,
-    SuburbanRailway,
-    SleeperRailService,
-    CarTransportRailService,
-    RailShuttle,
     RackAndPinionRailway,
+    RailShuttle,
+    RegionalRail,
+    ReplacementRailService,
+    SleeperRailService,
+    SpecialTrain,
+    SuburbanRailway,
+    TouristRailway,
 
     /**
      * Metro sub modes
      */
     Metro,
+    Tube,
+    UrbanRailway,
 
     /**
      * Air sub modes
      */
+    AirshipService,
+    DomesticCharterFlight,
     DomesticFlight,
+    DomesticScheduledFlight,
     HelicopterService,
+    IntercontinentalCharterFlight,
+    IntercontinentalFlight,
+    InternationalCharterFligth,
     InternationalFlight,
+    RoundTripCharterFlight,
+    SchengenAreaFlight,
+    ShortHaulInternationalFlight,
+    ShuttleFlight,
+    SightseeingFlight,
 
     /**
      * Water sub modes
      */
+    AirportBoatLink,
+    CableFerry,
+    CanalBarge,
     HighSpeedPassengerService,
     HighSpeedVehicleService,
     InternationalCarFerry,
@@ -69,52 +95,89 @@ public enum TransportSubModeNameEnum {
     LocalCarFerry,
     LocalPassengerFerry,
     NationalCarFerry,
+    NationalPassengerFerry,
+    PostBoat,
+    RegionalCarFerry,
+    RegionalPassengerFerry,
+    RiverBus,
+    RoadFerryLink,
+    ScheduledFerry,
+    SchoolBoat,
+    ShuttleFerryService,
     SightseeingService,
+    TrainFerry,
 
     /**
      * Cabelway sub modes
      */
+    CableCar,
+    ChairLift,
+    DragLift,
+    Lift,
     Telecabin,
+    TelecabinLink,
 
     /**
      * Funicular sub modes
      */
+    AllFunicularServices,
     Funicular,
+    StreetCableCar,
 
-    /**
-     * Coach sub modes
-     */
-    InternationalCoach,
-    NationalCoach,
-    TouristCoach;
+	/**
+	 * Coach sub modes
+	 */
+    CommuterCoach,
+	InternationalCoach,
+	NationalCoach,
+    RegionalCoach,
+    SchoolCoach,
+    ShuttleCoach,
+    SightseeingCoach,
+    SpecialCoach,
+	TouristCoach;
 
-    public static final EnumSet<TransportSubModeNameEnum> CABLEWAY_SUB_MODES = EnumSet.of(Telecabin);
-    public static final EnumSet<TransportSubModeNameEnum> FUNICULAR_SUB_MODES = EnumSet.of(Funicular);
+    public static final Set<TransportSubModeNameEnum> CABLEWAY_SUB_MODES = EnumSet.of(Telecabin);
+    public static final Set<TransportSubModeNameEnum> FUNICULAR_SUB_MODES = EnumSet.of(Funicular);
 
-    public static final EnumSet<TransportSubModeNameEnum> AIR_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> AIR_SUB_MODES = EnumSet.of(
+            AirshipService,
+            DomesticCharterFlight,
             DomesticFlight,
+            DomesticScheduledFlight,
             HelicopterService,
-            InternationalFlight
+            IntercontinentalCharterFlight,
+            IntercontinentalFlight,
+            InternationalCharterFligth,
+            InternationalFlight,
+            RoundTripCharterFlight,
+            SchengenAreaFlight,
+            ShortHaulInternationalFlight,
+            ShuttleFlight,
+            SightseeingFlight
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> RAIL_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> RAIL_SUB_MODES = EnumSet.of(
+            AirportLinkRail,
+            CarTransportRailService,
+            CrossCountryRail,
+            HighSpeedRail,
             International,
             InterregionalRail,
             Local,
             LongDistance,
             NightRail,
-            RegionalRail,
-            TouristRailway,
-            AirportLinkRail,
-            HighSpeedRail,
-            SuburbanRailway,
-            SleeperRailService,
-            CarTransportRailService,
+            RackAndPinionRailway,
             RailShuttle,
-            RackAndPinionRailway
+            RegionalRail,
+            ReplacementRailService,
+            SleeperRailService,
+            SpecialTrain,
+            SuburbanRailway,
+            TouristRailway
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> FERRY_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> FERRY_SUB_MODES = EnumSet.of(
             InternationalCarFerry,
             InternationalPassengerFerry,
             LocalCarFerry,
@@ -122,7 +185,10 @@ public enum TransportSubModeNameEnum {
             NationalCarFerry
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> WATER_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> WATER_SUB_MODES = EnumSet.of(
+            AirportBoatLink,
+            CableFerry,
+            CanalBarge,
             HighSpeedPassengerService,
             HighSpeedVehicleService,
             InternationalCarFerry,
@@ -130,10 +196,20 @@ public enum TransportSubModeNameEnum {
             LocalCarFerry,
             LocalPassengerFerry,
             NationalCarFerry,
-            SightseeingService
+            NationalPassengerFerry,
+            PostBoat,
+            RegionalCarFerry,
+            RegionalPassengerFerry,
+            RiverBus,
+            RoadFerryLink,
+            ScheduledFerry,
+            SchoolBoat,
+            ShuttleFerryService,
+            SightseeingService,
+            TrainFerry
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> BUS_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> BUS_SUB_MODES = EnumSet.of(
             AirportLinkBus,
             DedicatedLaneBus,
             DemandAndResponseBus,
@@ -141,25 +217,31 @@ public enum TransportSubModeNameEnum {
             HighFrequencyBus,
             LocalBus,
             MobilityBus,
+            MobilityBusForRegisteredDisabled,
             NightBus,
+            PostBus,
             RailReplacementBus,
             RegionalBus,
             SchoolAndPublicServiceBus,
             SchoolBus,
             ShuttleBus,
-            SpecialNeedsBus,
-            SightseeingBus
+            SightseeingBus,
+            SpecialNeedsBus
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> COACH_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> COACH_SUB_MODES = EnumSet.of(
             InternationalCoach,
             NationalCoach,
             TouristCoach
     );
 
-    public static final EnumSet<TransportSubModeNameEnum> TRAM_SUB_MODES = EnumSet.of(
+    public static final Set<TransportSubModeNameEnum> TRAM_SUB_MODES = EnumSet.of(
             LocalTram,
-            CityTram
+            CityTram,
+            RegionalTram,
+            ShuttleTram,
+            SightseeingTram,
+            TrainTram
     );
 
 }
