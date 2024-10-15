@@ -10,6 +10,7 @@ import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.StopArea;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -65,6 +66,7 @@ public class TooManyNewStopsCheckCommand extends AbstractImporterCommand impleme
             List<StopArea> finalSubListStopAreasAlreadyInDB = subListStopAreasAlreadyInDB;
             List<StopArea> filteredNewStops = stopAreasIncoming.stream()
                     .filter(incomingStopArea -> finalSubListStopAreasAlreadyInDB.stream()
+                            .filter(stopAreaInDB -> StringUtils.isNotEmpty(stopAreaInDB.getOriginalStopId()))
                             .noneMatch(stopAreaInDB -> {
                                 String cleanedOriginalStopId = stopAreaInDB.getOriginalStopId().replace("COM_", "");
 
