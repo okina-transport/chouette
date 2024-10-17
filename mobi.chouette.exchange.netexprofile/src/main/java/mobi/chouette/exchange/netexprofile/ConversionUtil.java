@@ -15,6 +15,10 @@ import static mobi.chouette.common.TimeUtil.toLocalTimeFromJoda;
 @Log4j
 public class ConversionUtil {
 
+	private ConversionUtil() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static MultilingualString getMultiLingualString(String v) {
 		if (v == null) {
 			return null;
@@ -152,8 +156,12 @@ public class ConversionUtil {
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.LOCAL_BUS);
 				case MobilityBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.MOBILITY_BUS);
+				case MobilityBusForRegisteredDisabled:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.MOBILITY_BUS_FOR_REGISTERED_DISABLED);
 				case NightBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.NIGHT_BUS);
+				case PostBus:
+					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.POST_BUS);
 				case RailReplacementBus:
 					return new TransportSubmodeStructure().withBusSubmode(BusSubmodeEnumeration.RAIL_REPLACEMENT_BUS);
 				case RegionalBus:
@@ -173,10 +181,22 @@ public class ConversionUtil {
 				/**
 				 * Coach sub modes
 				 */
+				case CommuterCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.COMMUTER_COACH);
 				case InternationalCoach:
 					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.INTERNATIONAL_COACH);
 				case NationalCoach:
 					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.NATIONAL_COACH);
+				case RegionalCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.REGIONAL_COACH);
+				case SchoolCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.SCHOOL_COACH);
+				case ShuttleCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.SHUTTLE_COACH);
+				case SightseeingCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.SIGHTSEEING_COACH);
+				case SpecialCoach:
+					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.SPECIAL_COACH);
 				case TouristCoach:
 					return new TransportSubmodeStructure().withCoachSubmode(CoachSubmodeEnumeration.TOURIST_COACH);
 				/**
@@ -186,10 +206,26 @@ public class ConversionUtil {
 					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.LOCAL_TRAM);
 				case CityTram:
 					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.CITY_TRAM);
+				case RegionalTram:
+					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.REGIONAL_TRAM);
+				case ShuttleTram:
+					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.SHUTTLE_TRAM);
+				case SightseeingTram:
+					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.SIGHTSEEING_TRAM);
+				case TrainTram:
+					return new TransportSubmodeStructure().withTramSubmode(TramSubmodeEnumeration.TRAIN_TRAM);
 
 				/**
 				 * Rail sub modes
 				 */
+				case AirportLinkRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.AIRPORT_LINK_RAIL);
+				case CarTransportRailService:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
+				case CrossCountryRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.CROSS_COUNTRY_RAIL);
+				case HighSpeedRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.HIGH_SPEED_RAIL);
 				case International:
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.INTERNATIONAL);
 				case InterregionalRail:
@@ -200,44 +236,74 @@ public class ConversionUtil {
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.LONG_DISTANCE);
 				case NightRail:
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.NIGHT_RAIL);
-				case RegionalRail:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.REGIONAL_RAIL);
-				case TouristRailway:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.TOURIST_RAILWAY);
-				case AirportLinkRail:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.AIRPORT_LINK_RAIL);
-				case HighSpeedRail:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.HIGH_SPEED_RAIL);
-				case SuburbanRailway:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SUBURBAN_RAILWAY);
-				case SleeperRailService:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SLEEPER_RAIL_SERVICE);
-				case CarTransportRailService:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
-				case RailShuttle:
-					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.RAIL_SHUTTLE);
 				case RackAndPinionRailway:
 					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.RACK_AND_PINION_RAILWAY);
+				case RailShuttle:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.RAIL_SHUTTLE);
+				case RegionalRail:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.REGIONAL_RAIL);
+				case ReplacementRailService:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.REPLACEMENT_RAIL_SERVICE);
+				case SleeperRailService:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SLEEPER_RAIL_SERVICE);
+				case SpecialTrain:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SPECIAL_TRAIN);
+				case SuburbanRailway:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.SUBURBAN_RAILWAY);
+				case TouristRailway:
+					return new TransportSubmodeStructure().withRailSubmode(RailSubmodeEnumeration.TOURIST_RAILWAY);
 
 				/**
 				 * Metro sub modes
 				 */
 				case Metro:
 					return new TransportSubmodeStructure().withMetroSubmode(MetroSubmodeEnumeration.METRO);
+				case Tube:
+					return new TransportSubmodeStructure().withMetroSubmode(MetroSubmodeEnumeration.TUBE);
+				case UrbanRailway:
+					return new TransportSubmodeStructure().withMetroSubmode(MetroSubmodeEnumeration.URBAN_RAILWAY);
 
 				/**
 				 * Air sub modes
 				 */
+				case AirshipService:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.AIRSHIP_SERVICE);
+				case DomesticCharterFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.DOMESTIC_CHARTER_FLIGHT);
 				case DomesticFlight:
 					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.DOMESTIC_FLIGHT);
+				case DomesticScheduledFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.DOMESTIC_SCHEDULED_FLIGHT);
 				case HelicopterService:
 					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.HELICOPTER_SERVICE);
+				case IntercontinentalCharterFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.INTERCONTINENTAL_CHARTER_FLIGHT);
+				case IntercontinentalFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.INTERCONTINENTAL_FLIGHT);
+				case InternationalCharterFligth:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.INTERNATIONAL_CHARTER_FLIGHT);
 				case InternationalFlight:
 					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.INTERNATIONAL_FLIGHT);
+				case RoundTripCharterFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.ROUND_TRIP_CHARTER_FLIGHT);
+				case SchengenAreaFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.SCHENGEN_AREA_FLIGHT);
+				case ShortHaulInternationalFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.SHORT_HAUL_INTERNATIONAL_FLIGHT);
+				case ShuttleFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.SHUTTLE_FLIGHT);
+				case SightseeingFlight:
+					return new TransportSubmodeStructure().withAirSubmode(AirSubmodeEnumeration.SIGHTSEEING_FLIGHT);
 
 				/**
 				 * Water sub modes
 				 */
+				case AirportBoatLink:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.AIRPORT_BOAT_LINK);
+				case CableFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.CABLE_FERRY);
+				case CanalBarge:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.CANAL_BARGE);
 				case HighSpeedPassengerService:
 					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.HIGH_SPEED_PASSENGER_SERVICE);
 				case HighSpeedVehicleService:
@@ -252,20 +318,54 @@ public class ConversionUtil {
 					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.LOCAL_PASSENGER_FERRY);
 				case NationalCarFerry:
 					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.NATIONAL_CAR_FERRY);
+				case NationalPassengerFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.NATIONAL_PASSENGER_FERRY);
+				case PostBoat:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.POST_BOAT);
+				case RegionalCarFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.REGIONAL_CAR_FERRY);
+				case RegionalPassengerFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.REGIONAL_PASSENGER_FERRY);
+				case RiverBus:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.RIVER_BUS);
+				case RoadFerryLink:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.ROAD_FERRY_LINK);
+				case ScheduledFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.SCHEDULED_FERRY);
+				case SchoolBoat:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.SCHOOL_BOAT);
+				case ShuttleFerryService:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.SHUTTLE_FERRY_SERVICE);
 				case SightseeingService:
 					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.SIGHTSEEING_SERVICE);
+				case TrainFerry:
+					return new TransportSubmodeStructure().withWaterSubmode(WaterSubmodeEnumeration.TRAIN_FERRY);
 
 				/**
 				 * Cabelway sub modes
 				 */
+				case CableCar:
+					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.CABLE_CAR);
+				case ChairLift:
+					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.CHAIR_LIFT);
+				case DragLift:
+					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.DRAG_LIFT);
+				case Lift:
+					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.LIFT);
 				case Telecabin:
 					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.TELECABIN);
+				case TelecabinLink:
+					return new TransportSubmodeStructure().withTelecabinSubmode(TelecabinSubmodeEnumeration.TELECABIN_LINK);
 
 				/**
 				 * Funicular sub modes
 				 */
+				case AllFunicularServices:
+					return new TransportSubmodeStructure().withFunicularSubmode(FunicularSubmodeEnumeration.ALL_FUNICULAR_SERVICES);
 				case Funicular:
 					return new TransportSubmodeStructure().withFunicularSubmode(FunicularSubmodeEnumeration.FUNICULAR);
+				case StreetCableCar:
+					return new TransportSubmodeStructure().withFunicularSubmode(FunicularSubmodeEnumeration.STREET_CABLE_CAR);
 
 				default:
 					// Fall through
