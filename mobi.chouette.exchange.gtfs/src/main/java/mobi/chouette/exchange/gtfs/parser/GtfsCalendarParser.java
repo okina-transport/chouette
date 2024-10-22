@@ -22,11 +22,9 @@ import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Log4j
 public class GtfsCalendarParser implements Parser, Validator, Constant {
@@ -102,7 +100,81 @@ public class GtfsCalendarParser implements Parser, Validator, Constant {
 		}
 		return calendarParser;
 	}
-	
+
+	/**
+	 * Compare les IDs de service et regroupe les trajets ayant des structures de calendriers identiques
+	 * et des horaires similaires pour la détection d'anomalies. Cette méthode analyse les informations
+	 * de trajet présentes dans le contexte et identifie les trajets partageant les mêmes caractéristiques
+	 * de calendrier et d'horaires dans les fichiers GTFS.
+	 *
+	 * @param context Le contexte contenant les données GTFS, y compris les objets nécessaires pour
+	 *                l'importation et la validation des données.
+	 * @param duplicateTripStructure La structure de trajets dupliqués, mappée par horaire et par
+	 *                               liste de paires <trip_id, service_id>, représentant les trajets
+	 *                               ayant des caractéristiques de calendrier similaires.
+	 */
+	public void compareServiceIdsAndGroupTripsToAnnomalyDetection(Context context, Map<String, List<Map<String, String>>> duplicateTripStructure) {
+		Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop = new HashMap<>();
+
+		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
+
+		// calendar.txt
+		Index<GtfsCalendar> calendarParser = null;
+		if (importer.hasCalendarImporter()) {
+			gtfsValidationReporter.reportSuccess(context, GTFS_1_GTFS_Common_2, GTFS_CALENDAR_FILE);
+
+			try {
+				calendarParser = importer.getCalendarByService();
+			} catch (Exception ex ) {
+				log.error(ex);
+			}
+
+			// Iterate over each times group in duplicateTripStructure
+			for (Map.Entry<String, List<Map<String, String>>> entry : duplicateTripStructure.entrySet()) {
+				String times = entry.getKey();
+				List<Map<String, String>> tripServiceList = entry.getValue();
+
+				// Temporary map to store <service_id, List<trip_id>> for trips with identical calendar info
+				Map<String, List<String>> serviceIdToTripIds = new HashMap<>();
+
+				// For each trip_id and service_id pair, group by identical calendar attributes
+				for (Map<String, String> tripServiceMap : tripServiceList) {
+					for (Map.Entry<String, String> tripEntry : tripServiceMap.entrySet()) {
+						String tripId = tripEntry.getKey();
+						String serviceId = tripEntry.getValue();
+
+						// Find the calendar info for this service_id using a loop instead of stream()
+						GtfsCalendar calendar = null;
+						for (GtfsCalendar cal : calendarParser) {
+							if (cal.getServiceId().equals(serviceId)) {
+								calendar = cal;
+								break;
+							}
+						}
+
+						if (calendar != null) {
+							// Group trips by service_id
+							Boolean calendarEndDateIsAfter = calendar.getEndDate().isAfter(LocalDate.now());
+							String key = calendar.getMonday()+"+"+calendar.getTuesday()+"+"+calendar.getWednesday()+"+"+calendar.getFriday()+"+"+calendar.getThursday()+"+"+calendar.getSaturday()+"+"+calendar.getSunday()+"+"+calendarEndDateIsAfter;
+							serviceIdToTripIds.computeIfAbsent(key, k -> new ArrayList<>()).add(tripId);
+						}
+					}
+				}
+
+				// After grouping by service_id, add to the main map if service details match
+				for (Map.Entry<String, List<String>> serviceGroup : serviceIdToTripIds.entrySet()) {
+					List<String> tripIds = serviceGroup.getValue();
+					if (tripIds.size() > 1) {
+						duplicateTripStructureInStopTimesWithSameHourlyAndStop.computeIfAbsent(times, k -> new ArrayList<>()).addAll(tripIds);
+					}
+				}
+			}
+		}
+
+		context.put(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP, duplicateTripStructureInStopTimesWithSameHourlyAndStop);
+	}
+
 	private void validateCalendarDates(Context context, Index<GtfsCalendar> calendarParser) throws Exception {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);

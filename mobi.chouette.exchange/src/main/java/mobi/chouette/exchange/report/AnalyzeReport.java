@@ -121,6 +121,12 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "duplicateConsecutiveStopTimes")
     private List<String> duplicateConsecutiveStopTimes = new ArrayList<>();
 
+    @XmlElement(name = "duplicateTripStructureInStopTimesWithSameCalendarAndHourly")
+    private List<String> duplicateTripStructureInStopTimesWithSameCalendarAndHourly = new ArrayList<>();
+
+    @XmlElement(name = "duplicateTripStructureInStopTimesWithSameHourlyAndStop")
+    private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop = new HashMap<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -367,6 +373,14 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!duplicateConsecutiveStopTimes.isEmpty()) {
             canLaunchImport = false;
             analyzeReportMap.put("duplicateConsecutiveStopTimes", duplicateConsecutiveStopTimes);
+        }
+
+        if (duplicateTripStructureInStopTimesWithSameCalendarAndHourly != null && !duplicateTripStructureInStopTimesWithSameCalendarAndHourly.isEmpty()) {
+            analyzeReportMap.put("duplicateTripStructureInStopTimesWithSameCalendarAndHourly", duplicateTripStructureInStopTimesWithSameCalendarAndHourly);
+        }
+
+        if (duplicateTripStructureInStopTimesWithSameHourlyAndStop != null && !duplicateTripStructureInStopTimesWithSameHourlyAndStop.isEmpty()) {
+            analyzeReportMap.put("duplicateTripStructureInStopTimesWithSameHourlyAndStop", duplicateTripStructureInStopTimesWithSameHourlyAndStop);
         }
 
 

@@ -17,14 +17,12 @@ import mobi.chouette.model.StopArea;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Log4j
 public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements Command, Constant {
 
     public static final String COMMAND = "GtfsAnalyzeFileCommand";
-
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -53,6 +51,13 @@ public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements C
             result = process(context, commands, progression, true, Mode.line);
             List<String> selfReferencingStops = (List) context.get(GTFS_SELF_REFERENCING_STOPS);
             analyzeReport.setSelfReferencingStops(selfReferencingStops);
+
+            List<String> tripStructureInStopTimesWithSameCalendarAndHourly = (List<String>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_CALENDAR_AND_HOURLY);
+            analyzeReport.setDuplicateTripStructureInStopTimesWithSameCalendarAndHourly(tripStructureInStopTimesWithSameCalendarAndHourly);
+
+            Map<String, List<String>> tripStructureInStopTimesWithSameHourlyAndStop = (Map<String, List<String>>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP);
+            analyzeReport.setDuplicateTripStructureInStopTimesWithSameHourlyAndStop(tripStructureInStopTimesWithSameHourlyAndStop);
+
             report.setResult("OK");
             progression.saveAnalyzeReport(context,true);
             log.info("Gtfs analysis completed");

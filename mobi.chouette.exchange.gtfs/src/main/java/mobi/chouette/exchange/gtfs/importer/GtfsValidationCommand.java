@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class GtfsValidationCommand implements Command, Constant {
@@ -110,6 +111,11 @@ public class GtfsValidationCommand implements Command, Constant {
 				// shapes.txt, trips.txt, stop_times.txt & frequencies.txt
 				GtfsTripParser tripParser = (GtfsTripParser) ParserFactory.create(GtfsTripParser.class.getName());
 				tripParser.validate(context);
+
+				Map<String, List<Map<String, String>>> duplicateTripStructure = (Map<String, List<Map<String, String>>>) context.get("duplicateTripStructure");
+				if (duplicateTripStructure != null) {
+					calendarParser.compareServiceIdsAndGroupTripsToAnnomalyDetection(context, duplicateTripStructure);
+				}
 			}
 			
 			// transfers.txt

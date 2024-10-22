@@ -111,6 +111,8 @@ public interface Constant {
 	String SCHEDULE_STOP_POINT_STOP_AREA_NULL = "scheduleStopPointInStopAreaRefNull";
 	String WRONG_SCHEDULE_STOP_POINT_COORDINATES = "wrongScheduleStopPointCoordinates";
 	String WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN = "wrongStopPointOrderInJourneyPattern";
+	String DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_CALENDAR_AND_HOURLY = "duplicateTripStructureInStopTimesWithSameCalendarAndHourly";
+	String DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP = "duplicateTripStructureInStopTimesWithSameHourlyAndStop";
 
 	String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
 

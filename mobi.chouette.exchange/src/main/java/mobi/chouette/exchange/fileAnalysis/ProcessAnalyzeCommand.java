@@ -43,6 +43,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
     private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern;
     private Map<String, Set<String>> wrongScheduleStopPointCoordinates;
+    private List<String> duplicateTripStructureInStopTimesWithSameCalendarAndHourly;
+    private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop;
+
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
     private Map<String, String> originalIdMap = new HashMap<>();
@@ -104,6 +107,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongRefStopAreaInScheduleStopPoint = analyzeReport.getWrongRefStopAreaInScheduleStopPoint();
         wrongStopPointOrderInJourneyPattern = analyzeReport.getWrongStopPointOrderInJourneyPattern();
         wrongScheduleStopPointCoordinates = analyzeReport.getWrongScheduleStopPointCoordinates();
+        duplicateTripStructureInStopTimesWithSameCalendarAndHourly = analyzeReport.getDuplicateTripStructureInStopTimesWithSameCalendarAndHourly();
+        duplicateTripStructureInStopTimesWithSameHourlyAndStop = analyzeReport.getDuplicateTripStructureInStopTimesWithSameHourlyAndStop();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -119,6 +124,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsStopPointInJourneyPattern(context);
         constainsStopAreaWrongCoordinatesScheduleStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
+        containsDuplicateTripStructureInStopTimesWithSameCalendarAndHourly(context);
+        containsDuplicateTripStructureInStopTimesWithSameHourlyAndStop(context);
+
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
         }
@@ -371,6 +379,22 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         if (result != null) {
             Set<String> stopAreas = new HashSet<>(result);
             wrongScheduleStopPointCoordinates.put(currentFileName, stopAreas);
+        }
+    }
+
+    private void containsDuplicateTripStructureInStopTimesWithSameCalendarAndHourly(Context context) {
+        List<String> tripStructureInStopTimesWithSameCalendarAndHourly = (List<String>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_CALENDAR_AND_HOURLY);
+
+        if (tripStructureInStopTimesWithSameCalendarAndHourly != null) {
+            duplicateTripStructureInStopTimesWithSameCalendarAndHourly.addAll(tripStructureInStopTimesWithSameCalendarAndHourly);
+        }
+    }
+
+    private void containsDuplicateTripStructureInStopTimesWithSameHourlyAndStop(Context context) {
+        Map<String, List<String>> tripStructureInStopTimesWithSameHourlyAndStop = (Map<String, List<String>>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP);
+
+        if (tripStructureInStopTimesWithSameHourlyAndStop != null) {
+            duplicateTripStructureInStopTimesWithSameHourlyAndStop.putAll(tripStructureInStopTimesWithSameHourlyAndStop);
         }
     }
 
