@@ -221,6 +221,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
             }
 
+            findTripIdsWithSameTimes(stopTimeParser, context);
+
             if (enoughStopTimes) {
                 gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
             }
@@ -262,6 +264,42 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             gtfsValidationReporter.reportError(context, new GtfsException(GTFS_STOP_TIMES_FILE, 1, null,
                     GtfsException.ERROR.MISSING_FILE, null, null), GTFS_STOP_TIMES_FILE);
         }
+    }
+
+    /**
+     * Identifies trip_ids that share the same stop times and adds them to the context.
+     * Each trip's stop times are mapped and compared, and groups of trips with matching times are identified.
+     * Only trip_ids with identical times are added to the resulting list.
+     *
+     * @param stopTimeParser  an index used to retrieve stop times associated with trip_ids
+     * @param context         the context where the list of trip_ids with the same times is stored
+     */
+    private void findTripIdsWithSameTimes(Index<GtfsStopTime> stopTimeParser, Context context) {
+        Map<String, String> tripTimeMap = new HashMap<>();
+
+        // Iterate on each trip_id in stop_time and build the tripTimeMap
+        for (String tripId : stopTimeParser.keys()) {
+            for (GtfsStopTime stopTime : stopTimeParser.values(tripId)) {
+                String departure = stopTime.getDepartureTime() != null ? stopTime.getDepartureTime().getTime().toString() : "null";
+                String arrival = stopTime.getArrivalTime() != null ? stopTime.getArrivalTime().getTime().toString() : "null";
+                String departureArrival = departure + "+" + arrival;
+                tripTimeMap.merge(tripId, departureArrival, (existing, newValue) -> existing + "+" + newValue);
+            }
+        }
+
+        Map<String, String> timeTripIdMap = new HashMap<>();
+        tripTimeMap.forEach((tripId, times) ->
+                timeTripIdMap.merge(times, tripId, (existingIds, newId) -> existingIds + "+" + newId)
+        );
+
+        List<String> tripIdsWithSameTimesList = new ArrayList<>();
+        timeTripIdMap.forEach((times, ids) -> {
+            if (ids.contains("+")) {
+                tripIdsWithSameTimesList.add(ids);
+            }
+        });
+
+        context.putIfAbsent("tripIdsWithSameTimesList", tripIdsWithSameTimesList);
     }
 
     private void validateShapes(Context context) throws Exception {
@@ -445,6 +483,9 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 gtfsValidationReporter.validate(context, GTFS_TRIPS_FILE, bean.getOkTests());
 
             }
+
+            filterTripsWithSameServiceIdAndPutToContext(context, tripParser);
+
             tripParser.setWithValidation(false);
             int i = 1;
             boolean unsuedId = true;
@@ -464,6 +505,56 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         } else {
             gtfsValidationReporter.reportError(context, new GtfsException(GTFS_TRIPS_FILE, 1, null,
                     GtfsException.ERROR.MISSING_FILE, null, null), GTFS_TRIPS_FILE);
+        }
+    }
+
+    /**
+     * Filters trips with identical stop times and adds those sharing the same service_id to the context.
+     * If a group contains 3 or more trips, only those with the most common service_id are kept.
+     * If a group contains fewer than 3 trips, all must have the same service_id to be added.
+     *
+     * @param context     the context containing data and used to store results
+     * @param tripParser  an index used to retrieve GtfsTrip objects associated with trip_ids
+     */
+    private void filterTripsWithSameServiceIdAndPutToContext(Context context, Index<GtfsTrip> tripParser) {
+        List<String> duplicateTripStructureInStopTimes = new ArrayList<>();
+        List<String> tripIdsWithSameTimesList = (List<String>) context.get("tripIdsWithSameTimesList");
+
+        for (String tripIds : tripIdsWithSameTimesList) {
+            String[] splitTripIds = tripIds.split("\\+");
+            Map<String, List<String>> serviceIdToTripIds = new HashMap<>();
+
+            // Browse trip_ids and organize them by service_id
+            for (String tripId : splitTripIds) {
+                GtfsTrip gtfsTrip = tripParser.getValue(tripId);
+
+                if (gtfsTrip != null) {
+                    String serviceId = gtfsTrip.getServiceId();
+                    serviceIdToTripIds.computeIfAbsent(serviceId, k -> new ArrayList<>()).add(tripId);
+                }
+            }
+
+            if (splitTripIds.length >= 3) {
+                // Find the group of trip_ids with the largest number of the same service_id
+                List<String> largestGroup = serviceIdToTripIds.values().stream()
+                        .max(Comparator.comparingInt(List::size))
+                        .orElse(new ArrayList<>());
+
+                // Add the largest group if it contains at least 2 elements
+                if (largestGroup.size() >= 2) {
+                    duplicateTripStructureInStopTimes.add(String.join("+", largestGroup));
+                }
+            } else {
+                boolean allSameServiceId = serviceIdToTripIds.size() == 1;
+
+                if (allSameServiceId) {
+                    duplicateTripStructureInStopTimes.add(tripIds);
+                }
+            }
+        }
+
+        if (!duplicateTripStructureInStopTimes.isEmpty()) {
+            context.put(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES, duplicateTripStructureInStopTimes);
         }
     }
 

@@ -43,6 +43,8 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongRefStopAreaInScheduleStopPoint;
     private List<Map<String, Map<String, String>>> wrongStopPointOrderInJourneyPattern;
     private Map<String, Set<String>> wrongScheduleStopPointCoordinates;
+    private List<String> duplicateTripStructureInStopTimes;
+
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
     private Map<String, String> originalIdMap = new HashMap<>();
@@ -104,6 +106,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongRefStopAreaInScheduleStopPoint = analyzeReport.getWrongRefStopAreaInScheduleStopPoint();
         wrongStopPointOrderInJourneyPattern = analyzeReport.getWrongStopPointOrderInJourneyPattern();
         wrongScheduleStopPointCoordinates = analyzeReport.getWrongScheduleStopPointCoordinates();
+        duplicateTripStructureInStopTimes = analyzeReport.getDuplicateTripStructureInStopTimes();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -119,6 +122,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsStopPointInJourneyPattern(context);
         constainsStopAreaWrongCoordinatesScheduleStopPoint(context);
         checkRouteLinksIfNeeded(context, newValue);
+        containsDuplicateTripStructureInStopTimes(context);
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
         }
@@ -371,6 +375,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         if (result != null) {
             Set<String> stopAreas = new HashSet<>(result);
             wrongScheduleStopPointCoordinates.put(currentFileName, stopAreas);
+        }
+    }
+
+    private void containsDuplicateTripStructureInStopTimes(Context context) {
+        List<String> tripStructureInStopTimes = (List<String>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES);
+
+        if (tripStructureInStopTimes != null) {
+            duplicateTripStructureInStopTimes.addAll(tripStructureInStopTimes);
         }
     }
 
