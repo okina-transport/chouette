@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>mobi.chouette</groupId>
 		<artifactId>mobi.chouette</artifactId>
-		<version>3.5.9_MOBIITI</version>
+		<version>3.5.10_MOBIITI</version>
 	</parent>
   <artifactId>mobi.chouette.command</artifactId>
    <properties>
