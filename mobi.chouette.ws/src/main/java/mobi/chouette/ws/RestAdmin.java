@@ -9,6 +9,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.TestDescription;
 import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
+import mobi.chouette.exchange.importer.GenerateIneoToVjrefMappingCsv;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Stat;
 import mobi.chouette.service.JobService;
@@ -177,6 +178,19 @@ public class RestAdmin implements Constant {
 		}
 	}
 
+	@GET
+	@Path("/generate_ineo_to_vjref_mapping_csv")
+	public void generateIneoToVjrefMappingCsv() {
+		log.info(Color.BLUE + "Call Admin generateIneoToVjrefMappingCsv"+ Color.NORMAL);
+		try {
+			InitialContext initialContext = new InitialContext();
+			Command c = CommandFactory.create(initialContext, GenerateIneoToVjrefMappingCsv.class.getName());
+			c.execute(new mobi.chouette.common.Context());
+		} catch (Exception e) {
+			log.error("Error generating IneoToVjrefMapping.csv", e);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@GET
 	@Path("/test_list/{action}{type:(/[^/]+?)?}")
