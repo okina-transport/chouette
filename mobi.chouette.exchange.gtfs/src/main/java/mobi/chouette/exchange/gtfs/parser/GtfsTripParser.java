@@ -601,23 +601,25 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             return;
         }
 
-        // Iterate over each group in tripsGroupedByTimeAndStop
+        // Indexer les trips par tripId pour une recherche rapide
+        Map<String, String> tripIdToServiceId = new HashMap<>();
+        for (GtfsTrip trip : tripParser) {
+            tripIdToServiceId.put(trip.getTripId(), trip.getServiceId());
+        }
+
+        // Parcourir les groupes de trips
         for (Map.Entry<String, List<String>> entry : tripsGroupedByTimeAndStop.entrySet()) {
             String timeAndStopGroupKey = entry.getKey();
             List<String> tripIds = entry.getValue();
-            List<Map<String, String>> tripServiceList = new ArrayList<>();
+            List<Map<String, String>> tripServiceList = new ArrayList<>(tripIds.size());
 
             for (String tripId : tripIds) {
-                for (GtfsTrip trip : tripParser) {
-                    if (tripId.equals(trip.getTripId())) {
-                        String serviceId = trip.getServiceId();
-
-                        // Create a map for this trip_id and service_id pair
-                        Map<String, String> tripServiceMap = new HashMap<>();
-                        tripServiceMap.put(tripId, serviceId);
-                        tripServiceList.add(tripServiceMap);
-                        break;
-                    }
+                String serviceId = tripIdToServiceId.get(tripId);
+                if (serviceId != null) {
+                    // Créer un map contenant tripId et serviceId
+                    Map<String, String> tripServiceMap = new HashMap<>(1);
+                    tripServiceMap.put(tripId, serviceId);
+                    tripServiceList.add(tripServiceMap);
                 }
             }
             duplicateTripStructure.put(timeAndStopGroupKey, tripServiceList);
