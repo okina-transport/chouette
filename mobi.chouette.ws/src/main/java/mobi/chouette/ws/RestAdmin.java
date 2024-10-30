@@ -9,6 +9,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.TestDescription;
 import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
+import mobi.chouette.exchange.importer.GenerateIneoVJMappingCsv;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Stat;
 import mobi.chouette.service.JobService;
@@ -177,6 +178,23 @@ public class RestAdmin implements Constant {
 		}
 	}
 
+	@GET
+	@Path("/generate_ineo_vj_mapping")
+	public void generateIneoVJMappingCsv() {
+		log.info(Color.BLUE + "Call Admin generateIneoVJMappingCsv"+ Color.NORMAL);
+		if (!"true".equals(System.getenv("INEO_GENERATE_VJ_MAPPING"))) {
+			log.warn("Env variable INEO_GENERATE_VJ_MAPPING not set to 'true', abort");
+			return;
+		}
+		try {
+			InitialContext initialContext = new InitialContext();
+			Command c = CommandFactory.create(initialContext, GenerateIneoVJMappingCsv.class.getName());
+			c.execute(new mobi.chouette.common.Context());
+		} catch (Exception e) {
+			log.error("Error executing GenerateIneoVJMappingCsv command", e);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@GET
 	@Path("/test_list/{action}{type:(/[^/]+?)?}")

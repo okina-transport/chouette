@@ -1,35 +1,22 @@
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.persistence.Cacheable;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.joda.time.LocalDate;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Chouette Timetable
@@ -55,12 +42,6 @@ public class Timetable extends NeptuneIdentifiedObject {
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
-
-	/**
-	 * mapping day type with enumerations
-	 */
-	public static final DayTypeEnum[] dayTypeByInt = {DayTypeEnum.Monday, DayTypeEnum.Tuesday,
-			DayTypeEnum.Wednesday, DayTypeEnum.Thursday, DayTypeEnum.Friday, DayTypeEnum.Saturday, DayTypeEnum.Sunday};
 
 	/**
 	 * comment <br/>
@@ -121,7 +102,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 		List<DayTypeEnum> result = new ArrayList<DayTypeEnum>();
 		if (this.intDayTypes != null) {
 			for (DayTypeEnum dayType : DayTypeEnum.values()) {
-				int mask = 1 << dayType.ordinal();
+				int mask = dayType.buildBitMask();
 				if ((this.intDayTypes & mask) == mask) {
 					result.add(dayType);
 				}
@@ -318,20 +299,9 @@ public class Timetable extends NeptuneIdentifiedObject {
 		if (dayTypes == null)
 			return value;
 		for (DayTypeEnum dayType : dayTypes) {
-			value += buildDayTypeMask(dayType);
+			value += dayType.buildBitMask();
 		}
 		return value;
-	}
-
-	/**
-	 * build a bitwise dayType mask for filtering
-	 * 
-	 * @param dayType
-	 *            the dayType to filter
-	 * @return binary mask for a day type
-	 */
-	public static int buildDayTypeMask(DayTypeEnum dayType) {
-		return (int) Math.pow(2, dayType.ordinal());
 	}
 
 	/**
@@ -400,9 +370,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 				return false;
 		}
 		if (getIntDayTypes() != null && getIntDayTypes().intValue() != 0 && getPeriods() != null) {
-
-			int aDayOfWeek = aDay.getDayOfWeek() - 1; // zero on monday
-			int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
+			int aDayOfWeekFlag = DayTypeEnum.from(aDay.getDayOfWeek()).buildBitMask();
 			if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {
 				// check if day is in a period
 				for (Period period : getPeriods()) {
@@ -524,10 +492,7 @@ public class Timetable extends NeptuneIdentifiedObject {
 			LocalDate date = period.getStartDate();
 
 			while (!date.isAfter(period.getEndDate())) {
-
-				int aDayOfWeek = date.getDayOfWeek() - 1; // zero on
-				// monday
-				int aDayOfWeekFlag = buildDayTypeMask(dayTypeByInt[aDayOfWeek]);
+				int aDayOfWeekFlag = DayTypeEnum.from(date.getDayOfWeek()).buildBitMask();
 				if ((getIntDayTypes() & aDayOfWeekFlag) == aDayOfWeekFlag) {
 					if (!excluded.contains(date))
 						dates.add(date);
