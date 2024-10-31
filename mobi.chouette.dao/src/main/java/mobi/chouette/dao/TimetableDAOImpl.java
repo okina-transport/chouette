@@ -2,6 +2,8 @@ package mobi.chouette.dao;
 
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.statistics.LineAndTimetable;
+import mobi.chouette.model.type.DayTypeEnum;
+import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -34,6 +36,27 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 
 		List<Timetable> tt = q.getResultList();
 		return tt;
+	}
+
+	@Override
+	public Collection<? extends Number> getActiveTimetableIdsByDay(LocalDate date) {
+		Integer dayBitMask = DayTypeEnum.from(date.getDayOfWeek()).buildBitMask();
+		return em.createNativeQuery(
+						"select distinct tt.id from time_tables tt  " +
+								"left join time_table_periods ttp on ttp.time_table_id = tt.id " +
+								"left join time_table_dates ttd on tt.id = ttd.time_table_id " +
+								"where " +
+								"(" +
+								"   tt.int_day_types & :dayBitMask = :dayBitMask " +
+								"   and ttp.period_start <= cast(:date as date) " +
+								"   and ttp.period_end >= cast(:date as date) " +
+								"   and (ttd.\"date\" is null or ttd.\"date\" <> cast(:date as date) or ttd.in_out <> false) " +
+								") or (" +
+								"   ttd.\"date\" = cast(:date as date) and ttd.in_out = true" +
+								")")
+				.setParameter("date", date.toDate())
+				.setParameter("dayBitMask", dayBitMask)
+				.getResultList();
 	}
 
 	@Override

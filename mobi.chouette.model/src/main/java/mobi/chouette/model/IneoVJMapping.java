@@ -13,7 +13,9 @@ public class IneoVJMapping {
 
     private final LocalTime time;
 
-    private final String stopAreaObjectId;
+    private final String originalStopId;
+
+    private final String originalParentStopId;
 
     private final String lineNumber;
 

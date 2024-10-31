@@ -9,10 +9,12 @@ import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.Provider;
+import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
@@ -40,7 +42,7 @@ public class GenerateIneoVJMappingCsv implements Command {
     public static final String COMMAND = "GenerateIneoVJMappingCsv";
     public static final String INEO_VJ_MAPPING_CSV = "vehicleJourneyMapping.csv";
     public static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
-            "routeDirection", "stopAreaId", "vehicleJourneyId" };
+            "routeDirection", "originalStopId", "vehicleJourneyId" };
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
     public static final DateFormat DF_YYYY_MM_DD = new SimpleDateFormat("yyyyMMdd");
     public static final DateTimeFormatter DTF_HHMMSS = DateTimeFormatter.ofPattern("HHmmss");
@@ -92,8 +94,9 @@ public class GenerateIneoVJMappingCsv implements Command {
                             DF_YYYY_MM_DD.format(entity.getDate()),
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
-                            entity.getRouteDirection(),
-                            ObjectIdUtil.extractOriginalId(entity.getStopAreaObjectId()),
+                            PTDirectionEnum.A.equals(entity.getRouteDirection()) ? "1" : "2",
+                            StringUtils.isEmpty(entity.getOriginalParentStopId()) ? entity.getOriginalStopId() :
+                                    entity.getOriginalParentStopId(),
                             ObjectIdUtil.extractOriginalId(entity.getVehicleJourneyObjectId())
                     );
                 }
