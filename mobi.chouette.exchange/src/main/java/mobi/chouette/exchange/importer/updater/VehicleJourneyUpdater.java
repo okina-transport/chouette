@@ -106,6 +106,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 	@EJB
 	private AccessibilityAssessmentDAO accessibilityAssessmentDAO;
 
+	@EJB(beanName = VehicleJourneyFacilitiesUpdater.BEAN_NAME)
+	private Updater<VehicleJourneyFacility> vehicleJourneyFacilityUpdater;
+
 
 	@Override
 	public void update(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
@@ -145,7 +148,6 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			oldValue.setFacility(newValue.getFacility());
 			oldValue.setVehicleTypeIdentifier(newValue.getVehicleTypeIdentifier());
 			oldValue.setNumber(newValue.getNumber());
-			oldValue.setBikesAllowed(newValue.getBikesAllowed());
 			oldValue.setFlexibleService(newValue.getFlexibleService());
 			oldValue.setJourneyCategory(newValue.getJourneyCategory());
 			oldValue.setKeyValues(newValue.getKeyValues());
@@ -196,10 +198,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			if (newValue.getNumber() != null && !newValue.getNumber().equals(oldValue.getNumber())) {
 				oldValue.setNumber(newValue.getNumber());
 			}
-			if (newValue.getBikesAllowed() != null
-					&& !newValue.getBikesAllowed().equals(oldValue.getBikesAllowed()) && !dataTripIdfm) {
-				oldValue.setBikesAllowed(newValue.getBikesAllowed());
-			}
+
 			if (newValue.getFlexibleService() != null
 					&& !newValue.getFlexibleService().equals(oldValue.getFlexibleService())) {
 				oldValue.setFlexibleService(newValue.getFlexibleService());
@@ -387,6 +386,7 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 		updateInterchanges(context, oldValue, newValue);
 		updateAccessibilityAssessment(context, cache, oldValue, newValue);
 		updateTrains(context, oldValue, newValue);
+		updateFacilities(context, oldValue, newValue);
 //		monitor.stop();
 	}
 
@@ -533,5 +533,28 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			validationReporter.addCheckPointReportError(context, DATABASE_VEHICLE_JOURNEY_2, data.getDataLocations().get(newCompany.getObjectId()));
 		else
 			validationReporter.reportSuccess(context, DATABASE_VEHICLE_JOURNEY_2);
+	}
+
+	private void updateFacilities(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
+		Collection<VehicleJourneyFacility> addedFacilities = CollectionUtil.substract(newValue.getVehicleJourneyFacilities(),
+				oldValue.getVehicleJourneyFacilities(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		for (VehicleJourneyFacility vehicleJourneyFacility : addedFacilities) {
+			oldValue.addVehicleJourneyFacility(vehicleJourneyFacility);
+		}
+
+		Collection<Pair<VehicleJourneyFacility, VehicleJourneyFacility>> potentiallyModifiedFacility = CollectionUtil.intersection(
+				oldValue.getVehicleJourneyFacilities(), newValue.getVehicleJourneyFacilities(),
+				NeptuneIdentifiedObjectComparator.INSTANCE);
+
+		for (Pair<VehicleJourneyFacility, VehicleJourneyFacility> pair : potentiallyModifiedFacility) {
+			vehicleJourneyFacilityUpdater.update(context, pair.getLeft(), pair.getRight());
+		}
+
+		Collection<VehicleJourneyFacility> removedFacilities = CollectionUtil.substract(oldValue.getVehicleJourneyFacilities(), newValue.getVehicleJourneyFacilities(), NeptuneIdentifiedObjectComparator.INSTANCE);
+		for (VehicleJourneyFacility vehicleJourneyFacility : removedFacilities) {
+			oldValue.getVehicleJourneyFacilities().remove(vehicleJourneyFacility);
+		}
+
 	}
 }

@@ -33,6 +33,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
@@ -42,6 +43,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static mobi.chouette.model.constants.VehicleJourneyFacilityConstants.SERVICE_FACILITY_SET_OBJECT_ID_KEY;
 
 @Log4j
 public class GtfsTripParser implements Parser, Validator, Constant {
@@ -764,17 +767,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 
             if (gtfsTrip.getBikesAllowed() != null) {
-                switch (gtfsTrip.getBikesAllowed()) {
-                    case NoInformation:
-                        vehicleJourney.setBikesAllowed(null);
-                        break;
-                    case NoAllowed:
-                        vehicleJourney.setBikesAllowed(Boolean.FALSE);
-                        break;
-                    case Allowed:
-                        vehicleJourney.setBikesAllowed(Boolean.TRUE);
-                        break;
-                }
+                setBikeValue(referential, gtfsTrip, vehicleJourney);
             }
 
             vehicleJourney.setFilled(true);
@@ -1517,5 +1510,31 @@ public class GtfsTripParser implements Parser, Validator, Constant {
             }
         }
         return null;
+    }
+
+    private static void setBikeValue(Referential referential, GtfsTrip gtfsTrip, VehicleJourney vehicleJourney) {
+        String objectId = vehicleJourney.getObjectId().replace(VehicleJourney.VEHICLEJOURNEY_KEY, SERVICE_FACILITY_SET_OBJECT_ID_KEY);
+        VehicleJourneyFacility vehicleJourneyFacility = ObjectFactory.getVehicleJourneyFacility(referential, objectId);
+        vehicleJourneyFacility.setObjectVersion(0);
+        KeyValue keyValue = new KeyValue();
+        keyValue.setKey(VehicleJourneyFacilityEnum.LUGGAGE_CARRIAGE_ENUMERATION.getKey());
+        keyValue.setTypeOfKey(FacilityTypeEnum.SERVICE_FACILITY_SET.name());
+        List<KeyValue> keyValueList = new ArrayList<>(1);
+        keyValueList.add(keyValue);
+        vehicleJourneyFacility.setKeyValues(keyValueList);
+        switch (gtfsTrip.getBikesAllowed()) {
+            case NoInformation:
+                keyValue.setValue(LuggageCarriageEnumeration.UNKNOWN.name());
+                vehicleJourney.addVehicleJourneyFacility(vehicleJourneyFacility);
+                break;
+            case NoAllowed:
+                keyValue.setValue(LuggageCarriageEnumeration.NO_CYCLES.name());
+                vehicleJourney.addVehicleJourneyFacility(vehicleJourneyFacility);
+                break;
+            case Allowed:
+                keyValue.setValue(LuggageCarriageEnumeration.CYCLES_ALLOWED.name());
+                vehicleJourney.addVehicleJourneyFacility(vehicleJourneyFacility);
+                break;
+        }
     }
 }

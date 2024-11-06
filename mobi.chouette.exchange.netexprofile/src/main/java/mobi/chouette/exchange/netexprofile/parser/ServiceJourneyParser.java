@@ -3,7 +3,6 @@ package mobi.chouette.exchange.netexprofile.parser;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
-import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
@@ -32,9 +31,10 @@ import java.util.stream.Collectors;
 @Log4j
 public class ServiceJourneyParser extends NetexParser implements Parser, Constant {
 
-	private KeyValueParser keyValueParser = new KeyValueParser();
+	private final KeyValueParser keyValueParser = new KeyValueParser();
 
-	private ContactStructureParser contactStructureParser = new ContactStructureParser();
+	private final ServiceJourneyFacilityParser serviceJourneyFacilityParser = new ServiceJourneyFacilityParser();
+
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -54,12 +54,12 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		List<Journey_VersionStructure> serviceJourneys = journeyStructs.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney();
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
+
 			if (! (journeyStruct instanceof ServiceJourney)) {
 				log.debug("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
 				continue;
 			}
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
-
 			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
 
 			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
@@ -153,6 +153,9 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 			vehicleJourney.setKeyValues(keyValueParser.parse(serviceJourney.getKeyList()));
 			vehicleJourney.setServiceAlteration(NetexParserUtils.toServiceAlterationEum(serviceJourney.getServiceAlteration()));
+
+
+			serviceJourneyFacilityParser.parseFacilities(context, referential, serviceJourney, vehicleJourney);
 
 			if (serviceJourney.getFlexibleServiceProperties() != null) {
 				vehicleJourney.setFlexibleService(true);

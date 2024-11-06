@@ -1,0 +1,20 @@
+package mobi.chouette.exchange.netexprofile.exporter.producer.facilities;
+
+import org.rutebanken.netex.model.SafetyFacilityEnumeration;
+import org.rutebanken.netex.model.ServiceFacilitySet;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class SafetyFacility extends FacilityProducer<SafetyFacilityEnumeration> {
+    @Override
+    public void updateFacilitySet(ServiceFacilitySet facilitySet, String rawValues) {
+        if (this.checkExistingValue(rawValues)) {
+            List<SafetyFacilityEnumeration> facilityValues = Arrays.stream(rawValues.split(SEPARATOR))
+                    .map(SafetyFacilityEnumeration::valueOf)
+                    .collect(Collectors.toList());
+            facilitySet.withSafetyFacilityList(facilityValues);
+        }
+    }
+}

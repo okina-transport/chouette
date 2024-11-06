@@ -57,6 +57,7 @@ public class DataCollector {
 				}
 				for (VehicleJourney vehicleJourney : jp.getVehicleJourneys()) {
 					Hibernate.initialize(vehicleJourney.getKeyValues());
+					Hibernate.initialize(vehicleJourney.getVehicleJourneyFacilities());
 
 					if (vehicleJourney.getVehicleJourneyAtStops().isEmpty()) {
 						continue;

@@ -371,4 +371,16 @@ public class ObjectFactory {
 		return result;
 	}
 
+	public static VehicleJourneyFacility getVehicleJourneyFacility(Referential referential,
+												   String objectId) {
+		VehicleJourneyFacility result = referential.getFacilities().get(objectId);
+		if (result == null) {
+			result = new VehicleJourneyFacility();
+			result.setObjectId(objectId);
+			result.setDetached(true);
+			referential.getFacilities().put(objectId, result);
+		}
+		return result;
+	}
+
 }
