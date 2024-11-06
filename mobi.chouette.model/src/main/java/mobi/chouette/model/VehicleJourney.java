@@ -1,34 +1,18 @@
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Chouette VehicleJourney
@@ -62,7 +46,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * comment
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -72,7 +56,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set comment <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -82,7 +66,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * Transport mode when different from line transport mode
-	 * 
+	 *
 	 * @param transportMode
 	 *            New value
 	 * @return The actual value
@@ -95,7 +79,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * published journey name
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -105,7 +89,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set published journey name <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -116,7 +100,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * published journey identifier
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -126,7 +110,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set published journey identifier <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -137,7 +121,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * facility
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -147,7 +131,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set facility <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -157,7 +141,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * vehicle type identifier
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -167,7 +151,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * set vehicle type identifier <br/>
 	 * truncated to 255 characters if too long
-	 * 
+	 *
 	 * @param value
 	 *            New value
 	 */
@@ -178,7 +162,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * number
-	 * 
+	 *
 	 * @param number
 	 *            New value
 	 * @return The actual value
@@ -188,34 +172,15 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Column(name = "number")
 	private Long number;
 
-
-	/**
-	 * Indicates whether bikes are allowed. Valid options are:
-	 *
-	 * empty - No bike information for the trip.
-	 * true - Vehicle being used on this particular trip can accommodate at least one bicycle.
-	 * false - No bicycles are allowed on this trip.
-	 *
-	 *
-	 *
-	 * @param mobilityRestrictedSuitability
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "bikes_allowed")
-	private Boolean bikesAllowed;
-
 	/**
 	 * flexible service <br/>
-	 * 
+	 *
 	 * <ul>
 	 * <li>null if unknown or inherited from line
 	 * <li>true for flexible service</li>
 	 * <li>false for regular service</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param flexibleService
 	 *            New value
 	 * @return The actual value
@@ -227,7 +192,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * route reference
-	 * 
+	 *
 	 * @param route
 	 *            New value
 	 * @return The actual value
@@ -240,7 +205,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * journey pattern reference
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -250,7 +215,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * set journey pattern reference
-	 * 
+	 *
 	 * @param journeyPattern
 	 */
 	public void setJourneyPattern(JourneyPattern journeyPattern) {
@@ -266,7 +231,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	/**
 	 * company reference<br/>
 	 * if different from line company
-	 * 
+	 *
 	 * @param company
 	 *            New value
 	 * @return The actual value
@@ -279,7 +244,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * footnotes refs
-	 * 
+	 *
 	 * @param footnotes
 	 *            New value
 	 * @return The actual value
@@ -292,7 +257,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	/**
 	 * timetables
-	 * 
+	 *
 	 * @param timetables
 	 *            New value
 	 * @return The actual value
@@ -301,11 +266,11 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
 	@JoinTable(name = "time_tables_vehicle_journeys", joinColumns = { @JoinColumn(name = "vehicle_journey_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "time_table_id", nullable = false, updatable = false) })
-	private List<Timetable> timetables = new ArrayList<Timetable>(0);
+	private List<Timetable> timetables = new ArrayList<>(0);
 
 	/**
 	 * vehicle journey at stops : passing times
-	 * 
+	 *
 	 * @return The actual value
 	 */
 	@Getter
@@ -313,10 +278,10 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@OneToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
 	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<VehicleJourneyAtStop>(0);
-	
+
 	/**
 	 * To distinguish the timesheets journeys and the frequencies ones. Defaults to Timesheet.
-	 * 
+	 *
 	 * @param journeyCategory
 	 *         The new vehicle journey category
 	 * @return The actual vehicle journey category
@@ -327,10 +292,10 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Enumerated(EnumType.ORDINAL)
 	@Column(name = "journey_category")
 	private JourneyCategoryEnum journeyCategory = JourneyCategoryEnum.Timesheet;
-	
+
 	/**
 	 * For frequencies journeys, applicable periods
-	 * 
+	 *
 	 * @param journeyFrequencies
 	 *         The new vehicle journey frequencies
 	 * @return The actual vehicle journey category
@@ -340,7 +305,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
-	private List<JourneyFrequency> journeyFrequencies = new ArrayList<JourneyFrequency>(0);
+	private List<JourneyFrequency> journeyFrequencies = new ArrayList<>(0);
 
 
 	@Getter
@@ -348,6 +313,16 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
 	private AccessibilityAssessment accessibilityAssessment;
+
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "vehicleJourney")
+    private List<VehicleJourneyFacility> vehicleJourneyFacilities = new ArrayList<>(0);
+
+    public void addVehicleJourneyFacility(VehicleJourneyFacility vehicleJourneyFacility) {
+        vehicleJourneyFacility.setVehicleJourney(this);
+        this.vehicleJourneyFacilities.add(vehicleJourneyFacility);
+    }
 
 	public void copyAttributes(VehicleJourney source) {
 		super.copyAttributes(source);
