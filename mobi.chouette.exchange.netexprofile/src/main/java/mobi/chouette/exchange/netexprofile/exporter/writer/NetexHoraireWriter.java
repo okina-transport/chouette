@@ -14,7 +14,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GENERAL_FRAME;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.MEMBERS;
 
 public class NetexHoraireWriter extends AbstractNetexWriter {
@@ -38,7 +37,7 @@ public class NetexHoraireWriter extends AbstractNetexWriter {
 
                     if (serviceJourney instanceof ServiceJourney){
                         marshaller.marshal(netexFactory.createServiceJourney((ServiceJourney) serviceJourney), writer);
-                    }else{
+                    } else {
                         marshaller.marshal(netexFactory.createTemplateServiceJourney((TemplateServiceJourney) serviceJourney), writer);
                     }
 

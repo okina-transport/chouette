@@ -210,24 +210,6 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * Indicates whether bikes are allowed. Valid options are:
-	 *
-	 * empty - No bike information for the trip.
-	 * true - Vehicle being used on this particular trip can accommodate at least one bicycle.
-	 * false - No bicycles are allowed on this trip.
-	 *
-	 *
-	 *
-	 * @param mobilityRestrictedSuitability
-	 *            New state for mobility restriction indicator
-	 * @return The actual mobility restriction indicator
-	 */
-	@Getter
-	@Setter
-	@Column(name = "bikes_allowed")
-	private Boolean bikesAllowed;
-
-	/**
 	 * flexible service <br/>
 	 *
 	 * <ul>
@@ -347,7 +329,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
 	@JoinTable(name = "time_tables_vehicle_journeys", joinColumns = { @JoinColumn(name = "vehicle_journey_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "time_table_id", nullable = false, updatable = false) })
-	private List<Timetable> timetables = new ArrayList<Timetable>(0);
+	private List<Timetable> timetables = new ArrayList<>(0);
 
 	/**
 	 * vehicle journey at stops : passing times
@@ -358,7 +340,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
-	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<VehicleJourneyAtStop>(0);
+	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<>(0);
 
 	/**
 	 * To distinguish the timesheets journeys and the frequencies ones. Defaults to Timesheet.
@@ -386,7 +368,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "vehicle_journey_id", updatable = false)
-	private List<JourneyFrequency> journeyFrequencies = new ArrayList<JourneyFrequency>(0);
+	private List<JourneyFrequency> journeyFrequencies = new ArrayList<>(0);
 
 	/**
 	 * list of interchanges where this vehicle journey participates as the feeder
@@ -453,5 +435,15 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "branding_id")
 	private Branding branding;
+
+	@Getter
+	@Setter
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "vehicleJourney")
+	private List<VehicleJourneyFacility> vehicleJourneyFacilities = new ArrayList<>(0);
+
+	public void addVehicleJourneyFacility(VehicleJourneyFacility vehicleJourneyFacility) {
+		vehicleJourneyFacility.setVehicleJourney(this);
+		this.vehicleJourneyFacilities.add(vehicleJourneyFacility);
+	}
 
 }

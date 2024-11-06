@@ -194,6 +194,10 @@ public class Referential implements java.io.Serializable {
     @Setter
     private Map<String, Train> trains = new HashMap<>();
 
+    @Getter
+    @Setter
+    private Map<String, VehicleJourneyFacility> facilities = new HashMap<>();
+
 
     public void clear(boolean cascade) {
         if (cascade) {
@@ -227,6 +231,7 @@ public class Referential implements java.io.Serializable {
                 vj.getJourneyFrequencies().clear();
                 vj.getFootnotes().clear();
                 vj.getTrains().clear();
+                vj.getVehicleJourneyFacilities().clear();
             }
             for (Timetable timetable : timetables.values()) {
                 timetable.getVehicleJourneys().clear();
@@ -273,6 +278,7 @@ public class Referential implements java.io.Serializable {
         brandings.clear();
         journeyFrequency.clear();
         trains.clear();
+        facilities.clear();
     }
 
     public void dispose() {

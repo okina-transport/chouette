@@ -30,6 +30,8 @@ public class ServiceJourneyFranceProducer {
 
     private static final KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
 
+    private final ServiceFacilitiesProducer serviceFacilitiesProducer = new ServiceFacilitiesProducer();
+
     private static void getAccessibility(VehicleJourney vehicleJourney, ServiceJourney_VersionStructure serviceJourney) {
         if (vehicleJourney.getAccessibilityAssessment() != null && vehicleJourney.getAccessibilityAssessment().getAccessibilityLimitation() != null) {
             AccessibilityLimitation netexAccessibilityLimitation = netexFactory.createAccessibilityLimitation();
@@ -156,22 +158,18 @@ public class ServiceJourneyFranceProducer {
             serviceJourney.setPassingTimes(passingTimesStruct);
         }
 
-        ServiceFacilitySet serviceFacilitySet = new ServiceFacilitySet();
-        NetexProducerUtils.populateIdAndVersion(vehicleJourney, serviceFacilitySet);
-        serviceFacilitySet.setId(serviceFacilitySet.getId().replace("ServiceJourney", "ServiceFacilitySet"));
-        serviceFacilitySet.setVersion("any");
-
-        if (vehicleJourney.getBikesAllowed() == null) {
-            serviceFacilitySet.withLuggageCarriageFacilityList(LuggageCarriageEnumeration.UNKNOWN);
-        } else if (vehicleJourney.getBikesAllowed()) {
-            serviceFacilitySet.withLuggageCarriageFacilityList(LuggageCarriageEnumeration.CYCLES_ALLOWED);
-        } else {
-            serviceFacilitySet.withLuggageCarriageFacilityList(LuggageCarriageEnumeration.NO_CYCLES);
+        List<VehicleJourneyFacility> vehicleJourneyFacilities = vehicleJourney.getVehicleJourneyFacilities();
+        if (CollectionUtils.isNotEmpty(vehicleJourneyFacilities)) {
+            ServiceFacilitySets_RelStructure serviceFacilitySetStruct = new ServiceFacilitySets_RelStructure();
+            ServiceFacilitySet[] facilities = new ServiceFacilitySet[vehicleJourneyFacilities.size()];
+            int i = 0;
+            for (VehicleJourneyFacility facility : vehicleJourneyFacilities) {
+                facilities[i] = serviceFacilitiesProducer.mapToServiceFacilitySet(facility);
+                i++;
+            }
+            serviceFacilitySetStruct.withServiceFacilitySetRefOrServiceFacilitySet(facilities);
+            serviceJourney.setFacilities(serviceFacilitySetStruct);
         }
-
-        ServiceFacilitySets_RelStructure serviceFacilitySets_relStructure = new ServiceFacilitySets_RelStructure();
-        serviceFacilitySets_relStructure.withServiceFacilitySetRefOrServiceFacilitySet(serviceFacilitySet);
-        serviceJourney.setFacilities(serviceFacilitySets_relStructure);
 
         serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues()));
         serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));

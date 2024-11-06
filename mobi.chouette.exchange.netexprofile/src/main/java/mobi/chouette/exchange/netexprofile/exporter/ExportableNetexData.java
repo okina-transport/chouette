@@ -79,6 +79,8 @@ public class ExportableNetexData {
 
     private List<TrainNumber> trainNumbers = new ArrayList<>();
 
+    private List<ServiceFacilitySet> facilities = new ArrayList<>();
+
     public void clear() {
         lineCondition = null;
         line = null;
@@ -97,6 +99,7 @@ public class ExportableNetexData {
         destinationDisplays.clear();
         connectionLinks.clear();
         trainNumbers.clear();
+        facilities.clear();
     }
 
     public void dispose() {

@@ -14,8 +14,10 @@ import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDateTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
+import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,6 +27,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static mobi.chouette.model.type.VehicleJourneyFacilityEnum.LUGGAGE_CARRIAGE_ENUMERATION;
 
 @Stateless(name = UpdateLineInfosCommand.COMMAND)
 @Log4j
@@ -129,7 +133,14 @@ public class UpdateLineInfosCommand implements Command, Constant {
     private void manageBike(List<VehicleJourney> vehicleJourneyList, long nbVehicleJourney, Line lineToUpdate) {
         // VELOS
         int nbVehicleJourneyWithBike = (int) vehicleJourneyList.stream()
-                .filter(vehicleJourney -> vehicleJourney.getBikesAllowed() != null && vehicleJourney.getBikesAllowed()).count();
+                .filter(vehicleJourney -> CollectionUtils.isNotEmpty(vehicleJourney.getVehicleJourneyFacilities())
+                        && vehicleJourney.getVehicleJourneyFacilities()
+                        .stream().anyMatch(facility
+                                -> CollectionUtils.isNotEmpty(facility.getKeyValues()) && facility.getKeyValues()
+                                .stream().anyMatch(facilityDetail -> LUGGAGE_CARRIAGE_ENUMERATION.getKey().equals(facilityDetail.getKey())
+                                        && facilityDetail.getValue().contains(LuggageCarriageEnumeration.CYCLES_ALLOWED.name()))
+                        ))
+                .count();
         if (nbVehicleJourneyWithBike == 0) {
             lineToUpdate.setBike(BikeAccessEnum.NO_ACCESS);
         } else if (nbVehicleJourneyWithBike == nbVehicleJourney) {

@@ -4,6 +4,7 @@ import mobi.chouette.dao.*;
 import mobi.chouette.model.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.EJB;
@@ -65,6 +66,9 @@ public class LineOptimiser {
 	@EJB
 	private TrainDAO trainDAO;
 
+	@EJB
+	private VehicleJourneyFacilitiesDAO facilitiesDAO;
+
 	public void initialize(Referential cache, Referential referential) {
 
 //		Monitor monitor = MonitorFactory.start("LineOptimiser");
@@ -89,6 +93,7 @@ public class LineOptimiser {
 
 		initializeTimeband(cache, referential.getTimebands().values());
 		initializeTrains(cache, referential.getTrains().values());
+		initializeFacilities(cache, referential.getFacilities().values());
 //		monitor.stop();
 	}
 
@@ -380,6 +385,23 @@ public class LineOptimiser {
 				Train object = cache.getTrains().get(item.getObjectId());
 				if (object == null) {
 					object = ObjectFactory.getTrain(cache, item.getObjectId());
+				}
+			}
+		}
+	}
+
+	private void initializeFacilities(Referential cache, Collection<VehicleJourneyFacility> list) {
+		if (CollectionUtils.isNotEmpty(list)) {
+			Collection<String> objectIds = UpdaterUtils.getObjectIds(list);
+			List<VehicleJourneyFacility> objects = facilitiesDAO.findByObjectId(objectIds);
+			for (VehicleJourneyFacility object : objects) {
+				cache.getFacilities().put(object.getObjectId(), object);
+			}
+
+			for (VehicleJourneyFacility item : list) {
+				VehicleJourneyFacility object = cache.getFacilities().get(item.getObjectId());
+				if (object == null) {
+					object = ObjectFactory.getVehicleJourneyFacility(cache, item.getObjectId());
 				}
 			}
 		}

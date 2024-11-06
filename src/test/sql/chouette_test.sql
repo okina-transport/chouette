@@ -5365,6 +5365,39 @@ CREATE TABLE IF NOT EXISTS chouette_gui.trains_vehicle_journeys
 );
 
 
+CREATE TABLE IF NOT EXISTS chouette_gui.vehicle_journeys_facilities (
+    id bigint NOT NULL CONSTRAINT vj_facilities_pk PRIMARY KEY,
+    description character varying,
+    provider character varying(255),
+    objectid character varying(255),
+    object_version integer,
+    creation_time timestamp without time zone,
+    creator_id character varying(255),
+    vehicle_journey_id bigint,
+    CONSTRAINT vj_facilities_vehicle_journey_fk FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id)
+);
+
+CREATE TABLE IF NOT EXISTS chouette_gui.vehicle_journeys_facilities_key_values (
+    vehicle_journeys_facility_id bigint NOT NULL,
+    type_of_key character varying,
+    key character varying,
+    value character varying,
+    CONSTRAINT vj_facilities_key_values_vj_facilities_fk FOREIGN KEY (vehicle_journeys_facility_id) REFERENCES vehicle_journeys_facilities(id)
+);
+
+CREATE SEQUENCE IF NOT EXISTS chouette_gui.vehicle_journeys_facilities_id_seq
+  START WITH 1
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 1;
+
+ALTER SEQUENCE chouette_gui.vehicle_journeys_facilities_id_seq OWNED BY chouette_gui.vehicle_journeys_facilities.id;
+
+ALTER TABLE ONLY chouette_gui.vehicle_journeys_facilities ALTER COLUMN id SET DEFAULT nextval('vehicle_journeys_facilities_id_seq'::regclass);
+
+
+
 -- TOC entry 4251 (class 0 OID 0)
 -- Dependencies: 8
 -- Name: chouette_gui; Type: ACL; Schema: -; Owner: postgres

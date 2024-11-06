@@ -18,12 +18,16 @@ import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalTime;
+import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static mobi.chouette.model.type.VehicleJourneyFacilityEnum.LUGGAGE_CARRIAGE_ENUMERATION;
 
 /**
  * produce Trips and stop_times for vehicleJourney
@@ -321,11 +325,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
 		}
 
-		if (vj.getBikesAllowed() != null)
-			trip.setBikesAllowed(vj.getBikesAllowed() ? GtfsTrip.BikesAllowedType.Allowed
-					: GtfsTrip.BikesAllowedType.NoAllowed);
-		else
-			trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
+		updateBikeAllowedForTrip(vj);
 
 		// add StopTimes
 		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams, googleMapsCompatibility)) {
@@ -358,6 +358,36 @@ public class GtfsTripProducer extends AbstractProducer {
 		}
 
 		return true;
+	}
+
+	private void updateBikeAllowedForTrip(VehicleJourney vj) {
+		if (CollectionUtils.isNotEmpty(vj.getVehicleJourneyFacilities())) {
+			setBikeAllowedForTripFromFacilities(vj);
+		} else {
+			trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
+		}
+	}
+
+	private void setBikeAllowedForTripFromFacilities(VehicleJourney vj) {
+		boolean bikeInformationFound = false;
+		for (VehicleJourneyFacility vehicleJourneyFacility: vj.getVehicleJourneyFacilities()) {
+			for (KeyValue facilityDetail : vehicleJourneyFacility.getKeyValues()) {
+				if (LUGGAGE_CARRIAGE_ENUMERATION.getKey().equals(facilityDetail.getKey())) {
+					bikeInformationFound = true;
+					if (facilityDetail.getValue().contains(LuggageCarriageEnumeration.CYCLES_ALLOWED.name())) {
+						trip.setBikesAllowed(GtfsTrip.BikesAllowedType.Allowed);
+					} else if (facilityDetail.getValue().contains(LuggageCarriageEnumeration.NO_CYCLES.name())) {
+						trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoAllowed);
+					} else {
+						trip.setBikesAllowed(GtfsTrip.BikesAllowedType.NoInformation);
+					}
+					break;
+				}
+			}
+			if (bikeInformationFound) {
+				break;
+			}
+		}
 	}
 
 }
