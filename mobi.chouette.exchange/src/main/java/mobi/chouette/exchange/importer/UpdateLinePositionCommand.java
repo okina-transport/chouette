@@ -17,6 +17,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Update position of non-deleted lines inside their network.
@@ -79,9 +80,16 @@ public class UpdateLinePositionCommand implements Command {
             //  Line{pos=null, name = null},
             // ]
             lines.sort(new LineComparator());
-            Integer position = 1;
+            int maxPosition = lines.stream()
+                    .map(Line::getPosition)
+                    .filter(Objects::nonNull)
+                    .mapToInt(Integer::intValue)
+                    .max()
+                    .orElse(1);
+
+            Integer position = maxPosition;
             for (Line line : lines) {
-                if (!position.equals(line.getPosition())) {
+                if (line.getPosition() == null) {
                     log.info(String.format("Update line %d position (old: %d, new: %d)", line.getId(), line.getPosition(), position));
                     line.setPosition(position);
                     lineDAO.update(line);
