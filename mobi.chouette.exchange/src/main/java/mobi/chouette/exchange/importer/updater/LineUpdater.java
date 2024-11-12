@@ -166,6 +166,13 @@ public class LineUpdater implements Updater<Line> {
 			if (newValue.getPosition() != null && !newValue.getPosition().equals(oldValue.getPosition())) {
 				oldValue.setPosition(newValue.getPosition());
 			}
+			if (newValue.getPosition() == null) {
+				/* force to null and recalculate with UpdateLinePositionCommand
+				cases:
+				- if the isRouteSortOrder context is unchecked
+				- if the position in the import file for the current line is empty */
+				oldValue.setPosition(null);
+			}
 		}
 
 		// PTNetwork
