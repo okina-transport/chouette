@@ -174,7 +174,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             objectId = objectId.replaceFirst(SANITIZED_REPLACEMENT_CODE + "$", ":");
         }
 
-        objectId = objectId.replace(SANITIZED_REPLACEMENT_CODE, "-");
+        objectId = objectId.replace(SANITIZED_REPLACEMENT_CODE, ":");
         return objectId;
     }
 
