@@ -90,12 +90,12 @@ public class UpdateLinePositionCommand implements Command {
             Integer position = maxPosition;
             for (Line line : lines) {
                 if (line.getPosition() == null) {
-                    log.info(String.format("Update line %d position (old: %d, new: %d)", line.getId(), line.getPosition(), position));
+                    log.info(String.format("Update line %d position (old: null, new: %d)", line.getId(), position));
                     line.setPosition(position);
                     lineDAO.update(line);
                     flush = true;
+                    position++;
                 }
-                position++;
             }
         }
         if (flush) {
