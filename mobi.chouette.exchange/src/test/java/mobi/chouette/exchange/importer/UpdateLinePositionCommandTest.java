@@ -130,15 +130,15 @@ public class UpdateLinePositionCommandTest {
 
         // assert
         Assert.assertTrue(out, "should return true");
-        Assert.assertEquals(l1.getPosition().intValue(), 3, "position should be equal");
-        Assert.assertEquals(l2.getPosition().intValue(), 2, "position should be equal");
+        Assert.assertEquals(l1.getPosition().intValue(), 6, "position should be equal");
+        Assert.assertEquals(l2.getPosition().intValue(), 5, "position should be equal");
         Assert.assertEquals(l3.getPosition().intValue(), 1, "position should be equal");
 
-        Assert.assertEquals(l4.getPosition().intValue(), 1, "position should be equal");
-        Assert.assertEquals(l5.getPosition().intValue(), 2, "position should be equal");
-        Assert.assertEquals(l6.getPosition().intValue(), 3, "position should be equal");
+        Assert.assertEquals(l4.getPosition().intValue(), 5, "position should be equal");
+        Assert.assertEquals(l5.getPosition().intValue(), 1500, "position should be equal");
+        Assert.assertEquals(l6.getPosition().intValue(), 1501, "position should be equal");
 
-        Mockito.verify(lineDAOMock, Mockito.times(5)).update(Mockito.any());
+        Mockito.verify(lineDAOMock, Mockito.times(2)).update(Mockito.any());
         Mockito.verify(lineDAOMock).flush();
     }
 
@@ -198,14 +198,14 @@ public class UpdateLinePositionCommandTest {
             Assert.fail("should not raise NullPointerException");
         }
 
-        Assert.assertEquals(l1.getPosition().intValue(), 6, "position should be equal");
-        Assert.assertEquals(l2.getPosition().intValue(), 2, "position should be equal");
+        Assert.assertEquals(l1.getPosition().intValue(), 1502, "position should be equal");
+        Assert.assertEquals(l2.getPosition().intValue(), 5, "position should be equal");
         Assert.assertEquals(l3.getPosition().intValue(), 1, "position should be equal");
-        Assert.assertEquals(l4.getPosition().intValue(), 3, "position should be equal");
-        Assert.assertEquals(l5.getPosition().intValue(), 4, "position should be equal");
-        Assert.assertEquals(l6.getPosition().intValue(), 5, "position should be equal");
+        Assert.assertEquals(l4.getPosition().intValue(), 5, "position should be equal");
+        Assert.assertEquals(l5.getPosition().intValue(), 1500, "position should be equal");
+        Assert.assertEquals(l6.getPosition().intValue(), 1501, "position should be equal");
 
-        Mockito.verify(lineDAOMock, Mockito.times(5)).update(Mockito.any());
+        Mockito.verify(lineDAOMock, Mockito.times(2)).update(Mockito.any());
         Mockito.verify(lineDAOMock).flush();
     }
 

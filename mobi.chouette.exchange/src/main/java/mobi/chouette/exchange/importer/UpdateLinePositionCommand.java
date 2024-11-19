@@ -87,7 +87,7 @@ public class UpdateLinePositionCommand implements Command {
                     .max()
                     .orElse(1);
 
-            Integer position = maxPosition;
+            Integer position = maxPosition+1;
             for (Line line : lines) {
                 if (line.getPosition() == null) {
                     log.info(String.format("Update line %d position (old: null, new: %d)", line.getId(), position));
