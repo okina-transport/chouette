@@ -6,7 +6,17 @@ import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.type.DropOffTypeEnum;
 import mobi.chouette.model.type.PickUpTypeEnum;
-import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.BookingArrangementsStructure;
+import org.rutebanken.netex.model.BookingMethodEnumeration;
+import org.rutebanken.netex.model.DestinationDisplayRefStructure;
+import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
+import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
+import org.rutebanken.netex.model.RequestMethodTypeEnumeration;
+import org.rutebanken.netex.model.RouteRefStructure;
+import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
+import org.rutebanken.netex.model.ServiceJourneyPatternTypeEnumeration;
+import org.rutebanken.netex.model.StopPointInJourneyPattern;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -83,7 +93,24 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
                                             .filter(vehicleJourneyAtStop -> stopPoint.getObjectId().equals(vehicleJourneyAtStop.getStopPoint().getObjectId()))))
                             .collect(Collectors.toList());
 
-            updateBoardingAlighting(vehicleJourneyAtStops, stopPointInJourneyPattern);
+            // On ne récupère que les vehicleJourneyAtStop qui sont liés à un même stoppoint et qui ont un boardingAlighting identique
+            for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
+                boolean getVehicleJourneyAtStopWithBoardingAlighting = false;
+
+                for (VehicleJourneyAtStop vehicleJourneyAtStop1 : vehicleJourneyAtStops) {
+                    if (vehicleJourneyAtStop.getBoardingAlightingPossibility() != null && vehicleJourneyAtStop1.getBoardingAlightingPossibility() != null) {
+                        getVehicleJourneyAtStopWithBoardingAlighting = vehicleJourneyAtStop.getBoardingAlightingPossibility().equals(vehicleJourneyAtStop1.getBoardingAlightingPossibility());
+                    } else {
+                        getVehicleJourneyAtStopWithBoardingAlighting = false;
+                    }
+                    if (!getVehicleJourneyAtStopWithBoardingAlighting)
+                        break;
+
+                }
+                if (getVehicleJourneyAtStopWithBoardingAlighting && vehicleJourneyAtStop.getBoardingAlightingPossibility() != null) {
+                    setBoardingAlighting(stopPointInJourneyPattern, vehicleJourneyAtStop);
+                }
+            }
         }
 
         pointsInJourneyPattern_relStructure.withPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern(pointInLinkSequence_versionedChildStructures);
@@ -94,15 +121,6 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         netexServiceJourneyPattern.setKeyList(keyListStructureProducer.produce(journeyPattern.getKeyValues()));
 
         return netexServiceJourneyPattern;
-    }
-
-    protected void updateBoardingAlighting(List<VehicleJourneyAtStop> vehicleJourneyAtStops, StopPointInJourneyPattern stopPointInJourneyPattern) {
-        for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
-            if (vehicleJourneyAtStop.getBoardingAlightingPossibility() != null) {
-                setBoardingAlighting(stopPointInJourneyPattern, vehicleJourneyAtStop);
-                break;
-            }
-        }
     }
 
 
