@@ -59,6 +59,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
             if (parameters.isUseTargetNetwork()) {
+                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
                 commands.add(CommandFactory.create(initialContext, GtfsAgencyOverloadCommand.class.getName()));
             }
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
@@ -86,7 +87,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             }
 
 
-            if (CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.CONTIGUOUS)){
+            if (CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.CONTIGUOUS)) {
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 Command productionPeriods = CommandFactory.create(initialContext, ProductionPeriodCommand.class.getName());
                 chain.add(productionPeriods);
@@ -95,22 +96,22 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
             ArrayList<String> savedLines = new ArrayList<String>();
             String splitCharacter = parameters.getSplitCharacter();
-            context.put(TOTAL_NB_OF_LINES,index.getLength());
+            context.put(TOTAL_NB_OF_LINES, index.getLength());
 
             for (GtfsRoute gtfsRoute : index) {
 
-                if (StringUtils.isNotEmpty(splitCharacter)){
+                if (StringUtils.isNotEmpty(splitCharacter)) {
                     String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
-                    if(parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
+                    if (parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
                     savedLines.add(newRouteId);
-                    gtfsRoute.setRouteId(newRouteId.replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
+                    gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
                 }
 
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
                 GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
                         GtfsRouteParserCommand.class.getName());
-                parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
+                parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
                 chain.add(parser);
                 if (withDao && !parameters.isNoSave()) {
 
@@ -175,7 +176,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-            if (!withDao) {
+        if (!withDao) {
             return new ArrayList<>();
         }
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
@@ -241,20 +242,18 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
         try {
             commands.add(CommandFactory.create(initialContext, GenerateAttributionsCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, DeleteLineWithoutOfferCommand.class.getName()));
-            if (parameters.getRouteMerge()){
+            if (parameters.getRouteMerge()) {
                 commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
             }
 //            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, AccessibilityCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
-            if (parameters.isRoutesReorganization()){
+            if (parameters.isRoutesReorganization()) {
                 commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
             }
 //            if (parameters.isRouteSortOrder()) {
 //                commands.add(CommandFactory.create(initialContext, RouteSortOrderCommand.class.getName()));
 //            }
-
-
 
 
         } catch (Exception e) {

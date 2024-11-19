@@ -1,11 +1,5 @@
 package mobi.chouette.exchange.netexprofile.parser;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
@@ -18,177 +12,180 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
-import mobi.chouette.model.*;
-import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.type.LimitationStatusEnum;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-
-import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.AccessibilityAssessment;
+import org.rutebanken.netex.model.*;
 
-import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYASSESSMENT_KEY;
-import static mobi.chouette.model.util.ObjectIdTypes.ACCESSIBILITYLIMITATION_KEY;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j
 public class LineParser implements Parser, Constant {
 
-	private KeyValueParser keyValueParser = new KeyValueParser();
+    private KeyValueParser keyValueParser = new KeyValueParser();
 
-	private ContactStructureParser contactStructureParser = new ContactStructureParser();
+    private ContactStructureParser contactStructureParser = new ContactStructureParser();
 
-	@Override
-	public void parse(Context context) throws Exception {
-		Referential referential = (Referential) context.get(REFERENTIAL);
-		NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
-		LinesInFrame_RelStructure linesInFrameStruct = (LinesInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
-		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+    @Override
+    public void parse(Context context) throws Exception {
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
+        LinesInFrame_RelStructure linesInFrameStruct = (LinesInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
+        NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
 
-		List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
+        List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
-		for (JAXBElement<? extends DataManagedObjectStructure> lineElement : linesInFrameStruct.getLine_()) {
-			org.rutebanken.netex.model.Line_VersionStructure netexLine = (org.rutebanken.netex.model.Line_VersionStructure) lineElement.getValue();
-			String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",netexLine.getId());
+        for (JAXBElement<? extends DataManagedObjectStructure> lineElement : linesInFrameStruct.getLine_()) {
+            org.rutebanken.netex.model.Line_VersionStructure netexLine = (org.rutebanken.netex.model.Line_VersionStructure) lineElement.getValue();
+            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context, "Line", netexLine.getId());
 
-			mobi.chouette.model.Line chouetteLine = ObjectFactory.getLine(referential, lineId);
-			incomingLineList.add(lineId);
-			chouetteLine.setObjectVersion(NetexParserUtils.getVersion(netexLine));
+            mobi.chouette.model.Line chouetteLine = ObjectFactory.getLine(referential, lineId);
+            incomingLineList.add(lineId);
+            chouetteLine.setObjectVersion(NetexParserUtils.getVersion(netexLine));
+            if (context.get(TARGET_NETWORK_OBJECT_ID) != null) {
+                Network targetNetwork = ObjectFactory.getPTNetwork(referential, (String) context.get(TARGET_NETWORK_OBJECT_ID));
+                chouetteLine.setNetwork(targetNetwork);
+            } else if (netexLine.getRepresentedByGroupRef() != null) {
+                GroupOfLinesRefStructure representedByGroupRef = netexLine.getRepresentedByGroupRef();
+                String groupIdRef = representedByGroupRef.getRef();
+                String dataTypeName = groupIdRef.split(":")[1];
 
-			if (netexLine.getRepresentedByGroupRef() != null) {
-				GroupOfLinesRefStructure representedByGroupRef = netexLine.getRepresentedByGroupRef();
-				String groupIdRef = representedByGroupRef.getRef();
-				String dataTypeName = groupIdRef.split(":")[1];
+                if (dataTypeName.equals(NetexObjectIdTypes.NETWORK)) {
+                    String networkId = NetexImportUtil.composeObjectIdFromNetexId(context, "Network", groupIdRef);
+                    Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
+                    chouetteLine.setNetwork(ptNetwork);
+                } else if (dataTypeName.equals(NetexObjectIdTypes.GROUP_OF_LINES)) {
+                    GroupOfLine group = ObjectFactory.getGroupOfLine(referential, groupIdRef);
+                    group.addLine(chouetteLine);
+                    String networkId = NetexImportUtil.composeObjectIdFromNetexId(context, "Network", netexReferential.getGroupOfLinesToNetwork().get(groupIdRef));
+                    if (networkId != null) {
+                        Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
+                        chouetteLine.setNetwork(ptNetwork);
+                    }
+                }
+            } else {
+                Optional<Network> networkOpt = findNetworkFromReferential(referential, chouetteLine);
+                networkOpt.ifPresent(chouetteLine::setNetwork);
+            }
 
-				if (dataTypeName.equals(NetexObjectIdTypes.NETWORK)) {
-					String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network",groupIdRef);
-					Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
-					chouetteLine.setNetwork(ptNetwork);
-				} else if (dataTypeName.equals(NetexObjectIdTypes.GROUP_OF_LINES)) {
-					GroupOfLine group = ObjectFactory.getGroupOfLine(referential, groupIdRef);
-					group.addLine(chouetteLine);
-					String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network", netexReferential.getGroupOfLinesToNetwork().get(groupIdRef));
-					if (networkId != null) {
-						Network ptNetwork = ObjectFactory.getPTNetwork(referential, networkId);
-						chouetteLine.setNetwork(ptNetwork);
-					}
-				}
-			}else{
-				Optional<Network> networkOpt = findNetworkFromReferential(referential, chouetteLine);
-				networkOpt.ifPresent(chouetteLine::setNetwork);
-			}
+            // TODO find out how to handle in chouette? can be: new, delete, revise or delta
+            // ModificationEnumeration modification = netexLine.getModification();
 
-			// TODO find out how to handle in chouette? can be: new, delete, revise or delta
-			// ModificationEnumeration modification = netexLine.getModification();
+            chouetteLine.setName(ConversionUtil.getValue(netexLine.getName()));
+            if (netexLine.getShortName() != null) {
+                chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getShortName()));
+            } else {
+                chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getName()));
+            }
 
-			chouetteLine.setName(ConversionUtil.getValue(netexLine.getName()));
-			if (netexLine.getShortName() != null){
-				chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getShortName()));
-			}else{
-				chouetteLine.setPublishedName(ConversionUtil.getValue(netexLine.getName()));
-			}
+            chouetteLine.setComment(ConversionUtil.getValue(netexLine.getDescription()));
 
-			chouetteLine.setComment(ConversionUtil.getValue(netexLine.getDescription()));
+            AllVehicleModesOfTransportEnumeration transportMode = netexLine.getTransportMode();
+            TransportModeNameEnum transportModeName = NetexParserUtils.toTransportModeNameEnum(transportMode.value());
+            chouetteLine.setTransportModeName(transportModeName);
+            chouetteLine.setTransportSubModeName(NetexParserUtils.toTransportSubModeNameEnum(netexLine.getTransportSubmode()));
+            chouetteLine.setUrl(netexLine.getUrl());
+            chouetteLine.setNumber(netexLine.getPublicCode());
 
-			AllVehicleModesOfTransportEnumeration transportMode = netexLine.getTransportMode();
-			TransportModeNameEnum transportModeName = NetexParserUtils.toTransportModeNameEnum(transportMode.value());
-			chouetteLine.setTransportModeName(transportModeName);
-			chouetteLine.setTransportSubModeName(NetexParserUtils.toTransportSubModeNameEnum(netexLine.getTransportSubmode()));
-			chouetteLine.setUrl(netexLine.getUrl());
-			chouetteLine.setNumber(netexLine.getPublicCode());
+            PrivateCodeStructure privateCode = netexLine.getPrivateCode();
+            if (privateCode != null) {
+                chouetteLine.setRegistrationNumber(privateCode.getValue());
+            }
 
-			PrivateCodeStructure privateCode = netexLine.getPrivateCode();
-			if (privateCode != null) {
-				chouetteLine.setRegistrationNumber(privateCode.getValue());
-			}
+            if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+                Company company = ObjectFactory.getCompany(referential, (String) context.get(TARGET_COMPANY_OBJECT_ID));
+                chouetteLine.setCompany(company);
+            } else if (netexLine.getOperatorRef() != null) {
+                String operatorRefValue = netexLine.getOperatorRef().getRef();
+                String generatedOrganisationId = NetexImportUtil.composeOperatorIdFromNetexId(parameters.getObjectIdPrefix(), operatorRefValue);
+                Company company = ObjectFactory.getCompany(referential, generatedOrganisationId);
+                chouetteLine.setCompany(company);
+            }
 
-			if (netexLine.getOperatorRef() != null) {
-				String operatorRefValue = netexLine.getOperatorRef().getRef();
-				String generatedOrganisationId = NetexImportUtil.composeOperatorIdFromNetexId(parameters.getObjectIdPrefix(), operatorRefValue);
-				Company company = ObjectFactory.getCompany(referential, generatedOrganisationId);
-				chouetteLine.setCompany(company);
-			}
+            if (netexLine.getPresentation() != null) {
+                PresentationStructure presentation = netexLine.getPresentation();
+                HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();
+                if (parameters.isNetexImportColors()) {
+                    if (presentation.getColour() != null) {
+                        chouetteLine.setColor(hexBinaryAdapter.marshal(presentation.getColour()));
+                    }
+                    if (presentation.getTextColour() != null) {
+                        chouetteLine.setTextColor(hexBinaryAdapter.marshal(presentation.getTextColour()));
+                    }
+                }
+            }
 
-			if (netexLine.getPresentation() != null) {
-				PresentationStructure presentation = netexLine.getPresentation();
-				HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();
-				if (parameters.isNetexImportColors()) {
-					if (presentation.getColour() != null) {
-						chouetteLine.setColor(hexBinaryAdapter.marshal(presentation.getColour()));
-					}
-					if (presentation.getTextColour() != null) {
-						chouetteLine.setTextColor(hexBinaryAdapter.marshal(presentation.getTextColour()));
-					}
-				}
-			}
+            chouetteLine.setKeyValues(keyValueParser.parse(netexLine.getKeyList()));
 
-			chouetteLine.setKeyValues(keyValueParser.parse(netexLine.getKeyList()));
+            chouetteLine.setFilled(true);
 
-			chouetteLine.setFilled(true);
+            if (((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment() != null) {
+                AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
+                mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
+                chouetteLine.setAccessibilityAssessment(newAccess);
+            }
 
-			if (((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment() != null) {
-				AccessibilityAssessment accessibilityAssessment = ((Line_VersionStructure) lineElement.getValue()).getAccessibilityAssessment();
-				mobi.chouette.model.AccessibilityAssessment newAccess = NetexImportUtil.convertToChouetteAccessibilityAssessment(accessibilityAssessment, context);
-				chouetteLine.setAccessibilityAssessment(newAccess);
-			}
+            if (netexLine instanceof FlexibleLine) {
+                chouetteLine.setFlexibleService(true);
+                FlexibleLine flexibleLine = (FlexibleLine) netexLine;
+                FlexibleLineProperties flexibleLineProperties = new FlexibleLineProperties();
 
-			if (netexLine instanceof FlexibleLine) {
-				chouetteLine.setFlexibleService(true);
-				FlexibleLine flexibleLine = (FlexibleLine) netexLine;
-				FlexibleLineProperties flexibleLineProperties = new FlexibleLineProperties();
+                flexibleLineProperties.setFlexibleLineType(NetexParserUtils.toFlexibleLineType(flexibleLine.getFlexibleLineType()));
+                BookingArrangement bookingArrangement = new BookingArrangement();
+                if (flexibleLine.getBookingNote() != null) {
+                    bookingArrangement.setBookingNote(flexibleLine.getBookingNote().getValue());
+                }
+                bookingArrangement.setBookingAccess(NetexParserUtils.toBookingAccess(flexibleLine.getBookingAccess()));
+                bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(flexibleLine.getBookWhen()));
+                bookingArrangement.setBuyWhen(flexibleLine.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
+                bookingArrangement.setBookingMethods(flexibleLine.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
+                bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(flexibleLine.getLatestBookingTime()));
+                bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(flexibleLine.getMinimumBookingPeriod()));
 
-				flexibleLineProperties.setFlexibleLineType(NetexParserUtils.toFlexibleLineType(flexibleLine.getFlexibleLineType()));
-				BookingArrangement bookingArrangement=new BookingArrangement();
-				if (flexibleLine.getBookingNote() != null) {
-					bookingArrangement.setBookingNote(flexibleLine.getBookingNote().getValue());
-				}
-				bookingArrangement.setBookingAccess(NetexParserUtils.toBookingAccess(flexibleLine.getBookingAccess()));
-				bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(flexibleLine.getBookWhen()));
-				bookingArrangement.setBuyWhen(flexibleLine.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
-				bookingArrangement.setBookingMethods(flexibleLine.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-				bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(flexibleLine.getLatestBookingTime()));
-				bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(flexibleLine.getMinimumBookingPeriod()));
+                bookingArrangement.setBookingContact(contactStructureParser.parse(flexibleLine.getBookingContact()));
 
-				bookingArrangement.setBookingContact(contactStructureParser.parse(flexibleLine.getBookingContact()));
+                flexibleLineProperties.setBookingArrangement(bookingArrangement);
+                chouetteLine.setFlexibleLineProperties(flexibleLineProperties);
+            }
 
-				flexibleLineProperties.setBookingArrangement(bookingArrangement);
-				chouetteLine.setFlexibleLineProperties(flexibleLineProperties);
-			}
+        }
+    }
 
-		}
-	}
+    /**
+     * Read referential and try to find which network is associated to a line
+     *
+     * @param referential  the referential containing all data
+     * @param chouetteLine the line for which we need to find a network association
+     * @return the associated network, if it exists
+     */
+    private Optional<Network> findNetworkFromReferential(Referential referential, Line chouetteLine) {
+        for (Network network : referential.getSharedPTNetworks().values()) {
+            for (Line line : network.getLines()) {
+                if (line.getObjectId().equals(chouetteLine.getObjectId())) {
+                    return Optional.of(network);
+                }
+            }
+        }
+        return Optional.empty();
+    }
 
-	/**
-	 * Read referential and try to find which network is associated to a line
-	 * @param referential
-	 * 	the referential containing all data
-	 * @param chouetteLine
-	 * 	the line for which we need to find a network association
-	 * @return
-	 * 	the associated network, if it exists
-	 */
-	private Optional<Network> findNetworkFromReferential(Referential referential, Line chouetteLine) {
-		for (Network network : referential.getSharedPTNetworks().values()) {
-			for (Line line : network.getLines()) {
-				if (line.getObjectId().equals(chouetteLine.getObjectId())){
-					return Optional.of(network);
-				}
-			}
-		}
-		return Optional.empty();
-	}
+    static {
+        ParserFactory.register(LineParser.class.getName(), new ParserFactory() {
+            private LineParser instance = new LineParser();
 
-	static {
-		ParserFactory.register(LineParser.class.getName(), new ParserFactory() {
-			private LineParser instance = new LineParser();
-
-			@Override
-			protected Parser create() {
-				return instance;
-			}
-		});
-	}
+            @Override
+            protected Parser create() {
+                return instance;
+            }
+        });
+    }
 
 }

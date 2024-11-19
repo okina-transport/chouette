@@ -127,4 +127,7 @@ public interface Constant {
 	String NETEX_ACCESSIBILITY_MAP = "NetexAccessibilityMap";
 
 	String GTFS_SELF_REFERENCING_STOPS = "GTFSSelfReferencingStops";
+
+	String TARGET_COMPANY_OBJECT_ID = "target_company_object_id";
+	String TARGET_NETWORK_OBJECT_ID = "target_network_object_id";
 }

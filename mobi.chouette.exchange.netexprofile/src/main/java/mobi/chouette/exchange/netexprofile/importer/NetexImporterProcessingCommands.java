@@ -61,6 +61,9 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
             }
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
+            if (parameters.isUseTargetNetwork()) {
+                initChain.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+            }
             commands.add(initChain);
         } catch (Exception e) {
             log.error(e, e);
@@ -173,7 +176,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
                     .collect(Collectors.toList());
 
 
-            if (lineFilePaths.size() == 0){
+            if (lineFilePaths.size() == 0) {
                 log.error("#####         This Netex file has no line files. Only common files were detected. Please check your netex file    ######");
                 throw new IllegalArgumentException("No line files detected in Netex");
             }

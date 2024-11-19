@@ -9,18 +9,16 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsAgencyProducer;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
 import mobi.chouette.exchange.gtfs.model.importer.FactoryParameters;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.model.Company;
-import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.apache.commons.collections.CollectionUtils;
+import mobi.chouette.model.util.ObjectFactory;
+import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang.StringUtils;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -29,7 +27,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * This command generates new agency.txt/routes.txt files with a different agency/agency_id:
@@ -54,8 +54,6 @@ public class GtfsAgencyOverloadCommand implements Command {
     public static final String ROUTES_TXT = "routes.txt";
     public static final String ORIGINAL_ROUTES_TXT = "original.routes.txt";
 
-    public static final String DEFAULT_URL = "https://www.okina.fr";
-
     public static final String ERROR_GENERATING_AGENCY_TXT_FILE = "Generation of agency.txt file failed";
     public static final String ERROR_GENERATING_ROUTES_TXT_FILE = "Generating of routes.txt file failed";
     public static final String ERROR_RENAMING_AGENCY_TXT_FILE = "Renaming agency.txt file failed";
@@ -65,14 +63,7 @@ public class GtfsAgencyOverloadCommand implements Command {
         CommandFactory.factories.put(GtfsAgencyOverloadCommand.class.getName(), new GtfsAgencyOverloadCommand.DefaultCommandFactory());
     }
 
-    @EJB
-    CompanyDAO companyDAO;
-
     public GtfsAgencyOverloadCommand() {
-    }
-
-    public GtfsAgencyOverloadCommand(CompanyDAO companyDAO) {
-        this.companyDAO = companyDAO;
     }
 
     public boolean execute(Context context) throws Exception {
@@ -83,34 +74,26 @@ public class GtfsAgencyOverloadCommand implements Command {
             throw new IllegalArgumentException("Import parameters useTargetNetwork is true but targetNetwork is blank");
         }
 
+        if (StringUtils.isEmpty((String) context.get(TARGET_COMPANY_OBJECT_ID))) {
+            String error = String.format("Missing %s from context", TARGET_COMPANY_OBJECT_ID);
+            log.error(error);
+            throw new IllegalArgumentException(error);
+        }
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        Company targetCompany = ObjectFactory.getCompany(referential, (String) context.get(TARGET_COMPANY_OBJECT_ID));
+        if (!parameters.getTargetNetwork().equals(targetCompany.getName())) {
+            String error = "Target company not set properly in referential, call TargetNetworkPreprocessCommand first";
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+
         Monitor monitor = MonitorFactory.start(GtfsAgencyOverloadCommand.COMMAND);
         try {
-            Optional<Company> optionalCompany = lookForCompanyForCompanyByName(parameters.getTargetNetwork());
-            Company newCompany = optionalCompany.orElseGet(() -> generateNewCompany(parameters));
-            generateNewGtfsFiles(context, newCompany);
+            generateNewGtfsFiles(context, targetCompany);
         } finally {
             log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
         }
         return SUCCESS;
-    }
-
-    private Company generateNewCompany(GtfsImportParameters parameters) {
-        Company company = new Company();
-        String objectId = ObjectIdUtil.composeObjectId(parameters.isSplitIdOnDot(), parameters.getObjectIdPrefix(), Company.AUTHORITY_KEY, UUID.randomUUID().toString());
-        company.setObjectId(objectId);
-        company.setName(parameters.getTargetNetwork());
-        company.setUrl(DEFAULT_URL);
-        return company;
-    }
-
-    private Optional<Company> lookForCompanyForCompanyByName(String targetNetwork) {
-        List<Company> companies = companyDAO.findByName(targetNetwork);
-        if (CollectionUtils.isNotEmpty(companies)) {
-            // company with same name exists in database
-            log.info(String.format("Found company with name %s in database", targetNetwork));
-            return Optional.of(companies.stream().filter(c -> c.getOrganisationType() == OrganisationTypeEnum.Authority).findFirst().orElse(companies.get(0)));
-        }
-        return Optional.empty();
     }
 
     private void generateNewGtfsFiles(Context context, Company newCompany) {
@@ -138,9 +121,9 @@ public class GtfsAgencyOverloadCommand implements Command {
      *     <li>generate a new agency.txt with a single agency named {@link GtfsImportParameters#getTargetNetwork}</li>
      * </ul>
      *
-     * @param newCompany new company to generate agency.txt with
+     * @param newCompany         new company to generate agency.txt with
      * @param unzippedGtfsFolder path to unzipped GTFS folder
-     * @param gtfsExporter GTFS exporter
+     * @param gtfsExporter       GTFS exporter
      */
     private void generateAgencyTxt(Company newCompany, Path unzippedGtfsFolder, GtfsExporter gtfsExporter) {
         log.info("Generate new agency.txt file");
@@ -167,10 +150,11 @@ public class GtfsAgencyOverloadCommand implements Command {
      *     <li>rename original routes.txt file</li>
      *     <li>generate routes.txt file with new agency_id</li>
      * </ul>
-     * @param newCompany new company to generate agency.txt with
+     *
+     * @param newCompany         new company to generate agency.txt with
      * @param unzippedGtfsFolder path to unzipped GTFS folder
-     * @param gtfsExporter GTFS exporter
-     * @param parameters GTFS import parameters
+     * @param gtfsExporter       GTFS exporter
+     * @param parameters         GTFS import parameters
      */
     private void generateRouteTxt(Company newCompany, Path unzippedGtfsFolder, GtfsExporter gtfsExporter, GtfsImportParameters parameters) {
         log.info("Generate new route.txt file");
@@ -191,7 +175,8 @@ public class GtfsAgencyOverloadCommand implements Command {
         } catch (IOException e) {
             log.error(ERROR_RENAMING_ROUTES_TXT_FILE, e);
             throw new RuntimeException(ERROR_RENAMING_ROUTES_TXT_FILE, e);
-        } try {
+        }
+        try {
             log.info("Generate route.txt file with updated agency_id");
             for (GtfsRoute gtfsRoute : updatedGtfsRoutes) {
                 gtfsExporter.getRouteExporter().export(gtfsRoute);

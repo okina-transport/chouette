@@ -40,7 +40,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
             log.info("Ignore network from NeTEx import (except network lines)");
             log.info(String.format("Use target network %s instead", chouetteNetwork.getName()));
         } else {
-            String networkId = NetexImportUtil.composeObjectIdFromNetexId(context,"Network",netexNetwork.getId());
+            String networkId = NetexImportUtil.composeObjectIdFromNetexId(context, "Network", netexNetwork.getId());
             chouetteNetwork = ObjectFactory.getPTNetwork(referential, networkId);
             chouetteNetwork.setObjectVersion(NetexParserUtils.getVersion(netexNetwork));
 
@@ -52,8 +52,10 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
             }
 
             chouetteNetwork.setName(netexNetwork.getName().getValue());
-
-            if (netexNetwork.getTransportOrganisationRef() != null){
+            if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+                Company company = ObjectFactory.getCompany(referential, (String) context.get(TARGET_COMPANY_OBJECT_ID));
+                chouetteNetwork.setCompany(company);
+            } else if (netexNetwork.getTransportOrganisationRef() != null) {
                 OrganisationRefStructure authorityRefStruct = netexNetwork.getTransportOrganisationRef().getValue();
                 String generatedAuthorityId = NetexImportUtil.composeObjectIdFromNetexId("Authority", parameters.getObjectIdPrefix(), authorityRefStruct.getRef());
                 Company company = ObjectFactory.getCompany(referential, generatedAuthorityId);
@@ -69,15 +71,15 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
         log.info("Retrieve network lines");
         if (netexNetwork.getMainLineRef() != null) {
 
-            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",netexNetwork.getMainLineRef().getRef());
+            String lineId = NetexImportUtil.composeObjectIdFromNetexId(context, "Line", netexNetwork.getMainLineRef().getRef());
             Line line = ObjectFactory.getLine(referential, lineId);
             line.setNetwork(chouetteNetwork);
         }
 
-        if (netexNetwork.getMembers() != null){
+        if (netexNetwork.getMembers() != null) {
             for (JAXBElement<? extends LineRefStructure> lineRefStructure : netexNetwork.getMembers().getLineRef()) {
                 String lineRef = lineRefStructure.getValue().getRef();
-                String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineRef);
+                String lineId = NetexImportUtil.composeObjectIdFromNetexId(context, "Line", lineRef);
                 Line line = ObjectFactory.getLine(referential, lineId);
                 line.setNetwork(chouetteNetwork);
             }
@@ -93,14 +95,14 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
                 if (groupOfLines.getMembers() != null) {
                     for (JAXBElement<? extends LineRefStructure> lineRefRelStruct : groupOfLines.getMembers().getLineRef()) {
                         String lineIdRef = lineRefRelStruct.getValue().getRef();
-                        String lineId = NetexImportUtil.composeObjectIdFromNetexId(context,"Line",lineIdRef);
+                        String lineId = NetexImportUtil.composeObjectIdFromNetexId(context, "Line", lineIdRef);
                         Line line = ObjectFactory.getLine(referential, lineId);
                         line.setNetwork(chouetteNetwork);
                         groupOfLine.addLine(line);
                     }
                 }
 
-                netexReferential.getGroupOfLinesToNetwork().put(groupOfLine.getObjectId(),chouetteNetwork.getObjectId());
+                netexReferential.getGroupOfLinesToNetwork().put(groupOfLine.getObjectId(), chouetteNetwork.getObjectId());
                 groupOfLine.setFilled(true);
             }
         }

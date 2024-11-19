@@ -11,15 +11,15 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
 import mobi.chouette.exchange.report.AnalyzeReport;
-import mobi.chouette.model.*;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.ObjectFactory;
+import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
@@ -52,10 +52,10 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                     }
                 })
                 .filter(serviceJourney -> serviceJourney instanceof TemplateServiceJourney)
-                .map(templateServiceJourney -> (TemplateServiceJourney)templateServiceJourney)
+                .map(templateServiceJourney -> (TemplateServiceJourney) templateServiceJourney)
                 .forEach(templateServiceJourney -> {
-                    String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"TemplateServiceJourney", templateServiceJourney.getId());
-                    VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential,serviceJourneyId);
+                    String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context, "TemplateServiceJourney", templateServiceJourney.getId());
+                    VehicleJourney vehicleJourney = ObjectFactory.getVehicleJourney(referential, serviceJourneyId);
                     if (vehicleJourney.isFilled()) {
                         VehicleJourney vehicleJourneyWithVersion = ObjectFactory.getVehicleJourney(referential,
                                 templateServiceJourney.getId() + "_" + templateServiceJourney.getVersion());
@@ -82,7 +82,7 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                         JourneyPatternRefStructure patternRefStruct = templateServiceJourney.getJourneyPatternRef().getValue();
                         String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId("JourneyPattern", parameters.getObjectIdPrefix(), patternRefStruct.getRef());
 
-                        mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential,journeyPatternId);
+                        mobi.chouette.model.JourneyPattern journeyPattern = ObjectFactory.getJourneyPattern(referential, journeyPatternId);
                         vehicleJourney.setJourneyPattern(journeyPattern);
                     }
 
@@ -97,7 +97,10 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                             }
                         }
                     }
-                    if (templateServiceJourney.getOperatorRef() != null) {
+                    if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+                        Company company = ObjectFactory.getCompany(referential, (String) context.get(TARGET_COMPANY_OBJECT_ID));
+                        vehicleJourney.setCompany(company);
+                    } else if (templateServiceJourney.getOperatorRef() != null) {
                         String operatorIdRef = templateServiceJourney.getOperatorRef().getRef();
                         Company company = ObjectFactory.getCompany(referential, operatorIdRef);
                         vehicleJourney.setCompany(company);
@@ -123,8 +126,8 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                         vehicleJourney.setTransportMode(transportModeName);
                     }
 
-                    if(templateServiceJourney.getFrequencyGroups() != null
-                            && templateServiceJourney.getFrequencyGroups().getHeadwayJourneyGroupRefOrHeadwayJourneyGroupOrRhythmicalJourneyGroupRef() != null){
+                    if (templateServiceJourney.getFrequencyGroups() != null
+                            && templateServiceJourney.getFrequencyGroups().getHeadwayJourneyGroupRefOrHeadwayJourneyGroupOrRhythmicalJourneyGroupRef() != null) {
                         FrequencyGroups_RelStructure frequencyGroup = templateServiceJourney.getFrequencyGroups();
                         List<JourneyFrequency> journeyFrequencies = new ArrayList<>();
                         VehicleJourney finalVehicleJourney = vehicleJourney;
@@ -132,12 +135,12 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                                 .filter(headwayJourneyGroupRef -> headwayJourneyGroupRef instanceof HeadwayJourneyGroupRefStructure)
                                 .forEach(headwayJourneyGroupRef -> {
                                     String headwayIdRef = ((HeadwayJourneyGroupRefStructure) headwayJourneyGroupRef).getRef();
-                                    String serviceHeadwayJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"HeadwayJourney", headwayIdRef);
+                                    String serviceHeadwayJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context, "HeadwayJourney", headwayIdRef);
                                     JourneyFrequency journeyFrequency = ObjectFactory.getJourneyFrequency(referential, serviceHeadwayJourneyId);
                                     journeyFrequency.setVehicleJourney(finalVehicleJourney);
                                     journeyFrequencies.add(journeyFrequency);
 
-                        });
+                                });
                         vehicleJourney.setJourneyFrequencies(journeyFrequencies);
                         vehicleJourney.setJourneyCategory(JourneyCategoryEnum.Frequency);
                     }
@@ -184,11 +187,11 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
     private void parseTimetabledPassingTimes(Context context, Referential referential, TemplateServiceJourney templateServiceJourney, VehicleJourney vehicleJourney) {
 
         NetexprofileImportParameters configuration = (NetexprofileImportParameters) context.get(CONFIGURATION);
-        String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context,"JourneyPattern",templateServiceJourney.getJourneyPatternRef().getValue().getRef());
+        String journeyPatternId = NetexImportUtil.composeObjectIdFromNetexId(context, "JourneyPattern", templateServiceJourney.getJourneyPatternRef().getValue().getRef());
 
         mobi.chouette.model.JourneyPattern journeyPattern = referential.getJourneyPatterns().get(journeyPatternId);
 
-        if (templateServiceJourney.getPassingTimes() == null){
+        if (templateServiceJourney.getPassingTimes() == null) {
             handleEmptyPassingTimes(context, templateServiceJourney);
             return;
         }
@@ -221,15 +224,15 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
 
         log.error("Empty passing times in sequence in file :" + fileName + " , templateServiceJourney:" + serviceJourneyId);
 
-        if ( context.get(ANALYSIS_REPORT) == null){
-            return ;
+        if (context.get(ANALYSIS_REPORT) == null) {
+            return;
         }
 
         AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
         analyzeReport.addEmptyPassingTimes(fileName, serviceJourneyId);
     }
 
-        // TODO add support for other time zones and zone offsets, for now only handling UTC
+    // TODO add support for other time zones and zone offsets, for now only handling UTC
     private void parsePassingTimes(TimetabledPassingTime timetabledPassingTime, VehicleJourneyAtStop vehicleJourneyAtStop) {
 
         NetexTimeConversionUtil.parsePassingTime(timetabledPassingTime, false, vehicleJourneyAtStop);
