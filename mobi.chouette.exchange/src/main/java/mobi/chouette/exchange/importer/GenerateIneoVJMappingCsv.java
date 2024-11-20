@@ -14,7 +14,7 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
@@ -42,7 +42,7 @@ public class GenerateIneoVJMappingCsv implements Command {
     public static final String COMMAND = "GenerateIneoVJMappingCsv";
     public static final String INEO_VJ_MAPPING_CSV = "vehicleJourneyMapping.csv";
     public static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
-            "routeDirection", "originalStopId", "vehicleJourneyId" };
+            "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId" };
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
     public static final DateFormat DF_YYYY_MM_DD = new SimpleDateFormat("yyyyMMdd");
     public static final DateTimeFormatter DTF_HHMMSS = DateTimeFormatter.ofPattern("HHmmss");
@@ -79,14 +79,14 @@ public class GenerateIneoVJMappingCsv implements Command {
                 ContextHolder.clear();
                 ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
                 LocalDate today = LocalDate.now(ZONE_ID);
-                List<IneoVJMapping> todaysEntities = vjDAO.getIneoVJMappingData(today);
-                List<IneoVJMapping> tommorowEntities = vjDAO.getIneoVJMappingData(today.plusDays(1));
+                List<IneoVJMapping> todayEntities = vjDAO.getIneoVJMappingData(today);
+                List<IneoVJMapping> tomorrowEntities = vjDAO.getIneoVJMappingData(today.plusDays(1));
                 List<IneoVJMapping> all = new ArrayList<>();
-                if (CollectionUtils.isNotEmpty(todaysEntities)) {
-                    all.addAll(todaysEntities);
+                if (CollectionUtils.isNotEmpty(todayEntities)) {
+                    all.addAll(todayEntities);
                 }
-                if (CollectionUtils.isNotEmpty(tommorowEntities)) {
-                    all.addAll(tommorowEntities);
+                if (CollectionUtils.isNotEmpty(tomorrowEntities)) {
+                    all.addAll(tomorrowEntities);
                 }
 
                 for (IneoVJMapping entity : all) {
@@ -95,8 +95,8 @@ public class GenerateIneoVJMappingCsv implements Command {
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
                             PTDirectionEnum.A.equals(entity.getRouteDirection()) ? "1" : "2",
-                            StringUtils.isEmpty(entity.getOriginalParentStopId()) ? entity.getOriginalStopId() :
-                                    entity.getOriginalParentStopId(),
+                            entity.getOriginalStopId(),
+                            StringUtils.trimToEmpty(entity.getOriginalParentStopId()),
                             ObjectIdUtil.extractOriginalId(entity.getVehicleJourneyObjectId())
                     );
                 }
