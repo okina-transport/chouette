@@ -9,7 +9,6 @@ import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.Provider;
-import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -94,7 +93,7 @@ public class GenerateIneoVJMappingCsv implements Command {
                             DF_YYYY_MM_DD.format(entity.getDate()),
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
-                            PTDirectionEnum.A.equals(entity.getRouteDirection()) ? "1" : "2",
+                            entity.getRouteDirection(),
                             entity.getOriginalStopId(),
                             StringUtils.trimToEmpty(entity.getOriginalParentStopId()),
                             ObjectIdUtil.extractOriginalId(entity.getVehicleJourneyObjectId())
