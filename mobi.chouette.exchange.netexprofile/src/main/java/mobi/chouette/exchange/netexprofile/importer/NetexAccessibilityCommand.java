@@ -88,9 +88,25 @@ public class NetexAccessibilityCommand implements Command, Constant {
     }
 
     private void updateVehicleJourneysWithAccessibility(Long accessibilityId, List<VehicleJourney> vehicleJourneys) {
-        List<String> listIds = vehicleJourneys.stream().map(vj -> String.valueOf(vj.getObjectId())).collect(Collectors.toList());
-        long updatedLines = vehicleJourneyDAO.updateAccessibilityId(accessibilityId, listIds);
-        log.info("Updated vehicle journeys for accessibility " + accessibilityId + ": " + updatedLines);
+        int batchSize = 5000;
+        List<String> listIds = vehicleJourneys.stream()
+                .map(vj -> String.valueOf(vj.getObjectId()))
+                .collect(Collectors.toList());
+
+        log.info("Starting batch update for " + listIds.size() + " vehicle journeys with accessibilityId " + accessibilityId);
+
+        long totalUpdated = 0;
+        for (int i = 0; i < listIds.size(); i += batchSize) {
+            List<String> batch = listIds.subList(i, Math.min(i + batchSize, listIds.size()));
+            try {
+                long updatedLines = vehicleJourneyDAO.updateAccessibilityId(accessibilityId, batch);
+                totalUpdated += updatedLines;
+            } catch (Exception e) {
+                log.error("Error updating accessibility vj", e);
+            }
+        }
+
+        log.info("Batch update completed: total " + totalUpdated + " vehicle journeys updated with accessibilityId " + accessibilityId);
     }
 
     private String generateUniqueObjectId(String type) {
