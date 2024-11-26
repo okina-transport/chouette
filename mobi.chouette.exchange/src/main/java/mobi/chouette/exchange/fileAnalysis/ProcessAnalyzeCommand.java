@@ -45,6 +45,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, Set<String>> wrongScheduleStopPointCoordinates;
     private List<String> duplicateTripStructureInStopTimesWithSameCalendarAndHourly;
     private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop;
+    private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference;
 
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
@@ -109,6 +110,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         wrongScheduleStopPointCoordinates = analyzeReport.getWrongScheduleStopPointCoordinates();
         duplicateTripStructureInStopTimesWithSameCalendarAndHourly = analyzeReport.getDuplicateTripStructureInStopTimesWithSameCalendarAndHourly();
         duplicateTripStructureInStopTimesWithSameHourlyAndStop = analyzeReport.getDuplicateTripStructureInStopTimesWithSameHourlyAndStop();
+        stopPointsPassingTimesDifference = analyzeReport.getStopPointsPassingTimesDifference();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -126,6 +128,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         checkRouteLinksIfNeeded(context, newValue);
         containsDuplicateTripStructureInStopTimesWithSameCalendarAndHourly(context);
         containsDuplicateTripStructureInStopTimesWithSameHourlyAndStop(context);
+        containsStopPointsPassingTimesDifference(context);
 
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
@@ -398,6 +401,13 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         }
     }
 
+    private void containsStopPointsPassingTimesDifference(Context context) {
+        List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifferenceList = (List<Map<String, List<Map<String, Object>>>>) context.get(STOP_POINTS_PASSING_TIMES_DIFFERENCE);
+
+        if (stopPointsPassingTimesDifferenceList != null) {
+            stopPointsPassingTimesDifference.addAll(stopPointsPassingTimesDifferenceList);
+        }
+    }
     /**
      * recover all data of stopAreas and write analysis results into analyzeReport     *
      * @param line

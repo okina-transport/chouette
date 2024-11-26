@@ -240,6 +240,56 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		}
 
 		for (int i = 0; i < serviceJourney.getPassingTimes().getTimetabledPassingTime().size(); i++) {
+
+			if (i >= journeyPattern.getStopPoints().size()) {
+				List<Map<String, List<Map<String, Object>>>> mismatchedEntries =
+						(List<Map<String, List<Map<String, Object>>>>) context.get(STOP_POINTS_PASSING_TIMES_DIFFERENCE);
+				if (mismatchedEntries == null) {
+					mismatchedEntries = new ArrayList<>();
+				}
+
+				// Identifier le journeyPatternIdentifier
+				String journeyPatternIdentifier = journeyPattern.getObjectId()
+						.replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":");
+
+				// Vérifier si une map avec cette clé existe déjà
+				Map<String, List<Map<String, Object>>> existingEntry = mismatchedEntries.stream()
+						.filter(entry -> entry.containsKey(journeyPatternIdentifier))
+						.findFirst()
+						.orElse(null);
+
+				if (existingEntry == null) {
+					// Si l'entrée n'existe pas encore, on la crée et l'ajoute à la liste
+					existingEntry = new HashMap<>();
+					existingEntry.put(journeyPatternIdentifier, new ArrayList<>());
+					mismatchedEntries.add(existingEntry);
+				}
+
+				// Récupérer la liste associée à cette clé
+				List<Map<String, Object>> variantList = existingEntry.get(journeyPatternIdentifier);
+
+				Map<String, Object> currentVariant = new HashMap<>();
+				currentVariant.put("stopPointsSize", journeyPattern.getStopPoints().size());
+				currentVariant.put("serviceJourneyId", serviceJourney.getId()
+						.replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":"));
+				currentVariant.put("passingTimesSize", serviceJourney.getPassingTimes().getTimetabledPassingTime().size());
+
+				// Vérifier si cette variante existe déjà
+				boolean exists = variantList.stream().anyMatch(variant ->
+						variant.get("stopPointsSize").equals(currentVariant.get("stopPointsSize")) &&
+								variant.get("serviceJourneyId").equals(currentVariant.get("serviceJourneyId")) &&
+								variant.get("passingTimesSize").equals(currentVariant.get("passingTimesSize"))
+				);
+
+				if (!exists) {
+					variantList.add(currentVariant);
+				}
+
+				context.putIfAbsent(STOP_POINTS_PASSING_TIMES_DIFFERENCE, mismatchedEntries);
+				continue;
+			}
+
+
 			TimetabledPassingTime passingTime = serviceJourney.getPassingTimes().getTimetabledPassingTime().get(i);
 			String passingTimeId = passingTime.getId();
 
