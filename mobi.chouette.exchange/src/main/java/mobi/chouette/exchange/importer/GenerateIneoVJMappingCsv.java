@@ -94,8 +94,9 @@ public class GenerateIneoVJMappingCsv implements Command {
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
                             entity.getRouteDirection(),
-                            entity.getOriginalStopId(),
+                            StringUtils.trimToEmpty(entity.getOriginalStopId()),
                             StringUtils.trimToEmpty(entity.getOriginalParentStopId()),
+                            // extract original id because there is only one AO for SEM in order to reduce size of output file
                             ObjectIdUtil.extractOriginalId(entity.getVehicleJourneyObjectId())
                     );
                 }
