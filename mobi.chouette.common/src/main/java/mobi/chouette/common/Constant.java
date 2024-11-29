@@ -113,6 +113,7 @@ public interface Constant {
 	String WRONG_STOP_POINT_ORDER_IN_JOUNEY_PATTERN = "wrongStopPointOrderInJourneyPattern";
 	String DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_CALENDAR_AND_HOURLY = "duplicateTripStructureInStopTimesWithSameCalendarAndHourly";
 	String DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP = "duplicateTripStructureInStopTimesWithSameHourlyAndStop";
+	String STOP_POINTS_PASSING_TIMES_DIFFERENCE = "stopPointsPassingTimesDifference";
 
 	String STOP_PLACES_WITHOUT_QUAY = "stopPlacesWithoutQuay";
 

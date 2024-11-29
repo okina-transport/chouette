@@ -242,34 +242,51 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		for (int i = 0; i < serviceJourney.getPassingTimes().getTimetabledPassingTime().size(); i++) {
 
 			if (i >= journeyPattern.getStopPoints().size()) {
-				// Initialiser ou récupérer la liste du contexte
-				List<Map<String, Object>> mismatchedEntries = (List<Map<String, Object>>) context.get("mismatchedJourneys");
+				List<Map<String, List<Map<String, Object>>>> mismatchedEntries =
+						(List<Map<String, List<Map<String, Object>>>>) context.get(STOP_POINTS_PASSING_TIMES_DIFFERENCE);
 				if (mismatchedEntries == null) {
 					mismatchedEntries = new ArrayList<>();
 				}
 
-				// Créer une entrée pour cette itération
-				Map<String, Object> currentEntry = new HashMap<>();
-				currentEntry.put("journeyPatternId", journeyPattern.getObjectId().replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":"));
-				currentEntry.put("stopPointsSize", journeyPattern.getStopPoints().size());
-				currentEntry.put("serviceJourneyId", serviceJourney.getId().replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":"));
-				currentEntry.put("passingTimesSize", serviceJourney.getPassingTimes().getTimetabledPassingTime().size());
+				// Identifier le journeyPatternIdentifier
+				String journeyPatternIdentifier = journeyPattern.getObjectId()
+						.replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":");
 
-				// Vérifier si cette entrée existe déjà
-				boolean exists = mismatchedEntries.stream().anyMatch(entry ->
-						entry.get("journeyPatternId").equals(currentEntry.get("journeyPatternId")) &&
-								entry.get("stopPointsSize").equals(currentEntry.get("stopPointsSize")) &&
-								entry.get("serviceJourneyId").equals(currentEntry.get("serviceJourneyId")) &&
-								entry.get("passingTimesSize").equals(currentEntry.get("passingTimesSize"))
-				);
+				// Vérifier si une map avec cette clé existe déjà
+				Map<String, List<Map<String, Object>>> existingEntry = mismatchedEntries.stream()
+						.filter(entry -> entry.containsKey(journeyPatternIdentifier))
+						.findFirst()
+						.orElse(null);
 
-				// Ajouter l'entrée si elle n'existe pas
-				if (!exists) {
-					mismatchedEntries.add(currentEntry);
-					context.putIfAbsent("mismatchedJourneys", mismatchedEntries);
+				if (existingEntry == null) {
+					// Si l'entrée n'existe pas encore, on la crée et l'ajoute à la liste
+					existingEntry = new HashMap<>();
+					existingEntry.put(journeyPatternIdentifier, new ArrayList<>());
+					mismatchedEntries.add(existingEntry);
 				}
 
-				continue; // Skip this iteration to avoid the error
+				// Récupérer la liste associée à cette clé
+				List<Map<String, Object>> variantList = existingEntry.get(journeyPatternIdentifier);
+
+				Map<String, Object> currentVariant = new HashMap<>();
+				currentVariant.put("stopPointsSize", journeyPattern.getStopPoints().size());
+				currentVariant.put("serviceJourneyId", serviceJourney.getId()
+						.replace(mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE, ":"));
+				currentVariant.put("passingTimesSize", serviceJourney.getPassingTimes().getTimetabledPassingTime().size());
+
+				// Vérifier si cette variante existe déjà
+				boolean exists = variantList.stream().anyMatch(variant ->
+						variant.get("stopPointsSize").equals(currentVariant.get("stopPointsSize")) &&
+								variant.get("serviceJourneyId").equals(currentVariant.get("serviceJourneyId")) &&
+								variant.get("passingTimesSize").equals(currentVariant.get("passingTimesSize"))
+				);
+
+				if (!exists) {
+					variantList.add(currentVariant);
+				}
+
+				context.putIfAbsent(STOP_POINTS_PASSING_TIMES_DIFFERENCE, mismatchedEntries);
+				continue;
 			}
 
 

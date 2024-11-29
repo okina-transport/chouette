@@ -127,6 +127,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "duplicateTripStructureInStopTimesWithSameHourlyAndStop")
     private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop = new HashMap<>();
 
+    @XmlElement(name = "stopPointsPassingTimesDifference")
+    private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference = new ArrayList<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -381,6 +384,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 
         if (duplicateTripStructureInStopTimesWithSameHourlyAndStop != null && !duplicateTripStructureInStopTimesWithSameHourlyAndStop.isEmpty()) {
             analyzeReportMap.put("duplicateTripStructureInStopTimesWithSameHourlyAndStop", duplicateTripStructureInStopTimesWithSameHourlyAndStop);
+        }
+
+        if (stopPointsPassingTimesDifference != null && !stopPointsPassingTimesDifference.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("stopPointsPassingTimesDifference", stopPointsPassingTimesDifference.stream().distinct().collect(Collectors.toList()));
         }
 
 
