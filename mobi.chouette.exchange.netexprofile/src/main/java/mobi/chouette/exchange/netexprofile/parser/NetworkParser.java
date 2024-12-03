@@ -52,10 +52,7 @@ public class NetworkParser extends NetexParser implements Parser, Constant {
             }
 
             chouetteNetwork.setName(netexNetwork.getName().getValue());
-            if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
-                Company company = ObjectFactory.getCompany(referential, (String) context.get(TARGET_COMPANY_OBJECT_ID));
-                chouetteNetwork.setCompany(company);
-            } else if (netexNetwork.getTransportOrganisationRef() != null) {
+            if (netexNetwork.getTransportOrganisationRef() != null) {
                 OrganisationRefStructure authorityRefStruct = netexNetwork.getTransportOrganisationRef().getValue();
                 String generatedAuthorityId = NetexImportUtil.composeObjectIdFromNetexId("Authority", parameters.getObjectIdPrefix(), authorityRefStruct.getRef());
                 Company company = ObjectFactory.getCompany(referential, generatedAuthorityId);

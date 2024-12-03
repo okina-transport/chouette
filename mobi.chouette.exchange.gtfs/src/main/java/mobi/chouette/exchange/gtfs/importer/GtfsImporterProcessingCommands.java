@@ -60,7 +60,6 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
             if (parameters.isUseTargetNetwork()) {
                 commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
-                commands.add(CommandFactory.create(initialContext, GtfsAgencyOverloadCommand.class.getName()));
             }
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
         } catch (Exception e) {

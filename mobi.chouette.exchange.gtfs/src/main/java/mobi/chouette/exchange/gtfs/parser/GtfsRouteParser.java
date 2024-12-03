@@ -191,10 +191,15 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 
         convert(context, gtfsRoute, line);
 
+        String agencyId = null;
 
-        String agencyId = gtfsRoute.getAgencyId();
-        if (agencyId == null) {
-            agencyId = configuration.getReferentialName();
+        if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+            agencyId = StringUtils.chop(ObjectIdUtil.extractOriginalId((String) context.get(TARGET_COMPANY_OBJECT_ID)));
+        } else {
+            agencyId = gtfsRoute.getAgencyId();
+            if (agencyId == null) {
+                agencyId = configuration.getReferentialName();
+            }
         }
 
         String operatorId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
@@ -203,8 +208,13 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
         line.setCompany(operator);
 
         // PTNetwork
-        String ptNetworkId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
-                Network.PTNETWORK_KEY, agencyId);
+        String ptNetworkId;
+        if (context.get(TARGET_NETWORK_OBJECT_ID) != null) {
+            ptNetworkId = (String) context.get(TARGET_NETWORK_OBJECT_ID);
+        }else {
+            ptNetworkId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
+                    Network.PTNETWORK_KEY, agencyId);
+        }
         Network ptNetwork = ObjectFactory.getPTNetwork(referential, ptNetworkId);
         if (ptNetwork.getCompany() == null) {
             String authorityId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
