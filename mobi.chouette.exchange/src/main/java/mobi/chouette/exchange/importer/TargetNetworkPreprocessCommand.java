@@ -68,7 +68,8 @@ public class TargetNetworkPreprocessCommand implements Command {
             }
             log.info("Found active operator company with name '{}' in database", parameters.getTargetNetwork());
             targetOperatorCompany = companies.get(0);
-            targetCompanyOriginalId = ObjectIdUtil.extractOriginalId(targetOperatorCompany.getObjectId());
+            targetCompanyOriginalId =
+                    StringUtils.chomp(ObjectIdUtil.extractOriginalId(targetOperatorCompany.getObjectId()), "o");
         } else {
             log.info("No active operator company with name '{}' in database, create a default one and put it in " +
                             "referential", parameters.getTargetNetwork());
