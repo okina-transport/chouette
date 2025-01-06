@@ -59,7 +59,11 @@ public class LineParser implements Parser, Constant, JsonExtension {
 				line.setFilled(true);
 				line.setNetwork(getPtNetwork(referential));
 				line.setCompany(getFirstCompany(referential));
-				line.setPosition((int) context.get(LINE_POSITION));
+				int linePos = (int) context.get(LINE_POSITION);
+				if (linePos != 0) {
+					line.setPosition((int) context.get(LINE_POSITION));
+				}
+
 			} else if (xpp.getName().equals("objectVersion")) {
 				Integer version = ParserUtils.getInt(xpp.nextText());
 				line.setObjectVersion(version);
