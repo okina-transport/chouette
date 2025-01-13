@@ -76,8 +76,8 @@ public class AbstractImportParameter extends AbstractParameter {
     @XmlElement(name = "keep_stop_names", defaultValue = "true")
     private boolean keepStopNames = true;
 
-    @XmlElement(name = "generate_map_matching", defaultValue = "false")
-    private boolean generateMapMatching = false;
+    @XmlElement(name = "generate_map_matching", defaultValue = "NONE")
+    private ImportGenerateMapMatching generateMapMatching = ImportGenerateMapMatching.NONE;
 
     @XmlElement(name = "distance_geolocation")
     private Long distanceGeolocation = 200L;
