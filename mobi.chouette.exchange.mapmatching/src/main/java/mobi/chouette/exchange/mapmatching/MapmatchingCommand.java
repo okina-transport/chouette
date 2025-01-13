@@ -11,26 +11,15 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.JourneyPatternDAO;
-import mobi.chouette.dao.LineDAO;
-import mobi.chouette.dao.ProfileOSRMJourneyPatternDAO;
-import mobi.chouette.dao.RouteSectionDAO;
-import mobi.chouette.dao.StopPointDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.CommandCancelledException;
 import mobi.chouette.exchange.ProgressionCommand;
+import mobi.chouette.exchange.parameters.ImportGenerateMapMatching;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.MapMatchingReport;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.LatLngMapMatching;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.OSRMProfile;
-import mobi.chouette.model.ProfileOSRMInterStopJourneyPattern;
-import mobi.chouette.model.ProfileOSRMJourneyPattern;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.OSRMService;
 import org.codehaus.jettison.json.JSONArray;
@@ -45,10 +34,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -91,13 +77,15 @@ public class MapmatchingCommand implements Command, Constant {
         ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext, ProgressionCommand.class.getName());
         ActionReporter reporter = ActionReporter.Factory.getInstance();
         MapMatchingReport mapMatchingReport = new MapMatchingReport();
+        MapmatchingParameters mapmatchingParameters = (MapmatchingParameters) context.get(CONFIGURATION);
+        ImportGenerateMapMatching mapMatchingType = ImportGenerateMapMatching.valueOf(mapmatchingParameters.getGenerateMapMatching());
         progression.initialize(context, 1);
         progression.execute(context);
 
         try {
             progression.start(context, 1);
             progression.execute(context);
-            generateGeoJsonAllJourneyPatterns(mapMatchingReport);
+            generateGeoJsonAllJourneyPatterns(mapMatchingReport, mapMatchingType);
             context.put(MAP_MATCHING_REPORT_FILE, mapMatchingReport);
             report.setResult("OK");
             progression.saveMapMatchingReport(context, true);
@@ -120,13 +108,13 @@ public class MapmatchingCommand implements Command, Constant {
         return result;
     }
 
-    public boolean generateGeoJsonAllJourneyPatterns(MapMatchingReport mapMatchingReport) {
+    public boolean generateGeoJsonAllJourneyPatterns(MapMatchingReport mapMatchingReport, ImportGenerateMapMatching mapMatchingType) {
         List<Line> lineList = lineDAO.findAll();
         for(Line line : lineList){
             log.info("------------- Start mapmatching line - " + line.getPublishedName() + " -------------- in schema : " + ContextHolder.getContext());
             List<JourneyPattern> journeyPatterns = journeyPatternDAO.getEnabledJourneyOfLine(line);
             for (JourneyPattern ojp : journeyPatterns) {
-                generateAllGeoJsonForJourneyPatternsByLine(ojp, mapMatchingReport);
+                generateAllGeoJsonForJourneyPatternsByLine(ojp, mapMatchingReport, mapMatchingType);
                 mapMatchingReport.getRoutesOk().put(line.getObjectId(), ojp.getObjectId());
             }
             log.info("** Line done " + line.getPublishedName() + " **");
@@ -137,11 +125,11 @@ public class MapmatchingCommand implements Command, Constant {
     /**
      * Generate all GeoJSON by journey pattern
      */
-    public void generateAllGeoJsonForJourneyPatternsByLine(JourneyPattern ojp, MapMatchingReport mapMatchingReport) {
+    public void generateAllGeoJsonForJourneyPatternsByLine(JourneyPattern ojp, MapMatchingReport mapMatchingReport, ImportGenerateMapMatching mapMatchingType) {
         ojp = journeyPatternDAO.findByIdMapMatchingLazyDeps(ojp.getId());
         if (ojp.getGeojson() == null || ojp.getRouteSections().isEmpty()) {
             try {
-                addNewMapMatching(ojp);
+                addNewMapMatching(ojp, mapMatchingType);
                 journeyPatternDAO.flush();
                 journeyPatternDAO.clear();
                 log.info("** OJP done " + ojp.getName() + " **");
@@ -158,12 +146,12 @@ public class MapmatchingCommand implements Command, Constant {
      * @return
      * @throws Exception
      */
-    public JourneyPattern addNewMapMatching(JourneyPattern journeyPattern) throws Exception {
+    public JourneyPattern addNewMapMatching(JourneyPattern journeyPattern, ImportGenerateMapMatching mapMatchingType) throws Exception {
         if (journeyPattern.getGeojson() == null && !journeyPattern.getRouteSections().isEmpty()) {
             journeyPattern.setGeojson(journeyPattern.getGeoJSONFromRouteSections());
             return journeyPatternDAO.update(journeyPattern);
         } else {
-            return addNewMapMatchingByPoints(journeyPattern, getPoints(journeyPattern));
+            return addNewMapMatchingByPoints(journeyPattern, getPoints(journeyPattern), mapMatchingType);
         }
     }
 
@@ -175,8 +163,8 @@ public class MapmatchingCommand implements Command, Constant {
      * @return
      * @throws Exception
      */
-    public JourneyPattern addNewMapMatchingByPoints(JourneyPattern journeyPattern, List<LatLngMapMatching> points) throws Exception {
-        GeoJSON geoJSON = loadSectionRoute(journeyPattern, points);
+    public JourneyPattern addNewMapMatchingByPoints(JourneyPattern journeyPattern, List<LatLngMapMatching> points, ImportGenerateMapMatching mapMatchingType) throws Exception {
+        GeoJSON geoJSON = loadSectionRoute(journeyPattern, points, mapMatchingType);
 
         journeyPattern = journeyPatternDAO.updateGeoJson(journeyPattern, geoJSON);
 
@@ -192,12 +180,17 @@ public class MapmatchingCommand implements Command, Constant {
      * @param listStopPoints
      * @return
      */
-    public GeoJSON loadSectionRoute(JourneyPattern journeyPattern, List<LatLngMapMatching> listStopPoints) throws Exception {
+    public GeoJSON loadSectionRoute(JourneyPattern journeyPattern, List<LatLngMapMatching> listStopPoints, ImportGenerateMapMatching mapMatchingType) throws Exception {
         List<StopPoint> stopPoints = stopPointDAO.getStopPointsofJourneyPattern(journeyPattern);
 
         routeSectionDAO.deleteSectionUsedByJourneyPattern(journeyPattern);
+        OSRMProfile osrmProfile;
+        if (mapMatchingType == ImportGenerateMapMatching.AIR) {
+            osrmProfile = OSRMProfile.AIR;
+        } else {
+            osrmProfile = getOSRMProfile(journeyPattern);
+        }
 
-        OSRMProfile osrmProfile = getOSRMProfile(journeyPattern);
 
         // full journey pattern osrm line: we use this as a reference for section lines
         List<JSONObject> osrmResponseMultiLines = fetchOsrmLinesWithTurnBack(listStopPoints, osrmProfile);
@@ -308,7 +301,7 @@ public class MapmatchingCommand implements Command, Constant {
             routeSection.setToScheduledStopPoint(scheduledStopPoint2);
 
             routeSection.setNoProcessing(true);
-            routeSection.setObjectId(String.valueOf(System.currentTimeMillis()));
+            routeSection.setObjectId(UUID.randomUUID().toString());
 
             routeSectionDAO.create(routeSection);
 
