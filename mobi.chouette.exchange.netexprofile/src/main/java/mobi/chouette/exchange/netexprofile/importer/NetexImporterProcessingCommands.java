@@ -257,6 +257,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
                 }
 
                 mainChain.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
+                mainChain.add(CommandFactory.create(initialContext, NetexGeocodeCommand.class.getName()));
             }
 
         } catch (Exception e) {
