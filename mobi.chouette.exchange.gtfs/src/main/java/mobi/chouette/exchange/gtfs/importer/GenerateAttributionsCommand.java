@@ -11,6 +11,7 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AttributionDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.model.*;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -56,8 +57,8 @@ public class GenerateAttributionsCommand implements Command, Constant {
         for (Line l : lines) {
             Attribution lineAttribution = new Attribution();
             lineAttribution.setLine(l);
-            if(l.getCompany() != null && l.getCompany().getRegistrationNumber() != null){
-                lineAttribution.setOrganisationName(l.getCompany().getRegistrationNumber().replaceAll("o+$", ""));
+            if(l.getCompany() != null && StringUtils.isNotEmpty(l.getCompany().getName())){
+                lineAttribution.setOrganisationName(l.getCompany().getName());
             }
             lineAttribution.setIsProducer(true);
             lineAttribution.setIsOperator(true);
@@ -68,8 +69,8 @@ public class GenerateAttributionsCommand implements Command, Constant {
                     for (VehicleJourney vj : jp.getVehicleJourneys()) {
                         Attribution vehicleJourneyAttribution = new Attribution();
                         vehicleJourneyAttribution.setVehicleJourney(vj);
-                        if(l.getCompany() != null && l.getCompany().getRegistrationNumber() != null) {
-                            vehicleJourneyAttribution.setOrganisationName(l.getCompany().getRegistrationNumber().replaceAll("o+$", ""));
+                        if(l.getCompany() != null && StringUtils.isNotEmpty(l.getCompany().getName())) {
+                            vehicleJourneyAttribution.setOrganisationName(l.getCompany().getName());
                         }
                         vehicleJourneyAttribution.setIsProducer(true);
                         vehicleJourneyAttribution.setIsOperator(true);
