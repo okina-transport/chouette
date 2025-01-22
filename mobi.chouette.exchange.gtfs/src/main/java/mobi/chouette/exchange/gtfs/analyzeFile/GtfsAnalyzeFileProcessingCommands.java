@@ -41,8 +41,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
 
         @Override
         protected ProcessingCommands create() throws IOException {
-            ProcessingCommands result = new GtfsAnalyzeFileProcessingCommands();
-            return result;
+            return new GtfsAnalyzeFileProcessingCommands();
         }
     }
 
@@ -78,7 +77,6 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
     public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
         GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        boolean level3validation = context.get(VALIDATION) != null;
         List<Command> commands = new ArrayList<>();
         GtfsImporter importer = (GtfsImporter) context.get(PARSER);
         Index<GtfsRoute> index = importer.getRouteById();
@@ -90,7 +88,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
                 commands.add(chain);
             }
 
-            ArrayList<String> savedLines = new ArrayList<String>();
+            ArrayList<String> savedLines = new ArrayList<>();
 
             String splitCharacter = parameters.getSplitCharacter();
             context.put(TOTAL_NB_OF_LINES, index.getLength());
@@ -167,7 +165,8 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             }
 
         } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();        }
+            log.error("Error creating mobiiti commands", e);
+        }
 
         return commands;
     }

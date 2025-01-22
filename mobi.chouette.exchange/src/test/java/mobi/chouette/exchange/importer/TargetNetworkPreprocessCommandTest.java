@@ -3,12 +3,10 @@ package mobi.chouette.exchange.importer;
 
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.NetworkDAO;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -17,11 +15,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static mobi.chouette.common.Constant.*;
+import static mobi.chouette.common.Constant.CONFIGURATION;
+import static mobi.chouette.common.Constant.REFERENTIAL;
 
 public class TargetNetworkPreprocessCommandTest {
 
@@ -33,7 +28,6 @@ public class TargetNetworkPreprocessCommandTest {
     private final Network dbNetwork;
     TargetNetworkPreprocessCommand tested;
     private CompanyDAO companyDAOMock;
-    private NetworkDAO networkDAOMock;
 
 
     public TargetNetworkPreprocessCommandTest() {
@@ -64,8 +58,7 @@ public class TargetNetworkPreprocessCommandTest {
     @BeforeMethod
     private void beforeMethod() {
         companyDAOMock = Mockito.mock(CompanyDAO.class);
-        networkDAOMock = Mockito.mock(NetworkDAO.class);
-        tested = new TargetNetworkPreprocessCommand(companyDAOMock, networkDAOMock);
+        tested = new TargetNetworkPreprocessCommand(companyDAOMock);
     }
 
     private Context buildContext(String targetNetwork) {

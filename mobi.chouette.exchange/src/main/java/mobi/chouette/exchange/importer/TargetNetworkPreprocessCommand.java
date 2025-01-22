@@ -6,7 +6,6 @@ import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.CompanyDAO;
-import mobi.chouette.dao.NetworkDAO;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Network;
@@ -36,7 +35,7 @@ public class TargetNetworkPreprocessCommand implements Command {
     @EJB
     CompanyDAO companyDAO;
 
-    public TargetNetworkPreprocessCommand(CompanyDAO companyDAO, NetworkDAO networkDAO) {
+    public TargetNetworkPreprocessCommand(CompanyDAO companyDAO) {
         this.companyDAO = companyDAO;
     }
 

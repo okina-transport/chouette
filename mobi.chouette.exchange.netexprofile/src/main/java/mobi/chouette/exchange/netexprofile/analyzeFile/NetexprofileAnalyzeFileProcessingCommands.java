@@ -23,6 +23,7 @@ import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.naming.InitialContext;
@@ -206,7 +207,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
     private void addLineCommands(Chain mainChain, Context context, List<Path> lineFilePaths) throws IOException, ClassNotFoundException {
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 
-        if (lineFilePaths.size() == 0){
+        if (CollectionUtils.isEmpty(lineFilePaths)) {
             //if no line file is available, a single "processAnalyzeCommand" is launch to count stopAreas
             Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
             mainChain.add(analyzeCommand);
@@ -221,7 +222,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         lineChains.setIgnored(parameters.isContinueOnLineErrors());
 
 
-        if (lineFilePaths.size() > 0){
+        if (CollectionUtils.isNotEmpty(lineFilePaths)) {
             mainChain.add(lineChains);
         }
 
@@ -253,8 +254,9 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
     }
     private void addLineValidationCommands(Chain mainChain, Context context, List<Path> lineFilePaths) throws IOException, ClassNotFoundException {
 
-        if (lineFilePaths.size() == 0)
-            return ;
+        if (CollectionUtils.isEmpty(lineFilePaths)) {
+            return;
+        }
 
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 
@@ -266,7 +268,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
         // Compare by file size, largest first
         List<Path> allPathsSortedLargestFirst = new ArrayList<>(lineFilePaths);
-        Collections.sort(allPathsSortedLargestFirst, (o1, o2) -> (int) (o2.toFile().length() - o1.toFile().length()));
+        allPathsSortedLargestFirst.sort((o1, o2) -> (int) (o2.toFile().length() - o1.toFile().length()));
         for (Path file : allPathsSortedLargestFirst) {
             Chain lineChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 

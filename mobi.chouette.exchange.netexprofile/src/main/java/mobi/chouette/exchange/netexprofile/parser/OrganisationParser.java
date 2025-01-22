@@ -37,7 +37,7 @@ public class OrganisationParser implements Parser, Constant {
 			Organisation_VersionStructure organisationStruct = (Organisation_VersionStructure) organisation;
 			boolean isOperator = false;
 			String organisationId = organisation.getId();
-			String generatedOrganisationId = null;
+			String generatedOrganisationId;
 
 			if (organisationStruct instanceof Operator) {
 				isOperator = true;
@@ -64,9 +64,8 @@ public class OrganisationParser implements Parser, Constant {
 			}
 			
 			// Find type of organisation
-			OrganisationTypeEnumeration organisationTypeEnumeration = null;
 			if (CollectionUtils.isNotEmpty(organisationStruct.getOrganisationType())) {
-				organisationTypeEnumeration = organisationStruct.getOrganisationType().get(0);
+				OrganisationTypeEnumeration organisationTypeEnumeration = organisationStruct.getOrganisationType().get(0);
 				OrganisationTypeEnum organisationType = NetexParserUtils.getOrganisationType(organisationTypeEnumeration);
 				if (organisationType != null) {
 					company.setOrganisationType(organisationType);
@@ -105,7 +104,7 @@ public class OrganisationParser implements Parser, Constant {
 
 	static {
 		ParserFactory.register(OrganisationParser.class.getName(), new ParserFactory() {
-			private OrganisationParser instance = new OrganisationParser();
+			private final OrganisationParser instance = new OrganisationParser();
 
 			@Override
 			protected Parser create() {
