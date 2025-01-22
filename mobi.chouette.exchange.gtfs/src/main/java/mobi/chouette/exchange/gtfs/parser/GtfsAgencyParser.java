@@ -101,11 +101,13 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 	
 	@Override
 	public void parse(Context context) {
-
+		if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+			log.info("This is an import on target network, no need to parse agency.txt");
+			return;
+		}
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-
 		for (GtfsAgency gtfsAgency : importer.getAgencyById()) {
 			if(StringUtils.isEmpty(gtfsAgency.getAgencyId())){
 				gtfsAgency.setAgencyName(configuration.getReferentialName());

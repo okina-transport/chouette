@@ -79,7 +79,7 @@ public class TargetNetworkPreprocessCommand implements Command {
                             targetCompanyOriginalId + "o"));
             targetOperatorCompany.setName(parameters.getTargetNetwork());
             targetOperatorCompany.setOrganisationType(OrganisationTypeEnum.Operator);
-            targetOperatorCompany.setRegistrationNumber(targetCompanyOriginalId);
+            targetOperatorCompany.setRegistrationNumber(targetCompanyOriginalId + "o");
             targetOperatorCompany.setUrl(DEFAULT_URL);
         }
 
@@ -104,8 +104,10 @@ public class TargetNetworkPreprocessCommand implements Command {
             targetAuthorityCompany = ObjectFactory.getCompany(referential,
                     ObjectIdUtil.composeNeptuneObjectId(parameters.getObjectIdPrefix(),
                             ObjectIdTypes.AUTHORITY_KEY, targetCompanyOriginalId));
-                    targetAuthorityCompany.setOrganisationType(OrganisationTypeEnum.Authority);
             targetAuthorityCompany.setName(parameters.getTargetNetwork());
+            targetAuthorityCompany.setOrganisationType(OrganisationTypeEnum.Authority);
+            targetAuthorityCompany.setRegistrationNumber(targetCompanyOriginalId);
+            targetOperatorCompany.setUrl(DEFAULT_URL);
         }
 
         log.info("Target authority company objectId: '{}'", targetAuthorityCompany.getObjectId());

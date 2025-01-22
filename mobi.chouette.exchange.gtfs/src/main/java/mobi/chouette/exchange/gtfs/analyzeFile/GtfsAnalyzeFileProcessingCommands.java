@@ -23,6 +23,7 @@ import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
+import mobi.chouette.exchange.importer.TargetNetworkPreprocessCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import org.apache.commons.lang.StringUtils;
@@ -58,6 +59,9 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
             commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
             commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
+            if (parameters.isUseTargetNetwork()) {
+                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+            }
             commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
 
 

@@ -26,9 +26,12 @@ public class OrganisationParser implements Parser, Constant {
 	public void parse(Context context) throws Exception {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		OrganisationsInFrame_RelStructure organisationsInFrameStruct = (OrganisationsInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
-
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
-
+		if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+			log.info("Ignore organisation parsing from NeTEx import");
+			log.info(String.format("Use target company %s instead", parameters.getTargetNetwork()));
+			return;
+		}
 		for (JAXBElement<? extends DataManagedObjectStructure> organisationElement : organisationsInFrameStruct.getOrganisation_()) {
 			DataManagedObjectStructure organisation = organisationElement.getValue();
 			Organisation_VersionStructure organisationStruct = (Organisation_VersionStructure) organisation;

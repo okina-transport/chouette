@@ -15,7 +15,7 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
-import mobi.chouette.exchange.importer.CleanRepositoryCommand;
+import mobi.chouette.exchange.importer.TargetNetworkPreprocessCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.netexprofile.importer.*;
 import mobi.chouette.exchange.netexprofile.importer.util.IdVersion;
@@ -74,6 +74,9 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             Chain initChain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
+            if (parameters.isUseTargetNetwork()) {
+                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+            }
             commands.add(initChain);
 
             context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
