@@ -22,7 +22,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Stateless(name = TargetNetworkPreprocessCommand.COMMAND)
 @Slf4j
@@ -31,6 +30,9 @@ public class TargetNetworkPreprocessCommand implements Command {
     public static final String COMMAND = "TargetNetworkPreprocessCommand";
     public static final String DEFAULT_URL = "https://www.okina.fr";
 
+    static {
+        CommandFactory.factories.put(TargetNetworkPreprocessCommand.class.getName(), new TargetNetworkPreprocessCommand.DefaultCommandFactory());
+    }
 
     @EJB
     CompanyDAO companyDAO;
@@ -70,16 +72,8 @@ public class TargetNetworkPreprocessCommand implements Command {
             targetCompanyOriginalId =
                     StringUtils.chomp(ObjectIdUtil.extractOriginalId(targetOperatorCompany.getObjectId()), "o");
         } else {
-            log.info("No active operator company with name '{}' in database, create a default one and put it in " +
-                            "referential", parameters.getTargetNetwork());
-            targetCompanyOriginalId = UUID.randomUUID().toString();
-            targetOperatorCompany = ObjectFactory.getCompany(referential,
-                    ObjectIdUtil.composeNeptuneObjectId(parameters.getObjectIdPrefix(), ObjectIdTypes.OPERATOR_KEY,
-                            targetCompanyOriginalId + "o"));
-            targetOperatorCompany.setName(parameters.getTargetNetwork());
-            targetOperatorCompany.setOrganisationType(OrganisationTypeEnum.Operator);
-            targetOperatorCompany.setRegistrationNumber(targetCompanyOriginalId + "o");
-            targetOperatorCompany.setUrl(DEFAULT_URL);
+            throw new IllegalStateException(String.format("No active operator company with name '%s' in database",
+                    parameters.getTargetNetwork()));
         }
 
         log.info("Target operator company objectId: '{}'", targetOperatorCompany.getObjectId());
@@ -99,7 +93,7 @@ public class TargetNetworkPreprocessCommand implements Command {
             targetAuthorityCompany = companies.get(0);
         } else {
             log.info("No active authority company with name '{}' in database, create a default one and put it in " +
-                            "referential", parameters.getTargetNetwork());
+                    "referential", parameters.getTargetNetwork());
             targetAuthorityCompany = ObjectFactory.getCompany(referential,
                     ObjectIdUtil.composeNeptuneObjectId(parameters.getObjectIdPrefix(),
                             ObjectIdTypes.AUTHORITY_KEY, targetCompanyOriginalId));
@@ -140,11 +134,6 @@ public class TargetNetworkPreprocessCommand implements Command {
             }
             return result;
         }
-    }
-
-
-    static {
-        CommandFactory.factories.put(TargetNetworkPreprocessCommand.class.getName(), new TargetNetworkPreprocessCommand.DefaultCommandFactory());
     }
 
 
