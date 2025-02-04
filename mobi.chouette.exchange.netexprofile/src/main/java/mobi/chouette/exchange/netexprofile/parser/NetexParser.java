@@ -10,6 +10,7 @@ import org.rutebanken.netex.model.ValidBetween;
 import org.rutebanken.netex.model.ValidityConditions_RelStructure;
 
 import javax.xml.bind.JAXBElement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class NetexParser implements Constant {
@@ -88,7 +89,7 @@ public class NetexParser implements Constant {
 		List<Object> validityConditionElements = validityConditionStruct.getValidityConditionRefOrValidBetweenOrValidityCondition_();
 
 		if (CollectionUtils.isNotEmpty(validityConditionElements)) {
-			Object validityConditionElement =  validityConditionElements.get(0);
+			Object validityConditionElement = validityConditionElements.get(0);
 			if (validityConditionElement instanceof ValidBetween) {
 				validBetween = (ValidBetween) validityConditionElement;
 			} else if (validityConditionElement instanceof JAXBElement<?>) {
@@ -103,6 +104,16 @@ public class NetexParser implements Constant {
 
 			} else {
 				throw new RuntimeException("Only support ValidBetween and AvailabilityCondition as validityCondition");
+			}
+		}
+
+		if (validBetween != null) {
+			LocalDateTime toDate = validBetween.getToDate();
+
+			if (toDate.getHour() == 0 && toDate.getMinute() == 0) {
+				// Mettre à jour l'heure et les minutes
+				toDate = toDate.withHour(23).withMinute(59);
+				validBetween.setToDate(toDate);
 			}
 		}
 
