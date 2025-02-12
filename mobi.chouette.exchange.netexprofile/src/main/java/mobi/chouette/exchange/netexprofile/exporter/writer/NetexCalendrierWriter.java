@@ -61,7 +61,7 @@ public class NetexCalendrierWriter extends AbstractNetexWriter {
 			// Mettre à jour l'heure et les minutes
 			toDate = toDate.withHour(23).withMinute(59);
 		}
-
+		validBetween.setFromDate(fromDate);
 		validBetween.setToDate(toDate);
 
 		marshaller.marshal(validBetween, writer);
