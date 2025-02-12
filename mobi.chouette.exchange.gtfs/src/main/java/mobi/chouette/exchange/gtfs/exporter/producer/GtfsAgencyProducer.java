@@ -43,6 +43,22 @@ public class GtfsAgencyProducer extends AbstractProducer
    private GtfsAgency agency = new GtfsAgency();
 
 
+   public boolean save(String agencyId, String agencyName, String timezone, String agencyURL){
+       agency.setAgencyName(agencyName);
+       agency.setAgencyId(agencyId);
+       agency.setAgencyTimezone(TimeZone.getTimeZone(timezone));
+
+       try {
+           agency.setAgencyUrl(new URL(agencyURL));
+           getExporter().getAgencyExporter().export(agency);
+           return true;
+
+       } catch (Exception e) {
+           log.error("Error while setting agency URL ", e);
+           return false;
+       }
+   }
+
    public boolean save(Company neptuneObject, String prefix, TimeZone timeZone, boolean keepOriginalId)
    {
       String companyObjectId = ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);

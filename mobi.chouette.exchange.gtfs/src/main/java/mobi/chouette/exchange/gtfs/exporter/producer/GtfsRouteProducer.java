@@ -39,7 +39,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
    private GtfsRoute route = new GtfsRoute();
 
-   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams)
+   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String agencyId)
    {
       route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
        if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
@@ -48,7 +48,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
       Company c = neptuneObject.getCompany();
 
-       String agencyId;
+
        if (c == null || !OrganisationTypeEnum.Authority.equals(c.getOrganisationType())) {
            // Use network->authority as agency if it is an authority
            Network network = neptuneObject.getNetwork();
@@ -59,16 +59,22 @@ public class GtfsRouteProducer extends AbstractProducer
            }
        }
 
-       if (c == null) {
-           agencyId = neptuneObject.getNetwork().getObjectId();
-       } else {
-           agencyId = c.getObjectId();
-       }
-       route.setAgencyId(ObjectIdUtil.toGtfsId(agencyId, prefix, keepOriginalId));
-       if(c != null && OrganisationTypeEnum.Operator.equals(c.getOrganisationType()) && agencyId.endsWith("o")){
-           route.setAgencyId(StringUtils.chop(route.getAgencyId()));
-       }
-       route.setAgencyId(route.getAgencyId().replaceAll(COLON_REPLACEMENT_CODE, ":"));
+       if (StringUtils.isEmpty(agencyId)) {
+           if (c == null) {
+               agencyId = neptuneObject.getNetwork().getObjectId();
+           } else {
+               agencyId = c.getObjectId();
+           }
+           route.setAgencyId(ObjectIdUtil.toGtfsId(agencyId, prefix, keepOriginalId));
+           if(c != null && OrganisationTypeEnum.Operator.equals(c.getOrganisationType()) && agencyId.endsWith("o")){
+               route.setAgencyId(StringUtils.chop(route.getAgencyId()));
+           }
+           route.setAgencyId(route.getAgencyId().replaceAll(COLON_REPLACEMENT_CODE, ":"));
+       }else{
+           route.setAgencyId(agencyId);      }
+
+
+
        route.setRouteShortName(null);
        route.setRouteLongName(null);
 

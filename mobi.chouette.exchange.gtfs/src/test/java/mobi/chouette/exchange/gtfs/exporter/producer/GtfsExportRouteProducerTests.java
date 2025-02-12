@@ -33,7 +33,7 @@ public class GtfsExportRouteProducerTests
       Line neptuneObject = buildStandardLine();
       String expectedId = "4321";
 
-      producer.save(neptuneObject, "GTFS",false,false,new IdParameters());
+      producer.save(neptuneObject, "GTFS",false,false,new IdParameters(), null);
       Reporter.log("verifyRouteProducerWithShortAndLongName");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -81,7 +81,7 @@ public class GtfsExportRouteProducerTests
 
       IdParameters idParams = new IdParameters("PREFIXSTOP",null,null,"PREFIX","");
 
-      producer.save(neptuneObject, "GTFS",false,false,idParams);
+      producer.save(neptuneObject, "GTFS",false,false,idParams, null);
       Reporter.log("verifyRouteID");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -99,7 +99,7 @@ public class GtfsExportRouteProducerTests
 
       IdParameters idParams = new IdParameters("PREFIXSTOP",null,"SUFFIX","","");
 
-      producer.save(neptuneObject, "GTFS",false,false,idParams);
+      producer.save(neptuneObject, "GTFS",false,false,idParams, null);
       Reporter.log("verifyRouteIDSuffix");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -116,7 +116,7 @@ public class GtfsExportRouteProducerTests
       String expectedId = "PREFIX:FlexibleLine:4321SUFFIX";
 
       IdParameters idParams = new IdParameters("PREFIXSTOP", IdFormat.TRIDENT,"SUFFIX","PREFIX","");
-      producer.save(neptuneObject, "GTFS",false,false,idParams);
+      producer.save(neptuneObject, "GTFS",false,false,idParams, null);
       Reporter.log("verifyRouteIDWithTridentFormatAndSuffix");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -134,7 +134,7 @@ public class GtfsExportRouteProducerTests
       String expectedId = "PREFIX:FlexibleLine:4321";
 
       IdParameters idParams = new IdParameters("PREFIXSTOP", IdFormat.TRIDENT,null,"PREFIX","");
-      producer.save(neptuneObject, "GTFS",false,false,idParams);
+      producer.save(neptuneObject, "GTFS",false,false,idParams, null);
       Reporter.log("verifyRouteIDWithTridentFormat");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -157,7 +157,7 @@ public class GtfsExportRouteProducerTests
       company.setName("name");
       neptuneObject.setCompany(company);
       neptuneObject.setNetwork(new Network());
-      producer.save(neptuneObject,"GTFS",false,false,new IdParameters());
+      producer.save(neptuneObject,"GTFS",false,false,new IdParameters(), null);
       Reporter.log("verifyRouteProducerWithNoShortName");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -185,7 +185,7 @@ public class GtfsExportRouteProducerTests
       Network lineNetwork = new Network();
       neptuneObject.setNetwork(lineNetwork);
       neptuneObject.setCompany(company);
-      producer.save(neptuneObject,  "GTFS",false,false,new IdParameters());
+      producer.save(neptuneObject,  "GTFS",false,false,new IdParameters(), null);
       Reporter.log("verifyRouteProducerWithNoLongName");
       Assert.assertEquals(mock.getExportedRoutes().size(), 1, "Route should be returned");
       GtfsRoute gtfsObject = mock.getExportedRoutes().get(0);
@@ -207,7 +207,7 @@ public class GtfsExportRouteProducerTests
       company.setObjectId("GTFS:Company:1234");
       company.setName("name");
       neptuneObject.setCompany(company);
-      boolean state = producer.save(neptuneObject, "GTFS",false,false,new IdParameters());
+      boolean state = producer.save(neptuneObject, "GTFS",false,false,new IdParameters(), null);
       Reporter.log("verifyRouteProducerWithNoName");
       Assert.assertFalse(state, "GTFS Route must not be produced");
 
@@ -228,7 +228,7 @@ public class GtfsExportRouteProducerTests
       line.setTransportModeName(TransportModeNameEnum.Air);
       line.setNetwork(new Network());
 
-      boolean result = routeProducer.save(line, "prefix", false,true,new IdParameters());
+      boolean result = routeProducer.save(line, "prefix", false,true,new IdParameters(), null);
       Assert.assertTrue(result);
       Assert.assertEquals(mock.getExportedRoutes().size(), 1);
       Assert.assertEquals(mock.getExportedRoutes().get(0).getRouteType(), RouteTypeEnum.AirService);

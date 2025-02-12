@@ -28,6 +28,7 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
@@ -152,9 +153,14 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 		}
 
-		for (Company company : companies) {
-			agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
+		if (StringUtils.isNotEmpty(configuration.getAgencyId())){
+			agencyProducer.save(configuration.getAgencyId(), configuration.getAgencyName(), configuration.getAgencyTimezone(),configuration.getAgencyURL());
+		}else{
+			for (Company company : companies) {
+				agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
+			}
 		}
+
 
 		LocalDate startDate = configuration.getStartDate() == null ? null : new LocalDate(configuration.getStartDate());
 		LocalDate endDate = configuration.getEndDate() == null ? null : new LocalDate(configuration.getEndDate());

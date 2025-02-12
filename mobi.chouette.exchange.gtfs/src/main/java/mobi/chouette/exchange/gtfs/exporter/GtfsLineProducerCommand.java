@@ -154,7 +154,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 			}
 			if (hasVj) {
 				IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
-				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseExtendedGtfsRouteTypes(),idParams);
+				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseExtendedGtfsRouteTypes(),idParams, configuration.getAgencyId());
 				hasLine = true;
 				if (metadata != null) {
 					metadata.getResources().add(

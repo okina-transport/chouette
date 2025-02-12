@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useExtendedGtfsRouteTypes","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility"})
+@XmlType(propOrder={"objectIdPrefix","timeZone","keepOriginalId","useExtendedGtfsRouteTypes","exportedFileName","stopIdPrefix","lineIdPrefix","idFormat","idSuffix","commercialPointIdPrefix","mappingLinesIds",
+		"commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL"})
 public class GtfsExportParameters  extends AbstractExportParameter {
 		
 	@Getter @Setter
@@ -70,6 +71,22 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	@Setter
 	@XmlElement(name = "mapping_lines_ids")
 	private boolean mappingLinesIds = false;
+
+	@Getter @Setter
+	@XmlElement(name = "agency_id",required = false)
+	private String agencyId;
+
+	@Getter @Setter
+	@XmlElement(name = "agency_name",required = false)
+	private String agencyName;
+
+	@Getter @Setter
+	@XmlElement(name = "agency_timezone",required = false)
+	private String agencyTimezone;
+
+	@Getter @Setter
+	@XmlElement(name = "agency_url",required = false)
+	private String agencyURL;
 
 	@Getter
 	@Setter
