@@ -43,28 +43,11 @@ import static mobi.chouette.exchange.netexprofile.Constant.NETEX_FILE_PATHS;
 public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingCommands, Constant {
 
 
-    private Integer lineValidationTimeoutSeconds;
-
-    public static class DefaultFactory extends ProcessingCommandsFactory {
-
-        @Override
-        protected ProcessingCommands create() throws IOException {
-            NetexprofileAnalyzeFileProcessingCommands result = new NetexprofileAnalyzeFileProcessingCommands();
-
-            String lineValidationTimeoutPropertyKey = "iev.netex.validation.line.parallel.execution.timeout.seconds";
-            String lineValidationTimeoutString = System.getProperty(lineValidationTimeoutPropertyKey);
-            if (StringUtils.isNotEmpty(lineValidationTimeoutString)) {
-                result.lineValidationTimeoutSeconds = Integer.parseInt(lineValidationTimeoutString);
-                log.info("Parallel execution line validation command configured with time out seconds: " + result.lineValidationTimeoutSeconds);
-            }
-
-            return result;
-        }
-    }
-
     static {
         ProcessingCommandsFactory.factories.put(NetexprofileAnalyzeFileProcessingCommands.class.getName(), new DefaultFactory());
     }
+
+    private Integer lineValidationTimeoutSeconds;
 
     @Override
     public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
@@ -76,7 +59,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             initChain.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
             initChain.add(CommandFactory.create(initialContext, NetexInitImportCommand.class.getName()));
             if (parameters.isUseTargetNetwork()) {
-                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+                initChain.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
             }
             commands.add(initChain);
 
@@ -117,7 +100,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             // stream all file paths once
             List<Path> allFilePaths = FileUtil.listFiles(path, "*.xml", ".*.xml");
 
-            if (allFilePaths.size() == 1){
+            if (allFilePaths.size() == 1) {
                 //need to split a single xml file into many common files + line files
                 NetexSplitFileCommand splitFileCommand = (NetexSplitFileCommand) CommandFactory.create(initialContext,
                         NetexSplitFileCommand.class.getName());
@@ -143,8 +126,8 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             // common file parsing
 
             List<Path> commonFilePaths = allFilePaths.stream().filter(
-                    filePath -> filePath.getFileName() != null && NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
-                                                                                                     .collect(Collectors.toList());
+                            filePath -> filePath.getFileName() != null && NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
+                    .collect(Collectors.toList());
 
             ChainCommand commonFileChains = (ChainCommand) CommandFactory.create(initialContext, ChainCommand.class.getName());
             commonFileChains.setIgnored(parameters.isContinueOnLineErrors());
@@ -166,7 +149,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
                 commonFileChain.add(initializer);
 
                 // profile validation
-                if(parameters.isValidateAgainstProfile()) {
+                if (parameters.isValidateAgainstProfile()) {
                     Command validator = CommandFactory.create(initialContext, NetexValidationCommand.class.getName());
                     commonFileChain.add(validator);
                 }
@@ -182,7 +165,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
             // line file processing
             List<Path> lineFilePaths = allFilePaths.stream().filter(
-                    filePath -> filePath.getFileName() != null && !NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
+                            filePath -> filePath.getFileName() != null && !NetexImportUtil.isCommonFile(filePath.getFileName().toString()))
                     .collect(Collectors.toList());
 
             context.put(TOTAL_NB_OF_LINES, lineFilePaths.size());
@@ -203,7 +186,6 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         return commands;
     }
 
-
     private void addLineCommands(Chain mainChain, Context context, List<Path> lineFilePaths) throws IOException, ClassNotFoundException {
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 
@@ -211,9 +193,8 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
             //if no line file is available, a single "processAnalyzeCommand" is launch to count stopAreas
             Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
             mainChain.add(analyzeCommand);
-            return ;
+            return;
         }
-
 
 
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
@@ -252,6 +233,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
 
     }
+
     private void addLineValidationCommands(Chain mainChain, Context context, List<Path> lineFilePaths) throws IOException, ClassNotFoundException {
 
         if (CollectionUtils.isEmpty(lineFilePaths)) {
@@ -286,10 +268,6 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
 
         }
     }
-
-
-
-
 
     @Override
     public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
@@ -326,7 +304,7 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
         try {
 
-            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
+            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
                 Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
                 commands.add(timetableCheckCommand);
             }
@@ -336,6 +314,23 @@ public class NetexprofileAnalyzeFileProcessingCommands implements ProcessingComm
         }
 
         return commands;
+    }
+
+    public static class DefaultFactory extends ProcessingCommandsFactory {
+
+        @Override
+        protected ProcessingCommands create() throws IOException {
+            NetexprofileAnalyzeFileProcessingCommands result = new NetexprofileAnalyzeFileProcessingCommands();
+
+            String lineValidationTimeoutPropertyKey = "iev.netex.validation.line.parallel.execution.timeout.seconds";
+            String lineValidationTimeoutString = System.getProperty(lineValidationTimeoutPropertyKey);
+            if (StringUtils.isNotEmpty(lineValidationTimeoutString)) {
+                result.lineValidationTimeoutSeconds = Integer.parseInt(lineValidationTimeoutString);
+                log.info("Parallel execution line validation command configured with time out seconds: " + result.lineValidationTimeoutSeconds);
+            }
+
+            return result;
+        }
     }
 
 }
