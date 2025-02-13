@@ -18,6 +18,7 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.*;
 
@@ -30,9 +31,19 @@ import java.util.stream.Collectors;
 @Log4j
 public class LineParser implements Parser, Constant {
 
-    private KeyValueParser keyValueParser = new KeyValueParser();
+    static {
+        ParserFactory.register(LineParser.class.getName(), new ParserFactory() {
+            private final LineParser instance = new LineParser();
 
-    private ContactStructureParser contactStructureParser = new ContactStructureParser();
+            @Override
+            protected Parser create() {
+                return instance;
+            }
+        });
+    }
+
+    private final KeyValueParser keyValueParser = new KeyValueParser();
+    private final ContactStructureParser contactStructureParser = new ContactStructureParser();
 
     @Override
     public void parse(Context context) throws Exception {
@@ -123,7 +134,16 @@ public class LineParser implements Parser, Constant {
                 }
             }
 
-            chouetteLine.setKeyValues(keyValueParser.parse(netexLine.getKeyList()));
+            List<KeyValue> lineKeysValues = keyValueParser.parse(netexLine.getKeyList());
+            if (CollectionUtils.isNotEmpty(lineKeysValues)) {
+                Optional<KeyValue> routeSortOrder = lineKeysValues.stream().filter(kv -> kv.getKey().equals("route_sort_order")).findAny();
+                if (routeSortOrder.isPresent()) {
+                    lineKeysValues.remove(routeSortOrder.get());
+                    chouetteLine.setPosition(Integer.parseInt(routeSortOrder.get().getValue()));
+                }
+            }
+
+            chouetteLine.setKeyValues(lineKeysValues);
 
             chouetteLine.setFilled(true);
 
@@ -175,17 +195,6 @@ public class LineParser implements Parser, Constant {
             }
         }
         return Optional.empty();
-    }
-
-    static {
-        ParserFactory.register(LineParser.class.getName(), new ParserFactory() {
-            private LineParser instance = new LineParser();
-
-            @Override
-            protected Parser create() {
-                return instance;
-            }
-        });
     }
 
 }
