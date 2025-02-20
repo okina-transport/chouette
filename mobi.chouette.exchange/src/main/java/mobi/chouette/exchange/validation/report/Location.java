@@ -33,7 +33,7 @@ import mobi.chouette.model.util.NamingUtil;
 @EqualsAndHashCode(callSuper = false)
 @ToString
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "file", "line", "objectId", "name", "objectRefs" })
+@XmlType(propOrder = { "file", "line", "objectId", "name", "objectRefs", "schema" })
 public class Location extends AbstractReport {
 
 	@XmlElement(name = "file")
@@ -47,6 +47,9 @@ public class Location extends AbstractReport {
 
 	@XmlElement(name = "label")
 	private String name = "";
+
+	@XmlElement(name = "schema")
+	private String schema = "";
 
 	@XmlElement(name = "object_path")
 	private List<ObjectReference> objectRefs = new ArrayList<>();
@@ -67,6 +70,7 @@ public class Location extends AbstractReport {
 		if (dl.getFilename() != null) {
 			this.file = new FileLocation(dl);
 		}
+		this.schema = dl.getSchema();
 	}
 
 	public Location(String fileName) {
@@ -258,6 +262,10 @@ public class Location extends AbstractReport {
 		}
 		if (name != null) {
 			out.print(toJsonString(ret, level + 1, "label", name, first));
+			first = false;
+		}
+		if (schema != null) {
+			out.print(toJsonString(ret, level + 1, "schema", schema, first));
 			first = false;
 		}
 		if (!objectRefs.isEmpty()) {

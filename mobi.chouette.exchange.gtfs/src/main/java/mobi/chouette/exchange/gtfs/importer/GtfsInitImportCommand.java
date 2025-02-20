@@ -56,7 +56,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 			context.put(TIAMAT_ERROR_CODE_CONVERTER, new GtfsErrorCodeConverter());
 			if (importer == null) {
 				Path path = Paths.get(jobData.getPathName(), INPUT);
-				if ("exporter".equals(jobData.getAction())){
+				if ("exporter".equals(jobData.getAction()) || "globalExport".equals(jobData.getAction())) {
 					//After export, files are moved to tmp directory before validation to avoid .nfs files creation
 					path = FileUtil.getTmpPath(path);
 				}

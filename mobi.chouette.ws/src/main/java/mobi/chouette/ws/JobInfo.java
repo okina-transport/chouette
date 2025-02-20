@@ -125,7 +125,7 @@ public class JobInfo implements ServiceConstants {
 			return getFileBaseHref() + "/" + ACTION_PARAMETERS_FILE;
 		} else if (rel.equals(Link.VALIDATION_PARAMETERS_REL)) {
 			return getFileBaseHref() + "/" + VALIDATION_PARAMETERS_FILE;
-		} else if (rel.equals(Link.DATA_REL) && action.equals("exporter")) {
+		} else if (rel.equals(Link.DATA_REL) && (action.equals("exporter") || action.equals("globalExport"))) {
 			return getFileBaseHref() + "/" + jobService.getOutputFilename();
 		} else if (rel.equals(Link.DATA_REL) && !action.equals("exporter")) {
 			return getFileBaseHref() + "/" + jobService.getInputFilename();

@@ -20,6 +20,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.util.NamingUtil;
+import mobi.chouette.persistence.hibernate.ContextHolder;
 
 @Data
 @ToString (exclude={"object"})
@@ -33,14 +34,17 @@ public class DataLocation {
 	private NeptuneIdentifiedObject object;
 	// private Line line;
 	private List<Path> path = new ArrayList<>();
+	private String schema;
 
 	public DataLocation(String fileName) {
 		this.filename = fileName;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, String locationName) {
 		this.filename = fileName;
 		this.name = locationName;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, String locationName, int lineNumber, String objectId) {
@@ -48,6 +52,7 @@ public class DataLocation {
 		this.lineNumber = lineNumber;
 		this.objectId = objectId;
 		this.name = locationName;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, String locationName, int lineNumber, int columnNumber, String objectId) {
@@ -56,18 +61,21 @@ public class DataLocation {
 		this.columnNumber = columnNumber;
 		this.objectId = objectId;
 		this.name = locationName;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, String locationName, int lineNumber) {
 		this.filename = fileName;
 		this.lineNumber = lineNumber;
 		this.name = locationName;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, int lineNumber, int columnNumber) {
 		this.filename = fileName;
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, int lineNumber, int columnNumber, String objectId) {
@@ -75,6 +83,7 @@ public class DataLocation {
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
 		this.objectId = objectId;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(String fileName, int lineNumber, int columnNumber, NeptuneIdentifiedObject chouetteObject) {
@@ -82,12 +91,14 @@ public class DataLocation {
 		this.filename = fileName;
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
+		this.schema = ContextHolder.getContext();
 	}
 
 	public DataLocation(NeptuneIdentifiedObject chouetteObject) {
 		this.objectId = chouetteObject.getObjectId();
 		this.object = chouetteObject;
 		this.name = buildName(chouetteObject);
+		this.schema = ContextHolder.getContext();
 		if (chouetteObject.getObjectId() != null) {
 			path.add(new Path(object));
 			if (chouetteObject instanceof VehicleJourney) {
