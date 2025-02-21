@@ -61,6 +61,11 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
             parameters.setObjectIdPrefix(referential.toUpperCase());
             InitialContext ctx = (InitialContext) context.get(INITIAL_CONTEXT);
             context.remove(EXPORTABLE_DATA);
+            context.remove("line");
+            context.remove("line_id");
+            context.remove("referential");
+            context.remove("scheduled_stop_points");
+            ctx.removeFromEnvironment("scheduled_stop_points");
             Command exporterCommand = CommandFactory.create(ctx, GtfsExporterCommand.class.getName());
             exporterCommand.execute(context);
 
