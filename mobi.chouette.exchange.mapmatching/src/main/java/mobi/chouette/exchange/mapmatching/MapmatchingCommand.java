@@ -47,24 +47,22 @@ public class MapmatchingCommand implements Command, Constant {
 
     public static final String COMMAND = "MapmatchingCommand";
 
+    static {
+        CommandFactory.factories.put(MapmatchingCommand.class.getName(), new DefaultCommandFactory());
+    }
+
     @EJB
     LineDAO lineDAO;
-
     @EJB
     JourneyPatternDAO journeyPatternDAO;
-
     @EJB
     StopPointDAO stopPointDAO;
-
     @EJB
     RouteSectionDAO routeSectionDAO;
-
     @EJB
     OSRMService osrmService;
-
     @EJB
     ProfileOSRMJourneyPatternDAO profileOSRMJourneyPatternDAO;
-
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -110,7 +108,7 @@ public class MapmatchingCommand implements Command, Constant {
 
     public boolean generateGeoJsonAllJourneyPatterns(MapMatchingReport mapMatchingReport, ImportGenerateMapMatching mapMatchingType) {
         List<Line> lineList = lineDAO.findAll();
-        for(Line line : lineList){
+        for (Line line : lineList) {
             log.info("------------- Start mapmatching line - " + line.getPublishedName() + " -------------- in schema : " + ContextHolder.getContext());
             List<JourneyPattern> journeyPatterns = journeyPatternDAO.getEnabledJourneyOfLine(line);
             for (JourneyPattern ojp : journeyPatterns) {
@@ -142,6 +140,7 @@ public class MapmatchingCommand implements Command, Constant {
 
     /**
      * Get the points in the journey pattern and create a default route.
+     *
      * @param journeyPattern
      * @return
      * @throws Exception
@@ -266,14 +265,14 @@ public class MapmatchingCommand implements Command, Constant {
             int indexNext = listStopPoints.indexOf(arrivalStopPoint);
 
             RouteSection routeSection = new RouteSection();
-            if (OSRMProfile.AIR.equals(osrmProfile) || OSRMProfile.FERRY.equals(osrmProfile)){
+            if (OSRMProfile.AIR.equals(osrmProfile) || OSRMProfile.FERRY.equals(osrmProfile) || OSRMProfile.METRO.equals(osrmProfile)) {
                 try {
                     routeSection.setDistance(BigDecimal.valueOf(osrmResponseSection.getJSONArray(ROUTES).getJSONObject(0).getDouble("distance")));
                 } catch (JSONException e) {
-                    log.error("Error while setting distance for air section",e);
+                    log.error("Error while setting distance for air section", e);
                 }
 
-            }else{
+            } else {
                 // Inscription en base des interStop
                 ProfileOSRMInterStopJourneyPattern profileInterStopJP = getInterStopInformations(
                         osrmResponseMultiLines,
@@ -338,7 +337,6 @@ public class MapmatchingCommand implements Command, Constant {
      * @param journeyPattern
      * @param profile
      * @param json
-     *
      * @return
      */
     private ProfileOSRMJourneyPattern addProfileJourneyPattern(JourneyPattern journeyPattern, OSRMProfile profile, List<JSONObject> json) throws Exception {
@@ -392,6 +390,8 @@ public class MapmatchingCommand implements Command, Constant {
             case Ferry:
             case Water:
                 return OSRMProfile.FERRY;
+            case Metro:
+                return OSRMProfile.METRO;
             default:
                 return OSRMProfile.DRIVING;
         }
@@ -403,9 +403,7 @@ public class MapmatchingCommand implements Command, Constant {
      *
      * @param stopPoints
      * @param osrmProfile
-     *
      * @return
-     *
      * @throws Exception
      */
     private List<JSONObject> fetchOsrmLinesWithTurnBack(List<LatLngMapMatching> stopPoints, OSRMProfile osrmProfile) throws Exception {
@@ -438,7 +436,7 @@ public class MapmatchingCommand implements Command, Constant {
             return osrmService.getLineStringFromOSRM(json.getJSONArray(ROUTES).getJSONObject(0).getJSONObject(GEOMETRY));
         } catch (JSONException e) {
             String motif = "Failed to get the GeoJson in the OSRM response.";
-            log.error(motif,e);
+            log.error(motif, e);
             throw new Exception(motif);
         }
     }
@@ -450,8 +448,9 @@ public class MapmatchingCommand implements Command, Constant {
      * We need the section line coords to be strictly consistent with the full JP line coords, so no path incoherence can exist between the MapMatching path(built using a single JP osrm line) and the definitive JP path
      * built out of the section lines merge
      * cf redmine: #6329
+     *
      * @param sectionLine OSRM section line
-     * @param jpLine OSRM JourneyPattern line
+     * @param jpLine      OSRM JourneyPattern line
      * @return
      */
     private com.vividsolutions.jts.geom.LineString correctSectionLineWithJourneyPatternLine(com.vividsolutions.jts.geom.LineString sectionLine, com.vividsolutions.jts.geom.LineString jpLine) throws Exception {
@@ -463,7 +462,7 @@ public class MapmatchingCommand implements Command, Constant {
                         new Exception("Parsing OSRM results: Section and Journey Pattern path are incompatible")
                 );
 
-        int jpIndexMatchingSectionEnd = findClosestJPCoordinateIndex(jpCoords, sectionCoords, sectionCoords.length - 1, jpIndexMatchingSectionStart + 1 , 10)
+        int jpIndexMatchingSectionEnd = findClosestJPCoordinateIndex(jpCoords, sectionCoords, sectionCoords.length - 1, jpIndexMatchingSectionStart + 1, 10)
                 .orElseThrow(() ->
                         new Exception("Parsing OSRM results: Section and Journey Pattern path are incompatible")
                 );
@@ -481,7 +480,6 @@ public class MapmatchingCommand implements Command, Constant {
      * @param sectionCoordToMatchIndex Index of the coordinate of the section to match
      * @param jpSearchStartIndex       Starting index for searching in JP coordinates
      * @param maxTrials                Max number of attempts on close coordinates
-     *
      * @return
      */
     private OptionalInt findClosestJPCoordinateIndex(Coordinate[] jpCoords, Coordinate[] sectionCoords, int sectionCoordToMatchIndex, int jpSearchStartIndex, int maxTrials) {
@@ -503,12 +501,11 @@ public class MapmatchingCommand implements Command, Constant {
     /**
      * Build a InterStopPointProfile
      *
-     * @param mainGeoJsonList           Complete response of route OSRM
-     * @param departureStop             Indicates the starting StopPoint of the profile
-     * @param arrivalStop               Indicates the end StopPoint of the profile
-     * @param sectionIndexStart         Indicates the start identifier of the section in the legs of the full route OSRM response
-     * @param sectionIndexEnd           Indicates the end identifier of the section in the legs of the full route OSRM response
-     *
+     * @param mainGeoJsonList   Complete response of route OSRM
+     * @param departureStop     Indicates the starting StopPoint of the profile
+     * @param arrivalStop       Indicates the end StopPoint of the profile
+     * @param sectionIndexStart Indicates the start identifier of the section in the legs of the full route OSRM response
+     * @param sectionIndexEnd   Indicates the end identifier of the section in the legs of the full route OSRM response
      * @throws Exception
      */
     private ProfileOSRMInterStopJourneyPattern getInterStopInformations(List<JSONObject> mainGeoJsonList,
@@ -574,7 +571,6 @@ public class MapmatchingCommand implements Command, Constant {
         return profileInterStopJP;
     }
 
-
     public static class DefaultCommandFactory extends CommandFactory {
 
         @Override
@@ -594,9 +590,5 @@ public class MapmatchingCommand implements Command, Constant {
             }
             return result;
         }
-    }
-
-    static {
-        CommandFactory.factories.put(MapmatchingCommand.class.getName(), new DefaultCommandFactory());
     }
 }

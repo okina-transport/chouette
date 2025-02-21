@@ -27,14 +27,9 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 
 
 /**
@@ -48,14 +43,13 @@ public class OSRMService {
     public static final String EXTENSION_JSON = ".json";
     public static final String ROUTES = "routes";
     public static final String GEOMETRY = "geometry";
+    public static final String DISTANCE = "distance";
+    public static final String PROPERTY_OSRM_URL = System.getenv("OSRM_URL");
     private static final String SEPARATOR_OSRM = "/osrm/";
     private static final String SEPERATOR = "/";
     private static final String TRIP_V1 = "trip/v1/";
     private static final String ROUTE_V1 = "route/v1/";
     private static final String COMMA = ",";
-    public static final String DISTANCE = "distance";
-    public static final String PROPERTY_OSRM_URL = System.getenv("OSRM_URL");
-
     private static final String API_ADDRESS = "https://api-adresse.data.gouv.fr/search/?q=";
 
     @EJB
@@ -118,9 +112,9 @@ public class OSRMService {
     }
 
     public JSONObject getPointsRoute(OSRMProfile profile, List<LatLng> points) throws Exception {
-        if (OSRMProfile.AIR.equals(profile) || OSRMProfile.FERRY.equals(profile)){
-            return FakeOSRMService.getStraightRoute( points);
-        }else {
+        if (OSRMProfile.AIR.equals(profile) || OSRMProfile.FERRY.equals(profile) || OSRMProfile.METRO.equals(profile)) {
+            return FakeOSRMService.getStraightRoute(points);
+        } else {
             Map<String, String> params = new HashMap<>();
             params.put("alternatives", "false");
             params.put("steps", "true");
@@ -229,7 +223,7 @@ public class OSRMService {
         return response.readEntity(SearchAddress.class);
     }
 
-    public double transformDistanceBetweenTwoPointsToNumber(JSONObject response){
+    public double transformDistanceBetweenTwoPointsToNumber(JSONObject response) {
         try {
             String distance = response.getString(DISTANCE);
             double factor = Math.pow(10, 1);

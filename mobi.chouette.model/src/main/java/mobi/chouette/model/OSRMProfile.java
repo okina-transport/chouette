@@ -9,6 +9,7 @@ public enum OSRMProfile {
     BUS,
     RAIL,
     AIR,
-    FERRY
+    FERRY,
+    METRO
 }
 
