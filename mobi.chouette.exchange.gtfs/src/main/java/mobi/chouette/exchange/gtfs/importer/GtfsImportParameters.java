@@ -34,49 +34,38 @@ import java.util.Arrays;
         "railUICprocessing",
         "routeSortOrder",
         "renameRoutesAfterMerge",
+        "importFareFiles"
 })
 @Getter
 @Setter
 public class GtfsImportParameters extends AbstractImportParameter {
 
-    @XmlElement(name = "split_id_on_dot", defaultValue = "true")
-    private boolean splitIdOnDot = true;
-
-    @XmlElement(name = "max_distance_for_connection_link", defaultValue = "0")
-    private int maxDistanceForConnectionLink = 0;
-
-    @XmlElement(name = "max_distance_for_commercial", defaultValue = "0")
-    private int maxDistanceForCommercial = 0;
-
-    @XmlElement(name = "ignore_end_chars", defaultValue = "0")
-    private int ignoreEndChars = 0;
-
-    @XmlElement(name = "ignore_last_word", defaultValue = "false")
-    private boolean ignoreLastWord = false;
-
-    @XmlElement(name = "references_type")
-    private String referencesType;
-
-    @XmlElement(name = "parse_interchanges")
-    private boolean parseInterchanges = false;
-
-    @XmlElement(name = "parse_connection_links")
-    private boolean parseConnectionLinks = true;
-
     @XmlElement(name = "route_merge")
     public Boolean routeMerge = false;
-
     @XmlElement(name = "split_character")
     public String splitCharacter = "";
-
     @XmlElement(name = "commercial_point_prefix_to_remove")
     public String commercialPointIdPrefixToRemove = "";
-
     @XmlElement(name = "quay_id_prefix_to_remove")
     public String quayIdPrefixToRemove = "";
-
     @XmlElement(name = "line_prefix_to_remove")
     public String linePrefixToRemove = "";
+    @XmlElement(name = "split_id_on_dot", defaultValue = "true")
+    private boolean splitIdOnDot = true;
+    @XmlElement(name = "max_distance_for_connection_link", defaultValue = "0")
+    private int maxDistanceForConnectionLink = 0;
+    @XmlElement(name = "max_distance_for_commercial", defaultValue = "0")
+    private int maxDistanceForCommercial = 0;
+    @XmlElement(name = "ignore_end_chars", defaultValue = "0")
+    private int ignoreEndChars = 0;
+    @XmlElement(name = "ignore_last_word", defaultValue = "false")
+    private boolean ignoreLastWord = false;
+    @XmlElement(name = "references_type")
+    private String referencesType;
+    @XmlElement(name = "parse_interchanges")
+    private boolean parseInterchanges = false;
+    @XmlElement(name = "parse_connection_links")
+    private boolean parseConnectionLinks = true;
     @XmlElement(name = "remove_parent_stations", defaultValue = "false")
     private boolean removeParentStations = false;
 
@@ -91,6 +80,9 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "route_sort_order", defaultValue = "false")
     private boolean routeSortOrder = false;
+
+    @XmlElement(name = "import_fare_files", defaultValue = "false")
+    private boolean importFareFiles = false;
 
     @XmlElement(name = "rename_routes_after_merge", defaultValue = "false")
     private boolean renameRoutesAfterMerge = false;
