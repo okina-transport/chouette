@@ -93,9 +93,7 @@ public class GtfsExportParameters  extends AbstractExportParameter {
 	@XmlElement(name = "attributions_export_mode")
 	private AttributionsExportModes attributionsExportMode = AttributionsExportModes.NONE;
 
-	@Getter @Setter
-	@XmlElement(name = "exported_referentials",required = false)
-	private String exportedReferentials;
+
 
 
 

@@ -121,16 +121,20 @@ public class FileUtil {
         return txtFiles;
     }
 
-    public static Set<String> listTxtFiles(String directoryPath) {
-        Set<String> txtFiles = new HashSet<>();
+    public static Set<String> listFilesOfType(String directoryPath, String extension, boolean withAbsolutePath) {
+        Set<String> foundFiles = new HashSet<>();
         Path startPath = Paths.get(directoryPath);
 
         try {
             Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (file.toString().endsWith(".txt")) {
-                        txtFiles.add(file.getFileName().toString());
+                    if (file.toString().endsWith(extension)) {
+                        if (withAbsolutePath) {
+                            foundFiles.add(file.toAbsolutePath().toString());
+                        }else{
+                            foundFiles.add(file.getFileName().toString());
+                        }
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -139,8 +143,9 @@ public class FileUtil {
            log.error("Erreur lors du parcours des fichiers : " + e.getMessage());
         }
 
-        return txtFiles;
+        return foundFiles;
     }
+
 
     public static void uncompress(String filename, String path) throws IOException, ArchiveException {
         ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(
@@ -317,6 +322,29 @@ public class FileUtil {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void createZipFromFiles(Set<String> filePaths, String outputZipPath) throws IOException {
+        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(outputZipPath))) {
+            for (String filePath : filePaths) {
+                File fileToZip = new File(filePath);
+                if (!fileToZip.exists() || !fileToZip.isFile()) {
+                    log.error("Skipping invalid file: " + filePath);
+                    continue;
+                }
+
+                try (FileInputStream fis = new FileInputStream(fileToZip)) {
+                    ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        zipOut.write(buffer, 0, length);
+                    }
+                    zipOut.closeEntry();
+                }
+            }
         }
     }
 

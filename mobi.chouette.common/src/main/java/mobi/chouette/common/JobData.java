@@ -8,6 +8,7 @@ public interface JobData {
 	String getOutputFilename();
 	void setOutputFilename(String filename); 
 	String getReferential();
+	void setReferential(String referential);
 	String getAction();
 	String getType();
 	String getPathName();

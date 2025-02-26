@@ -20,7 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport"}, name = "actionExportParameter")
+@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials"}, name = "actionExportParameter")
 public class AbstractExportParameter extends AbstractParameter {
 
 	@Getter
@@ -52,6 +52,10 @@ public class AbstractExportParameter extends AbstractParameter {
 	@Setter
 	@XmlElement(name = "validate_after_export", defaultValue = "false")
 	private boolean validateAfterExport = true;
+
+	@Getter @Setter
+	@XmlElement(name = "exported_referentials",required = false)
+	private String exportedReferentials;
 
 	/**
 	 * Return a list with all additional referentials that must be locked for this job to execute. Defaults to empty.

@@ -8,10 +8,8 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
 
-import mobi.chouette.exchange.gtfs.exporter.ExportableData;
 import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.exporter.GtfsExporterCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -22,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,13 +74,13 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
         launchMerge(jobData);
         log.info("Merge completed successfully");
 
-        return false;
+        return true;
     }
 
     private void launchMerge(JobData jobData) throws IOException, ArchiveException {
         String exportDirectory = jobData.getPathName().toString();
         FileUtil.unzipAllFiles(exportDirectory);
-        Set<String> txtFiles = FileUtil.listTxtFiles(exportDirectory);
+        Set<String> txtFiles = FileUtil.listFilesOfType(exportDirectory, ".txt", false);
         Files.createDirectories(Paths.get(exportDirectory + "/" + mergeDirectory));
         for (String txtFile : txtFiles) {
             if ("agency.txt".equals(txtFile) || "stops.txt".equals(txtFile)) {

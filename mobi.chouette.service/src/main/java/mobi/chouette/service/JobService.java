@@ -196,7 +196,13 @@ public class JobService implements JobData, ServiceConstants {
      */
     public String getPathName() {
         if (jobPersisted()) {
-            return Paths.get(rootDirectory, ROOT_PATH, job.getReferential(), "data", job.getId().toString()).toString();
+            String referential = "";
+            if ("globalExport".equals(job.getAction()) && "netexprofile".equals(job.getType())){
+                referential = "mobiiti_technique";
+            }else{
+                referential = job.getReferential();
+            }
+            return Paths.get(rootDirectory, ROOT_PATH, referential, "data", job.getId().toString()).toString();
         }
         // TODO Non, lever une exception
         return null;
