@@ -3,6 +3,7 @@ package mobi.chouette.model;
 import lombok.Data;
 import mobi.chouette.model.type.PTDirectionEnum;
 
+import java.math.BigInteger;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -22,5 +23,7 @@ public class IneoVJMapping {
     private final PTDirectionEnum routeDirection;
 
     private final String vehicleJourneyObjectId;
+
+    private final BigInteger vehicleJourneyAtStopId;
 
 }
