@@ -130,6 +130,12 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "stopPointsPassingTimesDifference")
     private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference = new ArrayList<>();
 
+
+    @XmlElement(name = "inconsistentTimeProgress")
+    private List<String> inconsistentTimeProgress = new ArrayList<>();
+
+
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -269,6 +275,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (!stopPlacesWithoutQuay.isEmpty()) {
             canLaunchImport = false;
             analyzeReportMap.put("stopPlacesWithoutQuay", buildStringList(stopPlacesWithoutQuay, "stopId"));
+        }
+
+        if (!inconsistentTimeProgress.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("inconsistentTimeProgress", buildStringList(inconsistentTimeProgress, "sequence"));
         }
 
         if (selfReferencingStops != null && !selfReferencingStops.isEmpty()){

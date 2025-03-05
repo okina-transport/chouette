@@ -10,15 +10,15 @@ import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.AnalyzeReport;
+
 import mobi.chouette.model.*;
+import mobi.chouette.model.Period;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -46,6 +46,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private List<String> duplicateTripStructureInStopTimesWithSameCalendarAndHourly;
     private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop;
     private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference;
+    private List<String> inconsistentTimeProgress;
 
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
@@ -111,6 +112,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         duplicateTripStructureInStopTimesWithSameCalendarAndHourly = analyzeReport.getDuplicateTripStructureInStopTimesWithSameCalendarAndHourly();
         duplicateTripStructureInStopTimesWithSameHourlyAndStop = analyzeReport.getDuplicateTripStructureInStopTimesWithSameHourlyAndStop();
         stopPointsPassingTimesDifference = analyzeReport.getStopPointsPassingTimesDifference();
+        inconsistentTimeProgress = analyzeReport.getInconsistentTimeProgress();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -129,6 +131,10 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         containsDuplicateTripStructureInStopTimesWithSameCalendarAndHourly(context);
         containsDuplicateTripStructureInStopTimesWithSameHourlyAndStop(context);
         containsStopPointsPassingTimesDifference(context);
+        checkTimeProgress(context, newValue);
+
+
+
 
         if (detectChangedTrips){
             launchTripAnalyze(newValue);
@@ -143,6 +149,19 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
 
 
         return result;
+    }
+
+    private void checkTimeProgress(Context context, Line newValue) {
+
+        for (Route route : newValue.getRoutes()) {
+            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+                for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
+                    check3VehicleJourney5(context, vehicleJourney);
+                }
+            }
+        }
+
+
     }
 
     /**
@@ -222,6 +241,105 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         }
         analyzeReport.recordChangedTrip(tripId.split(":VehicleJourney:")[1], existingTrip.toString(), incomingTrip.toString());
 
+    }
+
+    protected static boolean isEmpty(Collection<?> beans) {
+        return beans == null || beans.isEmpty();
+    }
+
+    /**
+     * Time between two time values with offset handling
+     *
+     * @param first
+     * @param firstTimeOffset
+     * @param last
+     * @param lastTimeOffset
+     * @return
+     */
+    private long diffTime(LocalTime first, int firstTimeOffset, LocalTime last, int lastTimeOffset) {
+        if (first == null || last == null)
+            return Long.MIN_VALUE; // TODO
+
+        return Seconds.secondsBetween(first, last).getSeconds() + (lastTimeOffset - firstTimeOffset) * DateTimeConstants.SECONDS_PER_DAY;
+    }
+
+
+    public void check3VehicleJourney5(Context context, VehicleJourney vj) {
+        // 3-VehicleJourney-5 : check if time progress correctly on each stop
+        // including offset
+        if (isEmpty(vj.getVehicleJourneyAtStops())) {
+            log.error("vehicleJourney " + vj.getObjectId() + " has no vehicleJourneyAtStop");
+            return;
+        }
+
+        VehicleJourneyAtStop previous_vjas = null;
+        long diffTime = 0;
+
+        List<VehicleJourneyAtStop> vjasList = vj.getVehicleJourneyAtStops();
+        for (VehicleJourneyAtStop vjas : vjasList) {
+
+            if (vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject() == null) {
+                continue;
+            }
+
+            /** First stop */
+            if (previous_vjas == null) {
+
+                /**
+                 * Difference between arrival and departure time for the first
+                 * stop
+                 */
+                diffTime = diffTime(vjas.getArrivalTime(), vjas.getArrivalDayOffset(), vjas.getDepartureTime(),
+                        vjas.getDepartureDayOffset());
+
+                /**
+                 * GJT : Difference between two times on one stop cannot be
+                 * negative
+                 */
+                if (diffTime < 0) {
+                    inconsistentTimeProgress.add("trip:" + extractId(vj.getObjectId()) + ",stop:"+ extractId(vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId()) + ",departure:"+vjas.getDepartureTime());
+                }
+
+            } else {
+
+                /** Difference between arrival times of two stops */
+                diffTime = diffTime(previous_vjas.getArrivalTime(), previous_vjas.getArrivalDayOffset(),
+                        vjas.getArrivalTime(), vjas.getArrivalDayOffset());
+
+                /**
+                 * GJT : Difference between two times on one stop cannot be
+                 * negative
+                 */
+                if (diffTime < 0) {
+                    inconsistentTimeProgress.add("trip:" + extractId(vj.getObjectId()) + ",stop:"+ extractId(vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId()) + ",departure:"+vjas.getDepartureTime());
+                }
+
+                /** Difference between departure times of two stops */
+                diffTime = diffTime(previous_vjas.getDepartureTime(), previous_vjas.getDepartureDayOffset(),
+                        vjas.getDepartureTime(), vjas.getDepartureDayOffset());
+
+                /**
+                 * GJT : Difference between two times on one stop cannot be
+                 * negative
+                 */
+                if (diffTime < 0) {
+                    inconsistentTimeProgress.add("trip:" + extractId(vj.getObjectId()) + ",stop:"+ extractId(vjas.getStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObjectId()) + ",departure:"+vjas.getDepartureTime());
+                }
+
+            }
+
+            previous_vjas = vjas;
+
+        }
+
+    }
+
+    private String extractId(String tridentId){
+        String[] splitedId = tridentId.split(":");
+        if (splitedId.length == 3){
+            return splitedId[2];
+        }
+        return tridentId;
     }
 
     /**
