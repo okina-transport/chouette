@@ -7,6 +7,7 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
@@ -16,7 +17,6 @@ import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.*;
 import mobi.chouette.model.type.PTDirectionEnum;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -151,7 +151,7 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getVersion(), "any");
 
         Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getFromDate(), LocalDateTime.of(2020, 1, 1, 0, 0, 0));
-        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getToDate(), LocalDateTime.of(2020, 12, 31, 0, 0, 0));
+        Assert.assertEquals(exportableNetexDataResult.getSharedOperatingPeriods().get("TEST:OperatingPeriod:t1-0:LOC").getToDate(), LocalDateTime.of(2020, 12, 31, 23, 59, 59));
 
         List<JAXBElement<? extends DayTypeRefStructure>> dayTypesRef = exportableNetexDataResult.getSharedDayTypeAssignments().stream().map(DayTypeAssignment_VersionStructure::getDayTypeRef).collect(Collectors.toList());
         Assert.assertEquals(dayTypesRef.get(0).getValue().getRef(), "TEST:DayType:t1:LOC");
