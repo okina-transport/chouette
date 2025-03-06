@@ -1,10 +1,7 @@
 package mobi.chouette.exchange.gtfs.importer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -19,13 +16,18 @@ import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Log4j
 public class GtfsImporterCommand extends AbstractImporterCommand implements Command, Constant {
 
 	public static final String COMMAND = "GtfsImporterCommand";
+
+	static {
+		CommandFactory.factories.put(GtfsImporterCommand.class.getName(), new DefaultCommandFactory());
+	}
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -35,8 +37,7 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		context.put(INCOMING_LINE_LIST, new ArrayList());
 
-		ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext,
-				ProgressionCommand.class.getName());
+		ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext, ProgressionCommand.class.getName());
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
 		try {
 			// check params
@@ -44,14 +45,14 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			if (!(configuration instanceof GtfsImportParameters)) {
 				// fatal wrong parameters
 				//log.error("invalid parameters for gtfs import " + configuration.getClass().getName());
-				reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS,"invalid parameters for gtfs import " + configuration.getClass().getName());
+				reporter.setActionError(context, ERROR_CODE.INVALID_PARAMETERS, "invalid parameters for gtfs import " + configuration.getClass().getName());
 				return ERROR;
 			}
 
 			GtfsImportParameters parameters = (GtfsImportParameters) configuration;
 
 			String closeOldCalendarsPropStr = System.getProperty("iev.close.old.calendars");
-			if (closeOldCalendarsPropStr != null ){
+			if (closeOldCalendarsPropStr != null) {
 				context.put(CLOSE_OLD_CALENDARS, Boolean.parseBoolean(closeOldCalendarsPropStr));
 			}
 			// Pour éviter une import cyclique de GtfsImportParameters
@@ -60,24 +61,25 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			context.put(UPDATE_STOP_ACCESSIBILITY, Boolean.valueOf(parameters.isUpdateStopAccessibility()));
 
 			// import total par défaut
-			if (parameters.getReferencesType() == null) parameters.setReferencesType("line");
+			if (parameters.getReferencesType() == null)
+				parameters.setReferencesType("line");
 			boolean all = !(parameters.getReferencesType().equalsIgnoreCase("stop_area"));
-			
+
 			ProcessingCommands commands = ProcessingCommandsFactory.create(GtfsImporterProcessingCommands.class.getName());
-			result = process(context, commands, progression, true, (all?Mode.line:Mode.stopareas));
+			result = process(context, commands, progression, true, (all ? Mode.line : Mode.stopareas));
 
 		} catch (CommandCancelledException e) {
 			reporter.setActionError(context, ERROR_CODE.INTERNAL_ERROR, "Command cancelled");
 			log.error(e.getMessage());
 		} catch (Exception e) {
 			// log.error(e.getMessage(), e);
-			reporter.setActionError(context, ERROR_CODE.INTERNAL_ERROR,"Fatal :" + e);
+			reporter.setActionError(context, ERROR_CODE.INTERNAL_ERROR, "Fatal :" + e);
 		} finally {
 			progression.dispose(context);
 			log.info(Color.YELLOW + monitor.stop() + Color.NORMAL);
 		}
 
-		
+
 		return result;
 	}
 
@@ -88,9 +90,5 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			Command result = new GtfsImporterCommand();
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(GtfsImporterCommand.class.getName(), new DefaultCommandFactory());
 	}
 }

@@ -15,7 +15,9 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
 import mobi.chouette.model.ConnectionLink;
+import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
+import mobi.chouette.model.Transfers;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -26,6 +28,15 @@ import org.joda.time.LocalDateTime;
 @Log4j
 public class GtfsTransferParser implements Parser, Validator, Constant {
 
+	static {
+		ParserFactory.register(GtfsTransferParser.class.getName(), new ParserFactory() {
+			@Override
+			protected Parser create() {
+				return new GtfsTransferParser();
+			}
+		});
+	}
+
 	private String quayIdPrefixToRemove;
 	private String commercialPointIdPrefixToRemove;
 
@@ -34,7 +45,7 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
 		gtfsValidationReporter.getExceptions().clear();
-		
+
 		// transfers.txt
 		// log.info("validating transfers");
 		if (importer.hasTransferImporter()) { // the file "transfers.txt" exists ?
@@ -42,37 +53,37 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 
 			Index<GtfsTransfer> parser = null;
 			try { // Read and check the header line of the file "transfers.txt"
-				parser = importer.getTransferByFromStop(); 
-			} catch (Exception ex ) {
+				parser = importer.getTransferByFromStop();
+			} catch (Exception ex) {
 				if (ex instanceof GtfsException) {
-					gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_TRANSFERS_FILE);
+					gtfsValidationReporter.reportError(context, (GtfsException) ex, GTFS_TRANSFERS_FILE);
 				} else {
 					gtfsValidationReporter.throwUnknownError(context, ex, GTFS_TRANSFERS_FILE);
 				}
 			}
 
 			gtfsValidationReporter.validateOkCSV(context, GTFS_TRANSFERS_FILE);
-			
+
 			if (parser == null) { // importer.getTransferByFromStop() fails for any other reason
 				gtfsValidationReporter.throwUnknownError(context, new Exception("Cannot instantiate TransferByFromStop class"), GTFS_TRANSFERS_FILE);
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_TRANSFERS_FILE, parser.getOkTests());
 				gtfsValidationReporter.validateUnknownError(context);
 			}
-			
+
 			if (!parser.getErrors().isEmpty()) {
 				gtfsValidationReporter.reportErrors(context, parser.getErrors(), GTFS_TRANSFERS_FILE);
 				parser.getErrors().clear();
 			}
-			
+
 			gtfsValidationReporter.validateOKGeneralSyntax(context, GTFS_TRANSFERS_FILE);
-			
+
 			if (parser.getLength() == 0) {
 				gtfsValidationReporter.reportError(context, new GtfsException(GTFS_TRANSFERS_FILE, 1, null, GtfsException.ERROR.OPTIONAL_FILE_WITH_NO_ENTRY, null, null), GTFS_TRANSFERS_FILE);
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_TRANSFERS_FILE, GtfsException.ERROR.FILE_WITH_NO_ENTRY);
 			}
-			
+
 			GtfsException fatalException = null;
 			parser.setWithValidation(true);
 			for (GtfsTransfer bean : parser) {
@@ -80,12 +91,12 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
-						gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_TRANSFERS_FILE);
+						gtfsValidationReporter.reportError(context, (GtfsException) ex, GTFS_TRANSFERS_FILE);
 					} else {
 						gtfsValidationReporter.throwUnknownError(context, ex, GTFS_TRANSFERS_FILE);
 					}
 				}
-				for(GtfsException ex : bean.getErrors()) {
+				for (GtfsException ex : bean.getErrors()) {
 					if (ex.isFatal())
 						fatalException = ex;
 				}
@@ -110,21 +121,33 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		commercialPointIdPrefixToRemove = configuration.getCommercialPointIdPrefixToRemove();
 
 		for (GtfsTransfer gtfsTransfer : importer.getTransferByFromStop()) {
-
-			if(StringUtils.trimToNull(gtfsTransfer.getFromRouteId()) == null && StringUtils.trimToNull(gtfsTransfer.getToRouteId()) == null
-					&& StringUtils.trimToNull(gtfsTransfer.getFromTripId()) == null && StringUtils.trimToNull(gtfsTransfer.getToTripId()) == null) {
+			String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), ConnectionLink.CONNECTIONLINK_KEY, gtfsTransfer.getFromStopId() + "_" + gtfsTransfer.getToStopId());
+			if (StringUtils.trimToNull(gtfsTransfer.getFromRouteId()) == null && StringUtils.trimToNull(gtfsTransfer.getToRouteId()) == null && StringUtils.trimToNull(gtfsTransfer.getFromTripId()) == null && StringUtils.trimToNull(gtfsTransfer.getToTripId()) == null) {
 				// Treat as conneciton link
-				String objectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
-						ConnectionLink.CONNECTIONLINK_KEY, gtfsTransfer.getFromStopId() + "_" + gtfsTransfer.getToStopId()
-				);
 				ConnectionLink connectionLink = ObjectFactory.getConnectionLink(referential, objectId);
-				convert(context, gtfsTransfer, connectionLink);
+				convertTransferToConnectionLink(context, gtfsTransfer, connectionLink);
 
-			} 
+			} else {
+				Transfers transfers = ObjectFactory.getTransfers(referential, objectId);
+
+				String fromRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getFromRouteId());
+				Route fromRoute = ObjectFactory.getRoute(referential, fromRouteId);
+
+				String toRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getToRouteId());
+				Route toRoute = ObjectFactory.getRoute(referential, toRouteId);
+
+				String fromStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getFromStopId());
+				StopArea fromStop = ObjectFactory.getStopArea(referential, fromStopId);
+
+				String toStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getToStopId());
+				StopArea toStop = ObjectFactory.getStopArea(referential, toStopId);
+
+				convert(gtfsTransfer, transfers, fromRoute, toRoute, fromStop, toStop);
+			}
 		}
 	}
 
-	protected void convert(Context context, GtfsTransfer gtfsTransfer, ConnectionLink connectionLink) {
+	protected void convertTransferToConnectionLink(Context context, GtfsTransfer gtfsTransfer, ConnectionLink connectionLink) {
 
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
@@ -132,23 +155,23 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		String fromStopId = gtfsTransfer.getFromStopId();
 		String toStopId = gtfsTransfer.getToStopId();
 
-		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : fromStopId;
-		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^"+commercialPointIdPrefixToRemove,"").trim() : toStopId;
+		String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^" + commercialPointIdPrefixToRemove, "").trim() : fromStopId;
+		String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^" + commercialPointIdPrefixToRemove, "").trim() : toStopId;
 
 		StopArea startOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialFromId));
-		if(startOfLink == null) {
+		if (startOfLink == null) {
 			// Create between quays by default
-			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : fromStopId;
+			String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^" + quayIdPrefixToRemove, "").trim() : fromStopId;
 			startOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quayFromId));
 		}
-		
+
 		StopArea endOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialToStopId));
-		if(endOfLink == null) {
-			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^"+quayIdPrefixToRemove,"").trim() : toStopId;
+		if (endOfLink == null) {
+			String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^" + quayIdPrefixToRemove, "").trim() : toStopId;
 			endOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quaytoId));
 		}
 
-		
+
 		connectionLink.setStartOfLink(startOfLink);
 		connectionLink.setEndOfLink(endOfLink);
 		connectionLink.setCreationTime(LocalDateTime.now());
@@ -159,20 +182,20 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		if (gtfsTransfer.getTransferType() != null && gtfsTransfer.getTransferType().equals(TransferType.NoAllowed)) {
 			connectionLink.setName("FORBIDDEN");
 		} else {
-			connectionLink.setName("from " + connectionLink.getStartOfLink().getName() + " to "
-					+ connectionLink.getEndOfLink().getName());
+			connectionLink.setName("from " + connectionLink.getStartOfLink().getName() + " to " + connectionLink.getEndOfLink().getName());
 		}
 		connectionLink.setFilled(true);
-//		AbstractConverter.addLocation(context, "transfers.txt", connectionLink.getObjectId(), gtfsTransfer.getId());
+		//		AbstractConverter.addLocation(context, "transfers.txt", connectionLink.getObjectId(), gtfsTransfer.getId());
 	}
 
-
-	static {
-		ParserFactory.register(GtfsTransferParser.class.getName(), new ParserFactory() {
-			@Override
-			protected Parser create() {
-				return new GtfsTransferParser();
-			}
-		});
+	protected void convert(GtfsTransfer gtfsTransfer, Transfers transfers, Route fromRoute, Route toRoute, StopArea fromStop, StopArea toStop) throws Exception {
+		transfers.setFromRoute(fromRoute);
+		transfers.setToRoute(toRoute);
+		transfers.setFromStop(fromStop);
+		transfers.setToStop(toStop);
+		transfers.setFromTripId(gtfsTransfer.getFromTripId());
+		transfers.setToTripId(gtfsTransfer.getToTripId());
+		transfers.setTransferType(mobi.chouette.model.Transfers.TransferType.valueOf(String.valueOf(gtfsTransfer.getTransferType())));
+		transfers.setMinTransferTime(gtfsTransfer.getMinTransferTime());
 	}
 }

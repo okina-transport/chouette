@@ -1,21 +1,7 @@
 package mobi.chouette.model.util;
 
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.Company;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.GroupOfLine;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Period;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.Timetable;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.DayTypeEnum;
-
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -115,6 +101,18 @@ public abstract class NamingUtil {
 		return object.getObjectId();
 	}
 
+	public static String getName(FareAttribute object) {
+		return object.getObjectId();
+	}
+
+	public static String getName(FareRule object) {
+		return object.getObjectId();
+	}
+
+	public static String getName(Transfers object) {
+		return object.getObjectId();
+	}
+
 	public static boolean isFilled(String data) {
 		return (data != null && !data.trim().isEmpty());
 	}
@@ -142,12 +140,12 @@ public abstract class NamingUtil {
 		if (link.getAccessPoint() == null || isEmpty(link.getAccessPoint().getName()))
 			return;
 		switch (link.getLinkOrientation()) {
-		case AccessPointToStopArea:
-			link.setName(link.getAccessPoint().getName() + " -> " + link.getStopArea().getName());
-			break;
-		case StopAreaToAccessPoint:
-			link.setName(link.getStopArea().getName() + " -> " + link.getAccessPoint().getName());
-			break;
+			case AccessPointToStopArea:
+				link.setName(link.getAccessPoint().getName() + " -> " + link.getStopArea().getName());
+				break;
+			case StopAreaToAccessPoint:
+				link.setName(link.getStopArea().getName() + " -> " + link.getAccessPoint().getName());
+				break;
 		}
 	}
 
@@ -199,9 +197,7 @@ public abstract class NamingUtil {
 
 		// security if timetable is empty
 		if (firstDate != null && lastDate != null) {
-			String comment = timetable.objectIdSuffix() + " : " + format.print(firstDate) + " -> "
-					+ format.print(lastDate) + " : " + monday + tuesday + wednesday + thursday + friday + saturday
-					+ sunday;
+			String comment = timetable.objectIdSuffix() + " : " + format.print(firstDate) + " -> " + format.print(lastDate) + " : " + monday + tuesday + wednesday + thursday + friday + saturday + sunday;
 			timetable.setComment(comment);
 			timetable.setVersion(comment);
 		} else {

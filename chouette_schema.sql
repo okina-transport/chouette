@@ -2974,3 +2974,137 @@ ALTER TABLE trains_vehicle_journeys
 --
 --
 -- ALTER TABLE :SCH.variations_id_seq OWNER TO chouette;
+
+--
+-- Name: fare_attributes; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE fare_attributes
+(
+    id                bigint NOT NULL,
+    objectid          varchar(255),
+    object_version    integer,
+    creation_time     date,
+    creator_id        varchar(255),
+    price             float,
+    currency_type     varchar(255),
+    payment_method    varchar(255),
+    transfers         varchar(255),
+    agency_id         bigint,
+    CONSTRAINT fare_attributes_id_pkey PRIMARY KEY (id),
+    CONSTRAINT agency_id_fk FOREIGN KEY (agency_id) REFERENCES agency (id)
+);
+
+
+ALTER TABLE :SCH.fare_attributes OWNER TO chouette;
+
+--
+-- Name: fare_attribute_id_seq; Type: SEQUENCE; Schema: :SCH; Owner: chouette
+--
+
+CREATE SEQUENCE fare_attribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE :SCH.fare_attribute_id_seq OWNER TO chouette;
+
+--
+-- Name: fare_attribute_id_seq; Type: SEQUENCE OWNED BY; Schema: :SCH; Owner: chouette
+--
+
+ALTER SEQUENCE fare_attribute_id_seq OWNED BY fare_attributes.id;
+
+--
+-- Name: fare_rules; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE fare_rules
+(
+    id             bigint NOT NULL,
+    objectid       varchar(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     varchar(255),
+    route_id       bigint,
+    origin_id      bigint,
+    destination_id bigint,
+    contains_id    bigint,
+    CONSTRAINT fare_rules_id_pkey PRIMARY KEY (id),
+    CONSTRAINT route_id_fk FOREIGN KEY (route_id) REFERENCES routes (id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE :SCH.fare_rules OWNER TO chouette;
+
+--
+-- Name: fare_rule_id_seq; Type: SEQUENCE; Schema: :SCH; Owner: chouette
+--
+
+CREATE SEQUENCE fare_rule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE :SCH.fare_rule_id_seq OWNER TO chouette;
+
+--
+-- Name: fare_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: :SCH; Owner: chouette
+--
+
+ALTER SEQUENCE fare_rule_id_seq OWNED BY fare_rules.id;
+
+--
+-- Name: transfers; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE transfers
+(
+    id                bigint NOT NULL,
+    objectid          varchar(255),
+    object_version    integer,
+    creation_time     date,
+    creator_id        varchar(255),
+    from_stop_id      bigint,
+    to_stop_id        bigint,
+    from_route_id     bigint,
+    to_route_id       bigint,
+    from_trip_id      varchar(255),
+    to_trip_id        varchar(255),
+    transfer_type     varchar(255),
+    min_transfer_time integer,
+    CONSTRAINT transfers_id_pkey PRIMARY KEY (id),
+    CONSTRAINT from_stop_id_fk FOREIGN KEY (from_stop_id) REFERENCES stop_areas (id),
+    CONSTRAINT to_stop_id_fk FOREIGN KEY (to_stop_id) REFERENCES stop_areas (id),
+    CONSTRAINT from_route_id_fk FOREIGN KEY (from_route_id) REFERENCES routes (id) ON DELETE CASCADE,
+    CONSTRAINT to_route_id_fk FOREIGN KEY (to_route_id) REFERENCES routes (id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE :SCH.transfers OWNER TO chouette;
+
+--
+-- Name: transfers_id_seq; Type: SEQUENCE; Schema: :SCH; Owner: chouette
+--
+
+CREATE SEQUENCE transfers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE :SCH.transfers_id_seq OWNER TO chouette;
+
+--
+-- Name: transfers_id_seq; Type: SEQUENCE OWNED BY; Schema: :SCH; Owner: chouette
+--
+
+ALTER SEQUENCE transfers_id_seq OWNED BY transfers.id;

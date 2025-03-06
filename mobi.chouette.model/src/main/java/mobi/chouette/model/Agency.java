@@ -12,6 +12,8 @@ import javax.persistence.*;
 @Cacheable
 @NoArgsConstructor
 public class Agency {
+    @Getter
+    @Setter
     @Id
     @SequenceGenerator(name = "agency_id_seq", sequenceName = "agency_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "agency_id_seq")

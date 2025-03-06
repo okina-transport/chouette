@@ -23,7 +23,7 @@ public interface Constant {
 	String SCHEMA = "schema";
 	String IMPORTER = "importer";
 	String EXPORTER = "exporter";
-	String VALIDATOR = "validator";	
+	String VALIDATOR = "validator";
 	String INPUT = "input";
 	String OUTPUT = "output";
 	String PARAMETERS_FILE = "parameters.json";
@@ -56,7 +56,7 @@ public interface Constant {
 	String CONNECTION_LINK_BLOC = "connection_link_bloc";
 	String ALL_SCHEMAS = "all_schemas";
 
-	
+
 	String VALIDATION_DATA = "validation_data";
 	String EXPORTABLE_DATA = "exportable_data";
 	String SCHEDULED_STOP_POINTS = "scheduled_stop_points";
@@ -88,9 +88,9 @@ public interface Constant {
 	String SELECTED_ID = "selected-id";
 	String NETEX_VALID_PREFIX = System.getenv("NETEX_VALID_PREFIX");
 	String IS_NETEX_IMPORTER = "is_netex_importer";
-	String COLON_REPLACEMENT_CODE="##3A##";
+	String COLON_REPLACEMENT_CODE = "##3A##";
 
-	String SANITIZED_REPLACEMENT_CODE="__3A__";
+	String SANITIZED_REPLACEMENT_CODE = "__3A__";
 
 	String INCOMING_LINE_LIST = "incomingLineList";
 
@@ -102,6 +102,9 @@ public interface Constant {
 	String SUPERSPACE_PREFIX = System.getProperty("iev.superspace.prefix");
 
 	String CURRENT_LINE_ID = "currentLineId";
+	String CURRENT_FARE_ATTRIBUTE_ID = "currentFareAttributeId";
+	String CURRENT_FARE_RULE_ID = "currentFareRuleId";
+	String CURRENT_TRANSFERS_ID = "currentTransfersId";
 	String CURRENT_SCHEDULED_STOP_POINT = "currentScheduledStopPoint";
 
 	String ROUTE_LINKS_USED_IN_MULTIPLE_FILES = "routeLinksUsedInMutipleFiles";
@@ -130,4 +133,7 @@ public interface Constant {
 
 	String TARGET_COMPANY_OBJECT_ID = "target_company_object_id";
 	String TARGET_NETWORK_OBJECT_ID = "target_network_object_id";
+
+	String FARE_ATTRIBUTE = "fare_attribute";
+	String FARE_ATTRIBUTE_ID = "fare_attribute_id";
 }

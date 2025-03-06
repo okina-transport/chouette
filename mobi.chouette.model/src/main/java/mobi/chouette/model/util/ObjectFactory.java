@@ -4,8 +4,7 @@ import mobi.chouette.model.*;
 
 public class ObjectFactory {
 
-	public static AccessLink getAccessLink(Referential referential,
-			String objectId) {
+	public static AccessLink getAccessLink(Referential referential, String objectId) {
 		AccessLink result = referential.getSharedAccessLinks().get(objectId);
 		if (result == null) {
 			result = new AccessLink();
@@ -19,10 +18,9 @@ public class ObjectFactory {
 
 		return result;
 	}
-	
 
-	public static AccessPoint getAccessPoint(Referential referential,
-			String objectId) {
+
+	public static AccessPoint getAccessPoint(Referential referential, String objectId) {
 		AccessPoint result = referential.getSharedAccessPoints().get(objectId);
 		if (result == null) {
 			result = new AccessPoint();
@@ -37,8 +35,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static Timetable getTimetable(Referential referential,
-			String objectId) {
+	public static Timetable getTimetable(Referential referential, String objectId) {
 		Timetable result = referential.getSharedTimetables().get(objectId);
 		if (result == null) {
 			result = new Timetable();
@@ -53,8 +50,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static VehicleJourneyAtStop getVehicleJourneyAtStop(Referential referential,
-			String objectId) {
+	public static VehicleJourneyAtStop getVehicleJourneyAtStop(Referential referential, String objectId) {
 		VehicleJourneyAtStop result = referential.getVehicleJourneyAtStops().get(objectId);
 		if (result == null) {
 			result = new VehicleJourneyAtStop();
@@ -62,12 +58,11 @@ public class ObjectFactory {
 			result.setDetached(true);
 			referential.getVehicleJourneyAtStops().put(objectId, result);
 		}
-		
+
 		return result;
 	}
 
-	public static Network getPTNetwork(Referential referential,
-			String objectId) {
+	public static Network getPTNetwork(Referential referential, String objectId) {
 		Network result = referential.getSharedPTNetworks().get(objectId);
 		if (result == null) {
 			result = new Network();
@@ -108,6 +103,49 @@ public class ObjectFactory {
 		return result;
 	}
 
+	public static Agency getAgency(Referential referential, String objectId) {
+		Agency result = referential.getAgencies().get(objectId);
+		if (result == null) {
+			result = new Agency();
+			result.setAgencyId(objectId);
+			referential.getAgencies().put(objectId, result);
+		}
+		return result;
+	}
+
+	public static FareAttribute getFareAttribute(Referential referential, String objectId) {
+		FareAttribute result = referential.getFareAttributes().get(objectId);
+		if (result == null) {
+			result = new FareAttribute();
+			result.setDetached(true);
+			result.setObjectId(objectId);
+			referential.getFareAttributes().put(objectId, result);
+		}
+		return result;
+	}
+
+	public static FareRule getFareRule(Referential referential, String objectId) {
+		FareRule result = referential.getFareRules().get(objectId);
+		if (result == null) {
+			result = new FareRule();
+			result.setDetached(true);
+			result.setObjectId(objectId);
+			referential.getFareRules().put(objectId, result);
+		}
+		return result;
+	}
+
+	public static Transfers getTransfers(Referential referential, String objectId) {
+		Transfers result = referential.getTransfers().get(objectId);
+		if (result == null) {
+			result = new Transfers();
+			result.setDetached(true);
+			result.setObjectId(objectId);
+			referential.getTransfers().put(objectId, result);
+		}
+		return result;
+	}
+
 	public static Line getLine(Referential referential, String objectId) {
 		Line result = referential.getLines().get(objectId);
 		if (result == null) {
@@ -119,8 +157,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static JourneyPattern getJourneyPattern(Referential referential,
-			String objectId) {
+	public static JourneyPattern getJourneyPattern(Referential referential, String objectId) {
 		JourneyPattern result = referential.getJourneyPatterns().get(objectId);
 		if (result == null) {
 			result = new JourneyPattern();
@@ -141,10 +178,8 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static ConnectionLink getConnectionLink(Referential referential,
-			String objectId) {
-		ConnectionLink result = referential.getSharedConnectionLinks().get(
-				objectId);
+	public static ConnectionLink getConnectionLink(Referential referential, String objectId) {
+		ConnectionLink result = referential.getSharedConnectionLinks().get(objectId);
 		if (result == null) {
 			result = new ConnectionLink();
 			result.setObjectId(objectId);
@@ -168,16 +203,15 @@ public class ObjectFactory {
 			result.setObjectId(objectId);
 			result.setDetached(true);
 			referential.getSharedStopAreas().put(objectId, result);
-		} 
+		}
 		if (!referential.getStopAreas().containsKey(objectId)) {
 			referential.getStopAreas().put(objectId, result);
 		}
-		
+
 		return result;
 	}
 
-	public static GroupOfLine getGroupOfLine(Referential referential,
-			String objectId) {
+	public static GroupOfLine getGroupOfLine(Referential referential, String objectId) {
 		GroupOfLine result = referential.getSharedGroupOfLines().get(objectId);
 		if (result == null) {
 			result = new GroupOfLine();
@@ -192,8 +226,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static Footnote getFootnote(Referential referential,
-			String objectId) {
+	public static Footnote getFootnote(Referential referential, String objectId) {
 		Footnote result = referential.getSharedFootnotes().get(objectId);
 		if (result == null) {
 			result = new Footnote();
@@ -208,8 +241,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static Branding getBranding(Referential referential,
-									   String objectId) {
+	public static Branding getBranding(Referential referential, String objectId) {
 		Branding result = referential.getSharedBrandings().get(objectId);
 		if (result == null) {
 			result = new Branding();
@@ -224,8 +256,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static StopPoint getStopPoint(Referential referential,
-			String objectId) {
+	public static StopPoint getStopPoint(Referential referential, String objectId) {
 		StopPoint result = referential.getStopPoints().get(objectId);
 		if (result == null) {
 			result = new StopPoint();
@@ -236,8 +267,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static RoutePoint getRoutePoint(Referential referential,
-										   String objectId) {
+	public static RoutePoint getRoutePoint(Referential referential, String objectId) {
 		RoutePoint result = referential.getSharedRoutePoints().get(objectId);
 		if (result == null) {
 			result = new RoutePoint();
@@ -251,8 +281,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static ScheduledStopPoint getScheduledStopPoint(Referential referential,
-														   String objectId) {
+	public static ScheduledStopPoint getScheduledStopPoint(Referential referential, String objectId) {
 		ScheduledStopPoint result = referential.getSharedScheduledStopPoints().get(objectId);
 		if (result == null) {
 			result = new ScheduledStopPoint();
@@ -266,8 +295,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static VehicleJourney getVehicleJourney(Referential referential,
-			String objectId) {
+	public static VehicleJourney getVehicleJourney(Referential referential, String objectId) {
 		VehicleJourney result = referential.getVehicleJourneys().get(objectId);
 		if (result == null) {
 			result = new VehicleJourney();
@@ -277,7 +305,7 @@ public class ObjectFactory {
 		}
 		return result;
 	}
-	
+
 	public static Timeband getTimeband(Referential referential, String objectId) {
 		Timeband timeband = referential.getTimebands().get(objectId);
 		if (timeband == null) {
@@ -312,14 +340,14 @@ public class ObjectFactory {
 			result.setObjectId(objectId);
 			result.setDetached(true);
 			referential.getSharedDestinationDisplays().put(objectId, result);
-		} 
+		}
 		if (!referential.getDestinationDisplays().containsKey(objectId)) {
 			referential.getDestinationDisplays().put(objectId, result);
 		}
-		
+
 		return result;
 	}
-	
+
 	public static Interchange getInterchange(Referential referential, String objectId) {
 		Interchange interchange = referential.getSharedInterchanges().get(objectId);
 		if (interchange == null) {
@@ -328,7 +356,7 @@ public class ObjectFactory {
 			interchange.setDetached(true);
 			referential.getSharedInterchanges().put(objectId, interchange);
 		}
-		
+
 		if (!referential.getInterchanges().containsKey(objectId)) {
 			referential.getInterchanges().put(objectId, interchange);
 		}
@@ -336,8 +364,7 @@ public class ObjectFactory {
 		return interchange;
 	}
 
-	public static AccessibilityAssessment getAccessibilityAssessment(Referential referential,
-												   String objectId) {
+	public static AccessibilityAssessment getAccessibilityAssessment(Referential referential, String objectId) {
 		AccessibilityAssessment result = referential.getAccessibilityAssessments().get(objectId);
 		if (result == null) {
 			result = new AccessibilityAssessment();
@@ -348,8 +375,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static AccessibilityLimitation getAccessibilityLimitation(Referential referential,
-												   String objectId) {
+	public static AccessibilityLimitation getAccessibilityLimitation(Referential referential, String objectId) {
 		AccessibilityLimitation result = referential.getAccessibilityLimitations().get(objectId);
 		if (result == null) {
 			result = new AccessibilityLimitation();
@@ -371,8 +397,7 @@ public class ObjectFactory {
 		return result;
 	}
 
-	public static VehicleJourneyFacility getVehicleJourneyFacility(Referential referential,
-												   String objectId) {
+	public static VehicleJourneyFacility getVehicleJourneyFacility(Referential referential, String objectId) {
 		VehicleJourneyFacility result = referential.getFacilities().get(objectId);
 		if (result == null) {
 			result = new VehicleJourneyFacility();

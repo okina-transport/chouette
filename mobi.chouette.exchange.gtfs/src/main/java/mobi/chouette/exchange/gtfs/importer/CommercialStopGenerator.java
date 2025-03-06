@@ -27,8 +27,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 		List<StopArea> boardingPositions = new ArrayList<StopArea>();
 		for (StopArea stopArea : referential.getSharedStopAreas().values()) {
-			if (stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition)
-					|| stopArea.getAreaType().equals(ChouetteAreaEnum.Quay)) {
+			if (stopArea.getAreaType() != null && (stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition) || stopArea.getAreaType().equals(ChouetteAreaEnum.Quay))) {
 				boardingPositions.add(stopArea);
 			}
 		}
@@ -46,9 +45,10 @@ public class CommercialStopGenerator extends AbstractGenerator {
 				if (token.length > 0 && token[token.length - 1].length() < ignoreEndCharacters) {
 					key = key.substring(0, key.lastIndexOf(" " + token[token.length - 1]));
 				}
-			} else if (key.length() > ignoreEndCharacters) {
-				key = key.substring(0, key.length() - ignoreEndCharacters);
-			}
+			} else
+				if (key.length() > ignoreEndCharacters) {
+					key = key.substring(0, key.length() - ignoreEndCharacters);
+				}
 			keys.add(key);
 		}
 
@@ -72,14 +72,15 @@ public class CommercialStopGenerator extends AbstractGenerator {
 				} else {
 					area = stop.getParent();
 				}
-			} else if (stop.getParent() != null) {
-				if (!area.equals(stop.getParent())) {
-					log.error("conflict between generated and setted parent");
-					log.error("stop   = " + stop.getObjectId() + " " + stop.getName());
-					log.error("parent = " + area.getObjectId() + " " + area.getName());
-					continue;
+			} else
+				if (stop.getParent() != null) {
+					if (!area.equals(stop.getParent())) {
+						log.error("conflict between generated and setted parent");
+						log.error("stop   = " + stop.getObjectId() + " " + stop.getName());
+						log.error("parent = " + area.getObjectId() + " " + area.getName());
+						continue;
+					}
 				}
-			}
 			stop.setParent(area);
 
 		}
@@ -109,15 +110,14 @@ public class CommercialStopGenerator extends AbstractGenerator {
 				stopArea.setName(basename.trim());
 		}
 
-		log.debug("" + areas.size() + " commercial stops created");
+		log.debug(areas.size() + " commercial stops created");
 
 	}
 
 	/**
 	 * Commercial stop point initialization with first boarding position values
 	 *
-	 * @param stop
-	 *            boarding position
+	 * @param stop        boarding position
 	 * @param referential
 	 * @param objectId
 	 */
@@ -137,17 +137,13 @@ public class CommercialStopGenerator extends AbstractGenerator {
 	 * divide commercial stop point into smaller ones if boarding positions are
 	 * too far <br/>
 	 * recursive method
-	 * 
-	 * @param dividedAreas
-	 *            divided area container
-	 * @param area
-	 *            area to check
-	 * @param rank
-	 *            rank of subdivision
+	 *
+	 * @param dividedAreas divided area container
+	 * @param area         area to check
+	 * @param rank         rank of subdivision
 	 * @param referential
 	 */
-	private void explodeArea(Referential referential, List<StopArea> dividedAreas, StopArea area, int rank,
-			String baseId, double distanceMax) {
+	private void explodeArea(Referential referential, List<StopArea> dividedAreas, StopArea area, int rank, String baseId, double distanceMax) {
 		if (!checkDistance(area, distanceMax)) {
 			if (rank == 1) {
 				log.warn(area.getName() + " has long distance boarding positions , divided");
@@ -167,9 +163,8 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 	/**
 	 * remove boarding positions to far from others.
-	 * 
-	 * @param area
-	 *            the commercial stop point to check
+	 *
+	 * @param area the commercial stop point to check
 	 * @return a list of removed boarding positions
 	 */
 	private List<StopArea> excludeLongDistanceStops(StopArea area, double distanceMax) {
@@ -182,8 +177,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			List<StopArea> stops = area.getContainedStopAreas();
 			for (StopArea stop : stops) {
 
-				double distance = distance(area.getLongitude().doubleValue(), area.getLatitude().doubleValue(), stop
-						.getLongitude().doubleValue(), stop.getLatitude().doubleValue());
+				double distance = distance(area.getLongitude().doubleValue(), area.getLatitude().doubleValue(), stop.getLongitude().doubleValue(), stop.getLatitude().doubleValue());
 				if (distance > distanceMaxInArea) {
 					distanceMaxInArea = distance;
 					excluded = stop;
@@ -199,7 +193,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 	/**
 	 * compute centroid for the commercial stop point's boarding positions
-	 * 
+	 *
 	 * @param area
 	 */
 	private void buildCentroid(StopArea area) {
@@ -220,7 +214,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 
 	/**
 	 * check every pair of stop to see if they are all in the distance
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean checkDistance(StopArea area, double distanceMax) {
@@ -231,8 +225,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			StopArea first = stops.get(i);
 			for (int j = i + 1; j < stops.size(); j++) {
 				StopArea next = stops.get(j);
-				double distance = distance(first.getLongitude().doubleValue(), first.getLatitude().doubleValue(), next
-						.getLongitude().doubleValue(), next.getLatitude().doubleValue());
+				double distance = distance(first.getLongitude().doubleValue(), first.getLatitude().doubleValue(), next.getLongitude().doubleValue(), next.getLatitude().doubleValue());
 				if (distance > distanceMax) {
 					// logger.debug("BP : "+first.getName()+" (pos="+first.getLatitude()+","+first.getLongitude());
 					// logger.debug("BP : "+next.getName()+" (pos="+next.getLatitude()+","+next.getLongitude());
