@@ -2,46 +2,35 @@ package mobi.chouette.exchange.gtfs.model;
 
 import lombok.*;
 
-import javax.validation.constraints.Min;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class GtfsFareAttribute extends GtfsObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Getter
-    @Setter
     private String fareId;
 
-    @Getter
-    @Setter
-    @Min(0)
-    private Integer price;
+    private Float price;
 
-    @Getter
-    @Setter
     private String currencyType;
 
-    @Getter
-    @Setter
+    @Enumerated(EnumType.STRING)
     private PaymentMethodType paymentMethod;
 
-    @Getter
-    @Setter
+    @Enumerated(EnumType.STRING)
     private AttributeTransfersType transfers;
 
-    @Getter
-    @Setter
     private String agencyId;
 
-    @Getter
-    @Setter
-    @Min(0)
-    private Integer transferDuration;
+    private Float transferDuration;
 
     public void clear() {
         fareId = null;

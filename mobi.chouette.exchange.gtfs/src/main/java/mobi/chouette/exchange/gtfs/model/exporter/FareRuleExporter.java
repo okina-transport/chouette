@@ -22,9 +22,9 @@ public class FareRuleExporter extends ExporterImpl<GtfsFareRule> implements
             int i = 0;
             bean.setFareId(STRING_CONVERTER.from(context, FIELDS.fare_id, values.get(i++), true));
             bean.setRouteId(STRING_CONVERTER.from(context, FIELDS.route_id, values.get(i++), false));
-            bean.setOriginId(STRING_CONVERTER.from(context, FIELDS.origin_id, values.get(i++), false));
-            bean.setDestinationId(STRING_CONVERTER.from(context, FIELDS.destination_id, values.get(i++), false));
-            bean.setContainsId(STRING_CONVERTER.from(context, FIELDS.contains_id, values.get(i++), false));
+            bean.setOriginId(INTEGER_CONVERTER.from(context, FIELDS.origin_id, values.get(i++), false));
+            bean.setDestinationId(INTEGER_CONVERTER.from(context, FIELDS.destination_id, values.get(i++), false));
+            bean.setContainsId(INTEGER_CONVERTER.from(context, FIELDS.contains_id, values.get(i++), false));
 
             return bean;
         }
@@ -35,9 +35,9 @@ public class FareRuleExporter extends ExporterImpl<GtfsFareRule> implements
             List<String> values = new ArrayList<String>();
             values.add(STRING_CONVERTER.to(context, FIELDS.fare_id, input.getFareId(), true));
             values.add(STRING_CONVERTER.to(context, FIELDS.route_id, input.getRouteId(), false));
-            values.add(STRING_CONVERTER.to(context, FIELDS.origin_id, input.getOriginId(), false));
-            values.add(STRING_CONVERTER.to(context, FIELDS.destination_id, input.getDestinationId(), false));
-            values.add(STRING_CONVERTER.to(context, FIELDS.contains_id, input.getContainsId(), false));
+            values.add(INTEGER_CONVERTER.to(context, FIELDS.origin_id, input.getOriginId(), false));
+            values.add(INTEGER_CONVERTER.to(context, FIELDS.destination_id, input.getDestinationId(), false));
+            values.add(INTEGER_CONVERTER.to(context, FIELDS.contains_id, input.getContainsId(), false));
 
             result = Tokenizer.untokenize(values);
             return result;

@@ -4,16 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import mobi.chouette.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ExportableData {
 	// private Network network;
-	
+
+	@Getter
+	@Setter
+	Set<ScheduledStopPoint> scheduledStopPoints = new HashSet<>();
 	@Getter
 	@Setter
 	private Set<Network> networks = new HashSet<>();
@@ -83,21 +81,18 @@ public class ExportableData {
 	@Getter
 	@Setter
 	private Set<Footnote> footnotes = new HashSet<>();
-	@Getter
-	@Setter Set<ScheduledStopPoint> scheduledStopPoints = new HashSet<>();
-
 	// prevent lazy loading for non complete connectionlinks
 	@Getter
 	@Setter
 	private Set<StopArea> sharedStops = new HashSet<>();
 
-//	public Timetable findTimetable(String objectId) {
-//		for (Timetable tm : timetables) {
-//			if (tm.getObjectId().equals(objectId))
-//				return tm;
-//		}
-//		return null;
-//	}
+	//	public Timetable findTimetable(String objectId) {
+	//		for (Timetable tm : timetables) {
+	//			if (tm.getObjectId().equals(objectId))
+	//				return tm;
+	//		}
+	//		return null;
+	//	}
 
 	@Getter
 	@Setter
@@ -107,8 +102,19 @@ public class ExportableData {
 	@Setter
 	private Set<Attribution> attributions = new HashSet<>();
 
-	public void clear()
-	{
+	@Getter
+	@Setter
+	private List<FareAttribute> fareAttributes = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private List<FareRule> fareRules = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private List<Transfers> transfers = new ArrayList<>();
+
+	public void clear() {
 		networks.clear();
 		line = null;
 		companies.clear();
@@ -135,5 +141,8 @@ public class ExportableData {
 		footnotes.clear();
 		scheduledStopPoints.clear();
 		attributions.clear();
+		fareAttributes.clear();
+		fareRules.clear();
+		transfers.clear();
 	}
 }

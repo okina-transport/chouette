@@ -6,36 +6,19 @@
  */
 package mobi.chouette.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.ws.rs.DefaultValue;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.PTDirectionEnum;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import javax.ws.rs.DefaultValue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Chouette Route : An ordered list of StopPoints defining one single path
@@ -56,9 +39,7 @@ public class Route extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "routes_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "routes_id_seq"),
-			@Parameter(name = "increment_size", value = "50")})
+	@GenericGenerator(name = "routes_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {@Parameter(name = "sequence_name", value = "routes_id_seq"), @Parameter(name = "increment_size", value = "50")})
 	@GeneratedValue(generator = "routes_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
@@ -72,17 +53,6 @@ public class Route extends NeptuneIdentifiedObject {
 	@Getter
 	@Column(name = "name")
 	private String name;
-
-	/**
-	 * set name <br/>
-	 * truncated to 255 characters if too long
-	 *
-	 * @param value New value
-	 */
-	public void setName(String value) {
-		name = StringUtils.abbreviate(value, 255);
-	}
-
 	/**
 	 * comment
 	 *
@@ -91,17 +61,6 @@ public class Route extends NeptuneIdentifiedObject {
 	@Getter
 	@Column(name = "comment")
 	private String comment;
-
-	/**
-	 * set comment <br/>
-	 * truncated to 255 characters if too long
-	 *
-	 * @param value New value
-	 */
-	public void setComment(String value) {
-		comment = StringUtils.abbreviate(value, 255);
-	}
-
 	/**
 	 * opposite route identifier <br/>
 	 * an opposite route must have it's wayBack attribute on reverse value<br/>
@@ -116,6 +75,116 @@ public class Route extends NeptuneIdentifiedObject {
 	@OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
 	@JoinColumn(name = "opposite_route_id")
 	private Route oppositeRoute;
+	/**
+	 * published name
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@Column(name = "published_name")
+	private String publishedName;
+	/**
+	 * number
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@Column(name = "number")
+	private String number;
+	/**
+	 * direction
+	 *
+	 * @param direction
+	 * New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@Enumerated(EnumType.STRING)
+	@Column(name = "direction")
+	private PTDirectionEnum direction;
+	/**
+	 * wayback <br/>
+	 * possible values :
+	 * <ul>
+	 * <li>A : outBound</li>
+	 * <li>R : inBound</li>
+	 * </ul>
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@Column(name = "wayback")
+	private String wayBack;
+	/**
+	 * line reverse reference
+	 *
+	 * @return The actual value
+	 */
+	@Getter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "line_id")
+	private Line line;
+	/**
+	 * journeyPatterns
+	 *
+	 * @param journeyPatterns
+	 * New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "route", cascade = {CascadeType.PERSIST})
+	private List<JourneyPattern> journeyPatterns = new ArrayList<JourneyPattern>(0);
+	/**
+	 * stopPoints
+	 *
+	 * @param stopPoints
+	 * New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "route", cascade = {CascadeType.PERSIST})
+	@OrderColumn(name = "position", nullable = false)
+	private List<StopPoint> stopPoints = new ArrayList<StopPoint>(0);
+	/**
+	 * sharedRoutePoints
+	 *
+	 * @param sharedRoutePoints
+	 * New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ManyToMany(cascade = {CascadeType.PERSIST})
+	@OrderColumn(name = "position")
+	@JoinTable(name = "routes_route_points", joinColumns = {@JoinColumn(name = "route_id", nullable = false, updatable = false)}, inverseJoinColumns = {@JoinColumn(name = "route_point_id", nullable = false, updatable = false)})
+	private List<RoutePoint> routePoints = new ArrayList<>(0);
+	@Getter
+	@Setter
+	@DefaultValue("false")
+	private Boolean supprime = false;
+
+	/**
+	 * set name <br/>
+	 * truncated to 255 characters if too long
+	 *
+	 * @param value New value
+	 */
+	public void setName(String value) {
+		name = StringUtils.abbreviate(value, 255);
+	}
+
+	/**
+	 * set comment <br/>
+	 * truncated to 255 characters if too long
+	 *
+	 * @param value New value
+	 */
+	public void setComment(String value) {
+		comment = StringUtils.abbreviate(value, 255);
+	}
 
 	/**
 	 * opposite route identifier <br/>
@@ -138,15 +207,6 @@ public class Route extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * published name
-	 *
-	 * @return The actual value
-	 */
-	@Getter
-	@Column(name = "published_name")
-	private String publishedName;
-
-	/**
 	 * set published name <br/>
 	 * truncated to 255 characters if too long
 	 *
@@ -155,15 +215,6 @@ public class Route extends NeptuneIdentifiedObject {
 	public void setPublishedName(String value) {
 		publishedName = StringUtils.abbreviate(value, 255);
 	}
-
-	/**
-	 * number
-	 *
-	 * @return The actual value
-	 */
-	@Getter
-	@Column(name = "number")
-	private String number;
 
 	/**
 	 * set number <br/>
@@ -176,33 +227,6 @@ public class Route extends NeptuneIdentifiedObject {
 	}
 
 	/**
-	 * direction
-	 *
-	 * @param direction
-	 * New value
-	 * @return The actual value
-	 */
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	@Column(name = "direction")
-	private PTDirectionEnum direction;
-
-	/**
-	 * wayback <br/>
-	 * possible values :
-	 * <ul>
-	 * <li>A : outBound</li>
-	 * <li>R : inBound</li>
-	 * </ul>
-	 *
-	 * @return The actual value
-	 */
-	@Getter
-	@Column(name = "wayback")
-	private String wayBack;
-
-	/**
 	 * set wayBack <br/>
 	 * truncated to 255 characters if too long
 	 *
@@ -211,16 +235,6 @@ public class Route extends NeptuneIdentifiedObject {
 	public void setWayBack(String value) {
 		wayBack = StringUtils.abbreviate(value, 255);
 	}
-
-	/**
-	 * line reverse reference
-	 *
-	 * @return The actual value
-	 */
-	@Getter
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "line_id")
-	private Line line;
 
 	/**
 	 * set line reverse reference
@@ -236,50 +250,4 @@ public class Route extends NeptuneIdentifiedObject {
 			line.getRoutes().add(this);
 		}
 	}
-
-	/**
-	 * journeyPatterns
-	 *
-	 * @param journeyPatterns
-	 * New value
-	 * @return The actual value
-	 */
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "route", cascade = {CascadeType.PERSIST})
-	private List<JourneyPattern> journeyPatterns = new ArrayList<JourneyPattern>(0);
-
-	/**
-	 * stopPoints
-	 *
-	 * @param stopPoints
-	 * New value
-	 * @return The actual value
-	 */
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "route", cascade = {CascadeType.PERSIST})
-	@OrderColumn(name = "position", nullable = false)
-	private List<StopPoint> stopPoints = new ArrayList<StopPoint>(0);
-
-	/**
-	 * sharedRoutePoints
-	 *
-	 * @param sharedRoutePoints
-	 * New value
-	 * @return The actual value
-	 */
-	@Getter
-	@Setter
-	@ManyToMany(cascade = {CascadeType.PERSIST})
-	@OrderColumn(name = "position")
-	@JoinTable(name = "routes_route_points", joinColumns = {@JoinColumn(name = "route_id", nullable = false, updatable = false)}, inverseJoinColumns = {@JoinColumn(name = "route_point_id", nullable = false, updatable = false)})
-	private List<RoutePoint> routePoints = new ArrayList<>(0);
-
-	@Getter
-	@Setter
-	@DefaultValue("false")
-	private Boolean supprime = false;
-
-
 }

@@ -1,39 +1,25 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
+import mobi.chouette.exchange.gtfs.model.*;
+import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
-import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
-import mobi.chouette.exchange.gtfs.model.GtfsFrequency;
-import mobi.chouette.exchange.gtfs.model.GtfsObject;
-import mobi.chouette.exchange.gtfs.model.GtfsRoute;
-import mobi.chouette.exchange.gtfs.model.GtfsShape;
-import mobi.chouette.exchange.gtfs.model.GtfsStop;
-import mobi.chouette.exchange.gtfs.model.GtfsStopTime;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTrip;
-import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
-import org.apache.commons.lang.StringUtils;
-
 public class GtfsImporter {
-	public static enum INDEX {
-		AGENCY_BY_ID, CALENDAR_BY_SERVICE, CALENDAR_DATE_BY_SERVICE, FREQUENCY_BY_TRIP, ROUTE_BY_ID, STOP_BY_ID, STOP_TIME_BY_TRIP, TRANSFER_BY_FROM_STOP, TRANSFER_BY_FROM_TRIP, TRANSFER_BY_TO_TRIP, SHAPE_BY_ID, TRIP_BY_ID, TRIP_BY_ROUTE, TRIP_BY_SERVICE;
-	}
-
-	private String _path;
+	private final String _path;
+	private final FactoryParameters _factoryParameters;
 	private Map<String, Index<GtfsObject>> _map = new HashMap<String, Index<GtfsObject>>();
-	private FactoryParameters _factoryParameters;
 
 	public GtfsImporter(String path) {
-		this(path,null);
+		this(path, null);
 	}
 
-	public GtfsImporter(String path,FactoryParameters factoryParameters) {
+	public GtfsImporter(String path, FactoryParameters factoryParameters) {
 		_path = path;
 		_factoryParameters = factoryParameters;
 	}
@@ -47,9 +33,9 @@ public class GtfsImporter {
 		_map = null;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Index getImporter(String name, String path, Class clazz) {
-		return getImporter(name,path,clazz,null);
+		return getImporter(name, path, clazz, null);
 	}
 
 	public Index getImporter(String name, String path, Class clazz, FactoryParameters factoryParameters) {
@@ -57,10 +43,10 @@ public class GtfsImporter {
 
 		if (importer == null) {
 			try {
-				if (factoryParameters==null){
-					importer = IndexFactory.build(	Paths.get(_path, path).toString(), clazz.getName());
-				}else{
-					importer = IndexFactory.build(	Paths.get(_path, path).toString(), clazz.getName(),factoryParameters);
+				if (factoryParameters == null) {
+					importer = IndexFactory.build(Paths.get(_path, path).toString(), clazz.getName());
+				} else {
+					importer = IndexFactory.build(Paths.get(_path, path).toString(), clazz.getName(), factoryParameters);
 				}
 				_map.put(name, importer);
 			} catch (ClassNotFoundException | IOException e) {
@@ -109,9 +95,17 @@ public class GtfsImporter {
 	public boolean hasTripImporter() {
 		return hasImporter(TripById.FILENAME);
 	}
-	
+
 	public boolean hasShapeImporter() {
 		return hasImporter(ShapeById.FILENAME);
+	}
+
+	public boolean hasFareAttributeImporter() {
+		return hasImporter(FareAttributeById.FILENAME);
+	}
+
+	public boolean hasFareRuleImporter() {
+		return hasImporter(FareRuleById.FILENAME);
 	}
 
 	private boolean hasImporter(String filename) {
@@ -121,43 +115,39 @@ public class GtfsImporter {
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsAgency> getAgencyById() {
-		return getImporter(INDEX.AGENCY_BY_ID.name(), AgencyById.FILENAME,
-				AgencyById.class);
+		return getImporter(INDEX.AGENCY_BY_ID.name(), AgencyById.FILENAME, AgencyById.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsCalendar> getCalendarByService() {
-		return getImporter(INDEX.CALENDAR_BY_SERVICE.name(),
-				CalendarByService.FILENAME, CalendarByService.class);
+		return getImporter(INDEX.CALENDAR_BY_SERVICE.name(), CalendarByService.FILENAME, CalendarByService.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsCalendarDate> getCalendarDateByService() {
-		return getImporter(INDEX.CALENDAR_DATE_BY_SERVICE.name(),
-				CalendarDateByService.FILENAME, CalendarDateByService.class);
+		return getImporter(INDEX.CALENDAR_DATE_BY_SERVICE.name(), CalendarDateByService.FILENAME, CalendarDateByService.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsFrequency> getFrequencyByTrip() {
-		return getImporter(INDEX.FREQUENCY_BY_TRIP.name(),
-				FrequencyByTrip.FILENAME, FrequencyByTrip.class);
+		return getImporter(INDEX.FREQUENCY_BY_TRIP.name(), FrequencyByTrip.FILENAME, FrequencyByTrip.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsRoute> getRouteById() {
-		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())){
-			return getImporter(INDEX.ROUTE_BY_ID.name(), RouteById.FILENAME,RouteById.class,_factoryParameters);
-		}else{
-			return getImporter(INDEX.ROUTE_BY_ID.name(), RouteById.FILENAME,RouteByIdWithMergedIndex.class,_factoryParameters);
+		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())) {
+			return getImporter(INDEX.ROUTE_BY_ID.name(), RouteById.FILENAME, RouteById.class, _factoryParameters);
+		} else {
+			return getImporter(INDEX.ROUTE_BY_ID.name(), RouteById.FILENAME, RouteByIdWithMergedIndex.class, _factoryParameters);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsStop> getStopById() {
-		if (StringUtils.isEmpty(_factoryParameters.getCommercialPointIdPrefixToRemove()) ){
-			return getImporter(INDEX.STOP_BY_ID.name(), StopById.FILENAME,StopById.class);
-		}else{
-			return getImporter(INDEX.STOP_BY_ID.name(), StopById.FILENAME,StopById.class,_factoryParameters);
+		if (StringUtils.isEmpty(_factoryParameters.getCommercialPointIdPrefixToRemove())) {
+			return getImporter(INDEX.STOP_BY_ID.name(), StopById.FILENAME, StopById.class);
+		} else {
+			return getImporter(INDEX.STOP_BY_ID.name(), StopById.FILENAME, StopById.class, _factoryParameters);
 		}
 	}
 
@@ -168,59 +158,74 @@ public class GtfsImporter {
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsStopTime> getStopTimeByTrip() {
-		return getImporter(INDEX.STOP_TIME_BY_TRIP.name(),
-				StopTimeByTrip.FILENAME, StopTimeByTrip.class);
+		return getImporter(INDEX.STOP_TIME_BY_TRIP.name(), StopTimeByTrip.FILENAME, StopTimeByTrip.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTransfer> getTransferByFromStop() {
-		return getImporter(INDEX.TRANSFER_BY_FROM_STOP.name(),
-				TransferByFromStop.FILENAME, TransferByFromStop.class);
+		return getImporter(INDEX.TRANSFER_BY_FROM_STOP.name(), TransferByFromStop.FILENAME, TransferByFromStop.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTransfer> getTransferByToTrip() {
-		return getImporter(INDEX.TRANSFER_BY_TO_TRIP.name(),
-				TransferByFromStop.FILENAME, TransferByToTrip.class);
+		return getImporter(INDEX.TRANSFER_BY_TO_TRIP.name(), TransferByFromStop.FILENAME, TransferByToTrip.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTransfer> getTransferByFromTrip() {
-		return getImporter(INDEX.TRANSFER_BY_FROM_TRIP.name(),
-				TransferByFromStop.FILENAME, TransferByFromTrip.class);
+		return getImporter(INDEX.TRANSFER_BY_FROM_TRIP.name(), TransferByFromStop.FILENAME, TransferByFromTrip.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsShape> getShapeById() {
-		return getImporter(INDEX.SHAPE_BY_ID.name(), ShapeById.FILENAME,
-				ShapeById.class);
+		return getImporter(INDEX.SHAPE_BY_ID.name(), ShapeById.FILENAME, ShapeById.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTrip> getTripById() {
-		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter()) && StringUtils.isEmpty(_factoryParameters.getLinePrefixToRemove())){
-			return getImporter(INDEX.TRIP_BY_ID.name(), TripById.FILENAME,TripById.class);
-		}else{
-			return getImporter(INDEX.TRIP_BY_ID.name(), TripById.FILENAME,TripById.class,_factoryParameters);
+		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter()) && StringUtils.isEmpty(_factoryParameters.getLinePrefixToRemove())) {
+			return getImporter(INDEX.TRIP_BY_ID.name(), TripById.FILENAME, TripById.class);
+		} else {
+			return getImporter(INDEX.TRIP_BY_ID.name(), TripById.FILENAME, TripById.class, _factoryParameters);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTrip> getTripByRoute() {
-		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter()) && StringUtils.isEmpty(_factoryParameters.getLinePrefixToRemove())){
-			return getImporter(INDEX.TRIP_BY_ROUTE.name(), TripById.FILENAME,TripByRoute.class);
-		}else{
-			return getImporter(INDEX.TRIP_BY_ROUTE.name(), TripById.FILENAME,TripByRoute.class,_factoryParameters);
+		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter()) && StringUtils.isEmpty(_factoryParameters.getLinePrefixToRemove())) {
+			return getImporter(INDEX.TRIP_BY_ROUTE.name(), TripById.FILENAME, TripByRoute.class);
+		} else {
+			return getImporter(INDEX.TRIP_BY_ROUTE.name(), TripById.FILENAME, TripByRoute.class, _factoryParameters);
 		}
-
 
 
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsTrip> getTripByService() {
-		return getImporter(INDEX.TRIP_BY_SERVICE.name(), TripById.FILENAME,
-				TripByRoute.class);
+		return getImporter(INDEX.TRIP_BY_SERVICE.name(), TripById.FILENAME, TripByRoute.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Index<GtfsFareAttribute> getFareAttributeById() {
+		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())) {
+			return getImporter(INDEX.FARE_ID_BY_ATTRIBUTE.name(), FareAttributeById.FILENAME, FareAttributeById.class);
+		} else {
+			return getImporter(INDEX.FARE_ID_BY_ATTRIBUTE.name(), FareAttributeById.FILENAME, FareAttributeById.class, _factoryParameters);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Index<GtfsFareRule> getFareRuleById() {
+		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())) {
+			return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class);
+		} else {
+			return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class, _factoryParameters);
+		}
+	}
+
+	public enum INDEX {
+		AGENCY_BY_ID, CALENDAR_BY_SERVICE, CALENDAR_DATE_BY_SERVICE, FREQUENCY_BY_TRIP, ROUTE_BY_ID, STOP_BY_ID, STOP_TIME_BY_TRIP, TRANSFER_BY_FROM_STOP, TRANSFER_BY_FROM_TRIP, TRANSFER_BY_TO_TRIP, SHAPE_BY_ID, TRIP_BY_ID, TRIP_BY_ROUTE, TRIP_BY_SERVICE, FARE_ID_BY_ATTRIBUTE, FARE_ID_BY_RULE
 	}
 
 }

@@ -10,7 +10,6 @@ import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
 import mobi.chouette.exchange.exporter.CompressCommand;
 import mobi.chouette.exchange.exporter.SaveMetadataCommand;
-import mobi.chouette.exchange.gtfs.parameters.AttributionsExportModes;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -20,15 +19,6 @@ import java.util.List;
 @Log4j
 @Data
 public class GtfsExporterProcessingCommands implements ProcessingCommands, Constant {
-
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new GtfsExporterProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
 		ProcessingCommandsFactory.factories.put(GtfsExporterProcessingCommands.class.getName(), new DefaultFactory());
@@ -59,10 +49,11 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		List<Command> commands = new ArrayList<>();
 		try {
 			initialContext.addToEnvironment(SCHEDULED_STOP_POINTS, context.get(SCHEDULED_STOP_POINTS));
-			if (withDao)
+			if (withDao) {
 				commands.add(CommandFactory.create(initialContext, DaoGtfsLineProducerCommand.class.getName()));
-			else
+			} else {
 				commands.add(CommandFactory.create(initialContext, GtfsLineProducerCommand.class.getName()));
+			}
 		} catch (Exception e) {
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
@@ -79,8 +70,12 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		List<Command> commands = new ArrayList<>();
 		try {
 			commands.add(CommandFactory.create(initialContext, DaoGtfsAttributonsProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DaoGtfsFareAttributeProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DaoGtfsFareRuleProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DaoGtfsTransfersProducerCommand.class.getName()));
+
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFeedInfoProducerCommand.class.getName()));
-//			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));
+			//			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));
 			if (!(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
 				commands.add(CommandFactory.create(initialContext, GtfsSharedDataProducerCommand.class.getName()));
 			}
@@ -127,6 +122,15 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new GtfsExporterProcessingCommands();
+			return result;
+		}
 	}
 
 }

@@ -8,29 +8,21 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class GtfsFareRule extends GtfsObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Getter
-    @Setter
     private String fareId;
 
-    @Getter
-    @Setter
     private String routeId;
 
-    @Getter
-    @Setter
-    private String originId;
+    private Integer originId;
 
-    @Getter
-    @Setter
-    private String destinationId;
+    private Integer destinationId;
 
-    @Getter
-    @Setter
-    private String containsId;
+    private Integer containsId;
 
     public void clear() {
         fareId = null;

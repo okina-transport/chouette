@@ -11,349 +11,284 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GtfsExporterMock implements GtfsExporterInterface
-{
-   
-   @Getter 
-   List<GtfsAgency> exportedAgencies = new ArrayList<>();
-   @Getter 
-   List<GtfsCalendarDate> exportedCalendarDates = new ArrayList<>();
-   @Getter 
-   List<GtfsCalendar> exportedCalendars = new ArrayList<>();
-   @Getter
-   List<GtfsFeedInfo> exportedFeedInfo = new ArrayList<>();
-   @Getter 
-   List<GtfsFrequency> exportedFrequencies = new ArrayList<>();
-   @Getter 
-   List<GtfsRoute> exportedRoutes = new ArrayList<>();
-   @Getter 
-   List<GtfsShape> exportedShapes = new ArrayList<>();
-   @Getter 
-   List<GtfsStop> exportedStops = new ArrayList<>();
-   @Getter 
-   List<GtfsStopTime> exportedStopTimes = new ArrayList<>();
-   @Getter 
-   List<GtfsTransfer> exportedTransfers = new ArrayList<>();
-   @Getter 
-   List<GtfsTrip> exportedTrips = new ArrayList<>();
-   @Getter
-   List<GtfsAttribution> exportedAttributions = new ArrayList<>();
-   
-   AgencyExporterMock agencyMock = new AgencyExporterMock();
-   CalendarDateExporterMock calendarDateMock = new CalendarDateExporterMock();
-   CalendarExporterMock calendarMock = new CalendarExporterMock();
-   FeedInfoExporterMock feedInfoMock = new FeedInfoExporterMock();
-   FrequencyExporterMock frequencyMock = new FrequencyExporterMock();
-   RouteExporterMock routeMock = new RouteExporterMock();
-   ShapeExporterMock shapeMock = new ShapeExporterMock();
-   StopExporterMock stopMock = new StopExporterMock();
-   StopTimeExporterMock stopTimeMock = new StopTimeExporterMock();
-   TransferExporterMock transferMock = new TransferExporterMock();
-   TripExporterMock tripMock = new TripExporterMock();
-   AttributionExporterMock attributionMock = new AttributionExporterMock();
+public class GtfsExporterMock implements GtfsExporterInterface {
 
-   
-   public void reset()
-   {
-      exportedAgencies.clear();
-      exportedCalendarDates.clear();
-      exportedCalendars.clear();
-      exportedFrequencies.clear();
-      exportedRoutes.clear();
-      exportedShapes.clear();
-      exportedStops.clear();
-      exportedStopTimes.clear();
-      exportedTransfers.clear();
-      exportedTrips.clear();
-      exportedAttributions.clear();
-   }
+	@Getter
+	List<GtfsAgency> exportedAgencies = new ArrayList<>();
+	@Getter
+	List<GtfsCalendarDate> exportedCalendarDates = new ArrayList<>();
+	@Getter
+	List<GtfsCalendar> exportedCalendars = new ArrayList<>();
+	@Getter
+	List<GtfsFeedInfo> exportedFeedInfo = new ArrayList<>();
+	@Getter
+	List<GtfsFrequency> exportedFrequencies = new ArrayList<>();
+	@Getter
+	List<GtfsRoute> exportedRoutes = new ArrayList<>();
+	@Getter
+	List<GtfsShape> exportedShapes = new ArrayList<>();
+	@Getter
+	List<GtfsStop> exportedStops = new ArrayList<>();
+	@Getter
+	List<GtfsStopTime> exportedStopTimes = new ArrayList<>();
+	@Getter
+	List<GtfsTransfer> exportedTransfers = new ArrayList<>();
+	@Getter
+	List<GtfsTrip> exportedTrips = new ArrayList<>();
+	@Getter
+	List<GtfsAttribution> exportedAttributions = new ArrayList<>();
 
-   @Override
-   public Exporter<GtfsAgency> getAgencyExporter() throws Exception
-   {
-      return agencyMock;
-   }
+	AgencyExporterMock agencyMock = new AgencyExporterMock();
+	CalendarDateExporterMock calendarDateMock = new CalendarDateExporterMock();
+	CalendarExporterMock calendarMock = new CalendarExporterMock();
+	FeedInfoExporterMock feedInfoMock = new FeedInfoExporterMock();
+	FrequencyExporterMock frequencyMock = new FrequencyExporterMock();
+	RouteExporterMock routeMock = new RouteExporterMock();
+	ShapeExporterMock shapeMock = new ShapeExporterMock();
+	StopExporterMock stopMock = new StopExporterMock();
+	StopTimeExporterMock stopTimeMock = new StopTimeExporterMock();
+	TransferExporterMock transferMock = new TransferExporterMock();
+	TripExporterMock tripMock = new TripExporterMock();
+	AttributionExporterMock attributionMock = new AttributionExporterMock();
 
-   @Override
-   public Exporter<GtfsCalendarDate> getCalendarDateExporter() throws Exception
-   {
-      return calendarDateMock;
-   }
 
-   @Override
-   public Exporter<GtfsCalendar> getCalendarExporter() throws Exception
-   {
-      return calendarMock;
-   }
+	public void reset() {
+		exportedAgencies.clear();
+		exportedCalendarDates.clear();
+		exportedCalendars.clear();
+		exportedFrequencies.clear();
+		exportedRoutes.clear();
+		exportedShapes.clear();
+		exportedStops.clear();
+		exportedStopTimes.clear();
+		exportedTransfers.clear();
+		exportedTrips.clear();
+		exportedAttributions.clear();
+	}
 
-   @Override
-   public Exporter<GtfsFeedInfo> getFeedInfoExporter() throws Exception {
-      return feedInfoMock;
-   }
+	@Override
+	public Exporter<GtfsAgency> getAgencyExporter() throws Exception {
+		return agencyMock;
+	}
 
-   @Override
-   public Exporter<GtfsFrequency> getFrequencyExporter() throws Exception
-   {
-      return frequencyMock;
-   }
+	@Override
+	public Exporter<GtfsCalendarDate> getCalendarDateExporter() throws Exception {
+		return calendarDateMock;
+	}
 
-   @Override
-   public Exporter<GtfsRoute> getRouteExporter() throws Exception
-   {
-      return routeMock;
-   }
+	@Override
+	public Exporter<GtfsCalendar> getCalendarExporter() throws Exception {
+		return calendarMock;
+	}
 
-   @Override
-   public Exporter<GtfsShape> getShapeExporter() throws Exception
-   {
-      return shapeMock;
-   }
+	@Override
+	public Exporter<GtfsFeedInfo> getFeedInfoExporter() throws Exception {
+		return feedInfoMock;
+	}
 
-   @Override
-   public Exporter<GtfsStop> getStopExporter() throws Exception
-   {
-      return stopMock;
-   }
+	@Override
+	public Exporter<GtfsFrequency> getFrequencyExporter() throws Exception {
+		return frequencyMock;
+	}
 
-   @Override
-   public Exporter<GtfsStop> getStopExtendedExporter() throws Exception
-   {
-      return stopMock;
-   }
+	@Override
+	public Exporter<GtfsRoute> getRouteExporter() throws Exception {
+		return routeMock;
+	}
 
-   @Override
-   public Exporter<GtfsStopTime> getStopTimeExporter() throws Exception
-   {
-      return stopTimeMock;
-   }
+	@Override
+	public Exporter<GtfsShape> getShapeExporter() throws Exception {
+		return shapeMock;
+	}
 
-   @Override
-   public Exporter<GtfsTransfer> getTransferExporter() throws Exception
-   {
-      return transferMock;
-   }
+	@Override
+	public Exporter<GtfsStop> getStopExporter() throws Exception {
+		return stopMock;
+	}
 
-   @Override
-   public Exporter<GtfsTrip> getTripExporter() throws Exception
-   {
-      return tripMock;
-   }
+	@Override
+	public Exporter<GtfsStop> getStopExtendedExporter() throws Exception {
+		return stopMock;
+	}
 
-   @Override
-   public Exporter<GtfsAttribution> getAttributionExporter() throws Exception
-   {
-      return attributionMock;
-   }
+	@Override
+	public Exporter<GtfsStopTime> getStopTimeExporter() throws Exception {
+		return stopTimeMock;
+	}
 
-   private abstract class ExporterMock<T> implements Exporter<T>
-   {
+	@Override
+	public Exporter<GtfsTransfer> getTransferExporter() throws Exception {
+		return transferMock;
+	}
 
-      @Override
-      public void dispose(Context context) throws IOException
-      {         
-      }
+	@Override
+	public Exporter<GtfsTrip> getTripExporter() throws Exception {
+		return tripMock;
+	}
 
-      @Override
-      public void writeHeader() throws IOException
-      {         
-      }
+	@Override
+	public Exporter<GtfsAttribution> getAttributionExporter() throws Exception {
+		return attributionMock;
+	}
 
-      @Override
-      public void write(String text) throws IOException
-      {         
-      }
-      
-   }
-   
-   private class AgencyExporterMock extends ExporterMock<GtfsAgency>
-   {
-      @Override
-      public void export(GtfsAgency bean) throws IOException
-      {
-         try
-         {
-            exportedAgencies.add((GtfsAgency) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+	@Override
+	public Exporter<GtfsFareAttribute> getFareAttributeExporter() throws Exception {
+		return null;
+	}
 
-   private class CalendarDateExporterMock extends ExporterMock<GtfsCalendarDate>
-   {
-      @Override
-      public void export(GtfsCalendarDate bean) throws IOException
-      {
-         try
-         {
-            exportedCalendarDates.add((GtfsCalendarDate) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+	@Override
+	public Exporter<GtfsFareRule> getFareRuleExporter() throws Exception {
+		return null;
+	}
 
-   private class CalendarExporterMock extends ExporterMock<GtfsCalendar>
-   {
-      @Override
-      public void export(GtfsCalendar bean) throws IOException
-      {
-         try
-         {
-            exportedCalendars.add((GtfsCalendar) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+	private abstract class ExporterMock<T> implements Exporter<T> {
 
-   private class FeedInfoExporterMock extends ExporterMock<GtfsFeedInfo>
-   {
-      @Override
-      public void export(GtfsFeedInfo bean) throws IOException
-      {
-         try
-         {
-            exportedFeedInfo.add((GtfsFeedInfo) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+		@Override
+		public void dispose(Context context) throws IOException {
+		}
 
-   private class FrequencyExporterMock extends ExporterMock<GtfsFrequency>
-   {
-      @Override
-      public void export(GtfsFrequency bean) throws IOException
-      {
-         try
-         {
-            exportedFrequencies.add((GtfsFrequency) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
-   
-   private class RouteExporterMock extends ExporterMock<GtfsRoute>
-   {
-      @Override
-      public void export(GtfsRoute bean) throws IOException
-      {
-         try
-         {
-            exportedRoutes.add((GtfsRoute) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+		@Override
+		public void writeHeader() throws IOException {
+		}
 
-   private class ShapeExporterMock extends ExporterMock<GtfsShape>
-   {
-      @Override
-      public void export(GtfsShape bean) throws IOException
-      {
-         
-         try
-         {
-            exportedShapes.add((GtfsShape) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+		@Override
+		public void write(String text) throws IOException {
+		}
 
-   private class StopExporterMock extends ExporterMock<GtfsStop>
-   {
-      @Override
-      public void export(GtfsStop bean) throws IOException
-      {
-         
-         try
-         {
-            exportedStops.add((GtfsStop) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
-   
-   private class StopTimeExporterMock extends ExporterMock<GtfsStopTime>
-   {
-      @Override
-      public void export(GtfsStopTime bean) throws IOException
-      {
-         try
-         {
-            exportedStopTimes.add((GtfsStopTime) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
-   
-   private class TransferExporterMock extends ExporterMock<GtfsTransfer>
-   {
-      @Override
-      public void export(GtfsTransfer bean) throws IOException
-      {
-         try
-         {
-            exportedTransfers.add((GtfsTransfer) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
-   
-   private class TripExporterMock extends ExporterMock<GtfsTrip>
-   {
-      @Override
-      public void export(GtfsTrip bean) throws IOException
-      {
-         try
-         {
-            exportedTrips.add((GtfsTrip) BeanUtils.cloneBean(bean));
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   }
+	}
 
-   private class AttributionExporterMock extends ExporterMock<GtfsAttribution>
-   {
-      @Override
-      public void export(GtfsAttribution bean) throws IOException
-      {
-         try {
-            exportedAttributions.add((GtfsAttribution) BeanUtils.cloneBean(bean));
-         } catch (Exception e) {
-            e.printStackTrace();
-         }
-      }
-   }
+	private class AgencyExporterMock extends ExporterMock<GtfsAgency> {
+		@Override
+		public void export(GtfsAgency bean) throws IOException {
+			try {
+				exportedAgencies.add((GtfsAgency) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class CalendarDateExporterMock extends ExporterMock<GtfsCalendarDate> {
+		@Override
+		public void export(GtfsCalendarDate bean) throws IOException {
+			try {
+				exportedCalendarDates.add((GtfsCalendarDate) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class CalendarExporterMock extends ExporterMock<GtfsCalendar> {
+		@Override
+		public void export(GtfsCalendar bean) throws IOException {
+			try {
+				exportedCalendars.add((GtfsCalendar) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class FeedInfoExporterMock extends ExporterMock<GtfsFeedInfo> {
+		@Override
+		public void export(GtfsFeedInfo bean) throws IOException {
+			try {
+				exportedFeedInfo.add((GtfsFeedInfo) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class FrequencyExporterMock extends ExporterMock<GtfsFrequency> {
+		@Override
+		public void export(GtfsFrequency bean) throws IOException {
+			try {
+				exportedFrequencies.add((GtfsFrequency) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class RouteExporterMock extends ExporterMock<GtfsRoute> {
+		@Override
+		public void export(GtfsRoute bean) throws IOException {
+			try {
+				exportedRoutes.add((GtfsRoute) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class ShapeExporterMock extends ExporterMock<GtfsShape> {
+		@Override
+		public void export(GtfsShape bean) throws IOException {
+
+			try {
+				exportedShapes.add((GtfsShape) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class StopExporterMock extends ExporterMock<GtfsStop> {
+		@Override
+		public void export(GtfsStop bean) throws IOException {
+
+			try {
+				exportedStops.add((GtfsStop) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class StopTimeExporterMock extends ExporterMock<GtfsStopTime> {
+		@Override
+		public void export(GtfsStopTime bean) throws IOException {
+			try {
+				exportedStopTimes.add((GtfsStopTime) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class TransferExporterMock extends ExporterMock<GtfsTransfer> {
+		@Override
+		public void export(GtfsTransfer bean) throws IOException {
+			try {
+				exportedTransfers.add((GtfsTransfer) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class TripExporterMock extends ExporterMock<GtfsTrip> {
+		@Override
+		public void export(GtfsTrip bean) throws IOException {
+			try {
+				exportedTrips.add((GtfsTrip) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private class AttributionExporterMock extends ExporterMock<GtfsAttribution> {
+		@Override
+		public void export(GtfsAttribution bean) throws IOException {
+			try {
+				exportedAttributions.add((GtfsAttribution) BeanUtils.cloneBean(bean));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

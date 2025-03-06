@@ -32,6 +32,10 @@ public interface ObjectIdTypes {
      */
     String COMPANY_KEY = "Company";
     /**
+     * default objectId type for companies
+     */
+    String AGENCY_KEY = "Agency";
+    /**
      * default objectId type for connection links
      */
     String CONNECTIONLINK_KEY = "ConnectionLink";
@@ -128,5 +132,10 @@ public interface ObjectIdTypes {
      * default objectId type for operators
      */
     String OPERATOR_KEY = "Operator";
+
+    /**
+     * default objectId type for fare
+     */
+    String FARE_KEY = "Fare";
 
 }

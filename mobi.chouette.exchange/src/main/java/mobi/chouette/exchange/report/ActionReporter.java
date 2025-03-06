@@ -4,61 +4,14 @@ import mobi.chouette.common.Context;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
 
 public interface ActionReporter {
-	
-	public enum OBJECT_TYPE {
-		NETWORK,
-		COMPANY,
-		STOP_AREA,
-		STOP_POINT,
-		CONNECTION_LINK,
-		ACCESS_POINT,
-		TIMETABLE,
-		LINE,
-		ROUTE,
-		ROUTE_SECTION,
-		JOURNEY_PATTERN,
-		VEHICLE_JOURNEY,
-		INTERCHANGE
-	};
-	
-	public enum FILE_STATE {
-		IGNORED, OK, ERROR
-	};
-	
-	public enum ERROR_CODE 
-	{
-		INVALID_PARAMETERS,
-		NO_DATA_FOUND,
-		NO_DATA_PROCEEDED,
-		NO_DATA_ON_PERIOD,
-		INVALID_DATA,
-		INVALID_FORMAT,
-		INTERNAL_ERROR,
-		WRITE_ERROR
-	};
-	
-	public enum OBJECT_STATE 
-	{
-		OK,
-		WARNING,
-		ERROR
-	};
-	
-	public enum FILE_ERROR_CODE 
-	{
-		FILE_NOT_FOUND,
-		READ_ERROR,
-		WRITE_ERROR,
-		INVALID_FORMAT,
-		INTERNAL_ERROR
-	};
-	
+
 	/**
 	 * @param context
 	 * @param fileInfoName
 	 * @param ioType
 	 */
-	void addZipReport(Context context, String fileInfoName,IO_TYPE ioType);
+	void addZipReport(Context context, String fileInfoName, IO_TYPE ioType);
+
 	/**
 	 * @param context
 	 * @param fileInfoName
@@ -66,18 +19,21 @@ public interface ActionReporter {
 	 * @param message
 	 */
 	void addZipErrorInReport(Context context, String fileInfoName, FILE_ERROR_CODE code, String message);
+
 	/**
 	 * @param context
 	 * @param fileInfoName
 	 * @param ioType
 	 */
-	void addFileReport(Context context, String fileInfoName,IO_TYPE ioType);
+	void addFileReport(Context context, String fileInfoName, IO_TYPE ioType);
+
 	/**
 	 * @param context
 	 * @param fileInfoName
 	 * @param ioType
 	 */
-	void setFileState(Context context, String fileInfoName,IO_TYPE ioType,FILE_STATE state);
+	void setFileState(Context context, String fileInfoName, IO_TYPE ioType, FILE_STATE state);
+
 	/**
 	 * @param context
 	 * @param fileInfoName
@@ -85,6 +41,7 @@ public interface ActionReporter {
 	 * @param message
 	 */
 	void addFileErrorInReport(Context context, String fileInfoName, FILE_ERROR_CODE code, String message);
+
 	/**
 	 * @param context
 	 * @param fileInfoName
@@ -92,17 +49,20 @@ public interface ActionReporter {
 	 * @return
 	 */
 	boolean addValidationErrorToFileReport(Context context, String fileInfoName, int code, SEVERITY severity);
+
 	/**
 	 * @param context
 	 * @param code
 	 * @param description
 	 */
 	void setActionError(Context context, ERROR_CODE code, String description);
-    /**
-     * @param context
-     * @return
-     */
-    boolean hasActionError(Context context);
+
+	/**
+	 * @param context
+	 * @return
+	 */
+	boolean hasActionError(Context context);
+
 	/**
 	 * @param context
 	 * @param objectId
@@ -112,6 +72,7 @@ public interface ActionReporter {
 	 * @param ioType
 	 */
 	void addObjectReport(Context context, String objectId, OBJECT_TYPE type, String description, OBJECT_STATE status, IO_TYPE ioType);
+
 	/**
 	 * @param context
 	 * @param objectId
@@ -120,6 +81,7 @@ public interface ActionReporter {
 	 * @param descriptionError
 	 */
 	void addErrorToObjectReport(Context context, String objectId, OBJECT_TYPE type, ERROR_CODE code, String descriptionError);
+
 	/**
 	 * @param context
 	 * @param objectId
@@ -127,25 +89,30 @@ public interface ActionReporter {
 	 * @param code
 	 * @return
 	 */
-	boolean addValidationErrorToObjectReport(Context context,  String objectId, OBJECT_TYPE type, int code, SEVERITY severity);
+	boolean addValidationErrorToObjectReport(Context context, String objectId, OBJECT_TYPE type, int code, SEVERITY severity);
+
 	/**
-	 * add statistics value for object 
+	 * add statistics value for object
+	 *
 	 * @param context
 	 * @param objectId
 	 * @param type
 	 * @param statType
-	 * @param count value to add 
+	 * @param count    value to add
 	 */
 	void addStatToObjectReport(Context context, String objectId, OBJECT_TYPE type, OBJECT_TYPE statType, int count);
+
 	/**
-	 * set statistics value for object 
+	 * set statistics value for object
+	 *
 	 * @param context
 	 * @param objectId
 	 * @param type
 	 * @param statType
-	 * @param count value to set
+	 * @param count    value to set
 	 */
 	void setStatToObjectReport(Context context, String objectId, OBJECT_TYPE type, OBJECT_TYPE statType, int count);
+
 	/**
 	 * @param context
 	 * @param line
@@ -154,25 +121,44 @@ public interface ActionReporter {
 	boolean hasInfo(Context context, OBJECT_TYPE line);
 
 	boolean hasFileValidationErrors(Context context, String filename);
-	
-	
+
 	/**
 	 * Factory for using action reporter instance
-	 * @author gjamot
 	 *
+	 * @author gjamot
 	 */
-	public class Factory {
+	class Factory {
 		private static ActionReporter actionReporter;
-		
+
 		public static synchronized ActionReporter getInstance() {
-			if(actionReporter == null) {
+			if (actionReporter == null) {
 				actionReporter = new ActionReporterImpl();
 			}
-			
+
 			return actionReporter;
 		}
 	}
 
+	enum OBJECT_TYPE {
+		NETWORK, COMPANY, STOP_AREA, STOP_POINT, CONNECTION_LINK, ACCESS_POINT, TIMETABLE, LINE, ROUTE, ROUTE_SECTION, JOURNEY_PATTERN, VEHICLE_JOURNEY, INTERCHANGE, FARE_ATTRIBUTE, FARE_RULE
+	}
+
+	enum FILE_STATE {
+		IGNORED, OK, ERROR
+	}
+
+	enum ERROR_CODE {
+		INVALID_PARAMETERS, NO_DATA_FOUND, NO_DATA_PROCEEDED, NO_DATA_ON_PERIOD, INVALID_DATA, INVALID_FORMAT, INTERNAL_ERROR, WRITE_ERROR
+	}
+
+	enum OBJECT_STATE {
+		OK, WARNING, ERROR
+	}
+
+
+	enum FILE_ERROR_CODE {
+		FILE_NOT_FOUND, READ_ERROR, WRITE_ERROR, INVALID_FORMAT, INTERNAL_ERROR
+	}
 
 
 }

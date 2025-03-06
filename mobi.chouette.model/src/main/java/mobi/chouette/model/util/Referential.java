@@ -93,6 +93,18 @@ public class Referential implements java.io.Serializable {
 
     @Getter
     @Setter
+    private Map<String, FareAttribute> fareAttributes = new HashMap<String, FareAttribute>();
+
+    @Getter
+    @Setter
+    private Map<String, FareRule> fareRules = new HashMap<String, FareRule>();
+
+    @Getter
+    @Setter
+    private Map<String, Transfers> transfers = new HashMap<String, Transfers>();
+
+    @Getter
+    @Setter
     private Map<String, Line> lines = new HashMap<String, Line>();
 
     @Getter
@@ -130,6 +142,10 @@ public class Referential implements java.io.Serializable {
     @Getter
     @Setter
     private Map<String, Company> companies = new HashMap<String, Company>();
+
+    @Getter
+    @Setter
+    private Map<String, Agency> agencies = new HashMap<String, Agency>();
 
     @Getter
     @Setter
