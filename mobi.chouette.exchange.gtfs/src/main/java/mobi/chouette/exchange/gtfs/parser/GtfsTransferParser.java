@@ -126,7 +126,6 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 				ConnectionLink connectionLink = ObjectFactory.getConnectionLink(referential, objectId);
 				convertTransferToConnectionLink(context, gtfsTransfer, connectionLink);
 
-			} else {
 				Transfers transfers = ObjectFactory.getTransfers(referential, objectId);
 
 				String fromRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getFromRouteId());

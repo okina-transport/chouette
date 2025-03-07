@@ -37,133 +37,135 @@ import java.sql.SQLException;
 @Stateless(name = TransfersRegisterCommand.COMMAND)
 public class TransfersRegisterCommand implements Command {
 
-    public static final String COMMAND = "TransfersRegisterCommand";
+	public static final String COMMAND = "TransfersRegisterCommand";
 
-    static {
-        CommandFactory.factories.put(TransfersRegisterCommand.class.getName(), new DefaultCommandFactory());
-    }
+	static {
+		CommandFactory.factories.put(TransfersRegisterCommand.class.getName(), new DefaultCommandFactory());
+	}
 
-    @EJB
-    private TransfersOptimiser optimiser;
+	@EJB
+	private TransfersOptimiser optimiser;
 
-    @EJB
-    private TransfersDAO transfersDAO;
+	@EJB
+	private TransfersDAO transfersDAO;
 
-    @EJB
-    private RouteDAO routeDAO;
+	@EJB
+	private RouteDAO routeDAO;
 
-    @EJB(beanName = RouteUpdater.BEAN_NAME)
-    private Updater<Route> routeUpdater;
+	@EJB(beanName = RouteUpdater.BEAN_NAME)
+	private Updater<Route> routeUpdater;
 
-    @EJB(beanName = TransfersUpdater.BEAN_NAME)
-    private Updater<Transfers> transfersUpdater;
+	@EJB(beanName = TransfersUpdater.BEAN_NAME)
+	private Updater<Transfers> transfersUpdater;
 
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public boolean execute(Context context) throws Exception {
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public boolean execute(Context context) throws Exception {
 
-        boolean result = ERROR;
-        Monitor monitor = MonitorFactory.start(COMMAND);
+		boolean result = ERROR;
+		Monitor monitor = MonitorFactory.start(COMMAND);
 
-        if (!context.containsKey(OPTIMIZED)) {
-            context.put(OPTIMIZED, Boolean.TRUE);
-        }
-        Referential cache = new Referential();
-        context.put(CACHE, cache);
+		if (!context.containsKey(OPTIMIZED)) {
+			context.put(OPTIMIZED, Boolean.TRUE);
+		}
 
-        Referential referential = (Referential) context.get(REFERENTIAL);
+		Referential cache = new Referential();
+		context.put(CACHE, cache);
 
-        // Use property based enabling of stop place updater, but allow disabling if property exist in context
-        Transfers newValue = referential.getTransfers().values().iterator().next();
-        context.put(CURRENT_TRANSFERS_ID, newValue.getObjectId());
+		Referential referential = (Referential) context.get(REFERENTIAL);
 
-        log.info("register tranfers : " + newValue.getObjectId());
-        try {
-            optimiser.initialize(cache, referential);
+		// Use property based enabling of stop place updater, but allow disabling if property exist in context
+		Transfers newValue = referential.getTransfers().values().iterator().next();
+		context.put(CURRENT_TRANSFERS_ID, newValue.getObjectId());
 
-            Transfers oldValue = cache.getTransfers().get(newValue.getObjectId());
-            Route oldFromRouteValue = cache.getRoutes().get(newValue.getFromRoute().getObjectId());
-            Route oldToRouteValue = cache.getRoutes().get(newValue.getToRoute().getObjectId());
-            StopArea oldFromStopAreaValue = cache.getStopAreas().get(newValue.getFromStop().getObjectId());
-            StopArea oldToStopAreaValue = cache.getStopAreas().get(newValue.getToStop().getObjectId());
+		log.info("register tranfers : " + newValue.getObjectId());
+		try {
+			optimiser.initialize(cache, referential);
 
-            Route findedFromRoute = routeDAO.findByObjectId(oldFromRouteValue.getObjectId());
+			Transfers oldValue = cache.getTransfers().get(newValue.getObjectId());
+			Route oldFromRouteValue = cache.getRoutes().get(newValue.getFromRoute().getObjectId());
+			Route oldToRouteValue = cache.getRoutes().get(newValue.getToRoute().getObjectId());
+			StopArea oldFromStopAreaValue = cache.getStopAreas().get(newValue.getFromStop().getObjectId());
+			StopArea oldToStopAreaValue = cache.getStopAreas().get(newValue.getToStop().getObjectId());
 
-            if (oldValue.getId() == null && findedFromRoute == null) {
-                routeDAO.create(oldFromRouteValue);
-            } else if (findedFromRoute != null) {
-                routeUpdater.update(context, findedFromRoute, oldFromRouteValue);
-            }
+			Route findedFromRoute = routeDAO.findByObjectId(oldFromRouteValue.getObjectId());
 
-            newValue.setFromRoute(oldFromRouteValue);
+			if (oldValue.getId() == null && findedFromRoute == null) {
+				routeDAO.create(oldFromRouteValue);
+			} else
+				if (findedFromRoute != null) {
+					routeUpdater.update(context, findedFromRoute, oldFromRouteValue);
+				}
 
-            Route findedToRoute = routeDAO.findByObjectId(oldToRouteValue.getObjectId());
+			newValue.setFromRoute(oldFromRouteValue);
 
-            if (oldValue.getId() == null && findedToRoute == null) {
-                routeDAO.create(oldToRouteValue);
-            } else if (findedToRoute != null) {
-                routeUpdater.update(context, findedToRoute, oldToRouteValue);
-            }
+			Route findedToRoute = routeDAO.findByObjectId(oldToRouteValue.getObjectId());
 
-            newValue.setToRoute(oldToRouteValue);
+			if (oldValue.getId() == null && findedToRoute == null) {
+				routeDAO.create(oldToRouteValue);
+			} else
+				if (findedToRoute != null) {
+					routeUpdater.update(context, findedToRoute, oldToRouteValue);
+				}
 
-            newValue.setFromStop(oldFromStopAreaValue);
-            newValue.setToStop(oldToStopAreaValue);
+			newValue.setToRoute(oldToRouteValue);
 
-            if (oldValue.getId() == null) {
-                transfersDAO.create(oldValue);
-            } else {
-                transfersUpdater.update(context, oldValue, newValue);
-            }
-            transfersDAO.flush();
+			newValue.setFromStop(oldFromStopAreaValue);
+			newValue.setToStop(oldToStopAreaValue);
 
-            result = SUCCESS;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            ActionReporter reporter = ActionReporter.Factory.getInstance();
-            reporter.addObjectReport(context, newValue.getObjectId(),
-                    OBJECT_TYPE.FARE_RULE, NamingUtil.getName(newValue), OBJECT_STATE.ERROR, IO_TYPE.INPUT);
-            if (ex.getCause() != null) {
-                Throwable e = ex.getCause();
-                while (e.getCause() != null) {
-                    log.error(e.getMessage());
-                    e = e.getCause();
-                }
-                if (e instanceof SQLException) {
-                    e = ((SQLException) e).getNextException();
-                    reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.WRITE_ERROR, e.getMessage());
+			if (oldValue.getId() == null) {
+				transfersDAO.create(oldValue);
+			} else {
+				transfersUpdater.update(context, oldValue, newValue);
+			}
+			transfersDAO.flush();
 
-                } else {
-                    reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, e.getMessage());
-                }
-            } else {
-                reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
-            }
-            throw ex;
-        } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-        }
-        return result;
-    }
+			result = SUCCESS;
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			ActionReporter reporter = ActionReporter.Factory.getInstance();
+			reporter.addObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, NamingUtil.getName(newValue), OBJECT_STATE.ERROR, IO_TYPE.INPUT);
+			if (ex.getCause() != null) {
+				Throwable e = ex.getCause();
+				while (e.getCause() != null) {
+					log.error(e.getMessage());
+					e = e.getCause();
+				}
+				if (e instanceof SQLException) {
+					e = ((SQLException) e).getNextException();
+					reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.WRITE_ERROR, e.getMessage());
 
-    public static class DefaultCommandFactory extends CommandFactory {
+				} else {
+					reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+				}
+			} else {
+				reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
+			}
+			throw ex;
+		} finally {
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		}
+		return result;
+	}
 
-        @Override
-        protected Command create(InitialContext context) throws IOException {
-            Command result = null;
-            try {
-                String name = "java:app/mobi.chouette.exchange/" + COMMAND;
-                result = (Command) context.lookup(name);
-            } catch (NamingException e) {
-                // try another way on test context
-                String name = "java:module/" + COMMAND;
-                try {
-                    result = (Command) context.lookup(name);
-                } catch (NamingException e1) {
-                    log.error(e);
-                }
-            }
-            return result;
-        }
-    }
+	public static class DefaultCommandFactory extends CommandFactory {
+
+		@Override
+		protected Command create(InitialContext context) throws IOException {
+			Command result = null;
+			try {
+				String name = "java:app/mobi.chouette.exchange/" + COMMAND;
+				result = (Command) context.lookup(name);
+			} catch (NamingException e) {
+				// try another way on test context
+				String name = "java:module/" + COMMAND;
+				try {
+					result = (Command) context.lookup(name);
+				} catch (NamingException e1) {
+					log.error(e);
+				}
+			}
+			return result;
+		}
+	}
 }
