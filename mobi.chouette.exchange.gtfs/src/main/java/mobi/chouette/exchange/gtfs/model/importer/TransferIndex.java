@@ -2,7 +2,6 @@ package mobi.chouette.exchange.gtfs.model.importer;
 
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
 
 import java.io.IOException;
 import java.time.temporal.ValueRange;
@@ -60,31 +59,6 @@ public class TransferIndex extends IndexImpl<GtfsTransfer> implements GtfsConver
 					getErrors().add(new GtfsException(_path, 1, getIndex(fieldName), fieldName, GtfsException.ERROR.EXTRA_HEADER_FIELD, null, null));
 				}
 			}
-		}
-
-		// checks for ubiquitous header fields : 1-GTFS-Transfer-1 error
-		if (ValueRange.of(1, 3).isValidIntValue(fields.get(FIELDS.transfer_type.name())) && (fields.get(FIELDS.from_stop_id.name()) == null || fields.get(FIELDS.to_stop_id.name()) == null)) {
-
-			String name = "";
-			if (fields.get(FIELDS.from_stop_id.name()) == null)
-				name = FIELDS.from_stop_id.name();
-			else
-				if (fields.get(FIELDS.to_stop_id.name()) == null)
-					name = FIELDS.to_stop_id.name();
-
-			throw new GtfsException(_path, 1, name, GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, null);
-		}
-
-		if (ValueRange.of(4, 5).isValidIntValue(fields.get(FIELDS.transfer_type.name())) && (fields.get(FIELDS.from_trip_id.name()) == null || fields.get(FIELDS.to_trip_id.name()) == null)) {
-
-			String name = "";
-			if (fields.get(FIELDS.from_trip_id.name()) == null)
-				name = FIELDS.from_trip_id.name();
-			else
-				if (fields.get(FIELDS.to_trip_id.name()) == null)
-					name = FIELDS.to_trip_id.name();
-
-			throw new GtfsException(_path, 1, name, GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, null);
 		}
 
 		if (fields.get(FIELDS.transfer_type.name()) == null) {
@@ -203,9 +177,28 @@ public class TransferIndex extends IndexImpl<GtfsTransfer> implements GtfsConver
 			bean.setMinTransferTime(null);
 		}
 
-		if (bean.getTransferType() == TransferType.Minimal && bean.getMinTransferTime() == null) {
+		if (bean.getTransferType() == GtfsTransfer.TransfersTypeEnum.Minimal && bean.getMinTransferTime() == null) {
 			if (withValidation)
 				bean.getErrors().add(new GtfsException(_path, id, getIndex(FIELDS.transfer_type.name()), FIELDS.transfer_type.name(), GtfsException.ERROR.MISSING_TRANSFER_TIME, null, null));
+		}
+
+
+		if (ValueRange.of(1, 3).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromStopId() == null || bean.getToStopId() == null)) {
+			if (bean.getFromStopId() == null) {
+				bean.getErrors().add(new GtfsException(_path, id, FIELDS.from_stop_id.ordinal(), "fromStopId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
+			}
+			if (bean.getToStopId() == null) {
+				bean.getErrors().add(new GtfsException(_path, id, FIELDS.to_stop_id.ordinal(), "toStopId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
+			}
+		}
+
+		if (ValueRange.of(4, 5).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromTripId() == null || bean.getToTripId() == null)) {
+			if (bean.getFromTripId() == null) {
+				bean.getErrors().add(new GtfsException(_path, id, FIELDS.from_trip_id.ordinal(), "fromTripId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
+			}
+			if (bean.getToTripId() == null) {
+				bean.getErrors().add(new GtfsException(_path, id, FIELDS.to_trip_id.ordinal(), "toTripId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
+			}
 		}
 		return bean;
 	}

@@ -44,12 +44,12 @@ public class GtfsTransferProducer extends AbstractProducer {
 
 
 		if ("FORBIDDEN".equals(neptuneObject.getName())) {
-			transfer.setTransferType(GtfsTransfer.TransferType.NoAllowed);
+			transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.NoAllowed);
 		} else
 			if (neptuneObject.getDefaultDuration() != null && neptuneObject.getDefaultDuration().getStandardSeconds() > 1) {
-				transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
+				transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.Minimal);
 			} else {
-				transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
+				transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.Recommended);
 			}
 
 		if (neptuneObject.getDefaultDuration() == null) {
@@ -76,16 +76,16 @@ public class GtfsTransferProducer extends AbstractProducer {
 			transfer.setToStopId(GtfsStopUtils.getNewStopId(neptuneObject.getConsumerStopPoint().getContainedInStopAreaRef().getObject(), idParams, keepOriginalId, prefix));
 		}
 		if (Boolean.TRUE.equals(neptuneObject.getGuaranteed())) {
-			transfer.setTransferType(GtfsTransfer.TransferType.Timed);
+			transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.Timed);
 		} else
 			if (neptuneObject.getMinimumTransferTime() != null) {
-				transfer.setTransferType(GtfsTransfer.TransferType.Minimal);
+				transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.Minimal);
 				transfer.setMinTransferTime(Integer.valueOf((int) (neptuneObject.getMinimumTransferTime().getStandardSeconds())));
 			} else
 				if (neptuneObject.getPriority() != null && neptuneObject.getPriority() >= 0) {
-					transfer.setTransferType(GtfsTransfer.TransferType.Recommended);
+					transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.Recommended);
 				} else {
-					transfer.setTransferType(GtfsTransfer.TransferType.NoAllowed);
+					transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.NoAllowed);
 				}
 
 		if (neptuneObject.getFeederVehicleJourney() != null) {
@@ -116,7 +116,7 @@ public class GtfsTransferProducer extends AbstractProducer {
 		transfer.setToRouteId(neptuneObject.getToRoute().getObjectId());
 		transfer.setFromTripId(neptuneObject.getFromTripId());
 		transfer.setToTripId(neptuneObject.getToTripId());
-		transfer.setTransferType(GtfsTransfer.TransferType.valueOf(neptuneObject.getTransferType().name()));
+		transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.valueOf(neptuneObject.getTransferType().name()));
 		transfer.setMinTransferTime(neptuneObject.getMinTransferTime());
 		try {
 			getExporter().getTransferExporter().export(transfer);

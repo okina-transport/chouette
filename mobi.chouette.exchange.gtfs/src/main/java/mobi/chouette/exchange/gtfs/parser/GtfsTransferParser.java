@@ -5,7 +5,6 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
-import mobi.chouette.exchange.gtfs.model.GtfsTransfer.TransferType;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
@@ -179,7 +178,7 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		if (gtfsTransfer.getMinTransferTime() != null) {
 			connectionLink.setDefaultDuration(Duration.standardSeconds(gtfsTransfer.getMinTransferTime()));
 		}
-		if (gtfsTransfer.getTransferType() != null && gtfsTransfer.getTransferType().equals(TransferType.NoAllowed)) {
+		if (gtfsTransfer.getTransferType() != null && gtfsTransfer.getTransferType().equals(GtfsTransfer.TransfersTypeEnum.NoAllowed)) {
 			connectionLink.setName("FORBIDDEN");
 		} else {
 			connectionLink.setName("from " + connectionLink.getStartOfLink().getName() + " to " + connectionLink.getEndOfLink().getName());

@@ -127,11 +127,13 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 						Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
 						chain.add(registerRuleAttr);
 
-						GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
-						chain.add(transfersParser);
+						if (importer.hasTransferImporter()) {
+							GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
+							chain.add(transfersParser);
 
-						Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
-						chain.add(registerTransfersAttr);
+							Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
+							chain.add(registerTransfersAttr);
+						}
 					}
 				}
 				if (level3validation) {
