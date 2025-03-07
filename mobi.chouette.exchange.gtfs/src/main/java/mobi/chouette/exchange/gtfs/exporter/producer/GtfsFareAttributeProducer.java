@@ -25,7 +25,10 @@ public class GtfsFareAttributeProducer extends AbstractProducer {
 		fare.setPrice(neptuneObject.getPrice());
 		fare.setCurrencyType(neptuneObject.getCurrencyType());
 		fare.setPaymentMethod(GtfsFareAttribute.PaymentMethodType.valueOf(String.valueOf(neptuneObject.getPaymentMethod())));
-		fare.setTransfers(GtfsFareAttribute.AttributeTransfersType.valueOf(String.valueOf(neptuneObject.getTransfers())));
+		if (neptuneObject.getTransfers() != null) {
+			fare.setTransfers(GtfsFareAttribute.AttributeTransfersType.valueOf(String.valueOf(neptuneObject.getTransfers())));
+		}
+		
 		fare.setAgencyId(neptuneObject.getAgency().getAgencyId());
 		fare.setTransferDuration(neptuneObject.getTransferDuration());
 		try {
