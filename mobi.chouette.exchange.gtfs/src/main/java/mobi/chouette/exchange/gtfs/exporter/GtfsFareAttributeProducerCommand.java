@@ -27,44 +27,45 @@ import java.io.IOException;
  */
 @Log4j
 public class GtfsFareAttributeProducerCommand implements Command, Constant {
-    public static final String COMMAND = "GtfsFareAttributeProducerCommand";
+	public static final String COMMAND = "GtfsFareAttributeProducerCommand";
 
-    static {
-        CommandFactory.factories.put(GtfsFareAttributeProducerCommand.class.getName(), new DefaultCommandFactory());
-    }
+	static {
+		CommandFactory.factories.put(GtfsFareAttributeProducerCommand.class.getName(), new DefaultCommandFactory());
+	}
 
-    @Override
-    public boolean execute(Context context) throws Exception {
-        boolean result = ERROR;
-        Monitor monitor = MonitorFactory.start(COMMAND);
-        GtfsExporter exporter = (GtfsExporter) context.get(GTFS_EXPORTER);
-        GtfsFareAttributeProducer fareProducer = new GtfsFareAttributeProducer(exporter);
+	@Override
+	public boolean execute(Context context) throws Exception {
+		boolean result = ERROR;
+		Monitor monitor = MonitorFactory.start(COMMAND);
+		GtfsExporter exporter = (GtfsExporter) context.get(GTFS_EXPORTER);
+		GtfsFareAttributeProducer fareProducer = new GtfsFareAttributeProducer(exporter);
 
-        try {
-            ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
+		try {
+			ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 
-            if (!collection.getFareAttributes().isEmpty()) {
-                for (FareAttribute fareAttribute : collection.getFareAttributes()) {
-                    fareProducer.save(fareAttribute);
-                }
-            }
-            context.put(EXPORTABLE_DATA, collection);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-        }
+			if (!collection.getFareAttributes().isEmpty()) {
+				for (FareAttribute fareAttribute : collection.getFareAttributes()) {
+					fareProducer.save(fareAttribute);
+				}
+			}
+			context.put(EXPORTABLE_DATA, collection);
+			result = SUCCESS;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public static class DefaultCommandFactory extends CommandFactory {
+	public static class DefaultCommandFactory extends CommandFactory {
 
-        @Override
-        protected Command create(InitialContext context) throws IOException {
-            Command result = new GtfsFareAttributeProducerCommand();
-            return result;
-        }
-    }
+		@Override
+		protected Command create(InitialContext context) throws IOException {
+			Command result = new GtfsFareAttributeProducerCommand();
+			return result;
+		}
+	}
 
 }
