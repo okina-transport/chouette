@@ -1,61 +1,51 @@
 package mobi.chouette.exchange.parameters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.log4j.Logger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.log4j.Logger;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials"}, name = "actionExportParameter")
+@Getter
+@Setter
+@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials", "exportConfigurationId"}, name = "actionExportParameter")
 public class AbstractExportParameter extends AbstractParameter {
 
-	@Getter
-	@Setter
 	@XmlElement(name = "references_type", required = true)
 	private String referencesType;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "reference_ids")
 	private List<Long> ids;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "start_date")
 	private Date startDate;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "end_date")
 	private Date endDate;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "add_metadata", defaultValue = "true")
 	private boolean addMetadata = true;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "validate_after_export", defaultValue = "false")
 	private boolean validateAfterExport = true;
 
-	@Getter @Setter
-	@XmlElement(name = "exported_referentials",required = false)
+	@XmlElement(name = "exported_referentials")
 	protected String exportedReferentials;
+
+	@XmlElement(name = "export_configuration_id")
+	protected Long exportConfigurationId;
 
 	/**
 	 * Return a list with all additional referentials that must be locked for this job to execute. Defaults to empty.
