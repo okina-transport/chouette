@@ -8,8 +8,11 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.ObjectIdUtil;
+import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsFareAttribute;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.model.FareAttribute;
 
 @Log4j
@@ -20,15 +23,15 @@ public class GtfsFareAttributeProducer extends AbstractProducer {
 		super(exporter);
 	}
 
-	public boolean save(FareAttribute neptuneObject) {
-		fare.setFareId(neptuneObject.getObjectId());
+	public boolean save(FareAttribute neptuneObject, GtfsExportParameters configuration) {
+		fare.setFareId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
 		fare.setPrice(neptuneObject.getPrice());
 		fare.setCurrencyType(neptuneObject.getCurrencyType());
 		fare.setPaymentMethod(GtfsFareAttribute.PaymentMethodType.valueOf(String.valueOf(neptuneObject.getPaymentMethod())));
 		if (neptuneObject.getTransfers() != null) {
 			fare.setTransfers(GtfsFareAttribute.AttributeTransfersType.valueOf(String.valueOf(neptuneObject.getTransfers())));
 		}
-		
+
 		fare.setAgencyId(neptuneObject.getAgency().getAgencyId());
 		fare.setTransferDuration(neptuneObject.getTransferDuration());
 		try {

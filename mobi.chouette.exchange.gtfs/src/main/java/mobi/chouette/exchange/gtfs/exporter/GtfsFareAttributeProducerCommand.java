@@ -39,13 +39,14 @@ public class GtfsFareAttributeProducerCommand implements Command, Constant {
 		Monitor monitor = MonitorFactory.start(COMMAND);
 		GtfsExporter exporter = (GtfsExporter) context.get(GTFS_EXPORTER);
 		GtfsFareAttributeProducer fareProducer = new GtfsFareAttributeProducer(exporter);
+		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
 
 		try {
 			ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 
 			if (!collection.getFareAttributes().isEmpty()) {
 				for (FareAttribute fareAttribute : collection.getFareAttributes()) {
-					fareProducer.save(fareAttribute);
+					fareProducer.save(fareAttribute, configuration);
 				}
 			}
 			context.put(EXPORTABLE_DATA, collection);
