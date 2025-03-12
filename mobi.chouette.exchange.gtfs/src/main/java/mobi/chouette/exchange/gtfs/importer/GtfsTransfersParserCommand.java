@@ -8,6 +8,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
+import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.parser.GtfsTransferParser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.model.util.Referential;
@@ -18,43 +19,46 @@ import java.io.IOException;
 @Log4j
 public class GtfsTransfersParserCommand implements Command, Constant {
 
-    public static final String COMMAND = "GtfsTransfersParserCommand";
+	public static final String COMMAND = "GtfsTransfersParserCommand";
 
-    static {
-        CommandFactory.factories.put(GtfsTransfersParserCommand.class.getName(), new DefaultCommandFactory());
-    }
+	static {
+		CommandFactory.factories.put(GtfsTransfersParserCommand.class.getName(), new DefaultCommandFactory());
+	}
 
-    @Override
-    public boolean execute(Context context) throws Exception {
-        boolean result = ERROR;
+	@Override
+	public boolean execute(Context context) throws Exception {
+		boolean result = ERROR;
 
-        Monitor monitor = MonitorFactory.start(COMMAND);
+		Monitor monitor = MonitorFactory.start(COMMAND);
 
-        try {
-            Referential referential = (Referential) context.get(REFERENTIAL);
-            if (referential != null) {
-                referential.clear(true);
-            }
+		try {
+			Referential referential = (Referential) context.get(REFERENTIAL);
+			GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+			if (referential != null) {
+				referential.clear(true);
+			}
 
-            GtfsTransferParser gtfsTransfersParser = (GtfsTransferParser) ParserFactory.create(GtfsTransferParser.class.getName());
-            gtfsTransfersParser.parse(context);
+			if (importer.hasTransferImporter()) {
+				GtfsTransferParser gtfsTransfersParser = (GtfsTransferParser) ParserFactory.create(GtfsTransferParser.class.getName());
+				gtfsTransfersParser.parse(context);
+			}
 
-            result = SUCCESS;
-        } catch (Exception e) {
-            log.error("[DSU] error : ", e);
-            throw e;
-        } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-        }
-        return result;
-    }
+			result = SUCCESS;
+		} catch (Exception e) {
+			log.error("[DSU] error : ", e);
+			throw e;
+		} finally {
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		}
+		return result;
+	}
 
-    public static class DefaultCommandFactory extends CommandFactory {
+	public static class DefaultCommandFactory extends CommandFactory {
 
-        @Override
-        protected Command create(InitialContext context) throws IOException {
-            Command result = new GtfsTransfersParserCommand();
-            return result;
-        }
-    }
+		@Override
+		protected Command create(InitialContext context) throws IOException {
+			Command result = new GtfsTransfersParserCommand();
+			return result;
+		}
+	}
 }

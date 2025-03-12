@@ -8,6 +8,7 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
+import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.parser.GtfsFareRuleParser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.model.util.Referential;
@@ -18,43 +19,47 @@ import java.io.IOException;
 @Log4j
 public class GtfsFareRulesParserCommand implements Command, Constant {
 
-    public static final String COMMAND = "GtfsFareRulesParserCommand";
+	public static final String COMMAND = "GtfsFareRulesParserCommand";
 
-    static {
-        CommandFactory.factories.put(GtfsFareRulesParserCommand.class.getName(), new DefaultCommandFactory());
-    }
+	static {
+		CommandFactory.factories.put(GtfsFareRulesParserCommand.class.getName(), new DefaultCommandFactory());
+	}
 
-    @Override
-    public boolean execute(Context context) throws Exception {
-        boolean result = ERROR;
+	@Override
+	public boolean execute(Context context) throws Exception {
+		boolean result = ERROR;
 
-        Monitor monitor = MonitorFactory.start(COMMAND);
+		Monitor monitor = MonitorFactory.start(COMMAND);
 
-        try {
-            Referential referential = (Referential) context.get(REFERENTIAL);
-            if (referential != null) {
-                referential.clear(true);
-            }
+		try {
+			Referential referential = (Referential) context.get(REFERENTIAL);
+			GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 
-            GtfsFareRuleParser gtfsFareRuleParser = (GtfsFareRuleParser) ParserFactory.create(GtfsFareRuleParser.class.getName());
-            gtfsFareRuleParser.parse(context);
+			if (referential != null) {
+				referential.clear(true);
+			}
 
-            result = SUCCESS;
-        } catch (Exception e) {
-            log.error("[DSU] error : ", e);
-            throw e;
-        } finally {
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-        }
-        return result;
-    }
+			if (importer.hasFareRuleImporter()) {
+				GtfsFareRuleParser gtfsFareRuleParser = (GtfsFareRuleParser) ParserFactory.create(GtfsFareRuleParser.class.getName());
+				gtfsFareRuleParser.parse(context);
+			}
 
-    public static class DefaultCommandFactory extends CommandFactory {
+			result = SUCCESS;
+		} catch (Exception e) {
+			log.error("[DSU] error : ", e);
+			throw e;
+		} finally {
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+		}
+		return result;
+	}
 
-        @Override
-        protected Command create(InitialContext context) throws IOException {
-            Command result = new GtfsFareRulesParserCommand();
-            return result;
-        }
-    }
+	public static class DefaultCommandFactory extends CommandFactory {
+
+		@Override
+		protected Command create(InitialContext context) throws IOException {
+			Command result = new GtfsFareRulesParserCommand();
+			return result;
+		}
+	}
 }

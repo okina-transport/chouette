@@ -115,17 +115,21 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 					boolean importFareFiles = parameters.isImportFareFiles();
 
 					if (importFareFiles) {
-						GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
-						chain.add(fareAttributesParser);
+						if (importer.hasFareAttributeImporter()) {
+							GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
+							chain.add(fareAttributesParser);
 
-						Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
-						chain.add(registerFareAttr);
+							Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
+							chain.add(registerFareAttr);
+						}
 
-						GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
-						chain.add(fareRulesParser);
+						if (importer.hasFareRuleImporter()) {
+							GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
+							chain.add(fareRulesParser);
 
-						Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
-						chain.add(registerRuleAttr);
+							Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
+							chain.add(registerRuleAttr);
+						}
 
 						if (importer.hasTransferImporter()) {
 							GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
