@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper=true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "exportedReferentials", "fareFiles"})
+@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "fareFiles"})
 public class GtfsExportParameters extends AbstractExportParameter {
 
 	@Getter
@@ -92,11 +92,6 @@ public class GtfsExportParameters extends AbstractExportParameter {
 	@Setter
 	@XmlElement(name = "attributions_export_mode")
 	private AttributionsExportModes attributionsExportMode = AttributionsExportModes.NONE;
-
-	@Getter
-	@Setter
-	@XmlElement(name = "exported_referentials", required = false)
-	private String exportedReferentials;
 
 	@Getter
 	@Setter

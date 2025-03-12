@@ -55,7 +55,7 @@ public class AbstractExportParameter extends AbstractParameter {
 
 	@Getter @Setter
 	@XmlElement(name = "exported_referentials",required = false)
-	private String exportedReferentials;
+	protected String exportedReferentials;
 
 	/**
 	 * Return a list with all additional referentials that must be locked for this job to execute. Defaults to empty.
