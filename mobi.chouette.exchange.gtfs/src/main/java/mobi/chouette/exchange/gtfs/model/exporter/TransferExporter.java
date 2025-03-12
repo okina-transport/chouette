@@ -41,7 +41,7 @@ public class TransferExporter extends ExporterImpl<GtfsTransfer> implements Gtfs
 			values.add(STRING_CONVERTER.to(context, FIELDS.to_route_id, input.getToRouteId(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.from_trip_id, input.getFromTripId(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.to_trip_id, input.getToTripId(), false));
-			values.add(STRING_CONVERTER.to(context, FIELDS.transfer_type, String.valueOf(input.getTransferType()), true));
+			values.add(TRANSFERTYPE_CONVERTER.to(context, FIELDS.transfer_type, input.getTransferType(), true));
 			values.add(INTEGER_CONVERTER.to(context, FIELDS.min_transfer_time, input.getMinTransferTime(), false));
 
 			result = Tokenizer.untokenize(values);
