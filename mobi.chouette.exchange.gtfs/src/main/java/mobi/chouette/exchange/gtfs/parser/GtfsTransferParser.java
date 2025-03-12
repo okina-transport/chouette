@@ -193,7 +193,9 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		transfers.setToStop(toStop);
 		transfers.setFromTripId(gtfsTransfer.getFromTripId());
 		transfers.setToTripId(gtfsTransfer.getToTripId());
-		transfers.setTransferType(mobi.chouette.model.Transfers.TransferType.valueOf(String.valueOf(gtfsTransfer.getTransferType())));
+		if(gtfsTransfer.getTransferType() != null){
+			transfers.setTransferType(mobi.chouette.model.Transfers.TransferType.valueOf(String.valueOf(gtfsTransfer.getTransferType())));
+		}
 		transfers.setMinTransferTime(gtfsTransfer.getMinTransferTime());
 	}
 }

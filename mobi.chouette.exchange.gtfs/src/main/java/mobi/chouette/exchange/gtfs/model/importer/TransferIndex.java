@@ -183,7 +183,7 @@ public class TransferIndex extends IndexImpl<GtfsTransfer> implements GtfsConver
 		}
 
 
-		if (ValueRange.of(1, 3).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromStopId() == null || bean.getToStopId() == null)) {
+		if (bean.getTransferType() != null && ValueRange.of(1, 3).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromStopId() == null || bean.getToStopId() == null)) {
 			if (bean.getFromStopId() == null) {
 				bean.getErrors().add(new GtfsException(_path, id, FIELDS.from_stop_id.ordinal(), "fromStopId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
 			}
@@ -192,7 +192,7 @@ public class TransferIndex extends IndexImpl<GtfsTransfer> implements GtfsConver
 			}
 		}
 
-		if (ValueRange.of(4, 5).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromTripId() == null || bean.getToTripId() == null)) {
+		if (bean.getTransferType() != null && ValueRange.of(4, 5).isValidIntValue(bean.getTransferType().getValue()) && (bean.getFromTripId() == null || bean.getToTripId() == null)) {
 			if (bean.getFromTripId() == null) {
 				bean.getErrors().add(new GtfsException(_path, id, FIELDS.from_trip_id.ordinal(), "fromTripId", GtfsException.ERROR.MISSING_REQUIRED_FIELDS, null, value));
 			}
