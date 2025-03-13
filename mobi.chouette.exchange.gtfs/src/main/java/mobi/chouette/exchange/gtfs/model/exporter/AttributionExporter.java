@@ -1,6 +1,5 @@
 package mobi.chouette.exchange.gtfs.model.exporter;
 
-import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 import mobi.chouette.exchange.gtfs.model.GtfsAttribution;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsConverter;
@@ -12,25 +11,7 @@ import java.util.List;
 public class AttributionExporter extends ExporterImpl<GtfsAttribution> implements
 		GtfsConverter {
 
-	public static enum FIELDS {
-		attribution_id, agency_id, route_id, trip_id, organization_name, is_producer, is_operator, is_authority, attribution_url, attribution_email, attribution_phone;
-	};
-
-	public static final String FILENAME = "attribution.txt";
-
-	public AttributionExporter(String path) throws IOException {
-		super(path);
-	}
-
-	@Override
-	public void writeHeader() throws IOException {
-		write(FIELDS.values());
-	}
-
-	@Override
-	public void export(GtfsAttribution bean) throws IOException {
-		write(CONVERTER.to(_context, bean));
-	}
+	public static final String FILENAME = "attributions.txt";
 
 	public static Converter<String, GtfsAttribution> CONVERTER = new Converter<String, GtfsAttribution>() {
 
@@ -98,17 +79,35 @@ public class AttributionExporter extends ExporterImpl<GtfsAttribution> implement
 
 	};
 
+	static {
+		ExporterFactory factory = new DefaultExporterFactory();
+		ExporterFactory.factories.put(AttributionExporter.class.getName(), factory);
+	}
+
+	public AttributionExporter(String path) throws IOException {
+		super(path);
+	}
+
+	@Override
+	public void writeHeader() throws IOException {
+		write(FIELDS.values());
+	}
+
+	@Override
+	public void export(GtfsAttribution bean) throws IOException {
+		write(CONVERTER.to(_context, bean));
+	}
+
+	public enum FIELDS {
+		attribution_id, agency_id, route_id, trip_id, organization_name, is_producer, is_operator, is_authority, attribution_url, attribution_email, attribution_phone
+	}
+
 	public static class DefaultExporterFactory extends ExporterFactory {
 
 		@Override
 		protected Exporter<GtfsAttribution> create(String path) throws IOException {
 			return new AttributionExporter(path);
 		}
-	}
-
-	static {
-		ExporterFactory factory = new DefaultExporterFactory();
-		ExporterFactory.factories.put(AttributionExporter.class.getName(), factory);
 	}
 
 }
