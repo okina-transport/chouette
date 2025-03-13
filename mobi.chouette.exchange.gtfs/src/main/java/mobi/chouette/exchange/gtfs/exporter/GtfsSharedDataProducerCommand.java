@@ -128,10 +128,9 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			for (ConnectionLink link : connectionLinks) {
 				if (!physicalStops.contains(link.getStartOfLink()) && !commercialStops.contains(link.getStartOfLink())) {
 					continue;
-				} else
-					if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
-						continue;
-					}
+				} else if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
+					continue;
+				}
 				transferProducer.save(link, prefix, configuration.isKeepOriginalId(), idParams);
 			}
 		}

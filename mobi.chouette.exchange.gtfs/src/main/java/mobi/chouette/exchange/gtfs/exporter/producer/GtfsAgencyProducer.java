@@ -170,10 +170,9 @@ public class GtfsAgencyProducer extends AbstractProducer {
 			String hostName = "unknown";
 			if (!StringUtils.isEmpty(neptuneObject.getShortName())) {
 				hostName = neptuneObject.getShortName();
-			} else
-				if (!StringUtils.isEmpty(neptuneObject.getName())) {
-					hostName = neptuneObject.getName();
-				}
+			} else if (!StringUtils.isEmpty(neptuneObject.getName())) {
+				hostName = neptuneObject.getName();
+			}
 
 			url = "http://www." + hostName.replaceAll("[^A-Za-z0-9]", "") + ".com";
 		}
