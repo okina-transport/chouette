@@ -13,57 +13,68 @@ import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "gtfs-export")
 @NoArgsConstructor
-@ToString(callSuper=true)
+@ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "fareFiles"})
+@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles"})
 public class GtfsExportParameters extends AbstractExportParameter {
 
 	@Getter
 	@Setter
 	@XmlElement(name = "time_zone", required = true)
 	private String timeZone;
-	
-	@Getter @Setter
-	@XmlElement(name = "object_id_prefix",required = true)
+
+	@Getter
+	@Setter
+	@XmlElement(name = "object_id_prefix", required = true)
 	private String objectIdPrefix;
-	
-	@Getter @Setter
-	@XmlElement(name = "keep_original_id",required = false)
+
+	@Getter
+	@Setter
+	@XmlElement(name = "keep_original_id", required = false)
 	private boolean keepOriginalId = false;
-	
-	@Getter @Setter
-	@XmlElement(name = "use_extended_gtfs_route_types",required = false)
+
+	@Getter
+	@Setter
+	@XmlElement(name = "use_extended_gtfs_route_types", required = false)
 	private boolean useExtendedGtfsRouteTypes = false;
 
-	@Getter @Setter
-	@XmlElement(name = "exported_filename",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "exported_filename", required = false)
 	private String exportedFileName;
 
-	@Getter @Setter
-	@XmlElement(name = "stop_id_prefix",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "stop_id_prefix", required = false)
 	private String stopIdPrefix;
 
-	@Getter @Setter
-	@XmlElement(name = "line_id_prefix",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "line_id_prefix", required = false)
 	private String lineIdPrefix;
 
-	@Getter @Setter
-	@XmlElement(name = "id_format",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "id_format", required = false)
 	private IdFormat idFormat;
 
-	@Getter @Setter
-	@XmlElement(name = "id_suffix",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "id_suffix", required = false)
 	private String idSuffix;
 
-	@Getter @Setter
-	@XmlElement(name = "commercial_point_id_prefix",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "commercial_point_id_prefix", required = false)
 	private String commercialPointIdPrefix;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	@XmlElement(name = "commercial_point_export", required = false)
 	private Boolean commercialPointExport;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	@XmlElement(name = "google_maps_compatibility", required = false)
 	private Boolean googleMapsCompatibility;
 
@@ -72,21 +83,30 @@ public class GtfsExportParameters extends AbstractExportParameter {
 	@XmlElement(name = "mapping_lines_ids")
 	private boolean mappingLinesIds = false;
 
-	@Getter @Setter
-	@XmlElement(name = "agency_id",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "agency_id", required = false)
 	private String agencyId;
 
-	@Getter @Setter
-	@XmlElement(name = "agency_name",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "agency_name", required = false)
 	private String agencyName;
 
-	@Getter @Setter
-	@XmlElement(name = "agency_timezone",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "agency_timezone", required = false)
 	private String agencyTimezone;
 
-	@Getter @Setter
-	@XmlElement(name = "agency_url",required = false)
+	@Getter
+	@Setter
+	@XmlElement(name = "agency_url", required = false)
 	private String agencyURL;
+
+	@Getter
+	@Setter
+	@XmlElement(name = "agency_lang", required = false)
+	private String agencyLang;
 
 	@Getter
 	@Setter
@@ -99,9 +119,9 @@ public class GtfsExportParameters extends AbstractExportParameter {
 	private boolean fareFiles = false;
 
 
-	public boolean isValid(Logger log, String[] allowedTypes)
-	{
-		if (!super.isValid(log,allowedTypes)) return false;
+	public boolean isValid(Logger log, String[] allowedTypes) {
+		if (!super.isValid(log, allowedTypes))
+			return false;
 
 		if (timeZone == null || timeZone.isEmpty()) {
 			log.error("missing time_zone");
@@ -109,6 +129,6 @@ public class GtfsExportParameters extends AbstractExportParameter {
 		}
 
 		return true;
-		
+
 	}
 }
