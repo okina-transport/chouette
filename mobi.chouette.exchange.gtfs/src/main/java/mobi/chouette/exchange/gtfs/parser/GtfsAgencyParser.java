@@ -24,53 +24,62 @@ import org.apache.commons.lang.StringUtils;
 @Log4j
 public class GtfsAgencyParser implements Parser, Validator, Constant {
 
+	static {
+		ParserFactory.register(GtfsAgencyParser.class.getName(), new ParserFactory() {
+			@Override
+			protected Parser create() {
+				return new GtfsAgencyParser();
+			}
+		});
+	}
+
 	@Override
 	public void validate(Context context) throws Exception {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsValidationReporter gtfsValidationReporter = (GtfsValidationReporter) context.get(GTFS_REPORTER);
 		gtfsValidationReporter.getExceptions().clear();
-		
+
 		// log.info("validating agencies");
 		// agency.txt
 		if (importer.hasAgencyImporter()) { // the file "agency.txt" exists
 			gtfsValidationReporter.reportSuccess(context, GTFS_1_GTFS_Common_1, GTFS_AGENCY_FILE);
-			
+
 			Index<GtfsAgency> parser = null;
 			try { // Read and check the header line of the file "agency.txt"
-				parser = importer.getAgencyById(); 
-			} catch (Exception ex ) {
+				parser = importer.getAgencyById();
+			} catch (Exception ex) {
 				// INVALID_HEADER_FILE_FORMAT, EMPTY_HEADER_FIELD, DUPLICATE_HEADER_FIELD, DUPLICATE_DEFAULT_KEY_FIELD
 				// MISSING_FIELD, DUPLICATE_FIELD, INVALID_FILE_FORMAT, MISSING_FILE, SYSTEM,
 				if (ex instanceof GtfsException) {
-					gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_AGENCY_FILE);
+					gtfsValidationReporter.reportError(context, (GtfsException) ex, GTFS_AGENCY_FILE);
 				} else {
 					gtfsValidationReporter.throwUnknownError(context, ex, GTFS_AGENCY_FILE);
 				}
 			}
-			
+
 			gtfsValidationReporter.validateOkCSV(context, GTFS_AGENCY_FILE);
-		
+
 			if (parser == null) { // importer.getAgencyById() fails for any other reason
 				gtfsValidationReporter.throwUnknownError(context, new Exception("Cannot instantiate AgencyById class"), GTFS_AGENCY_FILE);
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_AGENCY_FILE, parser.getOkTests());
 				gtfsValidationReporter.validateUnknownError(context);
 			}
-			
+
 			if (CollectionUtils.isNotEmpty(parser.getErrors())) {
 				// EXTRA_SPACE_IN_HEADER_FIELD, HTML_TAG_IN_HEADER_FIELD, EXTRA_HEADER_FIELD, MISSING_REQUIRED_FIELDS
 				gtfsValidationReporter.reportErrors(context, parser.getErrors(), GTFS_AGENCY_FILE);
 				parser.getErrors().clear();
 			}
-			
+
 			gtfsValidationReporter.validateOKGeneralSyntax(context, GTFS_AGENCY_FILE);
-			
+
 			if (parser.getLength() == 0) {
 				gtfsValidationReporter.reportError(context, new GtfsException(GTFS_AGENCY_FILE, 1, null, GtfsException.ERROR.FILE_WITH_NO_ENTRY, null, null), GTFS_AGENCY_FILE);
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_AGENCY_FILE, GtfsException.ERROR.FILE_WITH_NO_ENTRY);
 			}
-		
+
 			// EXTRA_SPACE_IN_FIELD
 			GtfsException fatalException = null;
 			parser.setWithValidation(true);
@@ -79,12 +88,12 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
-						gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_AGENCY_FILE);
+						gtfsValidationReporter.reportError(context, (GtfsException) ex, GTFS_AGENCY_FILE);
 					} else {
 						gtfsValidationReporter.throwUnknownError(context, ex, GTFS_AGENCY_FILE);
 					}
 				}
-				for(GtfsException ex : bean.getErrors()) {
+				for (GtfsException ex : bean.getErrors()) {
 					if (ex.isFatal())
 						fatalException = ex;
 				}
@@ -99,7 +108,7 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 			gtfsValidationReporter.reportError(context, new GtfsException(GTFS_AGENCY_FILE, 1, null, GtfsException.ERROR.MISSING_FILE, null, null), GTFS_AGENCY_FILE);
 		}
 	}
-	
+
 	@Override
 	public void parse(Context context) {
 		if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
@@ -110,54 +119,44 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 		for (GtfsAgency gtfsAgency : importer.getAgencyById()) {
-			if(StringUtils.isEmpty(gtfsAgency.getAgencyId())){
+			if (StringUtils.isEmpty(gtfsAgency.getAgencyId())) {
 				gtfsAgency.setAgencyName(configuration.getReferentialName());
 			}
 
-			if(StringUtils.isEmpty(gtfsAgency.getAgencyName())){
+			if (StringUtils.isEmpty(gtfsAgency.getAgencyName())) {
 				gtfsAgency.setAgencyName(configuration.getReferentialName());
 			}
 
 
 			// Create both as operator and as authority
-			String objectIdOperator = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.OPERATOR_KEY,
-					gtfsAgency.getAgencyId()+"o");
+			String objectIdOperator = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.OPERATOR_KEY, gtfsAgency.getAgencyId() + "o");
 			Company operator = ObjectFactory.getCompany(referential, objectIdOperator);
 			convert(context, gtfsAgency, operator, OrganisationTypeEnum.Operator);
 
-			String objectIdAuthority = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.AUTHORITY_KEY,
-					gtfsAgency.getAgencyId());
+			String objectIdAuthority = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.AUTHORITY_KEY, gtfsAgency.getAgencyId());
 			Company authority = ObjectFactory.getCompany(referential, objectIdAuthority);
 			convert(context, gtfsAgency, authority, OrganisationTypeEnum.Authority);
 		}
 	}
-	
+
 	private void convert(Context context, GtfsAgency gtfsAgency, Company company, OrganisationTypeEnum organisationType) {
-        GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-        NetworksNames networksNames = new NetworksNames();
-        if(networksNames.getPrefixInList(configuration.getObjectIdPrefix())){
-            company.setName(StringUtils.trimToNull(gtfsAgency.getAgencyName()));
-        }
-        else{
-        	String companyName = networksNames.getNetworkName(configuration.getObjectIdPrefix());
-        	if(!StringUtils.isEmpty( gtfsAgency.getAgencyName())) companyName = StringUtils.trimToNull(gtfsAgency.getAgencyName());
-            company.setName(companyName);
-        }
+		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
+		NetworksNames networksNames = new NetworksNames();
+		if (networksNames.getPrefixInList(configuration.getObjectIdPrefix())) {
+			company.setName(StringUtils.trimToNull(gtfsAgency.getAgencyName()));
+		} else {
+			String companyName = networksNames.getNetworkName(configuration.getObjectIdPrefix());
+			if (!StringUtils.isEmpty(gtfsAgency.getAgencyName()))
+				companyName = StringUtils.trimToNull(gtfsAgency.getAgencyName());
+			company.setName(companyName);
+		}
 		company.setUrl(AbstractConverter.toString(gtfsAgency.getAgencyUrl()));
 		company.setPhone(StringUtils.trimToNull(gtfsAgency.getAgencyPhone()));
 		String[] token = company.getObjectId().split(":");
 		company.setRegistrationNumber(token[2]);
 		company.setTimeZone(AbstractConverter.toString(gtfsAgency.getAgencyTimezone()));
 		company.setOrganisationType(organisationType);
+		company.setLang(gtfsAgency.getAgencyLang());
 		company.setFilled(true);
-	}
-
-	static {
-		ParserFactory.register(GtfsAgencyParser.class.getName(), new ParserFactory() {
-			@Override
-			protected Parser create() {
-				return new GtfsAgencyParser();
-			}
-		});
 	}
 }

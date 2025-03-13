@@ -1,9 +1,8 @@
 /**
  * Projet CHOUETTE
- *
+ * <p>
  * ce projet est sous license libre
  * voir LICENSE.txt pour plus de details
- *
  */
 
 package mobi.chouette.exchange.gtfs.exporter;
@@ -42,6 +41,10 @@ import java.util.*;
 public class GtfsSharedDataProducerCommand implements Command, Constant {
 	public static final String COMMAND = "GtfsSharedDataProducerCommand";
 
+	static {
+		CommandFactory.factories.put(GtfsSharedDataProducerCommand.class.getName(), new DefaultCommandFactory());
+	}
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		boolean result = ERROR;
@@ -56,22 +59,14 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			}
 
 			saveData(context);
-			reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK,
-					IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY, collection
-					.getAgencyCompanies().size());
-			reporter.addObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, "connection links",
-					OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, OBJECT_TYPE.CONNECTION_LINK,
-					collection.getConnectionLinks().size());
-			reporter.addObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, "stop areas", OBJECT_STATE.OK,
-					IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA, collection
-					.getCommercialStops().size() + collection.getPhysicalStops().size());
-			reporter.addObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, "calendars", OBJECT_STATE.OK,
-					IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE, collection
-					.getTimetables().size());
+			reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY, collection.getAgencyCompanies().size());
+			reporter.addObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, "connection links", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, OBJECT_TYPE.CONNECTION_LINK, collection.getConnectionLinks().size());
+			reporter.addObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, "stop areas", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA, collection.getCommercialStops().size() + collection.getPhysicalStops().size());
+			reporter.addObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, "calendars", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE, collection.getTimetables().size());
 			result = SUCCESS;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -99,10 +94,10 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		Set<StopArea> physicalStops = collection.getPhysicalStops();
 		Set<ConnectionLink> connectionLinks = collection.getConnectionLinks();
 		// Only export companies (agencies) actually referred to by routes.
-//		Set<Company> companies = collection.getAgencyCompanies();
+		//		Set<Company> companies = collection.getAgencyCompanies();
 		Set<Company> companies = collection.getOperatorCompanies();
 		Set<Interchange> interchanges = collection.getInterchanges();
-		IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),null,configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
+		IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), null, configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
 		if (!companies.isEmpty()) {
 			agencyProducer = new GtfsAgencyProducer(exporter);
 		}
@@ -110,52 +105,48 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			calendarProducer = new GtfsServiceProducer(exporter);
 		}
 
-		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext();) {
+		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext(); ) {
 			StopArea stop = iterator.next();
 
-			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix,
-					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility()))
-			{
+			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility())) {
 				iterator.remove();
 			} else {
 				if (metadata != null && stop.hasCoordinates())
-					metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),
-							stop.getLatitude().doubleValue());
+					metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(), stop.getLatitude().doubleValue());
 			}
 		}
 
 		for (StopArea stop : physicalStops) {
-			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix,
-					configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility());
+			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility());
 			if (metadata != null && stop.hasCoordinates()) {
-				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(),
-						stop.getLatitude().doubleValue());
+				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(), stop.getLatitude().doubleValue());
 			}
 		}
 
-		if (configuration.getGoogleMapsCompatibility() == null || !configuration.getGoogleMapsCompatibility()){
+		if (configuration.getGoogleMapsCompatibility() == null || !configuration.getGoogleMapsCompatibility()) {
 			// remove incomplete connectionlinks
 			for (ConnectionLink link : connectionLinks) {
 				if (!physicalStops.contains(link.getStartOfLink()) && !commercialStops.contains(link.getStartOfLink())) {
 					continue;
-				} else if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
-					continue;
-				}
+				} else
+					if (!physicalStops.contains(link.getEndOfLink()) && !commercialStops.contains(link.getEndOfLink())) {
+						continue;
+					}
 				transferProducer.save(link, prefix, configuration.isKeepOriginalId(), idParams);
 			}
 		}
 
-		
+
 		// produce interchanges
-		for(Interchange interchange : interchanges) {
+		for (Interchange interchange : interchanges) {
 			if (isInterchangeValid(interchange)) {
 				transferProducer.save(interchange, prefix, configuration.isKeepOriginalId(), idParams);
 			}
 		}
 
-		if (StringUtils.isNotEmpty(configuration.getAgencyId())){
-			agencyProducer.save(configuration.getAgencyId(), configuration.getAgencyName(), configuration.getAgencyTimezone(),configuration.getAgencyURL());
-		}else{
+		if (StringUtils.isNotEmpty(configuration.getAgencyId())) {
+			agencyProducer.save(configuration.getAgencyId(), configuration.getAgencyName(), configuration.getAgencyTimezone(), configuration.getAgencyURL(), configuration.getAgencyLang());
+		} else {
 			for (Company company : companies) {
 				agencyProducer.save(company, prefix, timezone, configuration.isKeepOriginalId());
 			}
@@ -180,10 +171,8 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 	 * Interchange relations are not enforced in db. Make sure they are valid before exporting.
 	 */
 	private boolean isInterchangeValid(Interchange interchange) {
-		return interchange.getConsumerVehicleJourney() != null && interchange.getFeederVehicleJourney() != null
-				&& interchange.getConsumerStopPoint() != null && interchange.getFeederStopPoint() != null;
+		return interchange.getConsumerVehicleJourney() != null && interchange.getFeederVehicleJourney() != null && interchange.getConsumerStopPoint() != null && interchange.getFeederStopPoint() != null;
 	}
-
 
 	public static class DefaultCommandFactory extends CommandFactory {
 
@@ -192,10 +181,6 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 			Command result = new GtfsSharedDataProducerCommand();
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(GtfsSharedDataProducerCommand.class.getName(), new DefaultCommandFactory());
 	}
 
 }

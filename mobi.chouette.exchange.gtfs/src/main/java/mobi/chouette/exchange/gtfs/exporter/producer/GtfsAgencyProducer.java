@@ -1,9 +1,8 @@
 /**
  * Projet CHOUETTE
- *
+ * <p>
  * ce projet est sous license libre
  * voir LICENSE.txt pour plus de details
- *
  */
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
@@ -33,111 +32,99 @@ import static mobi.chouette.common.PropertyNames.GTFS_AGENCY_URL_DEFAULTS;
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
 @Log4j
-public class GtfsAgencyProducer extends AbstractProducer
-{
-   public GtfsAgencyProducer(GtfsExporterInterface exporter)
-   {
-      super(exporter);
-   }
+public class GtfsAgencyProducer extends AbstractProducer {
+	private final GtfsAgency agency = new GtfsAgency();
 
-   private GtfsAgency agency = new GtfsAgency();
+	public GtfsAgencyProducer(GtfsExporterInterface exporter) {
+		super(exporter);
+	}
 
+	public boolean save(String agencyId, String agencyName, String timezone, String agencyURL, String agencyLang) {
+		agency.setAgencyName(agencyName);
+		agency.setAgencyId(agencyId);
+		agency.setAgencyTimezone(TimeZone.getTimeZone(timezone));
+		agency.setAgencyLang(agencyLang);
 
-   public boolean save(String agencyId, String agencyName, String timezone, String agencyURL){
-       agency.setAgencyName(agencyName);
-       agency.setAgencyId(agencyId);
-       agency.setAgencyTimezone(TimeZone.getTimeZone(timezone));
+		try {
+			agency.setAgencyUrl(new URL(agencyURL));
+			getExporter().getAgencyExporter().export(agency);
+			return true;
 
-       try {
-           agency.setAgencyUrl(new URL(agencyURL));
-           getExporter().getAgencyExporter().export(agency);
-           return true;
+		} catch (Exception e) {
+			log.error("Error while setting agency URL ", e);
+			return false;
+		}
+	}
 
-       } catch (Exception e) {
-           log.error("Error while setting agency URL ", e);
-           return false;
-       }
-   }
+	public boolean save(Company neptuneObject, String prefix, TimeZone timeZone, boolean keepOriginalId) {
+		String companyObjectId = ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);
+		companyObjectId = companyObjectId.replaceAll(COLON_REPLACEMENT_CODE, ":");
+		agency.setAgencyId(companyObjectId);
 
-   public boolean save(Company neptuneObject, String prefix, TimeZone timeZone, boolean keepOriginalId)
-   {
-      String companyObjectId = ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId);
-      companyObjectId = companyObjectId.replaceAll(COLON_REPLACEMENT_CODE, ":");
-      agency.setAgencyId(companyObjectId);
+		if (OrganisationTypeEnum.Operator.equals(neptuneObject.getOrganisationType()) && agency.getAgencyId().endsWith("o")) {
+			agency.setAgencyId(StringUtils.chop(agency.getAgencyId()));
+		}
 
-      if(OrganisationTypeEnum.Operator.equals(neptuneObject.getOrganisationType()) && agency.getAgencyId().endsWith("o")){
-          agency.setAgencyId(StringUtils.chop(agency.getAgencyId()));
-      }
+		String name = neptuneObject.getName();
+		if (name.trim().isEmpty()) {
+			log.error("no name for " + companyObjectId);
+			return false;
+		}
 
-      String name = neptuneObject.getName();
-      if (name.trim().isEmpty())
-      {
-         log.error("no name for " + companyObjectId);
-         return false;
-      }
+		agency.setAgencyName(name);
 
-      agency.setAgencyName(name);
+		// manage agency_timezone
+		TimeZone tz = timeZone;
+		if (!isEmpty(neptuneObject.getTimeZone())) {
+			tz = TimeZone.getTimeZone(neptuneObject.getTimeZone());
+		}
+		if (tz == null) {
+			tz = TimeZone.getDefault();
+		}
+		agency.setAgencyTimezone(tz);
 
-      // manage agency_timezone
-      TimeZone tz = timeZone;
-      if (!isEmpty(neptuneObject.getTimeZone()))
-      {
-         tz = TimeZone.getTimeZone(neptuneObject.getTimeZone());
-      }
-      if (tz == null)
-      {
-         tz = TimeZone.getDefault();
-      }
-      agency.setAgencyTimezone(tz);
+		// manage agency_url mandatory
+		// String urlData = "Url";
+		String url = sanitizeUrl(getValue(neptuneObject.getUrl()));
+		if (url == null) {
+			url = createURLFromProviderDefaults(neptuneObject);
+		}
+		try {
+			agency.setAgencyUrl(new URL(url));
+		} catch (MalformedURLException e) {
+			log.error("malformed URL " + url + " creating url from organisation unit as replacement");
+			String replacementUrl = createURLFromProviderDefaults(neptuneObject);
+			try {
+				agency.setAgencyUrl(new URL(replacementUrl));
+			} catch (MalformedURLException e2) {
+				log.error("malformed replacementUrl " + replacementUrl + " ignoring agency");
+				return false;
+			}
+		}
 
-      // manage agency_url mandatory
-      // String urlData = "Url";
-      String url = sanitizeUrl(getValue(neptuneObject.getUrl()));
-      if (url == null)
-      {
-         url = createURLFromProviderDefaults(neptuneObject);
-      }
-      try
-      {
-         agency.setAgencyUrl(new URL(url));
-      } catch (MalformedURLException e)
-      {
-         log.error("malformed URL " + url + " creating url from organisation unit as replacement");
-		  String replacementUrl = createURLFromProviderDefaults(neptuneObject);
-		  try {
-            agency.setAgencyUrl(new URL(replacementUrl));
-         } catch (MalformedURLException e2) {
-            log.error("malformed replacementUrl " + replacementUrl + " ignoring agency");
-            return false;
-         }
-      }
+		if (neptuneObject.getPhone() != null) {
+			agency.setAgencyPhone(neptuneObject.getPhone());
+		} else {
+			agency.setAgencyPhone(createPhoneFromProviderDefaults(neptuneObject));
+		}
 
-      if (neptuneObject.getPhone() != null) {
-		  agency.setAgencyPhone(neptuneObject.getPhone());
-	  } else {
-		  agency.setAgencyPhone(createPhoneFromProviderDefaults(neptuneObject));
-	  }
+		agency.setAgencyLang(neptuneObject.getLang());
 
-      agency.setAgencyLang(neptuneObject.getLang());
+		String fareUrl = sanitizeUrl(getValue(neptuneObject.getFareUrl()));
+		try {
+			agency.setAgencyFareUrl(new URL(fareUrl));
+		} catch (MalformedURLException e) {
+			log.error("malformed fare URL " + fareUrl);
+		}
 
-      String fareUrl = sanitizeUrl(getValue(neptuneObject.getFareUrl()));
-      try {
-          agency.setAgencyFareUrl(new URL(fareUrl));
-      } catch (MalformedURLException e) {
-          log.error("malformed fare URL " + fareUrl);
-      }
-      
-      try
-      {
-         getExporter().getAgencyExporter().export(agency);
-      }
-      catch (Exception e)
-      {
-         log.error("fail to produce agency "+e.getClass().getName()+" "+e.getMessage());
-         return false;
-      }
-      return true;
-   }
+		try {
+			getExporter().getAgencyExporter().export(agency);
+		} catch (Exception e) {
+			log.error("fail to produce agency " + e.getClass().getName() + " " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
 
 	private String sanitizeUrl(String url) {
 		String sanitized = url;
@@ -155,15 +142,15 @@ public class GtfsAgencyProducer extends AbstractProducer
 		String urlDefaults = System.getProperty(GTFS_AGENCY_URL_DEFAULTS);
 
 		String defaultUrl = getDefaultValueForProvider(neptuneObject, urlDefaults);
-		if (defaultUrl != null) return sanitizeUrl(defaultUrl);
+		if (defaultUrl != null)
+			return sanitizeUrl(defaultUrl);
 
 		return createURLFromOrganisationalUnit(neptuneObject);
 	}
 
 	private String getDefaultValueForProvider(Company neptuneObject, String defaultValues) {
 		if (defaultValues != null) {
-			Map<String, String> urlsPerCodeSpace = Arrays.stream(defaultValues.split(",")).filter(codeSpaceEqualsUrl -> codeSpaceEqualsUrl != null && codeSpaceEqualsUrl.contains("=")).map(codeSpaceEqualsUrl -> codeSpaceEqualsUrl.split("=")).collect(Collectors.toMap(codeSpaceEqualsUrl -> codeSpaceEqualsUrl[0],
-					codeSpaceEqualsUrl -> codeSpaceEqualsUrl[1]));
+			Map<String, String> urlsPerCodeSpace = Arrays.stream(defaultValues.split(",")).filter(codeSpaceEqualsUrl -> codeSpaceEqualsUrl != null && codeSpaceEqualsUrl.contains("=")).map(codeSpaceEqualsUrl -> codeSpaceEqualsUrl.split("=")).collect(Collectors.toMap(codeSpaceEqualsUrl -> codeSpaceEqualsUrl[0], codeSpaceEqualsUrl -> codeSpaceEqualsUrl[1]));
 			return urlsPerCodeSpace.get(neptuneObject.objectIdPrefix());
 
 		}
@@ -175,23 +162,22 @@ public class GtfsAgencyProducer extends AbstractProducer
 		return getDefaultValueForProvider(neptuneObject, urlDefaults);
 	}
 
-   String createURLFromOrganisationalUnit(Company neptuneObject) {
-      String url;
-      if (neptuneObject.getOrganisationalUnit() != null
-			&& neptuneObject.getOrganisationalUnit().startsWith("http"))
-	  {
-         url = neptuneObject.getOrganisationalUnit();
-      } else {
-         String hostName = "unknown";
-         if (!StringUtils.isEmpty(neptuneObject.getShortName())) {
-            hostName = neptuneObject.getShortName();
-         } else if (!StringUtils.isEmpty(neptuneObject.getName())) {
-            hostName = neptuneObject.getName();
-         }
+	String createURLFromOrganisationalUnit(Company neptuneObject) {
+		String url;
+		if (neptuneObject.getOrganisationalUnit() != null && neptuneObject.getOrganisationalUnit().startsWith("http")) {
+			url = neptuneObject.getOrganisationalUnit();
+		} else {
+			String hostName = "unknown";
+			if (!StringUtils.isEmpty(neptuneObject.getShortName())) {
+				hostName = neptuneObject.getShortName();
+			} else
+				if (!StringUtils.isEmpty(neptuneObject.getName())) {
+					hostName = neptuneObject.getName();
+				}
 
-         url = "http://www." + hostName.replaceAll("[^A-Za-z0-9]", "") + ".com";
-      }
-      return url;
-   }
+			url = "http://www." + hostName.replaceAll("[^A-Za-z0-9]", "") + ".com";
+		}
+		return url;
+	}
 
 }
