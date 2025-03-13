@@ -25,15 +25,24 @@ public class GtfsFareAttributeProducer extends AbstractProducer {
 
 	public boolean save(FareAttribute neptuneObject, GtfsExportParameters configuration) {
 		fare.setFareId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
-		fare.setPrice(neptuneObject.getPrice());
-		fare.setCurrencyType(neptuneObject.getCurrencyType());
-		fare.setPaymentMethod(GtfsFareAttribute.PaymentMethodType.valueOf(String.valueOf(neptuneObject.getPaymentMethod())));
+		if (neptuneObject.getPrice() != null) {
+			fare.setPrice(neptuneObject.getPrice());
+		}
+		if (neptuneObject.getCurrencyType() != null) {
+			fare.setCurrencyType(neptuneObject.getCurrencyType());
+		}
+		if (neptuneObject.getPaymentMethod() != null) {
+			fare.setPaymentMethod(GtfsFareAttribute.PaymentMethodType.valueOf(String.valueOf(neptuneObject.getPaymentMethod())));
+		}
 		if (neptuneObject.getTransfers() != null) {
 			fare.setTransfers(GtfsFareAttribute.AttributeTransfersType.valueOf(String.valueOf(neptuneObject.getTransfers())));
 		}
-
-		fare.setAgencyId(neptuneObject.getAgency().getAgencyId());
-		fare.setTransferDuration(neptuneObject.getTransferDuration());
+		if (neptuneObject.getAgency() != null) {
+			fare.setAgencyId(neptuneObject.getAgency().getAgencyId());
+		}
+		if (neptuneObject.getTransferDuration() != null) {
+			fare.setTransferDuration(neptuneObject.getTransferDuration());
+		}
 		try {
 			getExporter().getFareAttributeExporter().export(fare);
 		} catch (Exception e) {

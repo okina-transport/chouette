@@ -25,10 +25,18 @@ public class GtfsFareRuleProducer extends AbstractProducer {
 
 	public boolean save(FareRule neptuneObject, GtfsExportParameters configuration) {
 		rule.setFareId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
-		rule.setRouteId(neptuneObject.getRoute().getObjectId());
-		rule.setOriginId(neptuneObject.getOriginId());
-		rule.setDestinationId(neptuneObject.getDestinationId());
-		rule.setContainsId(neptuneObject.getContainsId());
+		if (neptuneObject.getRoute() != null) {
+			rule.setRouteId(neptuneObject.getRoute().getObjectId());
+		}
+		if (neptuneObject.getOriginId() != null) {
+			rule.setOriginId(neptuneObject.getOriginId());
+		}
+		if (neptuneObject.getDestinationId() != null) {
+			rule.setDestinationId(neptuneObject.getDestinationId());
+		}
+		if (neptuneObject.getContainsId() != null) {
+			rule.setContainsId(neptuneObject.getContainsId());
+		}
 		try {
 			getExporter().getFareRuleExporter().export(rule);
 		} catch (Exception e) {
