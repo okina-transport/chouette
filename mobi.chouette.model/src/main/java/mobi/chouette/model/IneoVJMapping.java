@@ -24,6 +24,6 @@ public class IneoVJMapping {
 
     private final String vehicleJourneyObjectId;
 
-    private final BigInteger vehicleJourneyAtStopId;
+    private final Integer position;
 
 }

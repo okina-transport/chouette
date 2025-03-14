@@ -76,7 +76,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
                         "	l.number as lineNumber, " +
                         "	r.direction as routeDirection, " +
                         "	vj.objectid as vehicleJourneyObjectId, " +
-                        "   vjas.id as vehicleJourneyAtStopId " +
+                        "   sp.position +1 as position " +
                         "from time_tables_vehicle_journeys ttvj " +
                         "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
                         "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
@@ -97,7 +97,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
         return res.stream().map(
                         e -> new IneoVJMapping(date.toDate(), ((Time) e[0]).toLocalTime(), (String) e[1], (String) e[2],
-                                (String) e[3],  e[4] != null ? PTDirectionEnum.valueOf((String) e[4]) : PTDirectionEnum.A, (String) e[5],(BigInteger) e[6]))
+                                (String) e[3],  e[4] != null ? PTDirectionEnum.valueOf((String) e[4]) : PTDirectionEnum.A, (String) e[5],(Integer) e[6]))
                 .collect(Collectors.toList());
     }
 
