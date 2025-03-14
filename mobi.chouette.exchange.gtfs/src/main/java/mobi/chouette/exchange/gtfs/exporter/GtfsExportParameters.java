@@ -16,106 +16,68 @@ import javax.xml.bind.annotation.*;
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles"})
+@Getter
+@Setter
 public class GtfsExportParameters extends AbstractExportParameter {
 
-	@Getter
-	@Setter
 	@XmlElement(name = "time_zone", required = true)
 	private String timeZone;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "object_id_prefix", required = true)
 	private String objectIdPrefix;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "keep_original_id", required = false)
+	@XmlElement(name = "keep_original_id")
 	private boolean keepOriginalId = false;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "use_extended_gtfs_route_types", required = false)
+	@XmlElement(name = "use_extended_gtfs_route_types")
 	private boolean useExtendedGtfsRouteTypes = false;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "exported_filename", required = false)
+	@XmlElement(name = "exported_filename")
 	private String exportedFileName;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "stop_id_prefix", required = false)
+	@XmlElement(name = "stop_id_prefix")
 	private String stopIdPrefix;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "line_id_prefix", required = false)
+	@XmlElement(name = "line_id_prefix")
 	private String lineIdPrefix;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "id_format", required = false)
+	@XmlElement(name = "id_format")
 	private IdFormat idFormat;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "id_suffix", required = false)
+	@XmlElement(name = "id_suffix")
 	private String idSuffix;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "commercial_point_id_prefix", required = false)
+	@XmlElement(name = "commercial_point_id_prefix")
 	private String commercialPointIdPrefix;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "commercial_point_export", required = false)
+	@XmlElement(name = "commercial_point_export")
 	private Boolean commercialPointExport;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "google_maps_compatibility", required = false)
+	@XmlElement(name = "google_maps_compatibility")
 	private Boolean googleMapsCompatibility;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "mapping_lines_ids")
 	private boolean mappingLinesIds = false;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "agency_id", required = false)
+	@XmlElement(name = "agency_id")
 	private String agencyId;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "agency_name", required = false)
+	@XmlElement(name = "agency_name")
 	private String agencyName;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "agency_timezone", required = false)
+	@XmlElement(name = "agency_timezone")
 	private String agencyTimezone;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "agency_url", required = false)
+	@XmlElement(name = "agency_url")
 	private String agencyURL;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "agency_lang", required = false)
+	@XmlElement(name = "agency_lang")
 	private String agencyLang;
 
-	@Getter
-	@Setter
 	@XmlElement(name = "attributions_export_mode")
 	private AttributionsExportModes attributionsExportMode = AttributionsExportModes.NONE;
 
-	@Getter
-	@Setter
-	@XmlElement(name = "fare_files", required = false)
+	@XmlElement(name = "fare_files")
 	private boolean fareFiles = false;
 
 
