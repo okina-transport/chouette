@@ -105,6 +105,8 @@ public class NetexInitExportCommand implements Command, Constant {
 
 			NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
 
+			parameters.setDefaultCodespacePrefix(prefixNetex);
+
 			if (parameters.isAddMetadata()) {
 				Metadata metadata = new Metadata();
 				metadata.setDate(LocalDateTime.now());
