@@ -5480,8 +5480,6 @@ CREATE SEQUENCE chouette_gui.transfers_id_seq
     NO MINVALUE
     NO MAXVALUE CACHE 1;
 
-ALTER TABLE chouette_gui.import_parameters
-    ADD COLUMN IF NOT EXISTS import_fare_files BOOLEAN DEFAULT false;
 
 
 -- Completed on 2016-01-04 11:09:57 CET
