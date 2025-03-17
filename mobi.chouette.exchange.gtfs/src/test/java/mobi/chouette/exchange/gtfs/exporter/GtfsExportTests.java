@@ -271,6 +271,12 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 
 		ActionReport report = (ActionReport) context.get(REPORT);
 		ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
+
+		if (!report.getResult().equals(STATUS_OK)){
+			for (FileError fileError : report.getFilesInError()) {
+				System.out.println(fileError.toString());
+			}
+		}
 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
 		for (FileReport info : report.getFiles()) {
 		    Reporter.log(info.toString(),true);
@@ -438,7 +444,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
     }
 
 
-	private void importNeptuneLines(String file, int fileCount, int lineCount) throws Exception
+	private void  importNeptuneLines(String file, int fileCount, int lineCount) throws Exception
 	{
 		Context context = initNeptuneImportContext();
 

@@ -5407,6 +5407,83 @@ GRANT ALL ON SCHEMA chouette_gui TO chouette;
 GRANT ALL ON SCHEMA chouette_gui TO PUBLIC;
 
 
+CREATE TABLE chouette_gui.fare_attributes
+(
+    id                bigint NOT NULL,
+    objectid          varchar(255),
+    object_version    integer,
+    creation_time     date,
+    creator_id        varchar(255),
+    price             float,
+    currency_type     varchar(255),
+    payment_method    varchar(255),
+    transfers         varchar(255),
+    agency_id         bigint,
+    transfer_duration float,
+    CONSTRAINT fare_attributes_id_pkey PRIMARY KEY (id),
+    CONSTRAINT agency_id_fk FOREIGN KEY (agency_id) REFERENCES agency (id)
+);
+
+CREATE SEQUENCE chouette_gui.fare_attribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE CACHE 1;
+
+
+CREATE TABLE chouette_gui.fare_rules
+(
+    id             bigint NOT NULL,
+    objectid       varchar(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     varchar(255),
+    route_id       bigint,
+    origin_id      bigint,
+    destination_id bigint,
+    contains_id    bigint,
+    CONSTRAINT fare_rules_id_pkey PRIMARY KEY (id),
+    CONSTRAINT route_id_fk FOREIGN KEY (route_id) REFERENCES routes (id) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE chouette_gui.fare_rule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE CACHE 1;
+
+CREATE TABLE chouette_gui.transfers
+(
+    id                bigint NOT NULL,
+    objectid          varchar(255),
+    object_version    integer,
+    creation_time     date,
+    creator_id        varchar(255),
+    from_stop_id      bigint,
+    to_stop_id        bigint,
+    from_route_id     bigint,
+    to_route_id       bigint,
+    from_trip_id      varchar(255),
+    to_trip_id        varchar(255),
+    transfer_type     varchar(255),
+    min_transfer_time integer,
+    CONSTRAINT transfers_id_pkey PRIMARY KEY (id),
+    CONSTRAINT from_stop_id_fk FOREIGN KEY (from_stop_id) REFERENCES stop_areas (id),
+    CONSTRAINT to_stop_id_fk FOREIGN KEY (to_stop_id) REFERENCES stop_areas (id),
+    CONSTRAINT from_route_id_fk FOREIGN KEY (from_route_id) REFERENCES routes (id) ON DELETE CASCADE,
+    CONSTRAINT to_route_id_fk FOREIGN KEY (to_route_id) REFERENCES routes (id) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE chouette_gui.transfers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE CACHE 1;
+
+ALTER TABLE chouette_gui.import_parameters
+    ADD COLUMN IF NOT EXISTS import_fare_files BOOLEAN DEFAULT false;
+
+
 -- Completed on 2016-01-04 11:09:57 CET
 
 --
