@@ -196,6 +196,7 @@ public class ValidationConnectionLinks extends AbstractTestValidation {
 		// stops of connectionLink
 		log.info(Color.BLUE + "3-ConnectionLink-2" + Color.NORMAL);
 		Context context = initValidatorContext();
+		fullparameters.setInterConnectionLinkDistanceMax(4000);
 		context.put(VALIDATION, fullparameters);
 		context.put(VALIDATION_REPORT, new ValidationReport());
 		Assert.assertNotNull(fullparameters, "no parameters for test");
