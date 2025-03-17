@@ -11,6 +11,7 @@ import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExporterCommand;
+import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.model.admin.ExportType;
 import mobi.chouette.model.admin.GlobalExportMonitoring;
 import mobi.chouette.model.admin.JobStatus;
@@ -44,6 +45,7 @@ public class NetexprofileGlobalExportCommand extends AbstractImporterCommand imp
         String[] exportedReferentialTab = exportedReferentials.split(",");
 
         JobData jobData = (JobData) context.get(JOB_DATA);
+        ActionReport actionReport = (ActionReport) context.get(REPORT);
         String mergedFileName = parameters.getExportedFileName();
         Map<String, GlobalExportMonitoring> exportMonitoringByReferential = globalExportMonitoringService.initGlobalMonitoring(exportedReferentialTab, parameters.getExportConfigurationId(), jobData.getId(), ExportType.GTFS);
         GlobalExportMonitoring globalExportMonitoring;
@@ -59,7 +61,16 @@ public class NetexprofileGlobalExportCommand extends AbstractImporterCommand imp
                 globalExportMonitoring.setStatus(JobStatus.FAILED);
                 globalExportMonitoringService.saveMonitoringAdminContext(globalExportMonitoring);
             }
-            globalExportMonitoring.setStatus(JobStatus.OK);
+
+            if("OK".equals(actionReport.getResult())){
+                globalExportMonitoring.setStatus(JobStatus.OK);
+            }else{
+                globalExportMonitoring.setStatus(JobStatus.FAILED);
+            }
+
+            // Global status must be true. Errors on particular referential must not fail global export
+            actionReport.setResult("OK");
+
             globalExportMonitoringService.saveMonitoringAdminContext(globalExportMonitoring);
         }
         log.info("Referential export completed. Launching Netex merge");
