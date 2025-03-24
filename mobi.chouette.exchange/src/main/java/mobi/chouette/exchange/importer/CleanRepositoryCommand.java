@@ -24,92 +24,74 @@ public class CleanRepositoryCommand implements Command {
 
 	public static final String COMMAND = "CleanRepositoryCommand";
 
-	@EJB
-	private CompanyDAO companyDAO;
-
-	@EJB
-	private GroupOfLineDAO groupOfLineDAO;
-
-	@EJB
-	private JourneyFrequencyDAO journeyFrequencyDAO;
-
-	@EJB
-	private JourneyPatternDAO journeyPatternDAO;
-
-	@EJB
-	private LineDAO lineDAO;
-
-	@EJB
-	private NetworkDAO networkDAO;
-
-	@EJB
-	private RouteDAO routeDAO;
-
-	@EJB
-	private RouteSectionDAO routeSectionDAO;
-
-	@EJB
-	private StopPointDAO stopPointDAO;
-
-	@EJB
-	private ScheduledStopPointDAO scheduledStopPointDAO;
-
-	@EJB
-	private TimetableDAO timetableDAO;
-
-	@EJB
-	private TimebandDAO timebandDAO;
-
-	@EJB
-	private VehicleJourneyDAO vehicleJourneyDAO;
-
-	@EJB
-	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
-
-	@EJB
-	private DestinationDisplayDAO destinationDisplayDAO;
-
-	@EJB
-	private FootnoteDAO footnoteDAO;
-
-	@EJB
-	private BrandingDAO brandingDAO;
-
-	@EJB
-	private InterchangeDAO interchangeDAO;
-
-	@EJB
-	private RoutePointDAO routePointDAO;
-
-	@EJB
-	private ContactStructureDAO contactStructureDAO;
-
-	@EJB
-	private BookingArrangementDAO bookingArrangementDAO;
-
-	@EJB
-	private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
-
-	@EJB
-	private StopAreaDAO stopAreaDAO;
+	static {
+		CommandFactory.factories.put(CleanRepositoryCommand.class.getName(), new DefaultCommandFactory());
+	}
 
 	@EJB
 	AccessLinkDAO accessLinkDao;
-
 	@EJB
 	AccessPointDAO accessPointDAO;
-
 	@EJB
 	ConnectionLinkDAO connectionLinkDAO;
-
 	@EJB
 	CategoriesForLinesDAO categoriesForLinesDAO;
-
 	@EJB
 	FeedInfoDAO feedInfoDAO;
-
 	@EJB
 	TrainDAO trainDAO;
+	@EJB
+	FareAttributeDAO fareAttributeDAO;
+	@EJB
+	FareRuleDAO fareRuleDAO;
+	@EJB
+	TransfersDAO transfersDAO;
+	@EJB
+	private CompanyDAO companyDAO;
+	@EJB
+	private GroupOfLineDAO groupOfLineDAO;
+	@EJB
+	private JourneyFrequencyDAO journeyFrequencyDAO;
+	@EJB
+	private JourneyPatternDAO journeyPatternDAO;
+	@EJB
+	private LineDAO lineDAO;
+	@EJB
+	private NetworkDAO networkDAO;
+	@EJB
+	private RouteDAO routeDAO;
+	@EJB
+	private RouteSectionDAO routeSectionDAO;
+	@EJB
+	private StopPointDAO stopPointDAO;
+	@EJB
+	private ScheduledStopPointDAO scheduledStopPointDAO;
+	@EJB
+	private TimetableDAO timetableDAO;
+	@EJB
+	private TimebandDAO timebandDAO;
+	@EJB
+	private VehicleJourneyDAO vehicleJourneyDAO;
+	@EJB
+	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
+	@EJB
+	private DestinationDisplayDAO destinationDisplayDAO;
+	@EJB
+	private FootnoteDAO footnoteDAO;
+	@EJB
+	private BrandingDAO brandingDAO;
+	@EJB
+	private InterchangeDAO interchangeDAO;
+	@EJB
+	private RoutePointDAO routePointDAO;
+	@EJB
+	private ContactStructureDAO contactStructureDAO;
+	@EJB
+	private BookingArrangementDAO bookingArrangementDAO;
+	@EJB
+	private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
+	@EJB
+	private StopAreaDAO stopAreaDAO;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -118,7 +100,7 @@ public class CleanRepositoryCommand implements Command {
 		boolean result = ERROR;
 		Monitor monitor = MonitorFactory.start(COMMAND);
 
-		if(context != null){
+		if (context != null) {
 			context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
 		}
 		try {
@@ -142,11 +124,15 @@ public class CleanRepositoryCommand implements Command {
 			accessLinkDao.truncate();
 			accessPointDAO.truncate();
 			connectionLinkDAO.truncate();
+			// fares
+			fareAttributeDAO.truncate();
+			fareRuleDAO.truncate();
+			transfersDAO.truncate();
 
 			// si pas import et ( transfert ou clean admin )
-			if(context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {
+			if (context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {
 				// si clean pour transfert
-				if(context != null && context.containsKey(CLEAR_TABLE_CATEGORIES_FOR_LINES) && context.get(CLEAR_TABLE_CATEGORIES_FOR_LINES) == Boolean.TRUE) {
+				if (context != null && context.containsKey(CLEAR_TABLE_CATEGORIES_FOR_LINES) && context.get(CLEAR_TABLE_CATEGORIES_FOR_LINES) == Boolean.TRUE) {
 					categoriesForLinesDAO.truncate();
 					feedInfoDAO.truncate();
 				}
@@ -193,9 +179,5 @@ public class CleanRepositoryCommand implements Command {
 			}
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(CleanRepositoryCommand.class.getName(), new DefaultCommandFactory());
 	}
 }
