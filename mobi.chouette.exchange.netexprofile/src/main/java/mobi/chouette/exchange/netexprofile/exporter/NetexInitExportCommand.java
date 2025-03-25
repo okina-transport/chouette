@@ -21,11 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
@@ -35,145 +31,141 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Log4j
 @Stateless(name = NetexInitExportCommand.COMMAND)
 public class NetexInitExportCommand implements Command, Constant {
 
-	public static final String COMMAND = "NetexInitExportCommand";
+    public static final String COMMAND = "NetexInitExportCommand";
 
-	@Resource
-	private SessionContext daoContext;
+    static {
+        CommandFactory.factories.put(NetexInitExportCommand.class.getName(), new NetexInitExportCommand.DefaultCommandFactory());
+    }
 
-	@EJB
-	private CodespaceDAO codespaceDAO;
+    @Resource
+    private SessionContext daoContext;
+    @EJB
+    private CodespaceDAO codespaceDAO;
+    @EJB
+    private ProviderDAO providerDAO;
 
-	@EJB
-	private ProviderDAO providerDAO;
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public boolean execute(Context context) throws Exception {
+        boolean result = ERROR;
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public boolean execute(Context context) throws Exception {
-		boolean result = ERROR;
+        Monitor monitor = MonitorFactory.start(COMMAND);
 
-		Monitor monitor = MonitorFactory.start(COMMAND);
+        try {
+            JobData jobData = (JobData) context.get(JOB_DATA);
 
-		try {
-			JobData jobData = (JobData) context.get(JOB_DATA);
-
-			String referential = jobData.getReferential();
-			Boolean isSimulationExport = referential.startsWith("simulation_");
+            String referential = jobData.getReferential();
+            Boolean isSimulationExport = referential.startsWith("simulation_");
             log.info("NetexInitExportCommand.execute : ref => " + referential);
 
             String idSite = "";
             String prefixNetex = "";
             if (!isSimulationExport) {
-				Optional<Provider> provider = providerDAO.findBySchema(referential);
-				idSite = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getCodeIdfm();
-				prefixNetex = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getPrefixNetex();
-				log.info("NetexInitExportCommand.execute : " + referential + " " + idSite);
-			} else {
-            	log.info("NetexInitExportCommand.execute : " + referential);
-			}
+                Optional<Provider> provider = providerDAO.findBySchema(referential);
+                idSite = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getCodeIdfm();
+                prefixNetex = provider.orElseThrow(() -> new RuntimeException("Aucun provider trouvé pour " + referential)).getPrefixNetex();
+                log.info("NetexInitExportCommand.execute : " + referential + " " + idSite);
+            } else {
+                log.info("NetexInitExportCommand.execute : " + referential);
+            }
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			Date currentDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            Date currentDate = new Date();
 
-			NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
-			String exportedFileName = configuration.getExportedFileName();
-			if (exportedFileName != null && !"".equals(exportedFileName)){
-				jobData.setOutputFilename(exportedFileName);
-			}else{
-				if (isSimulationExport) {
-					String prefix = referential.replace("simulation", "SIMULATION");
-					jobData.setOutputFilename(prefix + "_" + sdf.format(currentDate) + "Z.zip");
+            NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+            String exportedFileName = configuration.getExportedFileName();
+            if (exportedFileName != null && !"".equals(exportedFileName)) {
+                jobData.setOutputFilename(exportedFileName);
+            } else {
+                if (isSimulationExport) {
+                    String prefix = referential.replace("simulation", "SIMULATION");
+                    jobData.setOutputFilename(prefix + "_" + sdf.format(currentDate) + "Z.zip");
 
-				} else {
-					String prefixZip = StringUtils.isNotBlank(prefixNetex) ? prefixNetex : idSite;
-					jobData.setOutputFilename("OFFRE_" + prefixZip  + "_" + sdf.format(currentDate) + "Z.zip");
-				}
+                } else {
+                    String prefixZip = StringUtils.isNotBlank(prefixNetex) ? prefixNetex : idSite;
+                    jobData.setOutputFilename("OFFRE_" + prefixZip + "_" + sdf.format(currentDate) + "Z.zip");
+                }
 
-			}
+            }
 
-			context.put(REFERENTIAL, new Referential());
-			context.put(NETEX_REFERENTIAL, new NetexReferential());
+            context.put(REFERENTIAL, new Referential());
+            context.put(NETEX_REFERENTIAL, new NetexReferential());
 
-			NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
+            NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
 
-			parameters.setDefaultCodespacePrefix(prefixNetex);
+            if (StringUtils.isNotBlank(prefixNetex)) {
+                parameters.setDefaultCodespacePrefix(prefixNetex);
+            }
 
-			if (parameters.isAddMetadata()) {
-				Metadata metadata = new Metadata();
-				metadata.setDate(LocalDateTime.now());
-				metadata.setFormat("application/xml");
-				metadata.setTitle("Export NeTEx ");
-				try {
-					metadata.setRelation(new URL("http://www.normes-donnees-tc.org/format-dechange/donnees-theoriques/netex/"));
-				} catch (MalformedURLException e1) {
-					log.error("problem with http://www.normes-donnees-tc.org/format-dechange/donnees-theoriques/netex/ url", e1);
-				}
+            if (parameters.isAddMetadata()) {
+                Metadata metadata = new Metadata();
+                metadata.setDate(LocalDateTime.now());
+                metadata.setFormat("application/xml");
+                metadata.setTitle("Export NeTEx ");
+                try {
+                    metadata.setRelation(new URL("http://www.normes-donnees-tc.org/format-dechange/donnees-theoriques/netex/"));
+                } catch (MalformedURLException e1) {
+                    log.error("problem with http://www.normes-donnees-tc.org/format-dechange/donnees-theoriques/netex/ url", e1);
+                }
 
-				context.put(METADATA, metadata);
-			}
+                context.put(METADATA, metadata);
+            }
 
-			Path path = Paths.get(jobData.getPathName(), OUTPUT);
-			if (!Files.exists(path)) {
-				Files.createDirectories(path);
-			}
+            Path path = Paths.get(jobData.getPathName(), OUTPUT);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
 
-			List<Codespace> referentialCodespaces = codespaceDAO.findAll();
-			if (referentialCodespaces.isEmpty()) {
-				log.error("no valid codespaces present for referential");
-				return ERROR;
-			}
+            List<Codespace> referentialCodespaces = codespaceDAO.findAll();
+            if (referentialCodespaces.isEmpty()) {
+                log.error("no valid codespaces present for referential");
+                return ERROR;
+            }
 
-			Set<Codespace> validCodespaces = new HashSet<>(referentialCodespaces);
-			context.put(NETEX_VALID_CODESPACES, validCodespaces);
+            Set<Codespace> validCodespaces = new HashSet<>(referentialCodespaces);
+            context.put(NETEX_VALID_CODESPACES, validCodespaces);
 
-			NetexXMLProcessingHelperFactory netexXMLFactory = new NetexXMLProcessingHelperFactory();
-			context.put(MARSHALLER, netexXMLFactory.createFragmentMarshaller());
+            NetexXMLProcessingHelperFactory netexXMLFactory = new NetexXMLProcessingHelperFactory();
+            context.put(MARSHALLER, netexXMLFactory.createFragmentMarshaller());
 
-			daoContext.setRollbackOnly();
-			codespaceDAO.clear();
+            daoContext.setRollbackOnly();
+            codespaceDAO.clear();
 
-			result = SUCCESS;
-		} catch (Exception e) {
-			log.error(e, e);
-			throw e;
-		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-		}
+            result = SUCCESS;
+        } catch (Exception e) {
+            log.error(e, e);
+            throw e;
+        } finally {
+            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static class DefaultCommandFactory extends CommandFactory {
+    public static class DefaultCommandFactory extends CommandFactory {
 
-		@Override
-		protected Command create(InitialContext context) throws IOException {
-			Command result = null;
-			try {
-				String name = "java:app/mobi.chouette.exchange.netexprofile/" + COMMAND;
-				result = (Command) context.lookup(name);
-			} catch (NamingException e) {
-				String name = "java:module/" + COMMAND;
-				try {
-					result = (Command) context.lookup(name);
-				} catch (NamingException e1) {
-					log.error(e);
-				}
-			}
-			return result;
-		}
-	}
-
-	static {
-		CommandFactory.factories.put(NetexInitExportCommand.class.getName(), new NetexInitExportCommand.DefaultCommandFactory());
-	}
+        @Override
+        protected Command create(InitialContext context) throws IOException {
+            Command result = null;
+            try {
+                String name = "java:app/mobi.chouette.exchange.netexprofile/" + COMMAND;
+                result = (Command) context.lookup(name);
+            } catch (NamingException e) {
+                String name = "java:module/" + COMMAND;
+                try {
+                    result = (Command) context.lookup(name);
+                } catch (NamingException e1) {
+                    log.error(e);
+                }
+            }
+            return result;
+        }
+    }
 
 }
