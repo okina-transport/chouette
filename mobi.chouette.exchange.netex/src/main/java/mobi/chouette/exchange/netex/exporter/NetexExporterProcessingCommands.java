@@ -14,29 +14,20 @@ import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class NetexExporterProcessingCommands implements ProcessingCommands, Constant {
 
-	
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new NetexExporterProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
-		ProcessingCommandsFactory.factories.put(NetexExporterProcessingCommands.class.getName(),
-				new DefaultFactory());
+		ProcessingCommandsFactory.factories.put(NetexExporterProcessingCommands.class.getName(), new DefaultFactory());
 	}
 
 	@Override
-	public List<? extends Command> getPreProcessingCommands(Context context,boolean withDao) {
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
 		InitialContext initCtx = (InitialContext) context.get(INITIAL_CONTEXT);
 		List<Command> commands = new ArrayList<>();
 		try {
@@ -45,12 +36,12 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
 		}
-		
+
 		return commands;
 	}
 
 	@Override
-	public List<? extends Command> getLineProcessingCommands(Context context,boolean withDao) {
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		List<Command> commands = new ArrayList<>();
 		try {
@@ -62,9 +53,9 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
 		}
-		
+
 		return commands;
-		
+
 	}
 
 	@Override
@@ -102,6 +93,20 @@ public class NetexExporterProcessingCommands implements ProcessingCommands, Cons
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new NetexExporterProcessingCommands();
+			return result;
+		}
 	}
 
 }

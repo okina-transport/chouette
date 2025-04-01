@@ -6,22 +6,28 @@ import mobi.chouette.common.chain.Command;
 import java.util.List;
 
 /**
- * 
  * give processing elementary commands for line oriented actions <br/>
  * on import process, getLineProcessingCommands should return a command instance for each line to process <br>
  * on export process, getLineProcessingCommands should return a single command instance reusable for each line <br>
  * <ul><li>line should be provided in context on LINE key</li></ul>
- * 
- * @author michel
  *
+ * @author michel
  */
 public interface ProcessingCommands {
 
-	List<? extends Command> getPreProcessingCommands(Context context,boolean withDao);
-	List<? extends Command> getLineProcessingCommands(Context context,boolean withDao);
-	List<? extends Command> getStopAreaProcessingCommands(Context context,boolean withDao);
+	List<? extends Command> getPreProcessingCommands(Context context, boolean withDao);
+
+	List<? extends Command> getLineProcessingCommands(Context context, boolean withDao);
+
+	List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao);
+
 	List<? extends Command> getPostProcessingCommands(Context context, boolean withDao);
+
 	List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas);
-	List<? extends Command> getDisposeCommands(Context context,boolean withDao);
+
+	List<? extends Command> getDisposeCommands(Context context, boolean withDao);
+
 	List<? extends Command> getMobiitiCommands(Context context, boolean b);
+
+	List<? extends Command> getFaresCommands(Context context, boolean b);
 }

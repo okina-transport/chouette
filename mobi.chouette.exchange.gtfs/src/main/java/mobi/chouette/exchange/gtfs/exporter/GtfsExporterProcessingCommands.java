@@ -14,6 +14,7 @@ import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j
@@ -122,6 +123,11 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
 	}
 
 	public static class DefaultFactory extends ProcessingCommandsFactory {

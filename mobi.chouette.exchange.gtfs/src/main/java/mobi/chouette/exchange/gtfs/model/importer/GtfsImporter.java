@@ -208,20 +208,12 @@ public class GtfsImporter {
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsFareAttribute> getFareAttributeById() {
-		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())) {
-			return getImporter(INDEX.FARE_ID_BY_ATTRIBUTE.name(), FareAttributeById.FILENAME, FareAttributeById.class);
-		} else {
-			return getImporter(INDEX.FARE_ID_BY_ATTRIBUTE.name(), FareAttributeById.FILENAME, FareAttributeById.class, _factoryParameters);
-		}
+		return getImporter(INDEX.FARE_ID_BY_ATTRIBUTE.name(), FareAttributeById.FILENAME, FareAttributeById.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public Index<GtfsFareRule> getFareRuleById() {
-		if (StringUtils.isEmpty(_factoryParameters.getSplitCharacter())) {
-			return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class);
-		} else {
-			return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class, _factoryParameters);
-		}
+		return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class);
 	}
 
 	public enum INDEX {

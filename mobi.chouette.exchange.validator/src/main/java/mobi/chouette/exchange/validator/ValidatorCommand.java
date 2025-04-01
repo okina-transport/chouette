@@ -8,11 +8,7 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.exchange.CommandCancelledException;
-import mobi.chouette.exchange.DaoReader;
-import mobi.chouette.exchange.ProcessingCommands;
-import mobi.chouette.exchange.ProcessingCommandsFactory;
-import mobi.chouette.exchange.ProgressionCommand;
+import mobi.chouette.exchange.*;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
@@ -44,7 +40,12 @@ public class ValidatorCommand implements Command, Constant {
 
 	private static final String VALIDATION_ERROR_NO_DATA = "3-No-Data";
 
-	@EJB DaoReader reader;
+	static {
+		CommandFactory.factories.put(ValidatorCommand.class.getName(), new DefaultCommandFactory());
+	}
+
+	@EJB
+	DaoReader reader;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -112,7 +113,7 @@ public class ValidatorCommand implements Command, Constant {
 	}
 
 	private boolean process(Context context, ProcessingCommands commands, ProgressionCommand progression,
-			boolean continueLineProcesingOnError) throws Exception {
+							boolean continueLineProcesingOnError) throws Exception {
 
 		boolean result = ERROR;
 		ValidateParameters parameters = (ValidateParameters) context.get(CONFIGURATION);
@@ -120,27 +121,26 @@ public class ValidatorCommand implements Command, Constant {
 
 		// initialisation
 		List<? extends Command> preProcessingCommands = commands.getPreProcessingCommands(context, true);
-		progression.initialize(context, preProcessingCommands.size()+1);
+		progression.initialize(context, preProcessingCommands.size() + 1);
 		for (Command command : preProcessingCommands) {
 			result = command.execute(context);
 			if (!result) {
-				reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND,"no data selected");
+				reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data selected");
 				reportNoDataValidationError(context);
 				progression.execute(context);
-				return ERROR;		
+				return ERROR;
 			}
 			progression.execute(context);
 		}
-		// get lines 
+		// get lines
 		String type = parameters.getReferencesType();
-		// set default type 
-		if (type == null || type.isEmpty() )
-		{
+		// set default type
+		if (type == null || type.isEmpty()) {
 			// all lines
 			type = "line";
 			parameters.setIds(null);
 		}
-		type=type.toLowerCase();
+		type = type.toLowerCase();
 
 		List<Long> ids = null;
 		if (parameters.getIds() != null) {
@@ -149,7 +149,7 @@ public class ValidatorCommand implements Command, Constant {
 
 		Set<Long> lines = reader.loadLines(type, ids);
 		if (lines.isEmpty()) {
-			reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND,"no data selected");
+			reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data selected");
 			reportNoDataValidationError(context);
 			return ERROR;
 
@@ -180,25 +180,22 @@ public class ValidatorCommand implements Command, Constant {
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.ROUTE, data.getRoutes().size());
 			reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.VEHICLE_JOURNEY, data.getVehicleJourneys().size());
 
-			if (!validateFailed)
-			{
-				lineCount ++;
-			}
-			else if (!continueLineProcesingOnError)
-			{
-				reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_DATA,"unable to validate data");
+			if (!validateFailed) {
+				lineCount++;
+			} else if (!continueLineProcesingOnError) {
+				reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_DATA, "unable to validate data");
 				return ERROR;
 			}
 		}
 		// post processing
-		
+
 		// check if data where exported
 		if (lineCount == 0) {
 			progression.terminate(context, 1);
-			reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_PROCEEDED,"no data validated");
+			reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_PROCEEDED, "no data validated");
 			reportNoDataValidationError(context);
 			progression.execute(context);
-			return ERROR;		
+			return ERROR;
 		}
 		
 		List<? extends Command> postProcessingCommands = commands.getPostProcessingCommands(context, true, false);
@@ -207,12 +204,12 @@ public class ValidatorCommand implements Command, Constant {
 			result = command.execute(context);
 			if (!result) {
 				if (!reporter.hasActionError(context))
-				   reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_PROCEEDED,"no data exported");
-				   reportNoDataValidationError(context);
+					reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_PROCEEDED, "no data exported");
+				reportNoDataValidationError(context);
 				return ERROR;
 			}
 			progression.execute(context);
-		}	
+		}
 		// TODO a mettre dans une commande dédiée
 		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
 		reporter.addObjectReport(context, "merged", OBJECT_TYPE.NETWORK, "networks", OBJECT_STATE.OK, IO_TYPE.INPUT);
@@ -229,7 +226,6 @@ public class ValidatorCommand implements Command, Constant {
 		reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE, data.getTimetables().size());
 		return result;
 	}
-
 
 	private void reportNoDataValidationError(Context context) {
 		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
@@ -257,9 +253,5 @@ public class ValidatorCommand implements Command, Constant {
 			}
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(ValidatorCommand.class.getName(), new DefaultCommandFactory());
 	}
 }

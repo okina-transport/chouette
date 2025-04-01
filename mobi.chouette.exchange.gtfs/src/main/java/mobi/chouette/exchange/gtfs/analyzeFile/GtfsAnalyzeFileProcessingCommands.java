@@ -14,12 +14,7 @@ import mobi.chouette.exchange.fileAnalysis.GeolocationCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.fileAnalysis.TimetableCheckCommand;
 import mobi.chouette.exchange.fileAnalysis.TooManyNewStopsCheckCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
-import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsRouteParserCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsStopParserCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsValidationCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
+import mobi.chouette.exchange.gtfs.importer.*;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
@@ -31,144 +26,149 @@ import org.apache.commons.lang.StringUtils;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Constant {
 
-    public static class DefaultFactory extends ProcessingCommandsFactory {
+	static {
+		ProcessingCommandsFactory.factories.put(GtfsAnalyzeFileProcessingCommands.class.getName(), new DefaultFactory());
+	}
 
-        @Override
-        protected ProcessingCommands create() throws IOException {
-            return new GtfsAnalyzeFileProcessingCommands();
-        }
-    }
-
-    static {
-        ProcessingCommandsFactory.factories.put(GtfsAnalyzeFileProcessingCommands.class.getName(), new DefaultFactory());
-    }
-
-    @Override
-    public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        try {
-            commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
-            if (parameters.isUseTargetNetwork()) {
-                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
-            }
-            commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
+	@Override
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		try {
+			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
+			if (parameters.isUseTargetNetwork()) {
+				commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+			}
+			commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
 
 
-            context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+			context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
 
-    @Override
-    public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        GtfsImporter importer = (GtfsImporter) context.get(PARSER);
-        Index<GtfsRoute> index = importer.getRouteById();
+	@Override
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		Index<GtfsRoute> index = importer.getRouteById();
 
-        try {
-            {
-                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-                chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
-                commands.add(chain);
-            }
+		try {
+			{
+				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
+				commands.add(chain);
+			}
 
-            ArrayList<String> savedLines = new ArrayList<>();
+			ArrayList<String> savedLines = new ArrayList<>();
 
-            String splitCharacter = parameters.getSplitCharacter();
-            context.put(TOTAL_NB_OF_LINES, index.getLength());
-            for (GtfsRoute gtfsRoute : index) {
+			String splitCharacter = parameters.getSplitCharacter();
+			context.put(TOTAL_NB_OF_LINES, index.getLength());
+			for (GtfsRoute gtfsRoute : index) {
 
-                if (StringUtils.isNotEmpty(splitCharacter)){
-                    String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
-                    if(parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
-                    savedLines.add(newRouteId);
-                    gtfsRoute.setRouteId(newRouteId.replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                }
+				if (StringUtils.isNotEmpty(splitCharacter)) {
+					String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
+					if (parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
+					savedLines.add(newRouteId);
+					gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+				}
 
-                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-                GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
-                        GtfsRouteParserCommand.class.getName());
-                parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^"+parameters.getLinePrefixToRemove(),""));
-                chain.add(parser);
+				GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
+						GtfsRouteParserCommand.class.getName());
+				parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+				chain.add(parser);
 
-                // register
-                Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
-                chain.add(analyzeCommand);
+				// register
+				Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
+				chain.add(analyzeCommand);
 
-                commands.add(chain);
-            }
+				commands.add(chain);
+			}
 
 
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+		return commands;
+	}
 
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return  new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-        return  new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 
-    @Override
-    public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		try {
+			if (!parameters.isKeepStopGeolocalisation()) {
+				Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
+				commands.add(geolocationCheckCommand);
+			}
+			Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
+			commands.add(tooManyNewStopsCheckCommand);
 
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        try {
-            if (!parameters.isKeepStopGeolocalisation()) {
-                Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
-                commands.add(geolocationCheckCommand);
-            }
-            Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
-            commands.add(tooManyNewStopsCheckCommand);
+			if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+				Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
+				commands.add(timetableCheckCommand);
+			}
 
-            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
-                Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
-                commands.add(timetableCheckCommand);
-            }
+		} catch (ClassNotFoundException | IOException e) {
+			log.error("Error creating mobiiti commands", e);
+		}
 
-        } catch (ClassNotFoundException | IOException e) {
-            log.error("Error creating mobiiti commands", e);
-        }
+		return commands;
+	}
 
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			return new GtfsAnalyzeFileProcessingCommands();
+		}
+	}
 
 }

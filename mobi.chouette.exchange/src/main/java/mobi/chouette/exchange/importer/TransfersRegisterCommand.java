@@ -7,7 +7,8 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.RouteDAO;
+import mobi.chouette.dao.LineDAO;
+import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.dao.TransfersDAO;
 import mobi.chouette.exchange.importer.updater.RouteUpdater;
 import mobi.chouette.exchange.importer.updater.TransfersOptimiser;
@@ -18,6 +19,7 @@ import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Transfers;
@@ -32,6 +34,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 @Log4j
 @Stateless(name = TransfersRegisterCommand.COMMAND)
@@ -50,7 +53,10 @@ public class TransfersRegisterCommand implements Command {
 	private TransfersDAO transfersDAO;
 
 	@EJB
-	private RouteDAO routeDAO;
+	private LineDAO lineDAO;
+
+	@EJB
+	private StopAreaDAO stopAreaDAO;
 
 	@EJB(beanName = RouteUpdater.BEAN_NAME)
 	private Updater<Route> routeUpdater;
@@ -75,75 +81,91 @@ public class TransfersRegisterCommand implements Command {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 
 		// Use property based enabling of stop place updater, but allow disabling if property exist in context
-		Transfers newValue = referential.getTransfers().values().iterator().next();
-		context.put(CURRENT_TRANSFERS_ID, newValue.getObjectId());
+		Map<String, Transfers> newValue = referential.getTransfers();
+		for (Transfers transfers : newValue.values()) {
+			log.info("Register Transfers : " + transfers.getObjectId());
+			try {
+				optimiser.initialize(cache, referential);
 
-		log.info("register tranfers : " + newValue.getObjectId());
-		try {
-			optimiser.initialize(cache, referential);
+				Transfers oldValue = cache.getTransfers().get(transfers.getObjectId());
 
-			Transfers oldValue = cache.getTransfers().get(newValue.getObjectId());
-			Route oldFromRouteValue = cache.getRoutes().get(newValue.getFromRoute().getObjectId());
-			Route oldToRouteValue = cache.getRoutes().get(newValue.getToRoute().getObjectId());
-			StopArea oldFromStopAreaValue = cache.getStopAreas().get(newValue.getFromStop().getObjectId());
-			StopArea oldToStopAreaValue = cache.getStopAreas().get(newValue.getToStop().getObjectId());
-
-			Route findedFromRoute = routeDAO.findByObjectId(oldFromRouteValue.getObjectId());
-
-			if (oldValue.getId() == null && findedFromRoute == null) {
-				routeDAO.create(oldFromRouteValue);
-			} else
-				if (findedFromRoute != null) {
-					routeUpdater.update(context, findedFromRoute, oldFromRouteValue);
+				if (transfers.getFromLine() != null) {
+					Line oldFromRouteValue = cache.getLines().get(transfers.getFromLine().getObjectId());
+					Line findedFromRoute = lineDAO.findByObjectId(oldFromRouteValue.getObjectId());
+					if (oldValue.getId() == null && findedFromRoute == null) {
+						lineDAO.create(oldFromRouteValue);
+						oldValue.setFromLine(oldFromRouteValue);
+					} else {
+						oldValue.setFromLine(oldFromRouteValue);
+					}
 				}
 
-			newValue.setFromRoute(oldFromRouteValue);
-
-			Route findedToRoute = routeDAO.findByObjectId(oldToRouteValue.getObjectId());
-
-			if (oldValue.getId() == null && findedToRoute == null) {
-				routeDAO.create(oldToRouteValue);
-			} else
-				if (findedToRoute != null) {
-					routeUpdater.update(context, findedToRoute, oldToRouteValue);
+				if (transfers.getToLine() != null) {
+					Line oldToRouteValue = cache.getLines().get(transfers.getToLine().getObjectId());
+					Line findedToRoute = lineDAO.findByObjectId(oldToRouteValue.getObjectId());
+					if (oldValue.getId() == null && findedToRoute == null) {
+						lineDAO.create(oldToRouteValue);
+						oldValue.setToLine(oldToRouteValue);
+					} else {
+						oldValue.setToLine(oldToRouteValue);
+					}
 				}
 
-			newValue.setToRoute(oldToRouteValue);
-
-			newValue.setFromStop(oldFromStopAreaValue);
-			newValue.setToStop(oldToStopAreaValue);
-
-			if (oldValue.getId() == null) {
-				transfersDAO.create(oldValue);
-			} else {
-				transfersUpdater.update(context, oldValue, newValue);
-			}
-			transfersDAO.flush();
-
-			result = SUCCESS;
-		} catch (Exception ex) {
-			log.error(ex.getMessage());
-			ActionReporter reporter = ActionReporter.Factory.getInstance();
-			reporter.addObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, NamingUtil.getName(newValue), OBJECT_STATE.ERROR, IO_TYPE.INPUT);
-			if (ex.getCause() != null) {
-				Throwable e = ex.getCause();
-				while (e.getCause() != null) {
-					log.error(e.getMessage());
-					e = e.getCause();
+				if (transfers.getFromStop() != null) {
+					StopArea oldFromStopAreaValue = cache.getStopAreas().get(transfers.getFromStop().getObjectId());
+					StopArea findedFromStopArea = stopAreaDAO.findByOriginalId(oldFromStopAreaValue.getObjectId().split(":")[2]).get(0);
+					if (findedFromStopArea == null) {
+						stopAreaDAO.create(oldFromStopAreaValue);
+						oldValue.setFromStop(oldFromStopAreaValue);
+					} else {
+						oldValue.setFromStop(findedFromStopArea);
+					}
 				}
-				if (e instanceof SQLException) {
-					e = ((SQLException) e).getNextException();
-					reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.WRITE_ERROR, e.getMessage());
 
+				if (transfers.getFromStop() != null) {
+					StopArea oldToStopAreaValue = cache.getStopAreas().get(transfers.getToStop().getObjectId());
+					StopArea findedToStopArea = stopAreaDAO.findByOriginalId(oldToStopAreaValue.getObjectId().split(":")[2]).get(0);
+					if (findedToStopArea == null) {
+						stopAreaDAO.create(oldToStopAreaValue);
+						oldValue.setToStop(oldToStopAreaValue);
+					} else {
+						oldValue.setToStop(findedToStopArea);
+					}
+				}
+
+				Transfers findedTransfers = transfersDAO.findByObjectId(oldValue.getObjectId());
+				if (findedTransfers == null) {
+					transfersDAO.create(oldValue);
 				} else {
-					reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+					transfersUpdater.update(context, findedTransfers, oldValue);
 				}
-			} else {
-				reporter.addErrorToObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
+				transfersDAO.flush();
+
+				result = SUCCESS;
+			} catch (Exception ex) {
+				log.error(ex.getMessage());
+				ActionReporter reporter = ActionReporter.Factory.getInstance();
+				reporter.addObjectReport(context, transfers.getObjectId(), OBJECT_TYPE.FARE_RULE, NamingUtil.getName(transfers), OBJECT_STATE.ERROR, IO_TYPE.INPUT);
+				if (ex.getCause() != null) {
+					Throwable e = ex.getCause();
+					while (e.getCause() != null) {
+						log.error(e.getMessage());
+						e = e.getCause();
+					}
+					if (e instanceof SQLException) {
+						e = ((SQLException) e).getNextException();
+						reporter.addErrorToObjectReport(context, transfers.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.WRITE_ERROR, e.getMessage());
+
+					} else {
+						reporter.addErrorToObjectReport(context, transfers.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, e.getMessage());
+					}
+				} else {
+					reporter.addErrorToObjectReport(context, transfers.getObjectId(), OBJECT_TYPE.FARE_RULE, ERROR_CODE.INTERNAL_ERROR, ex.getMessage());
+				}
+				throw ex;
+			} finally {
+				log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 			}
-			throw ex;
-		} finally {
-			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 		return result;
 	}

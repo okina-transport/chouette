@@ -14,20 +14,12 @@ import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class NeptuneExporterProcessingCommands implements ProcessingCommands, Constant {
-
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new NeptuneExporterProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
 		ProcessingCommandsFactory.factories.put(NeptuneExporterProcessingCommands.class.getName(),
@@ -103,6 +95,20 @@ public class NeptuneExporterProcessingCommands implements ProcessingCommands, Co
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new NeptuneExporterProcessingCommands();
+			return result;
+		}
 	}
 
 }

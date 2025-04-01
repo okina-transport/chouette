@@ -27,149 +27,155 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class NeptuneAnalyzeFileProcessingCommands implements ProcessingCommands, Constant {
 
-    public static class DefaultFactory extends ProcessingCommandsFactory {
+	static {
+		ProcessingCommandsFactory.factories.put(NeptuneAnalyzeFileProcessingCommands.class.getName(), new DefaultFactory());
+	}
 
-        @Override
-        protected ProcessingCommands create() throws IOException {
-            ProcessingCommands result = new NeptuneAnalyzeFileProcessingCommands();
-            return result;
-        }
-    }
+	@Override
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		try {
+			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, NeptuneComplianceCheckerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
 
-    static {
-        ProcessingCommandsFactory.factories.put(NeptuneAnalyzeFileProcessingCommands.class.getName(), new DefaultFactory());
-    }
+			context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
 
-    @Override
-    public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        try {
-            commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, NeptuneInitImportCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, NeptuneComplianceCheckerCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, NeptuneTimeTablePeriodFixerCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, NeptuneBrokenRouteFixerCommand.class.getName()));
+	@Override
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		ActionReporter reporter = ActionReporter.Factory.getInstance();
+		boolean level3validation = context.get(VALIDATION) != null;
+		List<Command> commands = new ArrayList<>();
+		JobData jobData = (JobData) context.get(JOB_DATA);
+		Path path = Paths.get(jobData.getPathName(), INPUT);
+		try {
+			List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");
+			if (!excluded.isEmpty()) {
+				for (Path exclude : excluded) {
+					reporter.setFileState(context, exclude.getFileName().toString(), IO_TYPE.INPUT, ActionReporter.FILE_STATE.IGNORED);
+				}
+			}
+			List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
+			context.put(TOTAL_NB_OF_LINES, stream.size());
+			for (Path file : stream) {
+				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				commands.add(chain);
+				// validation schema
+				String url = file.toUri().toURL().toExternalForm();
+				NeptuneSAXParserCommand schema = (NeptuneSAXParserCommand) CommandFactory.create(initialContext,
+						NeptuneSAXParserCommand.class.getName());
+				schema.setFileURL(url);
+				chain.add(schema);
 
-            context.put(CLEAR_FOR_IMPORT, CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
+				// parser
+				NeptuneParserCommand parser = (NeptuneParserCommand) CommandFactory.create(initialContext,
+						NeptuneParserCommand.class.getName());
+				parser.setFileURL(file.toUri().toURL().toExternalForm());
+				chain.add(parser);
 
-    @Override
-    public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
-        ActionReporter reporter = ActionReporter.Factory.getInstance();
-        boolean level3validation = context.get(VALIDATION) != null;
-        List<Command> commands = new ArrayList<>();
-        JobData jobData = (JobData) context.get(JOB_DATA);
-        Path path = Paths.get(jobData.getPathName(), INPUT);
-        try {
-            List<Path> excluded = FileUtil.listFiles(path, "*", "*.xml");
-            if (!excluded.isEmpty()) {
-                for (Path exclude : excluded) {
-                    reporter.setFileState(context, exclude.getFileName().toString(), IO_TYPE.INPUT, ActionReporter.FILE_STATE.IGNORED);
-                }
-            }
-            List<Path> stream = FileUtil.listFiles(path, "*.xml", "*metadata*");
-            context.put(TOTAL_NB_OF_LINES, stream.size());
-            for (Path file : stream) {
-                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-                commands.add(chain);
-                // validation schema
-                String url = file.toUri().toURL().toExternalForm();
-                NeptuneSAXParserCommand schema = (NeptuneSAXParserCommand) CommandFactory.create(initialContext,
-                        NeptuneSAXParserCommand.class.getName());
-                schema.setFileURL(url);
-                chain.add(schema);
+				// extensions
+				NeptuneImportExtensionsCommand extension = (NeptuneImportExtensionsCommand) CommandFactory.create(initialContext,
+						NeptuneImportExtensionsCommand.class.getName());
+				chain.add(extension);
 
-                // parser
-                NeptuneParserCommand parser = (NeptuneParserCommand) CommandFactory.create(initialContext,
-                        NeptuneParserCommand.class.getName());
-                parser.setFileURL(file.toUri().toURL().toExternalForm());
-                chain.add(parser);
+				// validation
+				Command validation = CommandFactory.create(initialContext, NeptuneValidationCommand.class.getName());
+				chain.add(validation);
 
-                // extensions
-                NeptuneImportExtensionsCommand extension = (NeptuneImportExtensionsCommand) CommandFactory.create(initialContext,
-                        NeptuneImportExtensionsCommand.class.getName());
-                chain.add(extension);
+				// default values
+				Command defaults = CommandFactory.create(initialContext, NeptuneSetDefaultValuesCommand.class.getName());
+				chain.add(defaults);
 
-                // validation
-                Command validation = CommandFactory.create(initialContext, NeptuneValidationCommand.class.getName());
-                chain.add(validation);
+				// analyze
+				Command analyze = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
+				chain.add(analyze);
 
-                // default values
-                Command defaults = CommandFactory.create(initialContext, NeptuneSetDefaultValuesCommand.class.getName());
-                chain.add(defaults);
+			}
 
-                // analyze
-                Command analyze = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
-                chain.add(analyze);
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-            }
+		return commands;
+	}
 
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+	@Override
+	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+		NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		try {
+			if (!parameters.isKeepStopGeolocalisation()) {
+				Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
+				commands.add(geolocationCheckCommand);
+			}
+			Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
+			commands.add(tooManyNewStopsCheckCommand);
 
-    @Override
-    public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-        return  new ArrayList<>();
-    }
+			if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+				Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
+				commands.add(timetableCheckCommand);
+			}
 
-    @Override
-    public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        NeptuneImportParameters parameters = (NeptuneImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        try {
-            if (!parameters.isKeepStopGeolocalisation()) {
-                Command geolocationCheckCommand = CommandFactory.create(initialContext, GeolocationCheckCommand.class.getName());
-                commands.add(geolocationCheckCommand);
-            }
-            Command tooManyNewStopsCheckCommand = CommandFactory.create(initialContext, TooManyNewStopsCheckCommand.class.getName());
-            commands.add(tooManyNewStopsCheckCommand);
+		} catch (ClassNotFoundException | IOException e) {
+			log.error(e.getStackTrace());
+		}
 
-            if (!CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)){
-                Command timetableCheckCommand = CommandFactory.create(initialContext, TimetableCheckCommand.class.getName());
-                commands.add(timetableCheckCommand);
-            }
+		return commands;
+	}
 
-        } catch (ClassNotFoundException | IOException e) {
-            log.error(e.getStackTrace());
-        }
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
 
-        return commands;
-    }
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new NeptuneAnalyzeFileProcessingCommands();
+			return result;
+		}
+	}
 
 }

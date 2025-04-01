@@ -15,10 +15,11 @@ import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
-import mobi.chouette.model.Agency;
+import mobi.chouette.model.Company;
 import mobi.chouette.model.FareAttribute;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j
 public class GtfsFareAttributeParser implements Parser, Validator, Constant {
@@ -117,17 +118,28 @@ public class GtfsFareAttributeParser implements Parser, Validator, Constant {
 			String id = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareAttribute.FARE_KEY, gtfsFareAttribute.getFareId());
 			FareAttribute fareAttribute = ObjectFactory.getFareAttribute(referential, id);
 
-			String agencyId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareAttribute.AGENCY_KEY, gtfsFareAttribute.getAgencyId());
-			Agency agency = ObjectFactory.getAgency(referential, agencyId);
-			convert(context, gtfsFareAttribute, fareAttribute, agency);
+			String agencyId = null;
+			Company operator = null;
+
+			if (gtfsFareAttribute.getAgencyId() != null) {
+				if (context.get(TARGET_COMPANY_OBJECT_ID) != null) {
+					agencyId = StringUtils.chop(ObjectIdUtil.extractOriginalId((String) context.get(TARGET_COMPANY_OBJECT_ID)));
+				} else {
+					agencyId = gtfsFareAttribute.getAgencyId();
+					if (agencyId == null) {
+						agencyId = configuration.getReferentialName();
+					}
+				}
+				String operatorId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), Company.OPERATOR_KEY, agencyId + "o");
+				operator = ObjectFactory.getCompany(referential, operatorId);
+			}
+
+			convert(gtfsFareAttribute, fareAttribute, operator);
 		}
 	}
 
-	protected void convert(Context context, GtfsFareAttribute gtfsFareAttribute, FareAttribute fareAttribute, Agency agency) throws Exception {
-		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-
-		agency.setName(configuration.getReferentialName());
-		fareAttribute.setAgency(agency);
+	protected void convert(GtfsFareAttribute gtfsFareAttribute, FareAttribute fareAttribute, Company operator) throws Exception {
+		fareAttribute.setCompany(operator);
 
 		fareAttribute.setPrice(gtfsFareAttribute.getPrice());
 		fareAttribute.setCurrencyType(gtfsFareAttribute.getCurrencyType());

@@ -9,12 +9,12 @@ import javax.persistence.PersistenceContext;
 @Stateless(name = "FareRuleDAO")
 public class FareRuleDAOImpl extends GenericDAOImpl<FareRule> implements FareRuleDAO {
 
-    public FareRuleDAOImpl() {
-        super(FareRule.class);
-    }
+	public FareRuleDAOImpl() {
+		super(FareRule.class);
+	}
 
-    @PersistenceContext(unitName = "referential")
-    public void setEntityManager(EntityManager em) {
-        this.em = em;
-    }
+	@PersistenceContext(unitName = "referential")
+	public void setEntityManager(EntityManager em) {
+		this.em = em;
+	}
 }

@@ -10,7 +10,9 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
+import mobi.chouette.exchange.gtfs.model.GtfsFareRule;
 import mobi.chouette.exchange.gtfs.model.GtfsRoute;
+import mobi.chouette.exchange.gtfs.model.GtfsTransfer;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
 import mobi.chouette.exchange.gtfs.model.importer.Index;
 import mobi.chouette.exchange.importer.*;
@@ -57,6 +59,101 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
 		}
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+
+		try {
+			if (parameters.isImportFareFiles()) {
+				if (importer.hasFareRuleImporter()) {
+					ArrayList<String> savedLines = new ArrayList<String>();
+					String splitCharacter = parameters.getSplitCharacter();
+
+					Index<GtfsFareRule> indexFareRules = importer.getFareRuleById();
+					for (GtfsFareRule gtfsFareRule : indexFareRules) {
+						if (StringUtils.isNotEmpty(splitCharacter)) {
+							String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
+							if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
+								continue;
+							savedLines.add(newRouteId);
+							gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+						}
+					}
+
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+					if (importer.hasFareRuleImporter()) {
+						GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
+						chain.add(fareRulesParser);
+
+						Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
+						chain.add(registerRuleAttr);
+					}
+
+					commands.add(chain);
+				}
+
+				if (importer.hasFareAttributeImporter()) {
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+					GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
+					chain.add(fareAttributesParser);
+
+					Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
+					chain.add(registerFareAttr);
+
+					commands.add(chain);
+				}
+				if (importer.hasTransferImporter()) {
+					ArrayList<String> savedFromLines = new ArrayList<String>();
+					ArrayList<String> savedToLines = new ArrayList<String>();
+					String splitCharacter = parameters.getSplitCharacter();
+
+					Index<GtfsTransfer> transferByFromStop = importer.getTransferByFromStop();
+					for (GtfsTransfer gtfsTransfer : transferByFromStop) {
+						if (StringUtils.isNotEmpty(splitCharacter)) {
+							if (gtfsTransfer.getFromRouteId() != null) {
+								String newRouteId = gtfsTransfer.getFromRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedFromLines.contains(newRouteId))
+									continue;
+								savedFromLines.add(newRouteId);
+								gtfsTransfer.setFromRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							}
+							if (gtfsTransfer.getToRouteId() != null) {
+								String newRouteId = gtfsTransfer.getToRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedToLines.contains(newRouteId))
+									continue;
+								savedToLines.add(newRouteId);
+								gtfsTransfer.setToRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							}
+						}
+					}
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+					GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
+					chain.add(transfersParser);
+
+					Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
+					chain.add(registerTransfersAttr);
+
+					commands.add(chain);
+				}
+			}
+			Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+			commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
+
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+
 		return commands;
 	}
 
@@ -111,34 +208,6 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 
 					Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
 					chain.add(copy);
-
-					boolean importFareFiles = parameters.isImportFareFiles();
-
-					if (importFareFiles) {
-						if (importer.hasFareAttributeImporter()) {
-							GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
-							chain.add(fareAttributesParser);
-
-							Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
-							chain.add(registerFareAttr);
-						}
-
-						if (importer.hasFareRuleImporter()) {
-							GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
-							chain.add(fareRulesParser);
-
-							Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
-							chain.add(registerRuleAttr);
-						}
-
-						if (importer.hasTransferImporter()) {
-							GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
-							chain.add(transfersParser);
-
-							Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
-							chain.add(registerTransfersAttr);
-						}
-					}
 				}
 				if (level3validation) {
 					// add validation

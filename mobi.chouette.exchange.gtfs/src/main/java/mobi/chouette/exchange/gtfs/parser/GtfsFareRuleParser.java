@@ -16,9 +16,11 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
 import mobi.chouette.model.FareRule;
-import mobi.chouette.model.Route;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+
+import java.util.Objects;
 
 @Log4j
 public class GtfsFareRuleParser implements Parser, Validator, Constant {
@@ -117,21 +119,29 @@ public class GtfsFareRuleParser implements Parser, Validator, Constant {
 
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
 
 		for (GtfsFareRule gtfsFareRule : importer.getFareRuleById()) {
 			GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 			String id = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareRule.FARE_KEY, gtfsFareRule.getFareId());
 			FareRule fareRule = ObjectFactory.getFareRule(referential, id);
 
-			String routeIdModified = gtfsFareRule.getRouteId().replaceFirst("^" + configuration.getLinePrefixToRemove(), "");
-			String routeId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareRule.ROUTE_KEY, routeIdModified);
-			Route route = ObjectFactory.getRoute(referential, routeId);
-			convert(gtfsFareRule, fareRule, route);
+			if (gtfsFareRule.getRouteId() != null) {
+				String newRouteId = !Objects.equals(parameters.getSplitCharacter(), "") ? gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0] : gtfsFareRule.getRouteId();
+
+				String routeIdModified = newRouteId.replaceFirst("^" + configuration.getLinePrefixToRemove(), "");
+				String lineId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareRule.LINE_KEY, routeIdModified);
+				Line line = ObjectFactory.getLine(referential, lineId);
+				fareRule.addLine(line); // Ajoute la route à la liste
+			}
+
+			// Convertir les autres champs (originId, destinationId, etc.)
+			convert(gtfsFareRule, fareRule);
 		}
 	}
 
-	protected void convert(GtfsFareRule gtfsFareRule, FareRule fareRule, Route route) throws Exception {
-		fareRule.setRoute(route);
+	protected void convert(GtfsFareRule gtfsFareRule, FareRule fareRule) throws Exception {
+		// On ne set plus de route ici, c'est déjà fait dans la boucle
 		fareRule.setOriginId(gtfsFareRule.getOriginId());
 		fareRule.setDestinationId(gtfsFareRule.getDestinationId());
 		fareRule.setContainsId(gtfsFareRule.getContainsId());

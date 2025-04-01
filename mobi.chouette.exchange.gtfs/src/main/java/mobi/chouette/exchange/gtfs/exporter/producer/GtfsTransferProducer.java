@@ -109,15 +109,31 @@ public class GtfsTransferProducer extends AbstractProducer {
 		return true;
 	}
 
-	public boolean save(Transfers neptuneObject) {
-		transfer.setFromStopId(neptuneObject.getFromStop().getObjectId());
-		transfer.setToStopId(neptuneObject.getToStop().getObjectId());
-		transfer.setFromRouteId(neptuneObject.getFromRoute().getObjectId());
-		transfer.setToRouteId(neptuneObject.getToRoute().getObjectId());
-		transfer.setFromTripId(neptuneObject.getFromTripId());
-		transfer.setToTripId(neptuneObject.getToTripId());
-		transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.valueOf(neptuneObject.getTransferType().name()));
-		transfer.setMinTransferTime(neptuneObject.getMinTransferTime());
+	public boolean save(Transfers neptuneObject, String prefix, boolean keepOriginalId, IdParameters idParams) {
+		if (neptuneObject.getFromStop() != null) {
+			transfer.setFromStopId(GtfsStopUtils.getNewStopId(neptuneObject.getFromStop(), idParams, keepOriginalId, prefix));
+		}
+		if (neptuneObject.getToStop() != null) {
+			transfer.setToStopId(GtfsStopUtils.getNewStopId(neptuneObject.getToStop(), idParams, keepOriginalId, prefix));
+		}
+		if (neptuneObject.getFromLine() != null) {
+			transfer.setFromRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getFromLine().getObjectId(), prefix, keepOriginalId));
+		}
+		if (neptuneObject.getToLine() != null) {
+			transfer.setToRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getToLine().getObjectId(), prefix, keepOriginalId));
+		}
+		if (neptuneObject.getFromTripId() != null) {
+			transfer.setFromTripId(ObjectIdUtil.toGtfsId(neptuneObject.getFromTripId(), prefix, keepOriginalId));
+		}
+		if (neptuneObject.getToTripId() != null) {
+			transfer.setToTripId(ObjectIdUtil.toGtfsId(neptuneObject.getToTripId(), prefix, keepOriginalId));
+		}
+		if (neptuneObject.getTransferType() != null) {
+			transfer.setTransferType(GtfsTransfer.TransfersTypeEnum.valueOf(neptuneObject.getTransferType().name()));
+		}
+		if (neptuneObject.getMinTransferTime() != null) {
+			transfer.setMinTransferTime(neptuneObject.getMinTransferTime());
+		}
 		try {
 			getExporter().getTransferExporter().export(transfer);
 		} catch (Exception e) {

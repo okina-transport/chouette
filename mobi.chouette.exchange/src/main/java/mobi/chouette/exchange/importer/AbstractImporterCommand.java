@@ -20,13 +20,8 @@ import java.util.concurrent.TimeUnit;
 @Log4j
 public class AbstractImporterCommand implements Constant {
 
-	protected enum Mode {
-		line, stopareas
-	};
-
 	@SuppressWarnings("unchecked")
-	public boolean process(Context context, ProcessingCommands commands, ProgressionCommand progression,
-			boolean continueProcesingOnError, Mode mode) throws Exception {
+	public boolean process(Context context, ProcessingCommands commands, ProgressionCommand progression, boolean continueProcesingOnError, Mode mode) throws Exception {
 		boolean result = ERROR;
 		boolean disposeResult = SUCCESS;
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
@@ -40,7 +35,7 @@ public class AbstractImporterCommand implements Constant {
 				result = importCommand.execute(context);
 				if (!result) {
 					if (!reporter.hasActionError(context))
-					   reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data to import");
+						reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data to import");
 					progression.execute(context);
 					return ERROR;
 				}
@@ -51,8 +46,7 @@ public class AbstractImporterCommand implements Constant {
 				// get lines info
 				List<? extends Command> lineProcessingCommands = commands.getLineProcessingCommands(context, true);
 
-				ChainCommand master = (ChainCommand) CommandFactory
-						.create(initialContext, ChainCommand.class.getName());
+				ChainCommand master = (ChainCommand) CommandFactory.create(initialContext, ChainCommand.class.getName());
 				master.setIgnored(continueProcesingOnError);
 
 				for (Command command : lineProcessingCommands) {
@@ -101,8 +95,17 @@ public class AbstractImporterCommand implements Constant {
 
 			}
 
-			// post processing + Mosaic Commands after import before validation
+			List<? extends Command> faresCommands = commands.getFaresCommands(context, true);
+			progression.start(context, faresCommands.size());
+			for (Command command : faresCommands) {
+				result = command.execute(context);
+				if (!result) {
+					return ERROR;
+				}
+				progression.execute(context);
+			}
 
+			// post processing + Mosaic Commands after import before validation
 			List<? extends Command> postProcessingCommands = commands.getPostProcessingCommands(context, true);
 			List<? extends Command> mobiitiPostCommands = commands.getMobiitiCommands(context, true);
 			final int postProcessingCommandsTotalSize = postProcessingCommands.size() + mobiitiPostCommands.size();
@@ -153,7 +156,11 @@ public class AbstractImporterCommand implements Constant {
 			}
 			context.remove(CACHE);
 		}
-		return result ; // && disposeResult;
+		return result; // && disposeResult;
+	}
+
+	protected enum Mode {
+		line, stopareas
 	}
 
 }

@@ -24,39 +24,36 @@ import java.io.Serializable;
 @Setter
 @ToString(callSuper = true)
 public class FareAttribute extends NeptuneIdentifiedObject implements ObjectIdTypes {
-    @Id
-    @GenericGenerator(name = "fare_attribute_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "fare_attribute_id_seq"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-    @GeneratedValue(generator = "fare_attribute_id_seq")
-    @Column(name = "id", nullable = false)
-    protected Long id;
+	@Id
+	@GenericGenerator(name = "fare_attribute_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {@org.hibernate.annotations.Parameter(name = "sequence_name", value = "fare_attribute_id_seq"), @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+	@GeneratedValue(generator = "fare_attribute_id_seq")
+	@Column(name = "id", nullable = false)
+	protected Long id;
 
-    private Float price;
+	private Float price;
 
-    @Column(name = "currency_type")
-    private String currencyType;
+	@Column(name = "currency_type")
+	private String currencyType;
 
-    @Column(name = "payment_method")
-    @Enumerated(EnumType.STRING)
-    private PaymentMethodType paymentMethod;
+	@Column(name = "payment_method")
+	@Enumerated(EnumType.STRING)
+	private PaymentMethodType paymentMethod;
 
-    @Enumerated(EnumType.STRING)
-    private AttributeTransfersType transfers;
+	@Enumerated(EnumType.STRING)
+	private AttributeTransfersType transfers;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
+	@ManyToOne(cascade = {CascadeType.PERSIST})
+	@JoinColumn(name = "company_id")
+	private Company company;
 
-    @Column(name = "transfer_duration")
-    private Float transferDuration;
+	@Column(name = "transfer_duration")
+	private Float transferDuration;
 
-    public enum PaymentMethodType implements Serializable {
-        OnBoard, BeforeBoarding
-    }
+	public enum PaymentMethodType implements Serializable {
+		OnBoard, BeforeBoarding
+	}
 
-    public enum AttributeTransfersType implements Serializable {
-        NoTransfers, One, Two
-    }
+	public enum AttributeTransfersType implements Serializable {
+		NoTransfers, One, Two
+	}
 }

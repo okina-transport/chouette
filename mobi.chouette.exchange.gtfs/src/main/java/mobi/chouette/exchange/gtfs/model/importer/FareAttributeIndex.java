@@ -156,6 +156,17 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 		}
 
 		value = array[i++];
+		testExtraSpace(FIELDS.agency_id.name(), value, bean);
+		if (value != null || !value.trim().isEmpty()) {
+			try {
+				bean.setAgencyId(STRING_CONVERTER.from(context, FIELDS.agency_id, value, false));
+			} catch (GtfsException ex) {
+				if (withValidation)
+					bean.getErrors().add(new GtfsException(_path, id, getIndex(FIELDS.agency_id.name()), FIELDS.agency_id.name(), GtfsException.ERROR.INVALID_FORMAT, null, value));
+			}
+		}
+
+		value = array[i++];
 		testExtraSpace(FIELDS.transfer_duration.name(), value, bean);
 		if (value != null && !value.trim().isEmpty()) {
 			try {
@@ -180,14 +191,6 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 				result = false;
 			}
 
-		//        String agencyId = bean.getAgencyId();
-		//        if (dao.getAgencyById().containsKey(agencyId)) {
-		//            bean.getOkTests().add(GtfsException.ERROR.UNREFERENCED_ID);
-		//        } else {
-		//            bean.getErrors().add(new GtfsException(_path, bean.getId(), getIndex(FIELDS.agency_id.name()), FIELDS.agency_id.name(), GtfsException.ERROR.UNREFERENCED_ID, null, agencyId));
-		//            result = false;
-		//        }
-
 		return result;
 	}
 
@@ -211,7 +214,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 	}
 
 	public enum FIELDS {
-		fare_id, price, currency_type, payment_method, transfers, transfer_duration
+		fare_id, price, currency_type, payment_method, transfers, agency_id, transfer_duration
 	}
 
 }

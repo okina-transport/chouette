@@ -17,6 +17,7 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsTransferProducer;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
+import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.Transfers;
 
 import javax.naming.InitialContext;
@@ -39,13 +40,15 @@ public class GtfsTransfersProducerCommand implements Command, Constant {
 		Monitor monitor = MonitorFactory.start(COMMAND);
 		GtfsExporter exporter = (GtfsExporter) context.get(GTFS_EXPORTER);
 		GtfsTransferProducer fareProducer = new GtfsTransferProducer(exporter);
+		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
 
 		try {
 			ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
 
 			if (!collection.getTransfers().isEmpty()) {
 				for (Transfers transfers : collection.getTransfers()) {
-					fareProducer.save(transfers);
+					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(), configuration.getIdFormat(), configuration.getIdSuffix(), configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+					fareProducer.save(transfers, configuration.getObjectIdPrefix(), configuration.isKeepOriginalId(), idParams);
 				}
 			}
 			context.put(EXPORTABLE_DATA, collection);

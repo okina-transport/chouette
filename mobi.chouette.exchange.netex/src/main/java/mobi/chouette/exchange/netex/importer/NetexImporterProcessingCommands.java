@@ -25,20 +25,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class NetexImporterProcessingCommands implements ProcessingCommands, Constant {
-
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new NetexImporterProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
 		ProcessingCommandsFactory.factories.put(NetexImporterProcessingCommands.class.getName(),
@@ -46,7 +38,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 	}
 
 	@Override
-	public List<? extends Command> getPreProcessingCommands(Context context,boolean withDao) {
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 		List<Command> commands = new ArrayList<>();
@@ -65,7 +57,7 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 	}
 
 	@Override
-	public List<? extends Command> getLineProcessingCommands(Context context,boolean withDao) {
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		NetexImportParameters parameters = (NetexImportParameters) context.get(CONFIGURATION);
 		boolean level3validation = context.get(VALIDATION) != null;
@@ -157,6 +149,20 @@ public class NetexImporterProcessingCommands implements ProcessingCommands, Cons
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new NetexImporterProcessingCommands();
+			return result;
+		}
 	}
 
 }

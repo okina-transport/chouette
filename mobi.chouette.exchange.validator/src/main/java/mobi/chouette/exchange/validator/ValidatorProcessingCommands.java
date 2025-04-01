@@ -13,20 +13,12 @@ import mobi.chouette.exchange.validation.SharedDataValidatorCommand;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j
 @Data
 public class ValidatorProcessingCommands implements ProcessingCommands, Constant {
-
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new ValidatorProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
 		ProcessingCommandsFactory.factories.put(ValidatorProcessingCommands.class.getName(),
@@ -89,6 +81,20 @@ public class ValidatorProcessingCommands implements ProcessingCommands, Constant
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new ValidatorProcessingCommands();
+			return result;
+		}
 	}
 
 }

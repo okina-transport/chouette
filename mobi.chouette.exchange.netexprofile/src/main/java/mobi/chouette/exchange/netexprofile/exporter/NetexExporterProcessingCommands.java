@@ -14,111 +14,117 @@ import mobi.chouette.exchange.exporter.SaveMetadataCommand;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Log4j
 public class NetexExporterProcessingCommands implements ProcessingCommands, Constant {
 
-    public static class DefaultFactory extends ProcessingCommandsFactory {
+	static {
+		ProcessingCommandsFactory.factories.put(NetexExporterProcessingCommands.class.getName(),
+				new NetexExporterProcessingCommands.DefaultFactory());
+	}
 
-        @Override
-        protected ProcessingCommands create() throws IOException {
-            return new NetexExporterProcessingCommands();
-        }
-    }
+	@Override
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
+		InitialContext initCtx = (InitialContext) context.get(INITIAL_CONTEXT);
+		List<Command> commands = new ArrayList<>();
 
-    static {
-        ProcessingCommandsFactory.factories.put(NetexExporterProcessingCommands.class.getName(),
-                new NetexExporterProcessingCommands.DefaultFactory());
-    }
+		try {
+			commands.add(CommandFactory.create(initCtx, NetexInitExportCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-    @Override
-    public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
-        InitialContext initCtx = (InitialContext) context.get(INITIAL_CONTEXT);
-        List<Command> commands = new ArrayList<>();
+		return commands;
+	}
 
-        try {
-            commands.add(CommandFactory.create(initCtx, NetexInitExportCommand.class.getName()));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+	@Override
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		List<Command> commands = new ArrayList<>();
 
-        return commands;
-    }
+		try {
+			if (withDao) {
+				commands.add(CommandFactory.create(initialContext, DaoNetexLineProducerCommand.class.getName()));
+			} else {
+				commands.add(CommandFactory.create(initialContext, NetexLineProducerCommand.class.getName()));
+			}
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-    @Override
-    public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        List<Command> commands = new ArrayList<>();
+		return commands;
+	}
 
-        try {
-            if (withDao) {
-                commands.add(CommandFactory.create(initialContext, DaoNetexLineProducerCommand.class.getName()));
-            } else {
-                commands.add(CommandFactory.create(initialContext, NetexLineProducerCommand.class.getName()));
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+	@Override
+	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
+		return new ArrayList<>();
+	}
 
-    @Override
-    public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
-    }
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        return new ArrayList<>();
-    }
+		try {
+			commands.add(CommandFactory.create(initialContext, NetexCommonDataProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, NetexCalendarDataProducerCommand.class.getName()));
 
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
+			if (parameters.isValidateAfterExport()) {
+				commands.add(CommandFactory.create(initialContext, NetexValidateExportCommand.class.getName()));
+			}
+			if (parameters.isAddMetadata()) {
+				commands.add(CommandFactory.create(initialContext, SaveMetadataCommand.class.getName()));
+			}
+			commands.add(CommandFactory.create(initialContext, CompressCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-        try {
-            commands.add(CommandFactory.create(initialContext, NetexCommonDataProducerCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, NetexCalendarDataProducerCommand.class.getName()));
+		return commands;
+	}
 
-            if (parameters.isValidateAfterExport()) {
-                commands.add(CommandFactory.create(initialContext, NetexValidateExportCommand.class.getName()));
-            }
-            if (parameters.isAddMetadata()) {
-                commands.add(CommandFactory.create(initialContext, SaveMetadataCommand.class.getName()));
-            }
-            commands.add(CommandFactory.create(initialContext, CompressCommand.class.getName()));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+	@Override
+	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		List<Command> commands = new ArrayList<>();
 
-        return commands;
-    }
+		try {
+			commands.add(CommandFactory.create(initialContext, NetexDisposeExportCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-    @Override
-    public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        List<Command> commands = new ArrayList<>();
+		return commands;
+	}
 
-        try {
-            commands.add(CommandFactory.create(initialContext, NetexDisposeExportCommand.class.getName()));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+	@Override
+	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+		return new ArrayList<>();
+	}
 
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        return new ArrayList<>();
-    }
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			return new NetexExporterProcessingCommands();
+		}
+	}
 }

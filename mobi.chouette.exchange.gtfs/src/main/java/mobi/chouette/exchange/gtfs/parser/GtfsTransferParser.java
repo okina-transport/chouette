@@ -14,7 +14,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
 import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Route;
+import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Transfers;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
@@ -128,17 +128,17 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 
 				Transfers transfers = ObjectFactory.getTransfers(referential, objectId);
 
-				String fromRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getFromRouteId());
-				Route fromRoute = ObjectFactory.getRoute(referential, fromRouteId);
+				String fromRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.LINE_KEY, gtfsTransfer.getFromRouteId());
+				Line fromRoute = fromRouteId.isEmpty() ? null : ObjectFactory.getLine(referential, fromRouteId);
 
-				String toRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getToRouteId());
-				Route toRoute = ObjectFactory.getRoute(referential, toRouteId);
+				String toRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.LINE_KEY, gtfsTransfer.getToRouteId());
+				Line toRoute = toRouteId.isEmpty() ? null : ObjectFactory.getLine(referential, toRouteId);
 
-				String fromStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getFromStopId());
-				StopArea fromStop = ObjectFactory.getStopArea(referential, fromStopId);
+				String fromStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.STOPAREA_KEY, gtfsTransfer.getFromStopId());
+				StopArea fromStop = fromStopId.isEmpty() ? null : ObjectFactory.getStopArea(referential, fromStopId.replace("StopArea", "Quay"));
 
-				String toStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.ROUTE_KEY, gtfsTransfer.getToStopId());
-				StopArea toStop = ObjectFactory.getStopArea(referential, toStopId);
+				String toStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.STOPAREA_KEY, gtfsTransfer.getToStopId());
+				StopArea toStop = toStopId.isEmpty() ? null : ObjectFactory.getStopArea(referential, toStopId.replace("StopArea", "Quay"));
 
 				convert(gtfsTransfer, transfers, fromRoute, toRoute, fromStop, toStop);
 			}
@@ -186,14 +186,14 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		//		AbstractConverter.addLocation(context, "transfers.txt", connectionLink.getObjectId(), gtfsTransfer.getId());
 	}
 
-	protected void convert(GtfsTransfer gtfsTransfer, Transfers transfers, Route fromRoute, Route toRoute, StopArea fromStop, StopArea toStop) throws Exception {
-		transfers.setFromRoute(fromRoute);
-		transfers.setToRoute(toRoute);
+	protected void convert(GtfsTransfer gtfsTransfer, Transfers transfers, Line fromRoute, Line toRoute, StopArea fromStop, StopArea toStop) throws Exception {
+		transfers.setFromLine(fromRoute);
+		transfers.setToLine(toRoute);
 		transfers.setFromStop(fromStop);
 		transfers.setToStop(toStop);
 		transfers.setFromTripId(gtfsTransfer.getFromTripId());
 		transfers.setToTripId(gtfsTransfer.getToTripId());
-		if(gtfsTransfer.getTransferType() != null){
+		if (gtfsTransfer.getTransferType() != null) {
 			transfers.setTransferType(mobi.chouette.model.Transfers.TransferType.valueOf(String.valueOf(gtfsTransfer.getTransferType())));
 		}
 		transfers.setMinTransferTime(gtfsTransfer.getMinTransferTime());

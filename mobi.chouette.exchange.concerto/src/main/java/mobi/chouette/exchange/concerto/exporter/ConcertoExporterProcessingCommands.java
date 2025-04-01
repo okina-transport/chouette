@@ -15,20 +15,12 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j
 @Data
 public class ConcertoExporterProcessingCommands implements ProcessingCommands, Constant {
-
-	public static class DefaultFactory extends ProcessingCommandsFactory {
-
-		@Override
-		protected ProcessingCommands create() throws IOException {
-			ProcessingCommands result = new ConcertoExporterProcessingCommands();
-			return result;
-		}
-	}
 
 	static {
 		ProcessingCommandsFactory.factories.put(ConcertoExporterProcessingCommands.class.getName(), new DefaultFactory());
@@ -74,7 +66,7 @@ public class ConcertoExporterProcessingCommands implements ProcessingCommands, C
 		try {
 			commands.add(CommandFactory.create(initialContext, ConcertoSharedDataProducerCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, ConcertoTerminateExportCommand.class.getName()));
-			if(!allSchemas) {
+			if (!allSchemas) {
 				commands.add(CommandFactory.create(initialContext, MergeCommand.class.getName()));
 			}
 		} catch (Exception e) {
@@ -87,9 +79,9 @@ public class ConcertoExporterProcessingCommands implements ProcessingCommands, C
 
 	@Override
 	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-	    //@todo sch Voir pourquoi pas utilisé
-        List<Command> commands = new ArrayList<>();
-        return commands;
+		//@todo sch Voir pourquoi pas utilisé
+		List<Command> commands = new ArrayList<>();
+		return commands;
 	}
 
 	@Override
@@ -101,7 +93,7 @@ public class ConcertoExporterProcessingCommands implements ProcessingCommands, C
 
 	@Override
 	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-        //@todo sch Voir pourquoi pas utilisé
+		//@todo sch Voir pourquoi pas utilisé
 		List<Command> commands = new ArrayList<>();
 		return commands;
 	}
@@ -109,6 +101,20 @@ public class ConcertoExporterProcessingCommands implements ProcessingCommands, C
 	@Override
 	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean b) {
+		return Collections.emptyList();
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new ConcertoExporterProcessingCommands();
+			return result;
+		}
 	}
 
 }
