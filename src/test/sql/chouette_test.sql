@@ -5480,7 +5480,29 @@ CREATE SEQUENCE chouette_gui.transfers_id_seq
     NO MINVALUE
     NO MAXVALUE CACHE 1;
 
+ALTER TABLE chouette_gui.fare_rules DROP COLUMN IF EXISTS route_id;
 
+CREATE TABLE IF NOT EXISTS chouette_gui.fare_rule_lines (
+                                               fare_rule_id BIGINT NOT NULL,
+                                               line_id BIGINT NOT NULL,
+                                               PRIMARY KEY (fare_rule_id, line_id),
+    FOREIGN KEY (fare_rule_id) REFERENCES chouette_gui.fare_rules (id) ON DELETE CASCADE,
+    FOREIGN KEY (line_id) REFERENCES chouette_gui.lines (id) ON DELETE CASCADE
+    );
+
+ALTER TABLE chouette_gui.transfers DROP COLUMN IF EXISTS from_route_id;
+ALTER TABLE chouette_gui.transfers DROP COLUMN IF EXISTS to_route_id;
+ALTER TABLE chouette_gui.transfers DROP CONSTRAINT IF EXISTS from_route_id_fk;
+ALTER TABLE chouette_gui.transfers DROP CONSTRAINT IF EXISTS to_route_id_fk;
+
+ALTER TABLE chouette_gui.transfers ADD COLUMN from_line_id bigint;
+ALTER TABLE chouette_gui.transfers ADD COLUMN to_line_id bigint;
+ALTER TABLE chouette_gui.transfers ADD CONSTRAINT from_line_id_fk FOREIGN KEY (from_line_id) REFERENCES chouette_gui.lines (id) ON DELETE CASCADE;
+ALTER TABLE chouette_gui.transfers ADD CONSTRAINT to_line_id_fk FOREIGN KEY (to_line_id) REFERENCES chouette_gui.lines (id) ON DELETE CASCADE;
+
+ALTER TABLE chouette_gui.fare_attributes DROP COLUMN IF EXISTS agency_id;
+ALTER TABLE chouette_gui.fare_attributes ADD COLUMN company_id bigint;
+ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KEY (company_id) REFERENCES chouette_gui.companies (id);
 
 -- Completed on 2016-01-04 11:09:57 CET
 
