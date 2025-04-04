@@ -11,6 +11,7 @@ import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.exporter.GtfsExporterCommand;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
+import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.model.admin.ExportType;
 import mobi.chouette.model.admin.GlobalExportMonitoring;
 import mobi.chouette.model.admin.JobStatus;
@@ -60,6 +61,7 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
         String[] exportedReferentialTab = exportedReferentials.split(",");
 
         JobData jobData = (JobData) context.get(JOB_DATA);
+        ActionReport actionReport = (ActionReport) context.get(REPORT);
 
         Map<String, GlobalExportMonitoring> exportMonitoringByReferential = globalExportMonitoringService.initGlobalMonitoring(exportedReferentialTab, parameters.getExportConfigurationId(), jobData.getId(), ExportType.GTFS);
         GlobalExportMonitoring globalExportMonitoring;
@@ -74,7 +76,15 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
                 globalExportMonitoring.setStatus(JobStatus.FAILED);
                 globalExportMonitoringService.saveMonitoringAdminContext(globalExportMonitoring);
             }
-            globalExportMonitoring.setStatus(JobStatus.OK);
+            if("OK".equals(actionReport.getResult())){
+                globalExportMonitoring.setStatus(JobStatus.OK);
+            }else{
+                globalExportMonitoring.setStatus(JobStatus.FAILED);
+            }
+
+            // Global status must be true. Errors on particular referential must not fail global export
+            actionReport.setResult("OK");
+
             globalExportMonitoringService.saveMonitoringAdminContext(globalExportMonitoring);
         }
 
