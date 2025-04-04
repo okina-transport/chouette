@@ -12,4 +12,5 @@ public interface RouteDAO extends GenericDAO<Route> {
 
     List<Route> findByLineIdAndDirection(Long lineId, PTDirectionEnum direction);
 
+	Boolean existsByObjectId(String objectId);
 }

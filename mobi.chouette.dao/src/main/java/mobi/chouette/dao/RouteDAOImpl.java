@@ -54,4 +54,9 @@ public class RouteDAOImpl extends GenericDAOImpl<Route> implements RouteDAO{
 				.getResultList();
 	}
 
+	@Override
+	public Boolean existsByObjectId(String objectId) {
+		Long count = em.createQuery("SELECT COUNT(r) FROM Route r WHERE r.objectId = :objectId", Long.class).setParameter("objectId", objectId).getSingleResult();
+		return count > 0;
+	}
 }

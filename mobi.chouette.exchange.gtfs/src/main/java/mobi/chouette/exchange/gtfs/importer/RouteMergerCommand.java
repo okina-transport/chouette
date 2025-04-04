@@ -60,12 +60,14 @@ public class RouteMergerCommand implements Command {
 
         GtfsImportParameters params = (GtfsImportParameters) context.get(CONFIGURATION);
 
-        for (Map.Entry<Long, Set<PTDirectionEnum>> lineDirectionEntry : lineDirections.entrySet()) {
-            for (PTDirectionEnum ptDirectionEnum : lineDirectionEntry.getValue()) {
-                launchMergeForLineAndDirection(lineDirectionEntry.getKey(), ptDirectionEnum, params.isRenameRoutesAfterMerge());
-            }
-        }
+		for (Map.Entry<Long, Set<PTDirectionEnum>> lineDirectionEntry : lineDirections.entrySet()) {
+			for (PTDirectionEnum ptDirectionEnum : lineDirectionEntry.getValue()) {
+				launchMergeForLineAndDirection(lineDirectionEntry.getKey(), ptDirectionEnum, params.isRenameRoutesAfterMerge());
 
+			}
+
+		}
+		launchRenameRouteObjectId();
 
         LocalDateTime end = LocalDateTime.now();
         Duration duration = Duration.between(start, end);
@@ -79,36 +81,72 @@ public class RouteMergerCommand implements Command {
         return SUCCESS;
     }
 
-    /**
-     * Execute a loop on all routes of a specific line/direction to check and merge route that can be merged
-     * The loop is executed as long as merge happens and stops when no merge could be done.
-     * @param lineId
-     * 		Id of the line on which merges must be done
-     * @param ptDirectionEnum
-     * 		Direction on which merges must be done
-     * @param renameRoutesAfterMerge
-     *      Rename routes with all journey pattern departure and arrival stop names (eg: "A / B -> C / D")
-     */
-    private void launchMergeForLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum, boolean renameRoutesAfterMerge) {
-        int nbMerge = 0;
-        while (mergeLineAndDirection(lineId, ptDirectionEnum)) {
-            nbMerge++;
-        }
-        if (nbMerge == 0 || !renameRoutesAfterMerge) {
-            return;
-        }
-        List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
-        if (CollectionUtils.isEmpty(routes)) {
-            return;
-        }
-        for (Route route : routes) {
-            // Use sets to remove duplicates
-            Set<String> departuresStopNames = route.getJourneyPatterns().stream().map(jp -> jp.getDepartureStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-            Set<String> arrivalStopNames = route.getJourneyPatterns().stream().map(jp -> jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-            route.setName(String.format("%s -> %s", String.join(" / ", departuresStopNames), String.join(" / ",
-                    arrivalStopNames)));
-        }
-    }
+	/**
+	 * Execute a loop on all routes of a specific line/direction to check and merge route that can be merged
+	 * The loop is executed as long as merge happens and stops when no merge could be done.
+	 *
+	 * @param lineId                 Id of the line on which merges must be done
+	 * @param ptDirectionEnum        Direction on which merges must be done
+	 * @param renameRoutesAfterMerge Rename routes with all journey pattern departure and arrival stop names (eg: "A / B -> C / D")
+	 */
+	private void launchMergeForLineAndDirection(Long lineId, PTDirectionEnum ptDirectionEnum, boolean renameRoutesAfterMerge) {
+		int nbMerge = 0;
+		while (mergeLineAndDirection(lineId, ptDirectionEnum)) {
+			nbMerge++;
+		}
+		if (nbMerge == 0 || !renameRoutesAfterMerge) {
+			return;
+		}
+		List<Route> routes = routeDAO.findByLineIdAndDirection(lineId, ptDirectionEnum);
+		if (CollectionUtils.isEmpty(routes)) {
+			return;
+		}
+		for (Route route : routes) {
+			// Use sets to remove duplicates
+			Set<String> departuresStopNames = route.getJourneyPatterns().stream().map(jp -> jp.getDepartureStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+			Set<String> arrivalStopNames = route.getJourneyPatterns().stream().map(jp -> jp.getArrivalStopPoint().getScheduledStopPoint().getContainedInStopAreaRef().getObject().getName()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+			route.setName(String.format("%s -> %s", String.join(" / ", departuresStopNames), String.join(" / ", arrivalStopNames)));
+		}
+	}
+
+	public void launchRenameRouteObjectId() {
+		List<Route> routes = routeDAO.findAll();
+
+		// Map pour stocker temporairement les nouveaux ObjectID et vérifier les doublons
+		Map<String, Route> newObjectIdMap = new HashMap<>();
+		List<Route> routesToUpdate = new ArrayList<>();
+		int iterator = 1;
+
+		for (Route route : routes) {
+			String[] routeObjectId = route.getObjectId().split("_");
+			String baseObjectId = routeObjectId[0] + "_" + route.getLine().getId() + "_" + route.getDirection();
+			String newRouteObjectId = baseObjectId;
+
+			// Vérifier si l'ObjectID de base existe déjà
+			if (newObjectIdMap.containsKey(baseObjectId)) {
+				// Trouver un ObjectID unique en incrémentant un suffixe
+				int suffix = 1;
+				while (newObjectIdMap.containsKey(baseObjectId + "_" + suffix)) {
+					suffix++;
+				}
+				newRouteObjectId = baseObjectId + "_" + suffix;
+			}
+
+			// Vérifier aussi si le nouvel ObjectID n'existe pas déjà en base
+			while (routeDAO.existsByObjectId(newRouteObjectId)) {
+				iterator++;
+				newRouteObjectId = baseObjectId + "_" + iterator;
+			}
+
+			// Mettre à jour l'ObjectID de la route
+			route.setObjectId(newRouteObjectId);
+			newObjectIdMap.put(newRouteObjectId, route);
+			routesToUpdate.add(route);
+		}
+
+		// Sauvegarder toutes les routes modifiées en une seule opération
+		routesToUpdate.stream().map(route -> routeDAO.update(route));
+	}
 
     /**
      * Compares each route to other routes with same line/direction and merge them if possible.
