@@ -30,7 +30,7 @@ public class GtfsValidationReporter implements Constant {
 		reporter.addItemToValidationReport(context, "1-GTFS-", "Route", 3, "E", "E", "W");
 
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Common", 4, "E", "W", "E", "W");
-		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 7, "E", "W", "W", "E", "E", "E", "E");
+		reporter.addItemToValidationReport(context, "2-GTFS-", "Stop", 7, "E", "W", "W", "E", "W", "E", "E");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "StopTime", 1, "E");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W", "W", "W", "W");
 
@@ -45,7 +45,6 @@ public class GtfsValidationReporter implements Constant {
 	public void throwUnknownError(Context context, Exception ex, String filenameInfo) throws Exception {
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
 		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-		String name = name(filenameInfo);
 		String checkPointName = checkPointName(GtfsException.ERROR.SYSTEM);
 
 		if (filenameInfo != null && filenameInfo.indexOf('.') > 0) {
@@ -62,7 +61,7 @@ public class GtfsValidationReporter implements Constant {
 		validationReporter.reportSuccess(context, GTFS_1_GTFS_CSV_1);
 	}
 
-	public void reportErrors(Context context, String routeId, Set<GtfsException> errors, String filename) throws Exception {
+	public void reportErrors(Context context, String routeId, Set<GtfsException> errors, String filename) {
 		for (GtfsException error : errors) {
 			reportError(context, routeId, error, filename);
 		}
@@ -440,8 +439,9 @@ public class GtfsValidationReporter implements Constant {
 			case COORDINATES_STOP_0_0:
 				// 2-GTFS-Stop-5
 				checkPointName = checkPointName(GtfsException.ERROR.COORDINATES_STOP_0_0);
-				validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
-				throw ex;
+				validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context,
+						new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getCode()), routeId), ex.getValue());
+				break;
 
 			case PREFIX_REMOVAL_ERROR:
 				// 2-GTFS-Stop-6
@@ -607,25 +607,6 @@ public class GtfsValidationReporter implements Constant {
 		}
 	}
 
-	private String capitalize(String name) {
-		// CSV, CalendarDate, StopTime
-		if ("csv".equalsIgnoreCase(name))
-			return "CSV";
-		if ("calendar_date".equalsIgnoreCase(name))
-			return "CalendarDate";
-		if ("stop_time".equalsIgnoreCase(name))
-			return "StopTime";
-		if (name != null && !name.trim().isEmpty()) {
-			name = name.trim();
-			char c = name.charAt(0);
-			if (c >= 'a' && c <= 'z') {
-				name = name.substring(1);
-				name = (char) ((int) c + (int) 'A' - (int) ('a')) + name;
-			}
-		}
-		return name;
-	}
-
 	private String name(String filename) {
 		if (filename != null) {
 			if (filename.indexOf('.') > 0)
@@ -705,7 +686,7 @@ public class GtfsValidationReporter implements Constant {
 
 	}
 
-	public void reportErrors(Context context, Set<GtfsException> errors, String fileName) throws Exception {
+	public void reportErrors(Context context, Set<GtfsException> errors, String fileName) {
 		reportErrors(context, null, errors, fileName);
 
 	}

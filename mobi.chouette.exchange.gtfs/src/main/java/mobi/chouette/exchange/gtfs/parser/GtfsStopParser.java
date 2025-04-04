@@ -20,16 +20,28 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Log4j
 public class GtfsStopParser implements Parser, Validator, Constant {
 
+	static {
+		ParserFactory.register(GtfsStopParser.class.getName(), new ParserFactory() {
+			@Override
+			protected Parser create() {
+				return new GtfsStopParser();
+			}
+		});
+	}
+	
 	private String railUICregexp;
 	
 	@Override
@@ -40,7 +52,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		gtfsValidationReporter.getExceptions().clear();
 
 		List<String> selfReferencingStops = new ArrayList<>();
-		
+
 		// stops.txt
 		// log.info("validating stops");
 		if (importer.hasStopImporter()) { // the file "stops.txt" exists ?
@@ -48,7 +60,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 
 			Index<GtfsStop> parser = null;
 			try { // Read and check the header line of the file "stops.txt"
-				parser = importer.getStopById(); 
+				parser = importer.getStopById();
 			} catch (Exception ex ) {
 				if (ex instanceof GtfsException) {
 					gtfsValidationReporter.reportError(context, (GtfsException)ex, GTFS_STOPS_FILE);
@@ -58,40 +70,49 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			}
 
 			gtfsValidationReporter.validateOkCSV(context, GTFS_STOPS_FILE);
-		
+
 			if (parser == null) { // importer.getStopById() fails for any other reason
 				gtfsValidationReporter.throwUnknownError(context, new Exception("Cannot instantiate StopById class"), GTFS_STOPS_FILE);
+				return;
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, parser.getOkTests());
 				gtfsValidationReporter.validateUnknownError(context);
 			}
-			
-			if (!parser.getErrors().isEmpty()) {
+
+			if (CollectionUtils.isNotEmpty(parser.getErrors())) {
 				gtfsValidationReporter.reportErrors(context, parser.getErrors(), GTFS_STOPS_FILE);
 				parser.getErrors().clear();
 			}
-			
+
 			gtfsValidationReporter.validateOKGeneralSyntax(context, GTFS_STOPS_FILE);
-		
+
 			if (parser.getLength() == 0) {
 				gtfsValidationReporter.reportError(context, new GtfsException(GTFS_STOPS_FILE, 1, null, GtfsException.ERROR.FILE_WITH_NO_ENTRY, null, null), GTFS_STOPS_FILE);
 			} else {
 				gtfsValidationReporter.validate(context, GTFS_STOPS_FILE, GtfsException.ERROR.FILE_WITH_NO_ENTRY);
 			}
-		
+
 			GtfsException fatalException = null;
 			boolean hasLocationType = false;
 			parser.setWithValidation(true);
+			Set<String> parentStopIds = new HashSet<>();
+			if (parameters.isRemoveParentStations()) {
+				for (GtfsStop bean : parser) {
+					if (StringUtils.isNotBlank(bean.getParentStation())) {
+						parentStopIds.add(bean.getParentStation());
+					}
+				}
+			}
 			for (GtfsStop bean : parser) {
 				try {
+					if (parameters.isRemoveParentStations() && parentStopIds.contains(bean.getStopId())) {
+						// Do not valide parent stops when removing parent stations
+						continue;
+					}
 					if (!parameters.isRemoveParentStations() && bean.getParentStation() != null && bean.getStopId().equals(bean.getParentStation().replaceFirst("^"+parameters.getCommercialPointIdPrefixToRemove(),"").trim())){
 						selfReferencingStops.add(bean.getStopId());
 					}
-
-					if (bean.getLocationType() == null)
-						;//bean.setLocationType(LocationType.Stop);
-					else
-						hasLocationType = true;
+					hasLocationType = bean.getLocationType() != null;
 					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
@@ -118,8 +139,8 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		} else {
 			gtfsValidationReporter.reportError(context, new GtfsException(GTFS_STOPS_FILE, 1, null, GtfsException.ERROR.MISSING_FILE, null, null), GTFS_STOPS_FILE);
 		}
-	}	
-	
+	}
+
 	@Override
 	public void parse(Context context) throws Exception {
 
@@ -146,7 +167,6 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		}
 	}
 
-
 	private void handlePrefixes(GtfsStop gtfsStop, GtfsImportParameters configuration){
 
 		if (gtfsStop.getLocationType() == LocationType.Station){
@@ -159,16 +179,15 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			}
 		}
 	}
-
+	
 	private void checkUniqueIdWithParent(GtfsStop gtfsStop){
 		if (gtfsStop.getStopId().equals(gtfsStop.getParentStation())){
 			log.error("Error on prefix removal. Duplicate id for parent and child on id :" + gtfsStop.getStopId());
 		}
 	}
-	
+
 	protected void convert(Context context, GtfsStop gtfsStop, StopArea stopArea) {
 		Referential referential = (Referential) context.get(REFERENTIAL);
-		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 
 		if (LocationType.Station.equals(gtfsStop.getLocationType()) && configuration.isRailUICprocessing()){
@@ -190,14 +209,8 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			stopArea.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
 
 			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getCommercialPointIdPrefixToRemove(),"").trim());
-			if (StringUtils.trimToNull(gtfsStop.getParentStation()) != null) {
-				// TODO report
-			}
 		} else {
 			stopArea.setOriginalStopId(stopArea.getOriginalStopId().replaceFirst("^"+configuration.getQuayIdPrefixToRemove(),"").trim());
-			if (!importer.getStopById().containsKey(gtfsStop.getParentStation())) {
-				// TODO report
-			}
 			stopArea.setAreaType(ChouetteAreaEnum.BoardingPosition);
 			if (gtfsStop.getParentStation() != null && !configuration.isRemoveParentStations()) {
 				String parentId = ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(),
@@ -229,12 +242,12 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		stopArea.setCityName(gtfsStop.getLocality());
 		stopArea.setZipCode(gtfsStop.getPostalCode());
 		stopArea.setPlatformCode(gtfsStop.getPlatformCode());
-		
+
 		if(gtfsStop.getVehicleType() != null) {
 			stopArea.setTransportModeName(gtfsStop.getVehicleType().getTransportMode());
 			stopArea.setTransportSubMode(gtfsStop.getVehicleType().getSubMode());
 		}
-		
+
 		stopArea.setFilled(true);
 
 		if(gtfsStop.getZoneId() != null){
@@ -255,14 +268,5 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		if (matcher.matches()) {
 			stopArea.setRailUic(matcher.group(1));
 		}
-	}
-
-	static {
-		ParserFactory.register(GtfsStopParser.class.getName(), new ParserFactory() {
-			@Override
-			protected Parser create() {
-				return new GtfsStopParser();
-			}
-		});
 	}
 }

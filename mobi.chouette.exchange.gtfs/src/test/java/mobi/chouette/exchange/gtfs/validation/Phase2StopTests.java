@@ -7,7 +7,6 @@ import mobi.chouette.exchange.validation.report.CheckPointErrorReport;
 import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.CheckPointReport.SEVERITY;
 import mobi.chouette.exchange.validation.report.ValidationReporter.RESULT;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -151,7 +150,7 @@ public class Phase2StopTests extends AbstractPhase2Tests {
     public void verifyTest_2_7() throws Exception {
         log.info(Color.GREEN + "Stop_7 : coordinates stops 0 0" + Color.NORMAL);
         Context context = new Context();
-        CheckPointReport result = verifyValidation( log, context, "stop_7", GTFS_2_GTFS_Stop_5,SEVERITY.ERROR, RESULT.NOK,true);
+        CheckPointReport result = verifyValidation( log, context, "stop_7", GTFS_2_GTFS_Stop_5,SEVERITY.WARNING, RESULT.NOK,true);
 
         Assert.assertEquals(result.getCheckPointErrorCount(), 1, "detail count");
         for (CheckPointErrorReport detail : getDetails(context, result))
