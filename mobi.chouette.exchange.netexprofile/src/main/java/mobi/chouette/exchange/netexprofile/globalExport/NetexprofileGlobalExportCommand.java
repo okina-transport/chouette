@@ -47,7 +47,7 @@ public class NetexprofileGlobalExportCommand extends AbstractImporterCommand imp
         JobData jobData = (JobData) context.get(JOB_DATA);
         ActionReport actionReport = (ActionReport) context.get(REPORT);
         String mergedFileName = parameters.getExportedFileName();
-        Map<String, GlobalExportMonitoring> exportMonitoringByReferential = globalExportMonitoringService.initGlobalMonitoring(exportedReferentialTab, parameters.getExportConfigurationId(), jobData.getId(), ExportType.GTFS);
+        Map<String, GlobalExportMonitoring> exportMonitoringByReferential = globalExportMonitoringService.initGlobalMonitoring(exportedReferentialTab, parameters.getExportConfigurationId(), jobData.getId(), ExportType.NETEX);
         GlobalExportMonitoring globalExportMonitoring;
 
         for (String referential : exportedReferentialTab) {
