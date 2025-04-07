@@ -90,7 +90,9 @@ public class GtfsFareRuleParser implements Parser, Validator, Constant {
 			for (GtfsFareRule bean : parser) {
 				try {
 					GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-					bean.setRouteId(bean.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					if (bean.getRouteId() != null) {
+						bean.setRouteId(bean.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					}
 					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
