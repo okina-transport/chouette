@@ -74,30 +74,35 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
             CSVPrinter csvPrinter = new CSVPrinter(csvWriter,
                     CSVFormat.Builder.create().setHeader(CSV_HEADERS).build());
             for (Provider referential : referentials) {
-                ContextHolder.clear();
-                ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
-                LocalDate today = LocalDate.now(ZONE_ID);
+
+                try {
+                    ContextHolder.clear();
+                    ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
+                    LocalDate today = LocalDate.now(ZONE_ID);
 
 
-                List<FirstOrLastJourneyInfo> todayEntities = vjDAO.getFirstOrLastJourneyData(today);
-                List<FirstOrLastJourneyInfo> tomorrowEntities = vjDAO.getFirstOrLastJourneyData(today.plusDays(1));
+                    List<FirstOrLastJourneyInfo> todayEntities = vjDAO.getFirstOrLastJourneyData(today);
+                    List<FirstOrLastJourneyInfo> tomorrowEntities = vjDAO.getFirstOrLastJourneyData(today.plusDays(1));
 
 
-                List<FirstOrLastJourneyInfo> all = new ArrayList<>();
-                if (CollectionUtils.isNotEmpty(todayEntities)) {
-                    all.addAll(todayEntities);
-                }
-                if (CollectionUtils.isNotEmpty(tomorrowEntities)) {
-                    all.addAll(tomorrowEntities);
-                }
+                    List<FirstOrLastJourneyInfo> all = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(todayEntities)) {
+                        all.addAll(todayEntities);
+                    }
+                    if (CollectionUtils.isNotEmpty(tomorrowEntities)) {
+                        all.addAll(tomorrowEntities);
+                    }
 
-                for (FirstOrLastJourneyInfo entity : all) {
-                    csvPrinter.printRecord(
-                            DF_YYYY_MM_DD.format(entity.getDate()),
-                            entity.getLineId(),
-                            entity.getVehicleJourneyId(),
-                            entity.getServicePosition().name()
-                    );
+                    for (FirstOrLastJourneyInfo entity : all) {
+                        csvPrinter.printRecord(
+                                DF_YYYY_MM_DD.format(entity.getDate()),
+                                entity.getLineId(),
+                                entity.getVehicleJourneyId(),
+                                entity.getServicePosition().name()
+                        );
+                    }
+                }catch(Exception e){
+                    log.error("Error while generating firstOrLastJourneyInfo for provider:" + referential.getName(), e);
                 }
             }
             csvPrinter.flush();
