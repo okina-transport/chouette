@@ -9,6 +9,7 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.TestDescription;
 import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
+import mobi.chouette.exchange.importer.GenerateFirstOrLastJourneyInfo;
 import mobi.chouette.exchange.importer.GenerateIneoVJMappingCsv;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Stat;
@@ -192,6 +193,22 @@ public class RestAdmin implements Constant {
 			c.execute(new mobi.chouette.common.Context());
 		} catch (Exception e) {
 			log.error("Error executing GenerateIneoVJMappingCsv command", e);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	@GET
+	@Path("/generate_first_or_last_journey_info")
+	public void generateFirstOrLastJourneyInfoCsv() {
+		log.info(Color.BLUE + "Call Admin generateFirstOrLastJourneyInfoCsv"+ Color.NORMAL);
+
+		try {
+			InitialContext initialContext = new InitialContext();
+			Command c = CommandFactory.create(initialContext, GenerateFirstOrLastJourneyInfo.class.getName());
+			c.execute(new mobi.chouette.common.Context());
+		} catch (Exception e) {
+			log.error("Error executing generateFirstOrLastJourneyInfoCsv command", e);
 			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
 		}
 	}
