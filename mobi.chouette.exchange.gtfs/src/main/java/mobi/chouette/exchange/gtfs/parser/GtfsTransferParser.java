@@ -13,16 +13,13 @@ import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Transfers;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ConnectionLinkTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDateTime;import java.util.Objects;
 
 @Log4j
 public class GtfsTransferParser implements Parser, Validator, Constant {
@@ -128,19 +125,44 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 
 				Transfers transfers = ObjectFactory.getTransfers(referential, objectId);
 
-				String fromRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.LINE_KEY, gtfsTransfer.getFromRouteId());
-				Line fromRoute = fromRouteId.isEmpty() ? null : ObjectFactory.getLine(referential, fromRouteId);
+				if (gtfsTransfer.getFromRouteId() != null) {
+					String newRouteId = !Objects.equals(configuration.getSplitCharacter(), "") ? gtfsTransfer.getFromRouteId().split(configuration.getSplitCharacter())[0] : gtfsTransfer.getFromRouteId();
 
-				String toRouteId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.LINE_KEY, gtfsTransfer.getToRouteId());
-				Line toRoute = toRouteId.isEmpty() ? null : ObjectFactory.getLine(referential, toRouteId);
+					String routeIdModified = newRouteId.replaceFirst("^" + configuration.getLinePrefixToRemove(), "");
+					String lineId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareRule.LINE_KEY, routeIdModified);
+					Line line = ObjectFactory.getLine(referential, lineId);
+					transfers.setFromLine(line);
+				}
 
-				String fromStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.STOPAREA_KEY, gtfsTransfer.getFromStopId());
-				StopArea fromStop = fromStopId.isEmpty() ? null : ObjectFactory.getStopArea(referential, fromStopId.replace("StopArea", "Quay"));
+				if (gtfsTransfer.getToRouteId() != null) {
+					String newRouteId = !Objects.equals(configuration.getSplitCharacter(), "") ? gtfsTransfer.getToRouteId().split(configuration.getSplitCharacter())[0] : gtfsTransfer.getToRouteId();
 
-				String toStopId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), Transfers.STOPAREA_KEY, gtfsTransfer.getToStopId());
-				StopArea toStop = toStopId.isEmpty() ? null : ObjectFactory.getStopArea(referential, toStopId.replace("StopArea", "Quay"));
+					String routeIdModified = newRouteId.replaceFirst("^" + configuration.getLinePrefixToRemove(), "");
+					String lineId = ObjectIdUtil.composeNeptuneObjectId(configuration.getObjectIdPrefix(), FareRule.LINE_KEY, routeIdModified);
+					Line line = ObjectFactory.getLine(referential, lineId);
+					transfers.setToLine(line);
+				}
 
-				convert(gtfsTransfer, transfers, fromRoute, toRoute, fromStop, toStop);
+				String fromStopId = gtfsTransfer.getFromStopId();
+				String toStopId = gtfsTransfer.getToStopId();
+
+				String commercialFromId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? fromStopId.replaceFirst("^" + commercialPointIdPrefixToRemove, "").trim() : fromStopId;
+				String commercialToStopId = StringUtils.isNotEmpty(commercialPointIdPrefixToRemove) ? toStopId.replaceFirst("^" + commercialPointIdPrefixToRemove, "").trim() : toStopId;
+
+				StopArea startOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialFromId));
+				if (startOfLink == null) {
+					// Create between quays by default
+					String quayFromId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? fromStopId.replaceFirst("^" + quayIdPrefixToRemove, "").trim() : fromStopId;
+					startOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quayFromId));
+				}
+
+				StopArea endOfLink = referential.getSharedStopAreas().get(ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "StopPlace", commercialToStopId));
+				if (endOfLink == null) {
+					String quaytoId = StringUtils.isNotEmpty(quayIdPrefixToRemove) ? toStopId.replaceFirst("^" + quayIdPrefixToRemove, "").trim() : toStopId;
+					endOfLink = ObjectFactory.getStopArea(referential, ObjectIdUtil.toStopAreaId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), "Quay", quaytoId));
+				}
+
+				convert(gtfsTransfer, transfers, startOfLink, endOfLink);
 			}
 		}
 	}
@@ -186,9 +208,7 @@ public class GtfsTransferParser implements Parser, Validator, Constant {
 		//		AbstractConverter.addLocation(context, "transfers.txt", connectionLink.getObjectId(), gtfsTransfer.getId());
 	}
 
-	protected void convert(GtfsTransfer gtfsTransfer, Transfers transfers, Line fromRoute, Line toRoute, StopArea fromStop, StopArea toStop) throws Exception {
-		transfers.setFromLine(fromRoute);
-		transfers.setToLine(toRoute);
+	protected void convert(GtfsTransfer gtfsTransfer, Transfers transfers, StopArea fromStop, StopArea toStop) throws Exception {
 		transfers.setFromStop(fromStop);
 		transfers.setToStop(toStop);
 		transfers.setFromTripId(gtfsTransfer.getFromTripId());

@@ -112,24 +112,36 @@ public class TransfersRegisterCommand implements Command {
 				}
 
 				if (transfers.getFromStop() != null) {
-					StopArea oldFromStopAreaValue = cache.getStopAreas().get(transfers.getFromStop().getObjectId());
-					StopArea findedFromStopArea = stopAreaDAO.findByOriginalId(oldFromStopAreaValue.getObjectId().split(":")[2]).get(0);
-					if (findedFromStopArea == null) {
-						stopAreaDAO.create(oldFromStopAreaValue);
-						oldValue.setFromStop(oldFromStopAreaValue);
+					StopArea stopArea = referential.getStopAreas().get(transfers.getFromStop().getObjectId());
+
+					if (stopArea == null) {
+						stopAreaDAO.create(transfers.getFromStop());
+						oldValue.setFromStop(transfers.getFromStop());
 					} else {
-						oldValue.setFromStop(findedFromStopArea);
+						StopArea findedStopArea = stopAreaDAO.findByObjectId(stopArea.getObjectId());
+						if (findedStopArea == null) {
+							stopAreaDAO.create(stopArea);
+							oldValue.setFromStop(stopArea);
+						} else {
+							oldValue.setFromStop(findedStopArea);
+						}
 					}
 				}
 
-				if (transfers.getFromStop() != null) {
-					StopArea oldToStopAreaValue = cache.getStopAreas().get(transfers.getToStop().getObjectId());
-					StopArea findedToStopArea = stopAreaDAO.findByOriginalId(oldToStopAreaValue.getObjectId().split(":")[2]).get(0);
-					if (findedToStopArea == null) {
-						stopAreaDAO.create(oldToStopAreaValue);
-						oldValue.setToStop(oldToStopAreaValue);
+				if (transfers.getToStop() != null) {
+					StopArea stopArea = referential.getStopAreas().get(transfers.getToStop().getObjectId());
+
+					if (stopArea == null) {
+						stopAreaDAO.create(transfers.getToStop());
+						oldValue.setToStop(transfers.getToStop());
 					} else {
-						oldValue.setToStop(findedToStopArea);
+						StopArea findedStopArea = stopAreaDAO.findByObjectId(stopArea.getObjectId());
+						if (findedStopArea == null) {
+							stopAreaDAO.create(stopArea);
+							oldValue.setToStop(stopArea);
+						} else {
+							oldValue.setToStop(findedStopArea);
+						}
 					}
 				}
 

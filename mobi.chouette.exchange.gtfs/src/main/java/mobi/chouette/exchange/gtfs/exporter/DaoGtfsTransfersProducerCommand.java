@@ -43,7 +43,7 @@ public class DaoGtfsTransfersProducerCommand implements Command, Constant {
     }
 
     @EJB
-    private TransfersDAO fareRuleDAO;
+    private TransfersDAO transfersDAO;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -53,7 +53,7 @@ public class DaoGtfsTransfersProducerCommand implements Command, Constant {
 
         try {
             ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
-            List<Transfers> rules = fareRuleDAO.findAll();
+            List<Transfers> transfers = transfersDAO.findAll();
             Object configuration = context.get(CONFIGURATION);
 
             if (!(configuration instanceof GtfsExportParameters)) {
@@ -63,10 +63,10 @@ public class DaoGtfsTransfersProducerCommand implements Command, Constant {
             }
 
             if (collection != null) {
-                collection.getTransfers().addAll(rules);
+                collection.getTransfers().addAll(transfers);
             } else {
                 collection = new ExportableData();
-                collection.getTransfers().addAll(rules);
+                collection.getTransfers().addAll(transfers);
             }
 
             context.put(EXPORTABLE_DATA, collection);

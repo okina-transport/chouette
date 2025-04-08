@@ -78,11 +78,13 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 					Index<GtfsFareRule> indexFareRules = importer.getFareRuleById();
 					for (GtfsFareRule gtfsFareRule : indexFareRules) {
 						if (StringUtils.isNotEmpty(splitCharacter)) {
-							String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
-							if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
-								continue;
-							savedLines.add(newRouteId);
-							gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							if (gtfsFareRule.getRouteId() != null) {
+								String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
+									continue;
+								savedLines.add(newRouteId);
+								gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							}
 						}
 					}
 
