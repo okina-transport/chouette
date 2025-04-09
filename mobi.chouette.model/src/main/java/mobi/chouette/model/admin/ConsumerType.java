@@ -5,5 +5,6 @@ public enum ConsumerType {
     SFTP,
     REST,
     OPENDATASOFT,
-    URL
+    URL,
+    PIGMA
 }
