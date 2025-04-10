@@ -15,15 +15,15 @@ public class GtfsStopUtils {
 
 	public static String getNewStopId(StopArea stop, IdParameters idParams, boolean keepOriginalId, String schemaPrefix) {
 		String idPrefix = ChouetteAreaEnum.BoardingPosition.equals(stop.getAreaType()) ? idParams.getStopIdPrefix() : idParams.getCommercialPointIdPrefix();
-		if (IdFormat.TRIDENT.equals(idParams.getIdFormat())) {
-			if (StringUtils.isNotEmpty(idPrefix)) {
+		if (!keepOriginalId && StringUtils.isNotEmpty(stop.getOriginalStopId())) {
+			if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && StringUtils.isNotEmpty(idPrefix)) {
 				return createTridentId(stop, idPrefix);
-			} else if (schemaPrefix != null) {
-				return createTridentId(stop, schemaPrefix);
 			}
-		} else if (IdFormat.SOURCE.equals(idParams.getIdFormat())) {
-			return createStandardId(stop, idPrefix);
-		} else if (keepOriginalId && IdFormat.SOURCE_GLOBAL.equals(idParams.getIdFormat())) {
+			if (IdFormat.SOURCE.equals(idParams.getIdFormat())) {
+				return createStandardId(stop, idPrefix);
+			}
+		}
+		if (keepOriginalId && IdFormat.SOURCE_GLOBAL.equals(idParams.getIdFormat())) {
 			return createTridentIdStandard(stop, schemaPrefix);
 		}
 		return stop.getObjectId();

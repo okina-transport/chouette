@@ -13,6 +13,7 @@ import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsFareRule;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
 import mobi.chouette.exchange.gtfs.parameters.IdFormat;
+import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.FareRule;
 import mobi.chouette.model.Line;
 
@@ -25,10 +26,13 @@ public class GtfsFareRuleProducer extends AbstractProducer {
 	}
 
 	public boolean save(FareRule neptuneObject, GtfsExportParameters configuration) {
+		String prefix = configuration.getObjectIdPrefix();
+		IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+
 		for (Line line : neptuneObject.getLines()) {
 			rule.setFareId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
 			if (neptuneObject.getLines() != null) {
-				rule.setRouteId(ObjectIdUtil.toGtfsId(line.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
+				rule.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(line.getObjectId(), prefix, configuration.isKeepOriginalId()), idParams));
 			}
 			if (neptuneObject.getOriginId() != null) {
 				rule.setOriginId(neptuneObject.getOriginId());
