@@ -97,7 +97,7 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
                         csvPrinter.printRecord(
                                 DF_YYYY_MM_DD.format(entity.getDate()),
                                 entity.getLineId(),
-                                entity.getVehicleJourneyId(),
+                                entity.getVehicleJourneyId() + ":LOC",
                                 entity.getServicePosition().name()
                         );
                     }
