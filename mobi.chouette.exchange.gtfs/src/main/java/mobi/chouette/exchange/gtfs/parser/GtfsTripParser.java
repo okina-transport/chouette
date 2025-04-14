@@ -1183,6 +1183,11 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 					rank = i;
 				}
 			}
+
+			if (rank < segmentRank) {
+				rank = segmentRank - 1;
+			}
+
 			// compose routeSection
 			Coordinate projection;
 			boolean lastSegmentIncluded = false;
