@@ -29,10 +29,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static mobi.chouette.exchange.importer.utils.CsvGenerationConstants.DTF_HHMMSS;
+import static mobi.chouette.exchange.importer.utils.ProviderPredicate.isProviderForCsvGeneration;
 
 @Log4j
 @Stateless(name = GenerateIneoVJMappingCsv.COMMAND)
@@ -40,12 +42,11 @@ public class GenerateIneoVJMappingCsv implements Command {
 
     public static final String COMMAND = "GenerateIneoVJMappingCsv";
     public static final String INEO_VJ_MAPPING_CSV = "vehicleJourneyMapping.csv";
-    public static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
-            "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position" };
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
-    public static final DateFormat DF_YYYY_MM_DD = new SimpleDateFormat("yyyyMMdd");
-    public static final DateTimeFormatter DTF_HHMMSS = DateTimeFormatter.ofPattern("HHmmss");
+    protected static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
+            "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position" };
     private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
+    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
 
     @EJB
     VehicleJourneyDAO vjDAO;
@@ -66,8 +67,7 @@ public class GenerateIneoVJMappingCsv implements Command {
         ContextHolder.setContext("admin");
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
-                .filter(prov -> !prov.getCode().startsWith("mobiiti") && !prov.getCode().equals(
-                        "technique"))
+                .filter(isProviderForCsvGeneration())
                 .collect(Collectors.toList());
         try (BufferedWriter csvWriter = Files.newBufferedWriter(OUTDIR.resolve(INEO_VJ_MAPPING_CSV),
                 StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
@@ -90,7 +90,7 @@ public class GenerateIneoVJMappingCsv implements Command {
 
                 for (IneoVJMapping entity : all) {
                     csvPrinter.printRecord(
-                            DF_YYYY_MM_DD.format(entity.getDate()),
+                            dateFormatyyyyMMdd.format(entity.getDate()),
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
                             entity.getRouteDirection(),

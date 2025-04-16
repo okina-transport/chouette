@@ -2,19 +2,17 @@ package mobi.chouette.exchange.importer;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
-import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.ProviderDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.exchange.importer.utils.FileUtils;
 import mobi.chouette.model.FirstOrLastJourneyInfo;
-import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.Provider;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
@@ -34,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.exchange.importer.utils.ProviderPredicate.isProviderForCsvGeneration;
+
 @Log4j
 @Stateless(name = GenerateFirstOrLastJourneyInfo.COMMAND)
 public class GenerateFirstOrLastJourneyInfo implements Command {
@@ -41,9 +41,9 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
     public static final String COMMAND = "GenerateFirstOrLastJourneyInfo";
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/vehicleJourneys/");
     public static final String FIRST_OR_LAST_JOURNEY_CSV = "firstOrLastJourney.csv";
-    public static final String[] CSV_HEADERS = { "dateyyyyMMdd",  "lineId","vehicleJourneyId", "servicePosition" };
+    protected static final String[] CSV_HEADERS = { "dateyyyyMMdd",  "lineId","vehicleJourneyId", "servicePosition" };
     private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
-    public static final DateFormat DF_YYYY_MM_DD = new SimpleDateFormat("yyyyMMdd");
+    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
 
     @EJB
     VehicleJourneyDAO vjDAO;
@@ -51,20 +51,22 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
     @EJB
     ProviderDAO providerDAO;
 
+    @EJB
+    FileUtils fileUtils;
+
 
     @Override
     public boolean execute(Context context) throws Exception {
         log.info("Start generation of GenerateFirstOrLastJourneyInfo");
 
         long startTime = System.currentTimeMillis();
-        buildFolderIfNotExist(OUTDIR);
+        fileUtils.buildFolderIfNotExist(OUTDIR);
         String currentContext = ContextHolder.getContext();
         ContextHolder.clear();
         ContextHolder.setContext("admin");
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
-                .filter(prov -> !prov.getCode().startsWith("mobiiti") && !prov.getCode().equals(
-                        "technique"))
+                .filter(isProviderForCsvGeneration())
                 .collect(Collectors.toList());
 
 
@@ -95,7 +97,7 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
 
                     for (FirstOrLastJourneyInfo entity : all) {
                         csvPrinter.printRecord(
-                                DF_YYYY_MM_DD.format(entity.getDate()),
+                                dateFormatyyyyMMdd.format(entity.getDate()),
                                 entity.getLineId(),
                                 entity.getVehicleJourneyId() + ":LOC",
                                 entity.getServicePosition().name()
@@ -116,12 +118,6 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
 
         finally {
             ContextHolder.setContext(currentContext);
-        }
-    }
-
-    public void buildFolderIfNotExist(Path folder) throws IOException {
-        if (!Files.exists(folder) && !folder.toFile().mkdirs()) {
-            throw new IOException("Error creating directory " + folder.toAbsolutePath());
         }
     }
 

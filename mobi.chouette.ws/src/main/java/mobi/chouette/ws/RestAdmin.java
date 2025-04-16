@@ -11,6 +11,7 @@ import mobi.chouette.exchange.TestDescription;
 import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
 import mobi.chouette.exchange.importer.GenerateFirstOrLastJourneyInfo;
 import mobi.chouette.exchange.importer.GenerateIneoVJMappingCsv;
+import mobi.chouette.exchange.importer.GenerateTheoreticalStopMonitoringInfo;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Stat;
 import mobi.chouette.service.JobService;
@@ -19,6 +20,8 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
@@ -56,7 +59,8 @@ public class RestAdmin implements Constant {
 	@Context
 	UriInfo uriInfo;
 
-
+    @Resource(lookup = "java:comp/DefaultManagedExecutorService")
+    ManagedExecutorService executor;
 
 	// jobs listing
 	@GET
@@ -214,6 +218,29 @@ public class RestAdmin implements Constant {
 	}
 
 	@GET
+	@Path("/generate_theoretical_stop_monitoring")
+	public void generateTheoreticalStopMonitoringInfo() {
+		log.info(Color.BLUE + "Call Admin generateTheoreticalStopMonitoringInfo"+ Color.NORMAL);
+		if (!"true".equals(System.getenv("GENERATE_TH_SM_DATA"))) {
+			log.warn("Env variable GENERATE_TH_SM_DATA not set to 'true', abort");
+			return;
+		}
+
+        executor.submit(() -> {
+			try {
+				InitialContext initialContext = new InitialContext();
+				Command c = CommandFactory.create(initialContext, GenerateTheoreticalStopMonitoringInfo.class.getName());
+				c.execute(new mobi.chouette.common.Context());
+				return true;
+			} catch (Exception e) {
+				log.error("Error executing GenerateTheoreticalStopMonitoringInfo command", e);
+				return false;
+			}
+		});
+
+	}
+
+	@GET
 	@Path("/test_list/{action}{type:(/[^/]+?)?}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTestList(@PathParam("action") String action,
@@ -342,14 +369,14 @@ public class RestAdmin implements Constant {
 			return result;
 		}
 	}
-	
+
 	private String parseType(String type) {
 		if (type != null && type.startsWith("/")) {
 			return type.substring(1);
 		}
 		return type;
 	}
-	
-	
+
+
 
 }
