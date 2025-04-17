@@ -119,7 +119,12 @@ public class RouteMergerCommand implements Command {
 
 		for (Route route : routes) {
 			String[] routeObjectId = route.getObjectId().split("_");
-			String baseObjectId = routeObjectId[0] + "_" + route.getLine().getId() + "_" + route.getDirection();
+
+			String id = routeObjectId[0];
+			if (!id.contains(":Route:")) {
+				id = id.split(":")[0]+":Route:"+id.split(":")[1];
+			}
+			String baseObjectId = id + "_" + route.getLine().getId() + "_" + route.getDirection();
 			String newRouteObjectId = baseObjectId;
 
 			// Vérifier si l'ObjectID de base existe déjà
