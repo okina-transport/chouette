@@ -118,13 +118,7 @@ public class RouteMergerCommand implements Command {
 		int iterator = 1;
 
 		for (Route route : routes) {
-			String[] routeObjectId = route.getObjectId().split("_");
-
-			String id = routeObjectId[0];
-			if (!id.contains(":Route:")) {
-				id = id.split(":")[0]+":Route:"+id.split(":")[1];
-			}
-			String baseObjectId = id + "_" + route.getLine().getId() + "_" + route.getDirection();
+			String baseObjectId = processRouteObjectId(route);
 			String newRouteObjectId = baseObjectId;
 
 			// Vérifier si l'ObjectID de base existe déjà
@@ -152,6 +146,38 @@ public class RouteMergerCommand implements Command {
 		// Sauvegarder toutes les routes modifiées en une seule opération
 		routesToUpdate.stream().map(route -> routeDAO.update(route));
 	}
+
+	public String processRouteObjectId(Route route) {
+        // Vérification de base
+        if (route == null || route.getObjectId() == null || route.getLine() == null) {
+            throw new IllegalArgumentException("Route or its required properties are null");
+        }
+
+        String[] routeObjectIdParts = route.getObjectId().split(":");
+        if (routeObjectIdParts.length < 3) {
+            throw new IllegalArgumentException("Invalid objectId format: " + route.getObjectId());
+        }
+
+        // Construction de l'ID de base
+        String id = routeObjectIdParts[0];
+        String middlePart = routeObjectIdParts[1];
+
+        // Gestion de la partie centrale
+        if (!middlePart.contains("Route")) {
+            id += ":Route:";
+        } else {
+            id += ":" + middlePart + ":";
+        }
+
+        // Gestion de la dernière partie
+        String lastPart = routeObjectIdParts[2];
+        String[] lastPartComponents = lastPart.split("_");
+        if (lastPartComponents.length == 0) {
+            throw new IllegalArgumentException("Invalid last part format in objectId: " + lastPart);
+        }
+
+        return id + lastPartComponents[0] + "_" + route.getLine().getId() + "_" + route.getDirection();
+    }
 
     /**
      * Compares each route to other routes with same line/direction and merge them if possible.
