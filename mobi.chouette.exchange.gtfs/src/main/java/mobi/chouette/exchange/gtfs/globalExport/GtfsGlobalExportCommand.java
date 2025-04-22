@@ -1,6 +1,8 @@
 package mobi.chouette.exchange.gtfs.globalExport;
 
 import lombok.extern.slf4j.Slf4j;
+
+import mobi.chouette.common.CSVUtils;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
@@ -17,20 +19,22 @@ import mobi.chouette.model.admin.GlobalExportMonitoring;
 import mobi.chouette.model.admin.JobStatus;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -170,28 +174,36 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
     private void generateAggregatedFileWithFiltering(String exportDirectory, String txtFile) throws IOException {
         log.info("Starting generation of aggregated file {}", txtFile);
         Set<String> filesToAggregate = FileUtil.getFiles(exportDirectory, txtFile);
-        boolean isFirstFile = true;
         String mergedFileName = exportDirectory + "/" + MERGE_DIRECTORY + "/" + txtFile  ;
-        Set<String> finalResults = new LinkedHashSet<>();
-
+        Set<CSVRecord> finalRecords = new LinkedHashSet<>();
+        String headerLine = null;
+        Set<String> alreadyProcessedIds = new HashSet<>();
 
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(mergedFileName))) {
             for (String fileToAggregate : filesToAggregate) {
-                Stream<String> lineStream = Files.lines(Paths.get(fileToAggregate));
-
-                List<String> fileLines = lineStream.collect(Collectors.toList());
-
-                int startLine =  isFirstFile ? 0 : 1;
-
-                for (int i = startLine; i < fileLines.size(); i++) {
-                    finalResults.add(fileLines.get(i));
+                File currentFile = new File(fileToAggregate);
+                Iterable<CSVRecord> records = CSVUtils.getRecords(currentFile);
+                if (StringUtils.isEmpty(headerLine)){
+                    headerLine = CSVUtils.readFirstLine(currentFile);
                 }
-                isFirstFile = false;
+
+                for (CSVRecord record : records) {
+                    //  key could be stop_id or agency_id, depending on the file
+                    String key = record.get(0);
+                    if (!alreadyProcessedIds.contains(key)){
+                        finalRecords.add(record);
+                        alreadyProcessedIds.add(key);
+                    }
+                }
             }
 
-            for (String line : finalResults) {
-                writer.write(line);
-                writer.newLine();
+
+            CSVPrinter csvPrinter = new CSVPrinter(writer,
+                    CSVFormat.Builder.create().setHeader(headerLine.split(",")).build());
+
+
+            for (CSVRecord record : finalRecords) {
+                csvPrinter.printRecord(record);
             }
 
         }
