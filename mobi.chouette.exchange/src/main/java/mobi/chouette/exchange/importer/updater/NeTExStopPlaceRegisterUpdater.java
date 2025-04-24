@@ -11,10 +11,10 @@ import mobi.chouette.exchange.validation.ErrorCodeConverter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.Line;
-import mobi.chouette.model.*;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
@@ -56,61 +56,43 @@ import static mobi.chouette.common.PropertyNames.*;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton(name = NeTExStopPlaceRegisterUpdater.BEAN_NAME)
 public class NeTExStopPlaceRegisterUpdater {
-    private static final String STOP_PLACE_REGISTER_MAP = "STOP_PLACE_REGISTER_MAP";
-
-    private static final String STOP_PLACE_REGISTERED_TRANSPORT_MODES = "STOP_PLACE_REGISTERED_TRANSPORT_MODES";
-
-    private static final String VERSION = "1";
-
-
     public static final String MERGED_ID = "merged-id";
-
     public static final String EXTERNAL_REF = "external-ref";
-
     public static final String FARE_ZONE = "fare-zone";
-
     public static final String RAIL_UIC = "RAIL-UIC";
-
-
-
     public static final String BEAN_NAME = "NeTExStopPlaceRegisterUpdater";
-
     public static final String IMPORTED_ID_VALUE_SEPARATOR = ",";
-
-
     public static final ObjectFactory netexObjectFactory = new ObjectFactory();
-
-    private PublicationDeliveryClient client;
-
+    private static final String STOP_PLACE_REGISTER_MAP = "STOP_PLACE_REGISTER_MAP";
+    private static final String STOP_PLACE_REGISTERED_TRANSPORT_MODES = "STOP_PLACE_REGISTERED_TRANSPORT_MODES";
+    private static final String VERSION = "1";
+    private static final ObjectFactory objectFactory = new ObjectFactory();
     private final StopPlaceMapper stopPlaceMapper = new StopPlaceMapper();
 
     private final StopAreaMapper stopAreaMapper = new StopAreaMapper();
-
-    private NavigationPathMapper navigationPathMapper = null;
-
-    private static final ObjectFactory objectFactory = new ObjectFactory();
-
     private final Set<TransportModeNameEnum> busEnums = new HashSet<>(Arrays.asList(TransportModeNameEnum.Coach, TransportModeNameEnum.Bus));
+    private PublicationDeliveryClient client;
+    private NavigationPathMapper navigationPathMapper = null;
+    @EJB
+    private ContenerChecker contenerChecker;
 
     public NeTExStopPlaceRegisterUpdater(PublicationDeliveryClient client) throws DatatypeConfigurationException {
         this.client = client;
         navigationPathMapper = new NavigationPathMapper();
     }
 
+
     public NeTExStopPlaceRegisterUpdater() throws DatatypeConfigurationException {
         navigationPathMapper = new NavigationPathMapper();
     }
 
-
-    @EJB
-    private ContenerChecker contenerChecker;
-
     @PostConstruct
     public void postConstruct() {
-        initializeClient(null, false, false, false);
+        initializeClient(null, false, false, false, true);
     }
 
-    private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames, Boolean updateStopAccessibility){
+    private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames,
+                                  Boolean updateStopAccessibility, Boolean recomputeStopPlacesLocation){
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
 
         if(!StringUtils.isEmpty(ref)) {
@@ -133,6 +115,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
         url += ("&keepStopNames=" + keepStopNames);
 
+        url += ("&recomputeStopPlacesLocation=" + recomputeStopPlacesLocation);
+
         String clientId = getAndValidateProperty(KC_CLIENT_ID);
         String clientSecret = getAndValidateProperty(KC_CLIENT_SECRET);
         String realm = getAndValidateProperty(KC_CLIENT_REALM);
@@ -154,8 +138,10 @@ public class NeTExStopPlaceRegisterUpdater {
         Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
         Boolean keepStopNames = (Boolean) context.get(KEEP_STOP_NAMES);
         Boolean updateStopAccessibility = (Boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
+        Boolean recomputeStopPlacesLocation = (Boolean) context.get(RECOMPUTE_STOP_PLACES_LOCATION);
 
-        initializeClient(ref, keepStopGeolocalisation, keepStopNames, updateStopAccessibility);
+        initializeClient(ref, keepStopGeolocalisation, keepStopNames, updateStopAccessibility,
+                recomputeStopPlacesLocation);
 
         if (client == null) {
             throw new RuntimeException("Looks like PublicationDeliveryClient is not set up correctly. Aborting.");
@@ -314,7 +300,7 @@ public class NeTExStopPlaceRegisterUpdater {
                             .withLang("fr").withTextIdType(""))
                     .withPublicationTimestamp(LocalDateTime.now()).withParticipantRef("participantRef")
                     .withDataObjects(new PublicationDeliveryStructure.DataObjects()
-                            .withCompositeFrameOrCommonFrame(Arrays.asList(jaxSiteFrame)));
+                            .withCompositeFrameOrCommonFrame(Collections.singletonList(jaxSiteFrame)));
 
             PublicationDeliveryStructure response;
             try {
@@ -395,9 +381,9 @@ public class NeTExStopPlaceRegisterUpdater {
             }
 
             log.info("Map with objectId->newObjectId now contains "
-                    + stopPlaceRegisterMap.keySet().size()
+                    + stopPlaceRegisterMap.size()
                     + " keys (objectIds) and "
-                    + stopPlaceRegisterMap.values().size()
+                    + stopPlaceRegisterMap.size()
                     + " values (newObjectIds). correlationId: "
                     + correlationId);
 

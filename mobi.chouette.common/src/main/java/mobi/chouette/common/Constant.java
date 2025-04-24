@@ -69,6 +69,7 @@ public interface Constant {
 	String KEEP_STOP_NAMES = "KeepStopNames";
 	String CLOSE_OLD_CALENDARS = "CloseOldCalendars";
 	String UPDATE_STOP_ACCESSIBILITY = "updateStopAccessibility";
+	String RECOMPUTE_STOP_PLACES_LOCATION = "recomputeStopPlacesLocation";
 
 	char SEP = '|';
 	String NULL = "\\N";

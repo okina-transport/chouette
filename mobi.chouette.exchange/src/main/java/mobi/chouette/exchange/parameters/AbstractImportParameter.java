@@ -35,6 +35,7 @@ import java.util.Set;
         "objectIdPrefix",
         "useTargetNetwork",
         "targetNetwork",
+        "recomputeStopPlacesLocation",
 }, name = "actionImportParameter")
 @Getter
 @Setter
@@ -93,6 +94,9 @@ public class AbstractImportParameter extends AbstractParameter {
 
     @XmlElement(name = "target_network")
     private String targetNetwork = "";
+
+    @XmlElement(name = "recompute_stop_places_location", defaultValue = "true")
+    private boolean recomputeStopPlacesLocation = true;
 
     public boolean isValid(Logger log) {
         return super.isValid(log);

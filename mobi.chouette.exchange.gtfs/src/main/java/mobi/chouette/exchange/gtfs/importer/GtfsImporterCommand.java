@@ -59,6 +59,7 @@ public class GtfsImporterCommand extends AbstractImporterCommand implements Comm
 			context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 			context.put(KEEP_STOP_NAMES, Boolean.valueOf(parameters.isKeepStopNames()));
 			context.put(UPDATE_STOP_ACCESSIBILITY, Boolean.valueOf(parameters.isUpdateStopAccessibility()));
+			context.put(RECOMPUTE_STOP_PLACES_LOCATION, Boolean.valueOf(parameters.isRecomputeStopPlacesLocation()));
 
 			// import total par défaut
 			if (parameters.getReferencesType() == null)

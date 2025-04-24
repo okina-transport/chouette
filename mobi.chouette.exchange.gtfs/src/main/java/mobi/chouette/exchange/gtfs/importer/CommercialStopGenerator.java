@@ -46,9 +46,9 @@ public class CommercialStopGenerator extends AbstractGenerator {
 					key = key.substring(0, key.lastIndexOf(" " + token[token.length - 1]));
 				}
 			} else
-				if (key.length() > ignoreEndCharacters) {
-					key = key.substring(0, key.length() - ignoreEndCharacters);
-				}
+			if (key.length() > ignoreEndCharacters) {
+				key = key.substring(0, key.length() - ignoreEndCharacters);
+			}
 			keys.add(key);
 		}
 
@@ -73,14 +73,14 @@ public class CommercialStopGenerator extends AbstractGenerator {
 					area = stop.getParent();
 				}
 			} else
-				if (stop.getParent() != null) {
-					if (!area.equals(stop.getParent())) {
-						log.error("conflict between generated and setted parent");
-						log.error("stop   = " + stop.getObjectId() + " " + stop.getName());
-						log.error("parent = " + area.getObjectId() + " " + area.getName());
-						continue;
-					}
+			if (stop.getParent() != null) {
+				if (!area.equals(stop.getParent())) {
+					log.error("conflict between generated and setted parent");
+					log.error("stop   = " + stop.getObjectId() + " " + stop.getName());
+					log.error("parent = " + area.getObjectId() + " " + area.getName());
+					continue;
 				}
+			}
 			stop.setParent(area);
 
 		}

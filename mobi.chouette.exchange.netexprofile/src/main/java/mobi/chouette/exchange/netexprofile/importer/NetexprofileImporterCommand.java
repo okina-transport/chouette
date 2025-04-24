@@ -24,6 +24,10 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 
 	public static final String COMMAND = "NetextImporterCommand";
 
+	static {
+		CommandFactory.factories.put(NetexprofileImporterCommand.class.getName(), new DefaultCommandFactory());
+	}
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		boolean result = SUCCESS;
@@ -53,6 +57,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 		context.put(KEEP_STOP_NAMES, Boolean.valueOf(parameters.isKeepStopNames()));
 		context.put(UPDATE_STOP_ACCESSIBILITY, Boolean.FALSE);
+		context.put(RECOMPUTE_STOP_PLACES_LOCATION, Boolean.valueOf(parameters.isRecomputeStopPlacesLocation()));
 
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NetexImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);
@@ -63,7 +68,7 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 		} catch (Exception e) {
 			String fileName = (String) context.get(FILE_NAME);
 			log.error("Error parsing Netex file "+fileName+": "+e.getMessage(), e);
-			actionReporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, "Internal error while parsing Netex files: "+e.toString());
+			actionReporter.setActionError(context, ActionReporter.ERROR_CODE.INTERNAL_ERROR, "Internal error while parsing Netex files: "+ e);
 		} finally {
 			progression.dispose(context);
 			log.info(Color.YELLOW + monitor.stop() + Color.NORMAL);
@@ -79,9 +84,5 @@ public class NetexprofileImporterCommand extends AbstractImporterCommand impleme
 			Command result = new NetexprofileImporterCommand();
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(NetexprofileImporterCommand.class.getName(), new DefaultCommandFactory());
 	}
 }

@@ -1,10 +1,7 @@
 package mobi.chouette.exchange.neptune.importer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
@@ -20,8 +17,9 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ReportConstant;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * execute use in context : 
@@ -39,6 +37,10 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 
 	public static final String COMMAND = "NeptuneImporterCommand";
 
+	static {
+		CommandFactory.factories.put(NeptuneImporterCommand.class.getName(), new DefaultCommandFactory());
+	}
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		boolean result = ERROR;
@@ -48,7 +50,7 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 		context.put(INCOMING_LINE_LIST, new ArrayList());
 
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
-		
+
 		// initialize reporting and progression
 		ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext,
 				ProgressionCommand.class.getName());
@@ -76,10 +78,11 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 		context.put(KEEP_STOP_GEOLOCALISATION, Boolean.valueOf(parameters.isKeepStopGeolocalisation()));
 		context.put(KEEP_STOP_NAMES, Boolean.valueOf(parameters.isKeepStopNames()));
 		context.put(UPDATE_STOP_ACCESSIBILITY, Boolean.FALSE);
-		
+		context.put(RECOMPUTE_STOP_PLACES_LOCATION, Boolean.valueOf(parameters.isRecomputeStopPlacesLocation()));
+
 		ProcessingCommands commands = ProcessingCommandsFactory.create(NeptuneImporterProcessingCommands.class.getName());
 		result = process(context, commands, progression, true, Mode.line);
-		
+
 
 		} catch (CommandCancelledException e) {
 			reporter.setActionError(context, ERROR_CODE.INTERNAL_ERROR, "Command cancelled");
@@ -103,9 +106,5 @@ public class NeptuneImporterCommand extends AbstractImporterCommand implements C
 			Command result = new NeptuneImporterCommand();
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(NeptuneImporterCommand.class.getName(), new DefaultCommandFactory());
 	}
 }
