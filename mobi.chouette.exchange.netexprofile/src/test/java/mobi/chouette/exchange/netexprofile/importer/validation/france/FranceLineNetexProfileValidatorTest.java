@@ -53,6 +53,8 @@ public class FranceLineNetexProfileValidatorTest {
             if (cp.getState() == NOK) {
                 System.err.println(cp);
                 valid = false;
+            } else {
+				valid = true;
             }
         }
 

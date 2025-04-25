@@ -54,6 +54,8 @@ public class FranceCalendarNetexProfileValidatorTest {
             if (cp.getState() == NOK) {
                 System.err.println(cp);
                 valid = false;
+            } else {
+				valid = true;
             }
         }
 

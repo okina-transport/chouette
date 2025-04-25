@@ -38,13 +38,13 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.time.LocalDateTime;import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static mobi.chouette.common.Constant.CONFIGURATION;
-import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
+import static mobi.chouette.common.Constant.CREATION_DATE;import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
 import static org.jboss.util.property.jmx.SystemPropertyClassValue.log;
 
@@ -178,6 +178,7 @@ public class PublicationDeliveryFranceWriterTest {
             writer = NetexXMLProcessingHelperFactory.createXMLWriter(filePath);
 
             writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
+			if (context.get(CREATION_DATE) == null) context.put(CREATION_DATE, LocalDateTime.now());
             PublicationDeliveryFranceWriter.write(context, writer, exportableData, exportableNetexData, NetexFragmentMode.LINE, marshaller);
 
         } catch (XMLStreamException | IOException e) {
