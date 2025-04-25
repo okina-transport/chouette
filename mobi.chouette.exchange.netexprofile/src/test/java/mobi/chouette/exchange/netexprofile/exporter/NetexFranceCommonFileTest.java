@@ -130,12 +130,14 @@ public class NetexFranceCommonFileTest {
         Assert.assertEquals(firstSiteConnection.getWalkTransferDuration().getDefaultDuration(),expectedDuration);
 
 
-        List<FlexibleLine> lines = getFlexibleLines(firstFrame.getMembers());
-        Assert.assertFalse(lines.isEmpty(),"lines should be there");
-        FlexibleLine firstLine = lines.get(0);
+        List<FlexibleLine> flexibleLines = getFlexibleLines(firstFrame.getMembers());
+        Assert.assertTrue(flexibleLines.isEmpty(),"lines should be there");
+
+		List<org.rutebanken.netex.model.Line> lines = getLines(firstFrame.getMembers());
+        org.rutebanken.netex.model.Line firstLine = lines.get(0);
         Assert.assertEquals(firstLine.getName().getValue(),"TestLineName");
         Assert.assertEquals(firstLine.getShortName().getValue(),"testPublishedName");
-        Assert.assertEquals(firstLine.getTransportMode(),AllVehicleModesOfTransportEnumeration.BUS);
+        Assert.assertEquals(firstLine.getTransportMode(), AllVehicleModesOfTransportEnumeration.BUS);
 
         org.rutebanken.netex.model.AccessibilityAssessment firstLineAssessment = firstLine.getAccessibilityAssessment();
         Assert.assertNotNull(firstLineAssessment);

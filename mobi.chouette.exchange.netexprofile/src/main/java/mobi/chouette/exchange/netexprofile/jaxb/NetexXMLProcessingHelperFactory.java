@@ -113,7 +113,7 @@ public class NetexXMLProcessingHelperFactory {
 
 		List<BufferedInputStream> streamsToClose = (List<BufferedInputStream>)context.get(STREAM_TO_CLOSE);
 		BufferedInputStream bufferedStream = new BufferedInputStream(new FileInputStream(file));
-		streamsToClose.add(bufferedStream);
+		if (streamsToClose != null) streamsToClose.add(bufferedStream);
 
 
 		JAXBElement<PublicationDeliveryStructure> commonDeliveryStructure = (JAXBElement<PublicationDeliveryStructure>) createUnmarshaller
