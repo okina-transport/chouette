@@ -110,7 +110,6 @@ public interface Constant {
 	String ROUTE_LINKS_USED_IN_MULTIPLE_FILES = "routeLinksUsedInMutipleFiles";
 	String ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE = "routeLinksUsedMutipleTimesInTheSameFile";
 	String ROUTE_LINKS_USED_SAME_FROM_AND_TO_SCHEDULED_STOP_POINT = "routeLinksUsedSameFromAndToScheduledStopPoint";
-	String NOT_ENOUGH_ROUTE_POINTS = "notEnoughRoutePoints";
 
 	String SCHEDULE_STOP_POINT_STOP_AREA_NULL = "scheduleStopPointInStopAreaRefNull";
 	String WRONG_SCHEDULE_STOP_POINT_COORDINATES = "wrongScheduleStopPointCoordinates";
