@@ -189,17 +189,19 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 			Map<Integer, Integer> stopSequences = new HashMap<>();
 			boolean duplicateConsecutiveStops = false;
 			GtfsImportParameters params = (GtfsImportParameters) context.get(CONFIGURATION);
-			
-			Set<String> notEnoughRoutePointsForTrip = (Set<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
-            if (notEnoughRoutePointsForTrip == null) {
-                notEnoughRoutePointsForTrip = new HashSet<>();
-            }
+
+			List<String> notEnoughRoutePointsForTrip = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
+			if (notEnoughRoutePointsForTrip == null) {
+				notEnoughRoutePointsForTrip = new ArrayList<>();
+			}
 
 			for (String tripId : tripIds) {
 				stopSequences.clear();
 				Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
 				if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
-					notEnoughRoutePointsForTrip.add(tripId);
+					if (!notEnoughRoutePointsForTrip.contains(tripId)) {
+						notEnoughRoutePointsForTrip.add(tripId);
+					}
 				}
 
 				List<GtfsStopTime> tripIdStopTimes = new ArrayList<>();

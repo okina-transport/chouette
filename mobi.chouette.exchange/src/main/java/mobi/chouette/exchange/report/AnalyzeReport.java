@@ -11,7 +11,7 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.TransportModeNameEnum;
-import org.apache.commons.collections.CollectionUtils;import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 
@@ -283,7 +283,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("inconsistentTimeProgress", buildStringList(inconsistentTimeProgress, "sequence"));
         }
 
-		if (!CollectionUtils.isEmpty(notEnoughRoutePointsForTrip)) {
+		if (!notEnoughRoutePointsForTrip.isEmpty()) {
 			canLaunchImport = false;
 			analyzeReportMap.put("notEnoughRoutePointsForTrip", buildStringList(notEnoughRoutePointsForTrip, "tripId"));
 		}
