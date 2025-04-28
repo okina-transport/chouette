@@ -47,7 +47,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop;
     private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference;
     private List<String> inconsistentTimeProgress;
-	private List<String> notEnonghRoutePointsForTrip;
+	private List<String> notEnoughRoutePointsForTrip;
 
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
@@ -114,7 +114,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         duplicateTripStructureInStopTimesWithSameHourlyAndStop = analyzeReport.getDuplicateTripStructureInStopTimesWithSameHourlyAndStop();
         stopPointsPassingTimesDifference = analyzeReport.getStopPointsPassingTimesDifference();
         inconsistentTimeProgress = analyzeReport.getInconsistentTimeProgress();
-		notEnonghRoutePointsForTrip = analyzeReport.getNotEnonghRoutePointsForTrip();
+		notEnoughRoutePointsForTrip = analyzeReport.getNotEnoughRoutePointsForTrip();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -123,7 +123,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
 
-		containsNotEnonghRoutePointsForTrip(context);
+		containsNotEnoughRoutePointsForTrip(context);
         containsRouteLinksUsedInMutipleFiles(context);
         containsRouteLinksUsedMutipleTimesInTheSameFile(context);
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
@@ -448,11 +448,11 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         }
     }
 
-	private void containsNotEnonghRoutePointsForTrip(Context context) {
-		List<String> notEnonghRoutePoints = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
+	private void containsNotEnoughRoutePointsForTrip(Context context) {
+		List<String> notEnounghRoutePoints = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
 
-		if (notEnonghRoutePoints != null) {
-			notEnonghRoutePointsForTrip.addAll(notEnonghRoutePoints);
+		if (notEnounghRoutePoints != null) {
+			notEnoughRoutePointsForTrip.addAll(notEnounghRoutePoints);
 		}
 	}
 

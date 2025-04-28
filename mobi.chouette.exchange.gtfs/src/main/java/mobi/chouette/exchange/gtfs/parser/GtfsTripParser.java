@@ -190,18 +190,16 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 			boolean duplicateConsecutiveStops = false;
 			GtfsImportParameters params = (GtfsImportParameters) context.get(CONFIGURATION);
 			
-			List<String> notEnonghRoutePointsForTrip = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
-			if (notEnonghRoutePointsForTrip == null) {
-				notEnonghRoutePointsForTrip = new ArrayList<>();
-			}
+			Set<String> notEnoughRoutePointsForTrip = (Set<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
+            if (notEnoughRoutePointsForTrip == null) {
+                notEnoughRoutePointsForTrip = new HashSet<>();
+            }
 
 			for (String tripId : tripIds) {
 				stopSequences.clear();
 				Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
 				if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
-					if (!notEnonghRoutePointsForTrip.contains(tripId)) {
-						notEnonghRoutePointsForTrip.add(tripId);
-					}
+					notEnoughRoutePointsForTrip.add(tripId);
 				}
 
 				List<GtfsStopTime> tripIdStopTimes = new ArrayList<>();
@@ -243,7 +241,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 			}
 
-			context.put(NOT_ENOUGH_ROUTE_POINTS, notEnonghRoutePointsForTrip);
+			context.put(NOT_ENOUGH_ROUTE_POINTS, notEnoughRoutePointsForTrip);
 
 			findTripIdsWithSameTimes(stopTimeParser, context);
 			findTripIdsWithSameTimesAndStops(stopTimeParser, context);

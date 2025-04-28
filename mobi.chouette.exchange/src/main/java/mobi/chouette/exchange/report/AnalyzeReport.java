@@ -11,7 +11,7 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.TransportModeNameEnum;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 
@@ -134,8 +134,8 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "inconsistentTimeProgress")
     private List<String> inconsistentTimeProgress = new ArrayList<>();
 
-	@XmlElement(name = "notEnonghRoutePointsForTrip")
-	private List<String> notEnonghRoutePointsForTrip = new ArrayList<>();
+	@XmlElement(name = "notEnoughRoutePointsForTrip")
+	private List<String> notEnoughRoutePointsForTrip = new ArrayList<>();
 
     @XmlTransient
     private Date date = new Date(0);
@@ -283,9 +283,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("inconsistentTimeProgress", buildStringList(inconsistentTimeProgress, "sequence"));
         }
 
-		if (!notEnonghRoutePointsForTrip.isEmpty()) {
+		if (!CollectionUtils.isEmpty(notEnoughRoutePointsForTrip)) {
 			canLaunchImport = false;
-			analyzeReportMap.put("notEnonghRoutePointsForTrip", buildStringList(notEnonghRoutePointsForTrip, "tripId"));
+			analyzeReportMap.put("notEnoughRoutePointsForTrip", buildStringList(notEnoughRoutePointsForTrip, "tripId"));
 		}
 
         if (selfReferencingStops != null && !selfReferencingStops.isEmpty()){
