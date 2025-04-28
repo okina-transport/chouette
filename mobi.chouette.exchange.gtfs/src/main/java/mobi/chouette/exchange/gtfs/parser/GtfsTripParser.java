@@ -187,17 +187,21 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 			Iterable<String> tripIds = stopTimeParser.keys();
 
 			Map<Integer, Integer> stopSequences = new HashMap<>();
-			boolean enoughStopTimes = true;
 			boolean duplicateConsecutiveStops = false;
 			GtfsImportParameters params = (GtfsImportParameters) context.get(CONFIGURATION);
+			
+			List<String> notEnonghRoutePointsForTrip = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
+			if (notEnonghRoutePointsForTrip == null) {
+				notEnonghRoutePointsForTrip = new ArrayList<>();
+			}
+
 			for (String tripId : tripIds) {
 				stopSequences.clear();
 				Iterable<GtfsStopTime> stopTimes = stopTimeParser.values(tripId);
-
-
 				if (StreamSupport.stream(stopTimes.spliterator(), false).count() < 2) {
-					enoughStopTimes = false;
-					gtfsValidationReporter.reportError(context, new GtfsException(stopTimeParser.getPath(), stopTimeParser.getValue(tripId).getId(), stopTimeParser.getIndex(StopTimeByTrip.FIELDS.stop_sequence.name()), StopTimeByTrip.FIELDS.trip_id.name() + "," + StopTimeByTrip.FIELDS.stop_sequence.name(), GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS, null, tripId), GTFS_STOP_TIMES_FILE);
+					if (!notEnonghRoutePointsForTrip.contains(tripId)) {
+						notEnonghRoutePointsForTrip.add(tripId);
+					}
 				}
 
 				List<GtfsStopTime> tripIdStopTimes = new ArrayList<>();
@@ -239,12 +243,10 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 			}
 
+			context.put(NOT_ENOUGH_ROUTE_POINTS, notEnonghRoutePointsForTrip);
+
 			findTripIdsWithSameTimes(stopTimeParser, context);
 			findTripIdsWithSameTimesAndStops(stopTimeParser, context);
-
-			if (enoughStopTimes) {
-				gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.NOT_ENOUGH_ROUTE_POINTS);
-			}
 
 			if (!duplicateConsecutiveStops) {
 				gtfsValidationReporter.validate(context, GTFS_STOP_TIMES_FILE, GtfsException.ERROR.DUPLICATE_CONSECUTIVE_STOP_TIME);
