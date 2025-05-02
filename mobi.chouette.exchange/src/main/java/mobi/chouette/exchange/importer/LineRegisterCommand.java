@@ -14,7 +14,7 @@ import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyAtStopDAO;
 import mobi.chouette.exchange.importer.updater.*;
-import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.importer.utils.IdGeneration;import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
@@ -331,6 +331,8 @@ public class LineRegisterCommand implements Command {
 	protected void writeVjas(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint, VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) {
 		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
 		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+		IdGeneration.populateObjectId(vehicleJourney);
 
 		if (keepBoardingAlighting) {
 			Optional<BoardingAlightingPossibilityEnum> currentBoardingAlightingPossibilityOpt = getActualBoardingAlightingPossibility(vehicleJourney, vehicleJourneyAtStop);
