@@ -43,7 +43,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
 
         org.rutebanken.netex.model.Line_VersionStructure netexLine;
-        if (TadEnum.NO_TAD.equals(neptuneLine.getTad())){
+        if (TadEnum.NO_TAD.equals(neptuneLine.getTad()) || neptuneLine.getTad() == null) {
             netexLine = netexFactory.createLine();
         }else{
             netexLine = createFlexibleLine(neptuneLine);

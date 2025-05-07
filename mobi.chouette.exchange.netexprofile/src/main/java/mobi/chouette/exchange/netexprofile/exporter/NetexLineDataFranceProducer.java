@@ -1,5 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.FileUtil;
 import mobi.chouette.common.JobData;
@@ -28,13 +29,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.PASSENGER_STOP_ASSIGNMENT;
 
+@Slf4j
 public class NetexLineDataFranceProducer extends NetexProducer implements Constant {
 
     protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
@@ -237,11 +241,12 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
     private void producerAndCollectDirection(List<Route> routes, ExportableNetexData exportableNetexData) {
         for (Route route : routes) {
-            for (StopPoint stopPoint : route.getStopPoints()) {
-                if (stopPoint.getPosition().equals(route.getStopPoints().size() - 1)) {
-                    exportableNetexData.getDirections().add(directionProducer.produce(stopPoint));
-                }
-            }
+            route.getStopPoints().stream()
+                    .filter(Objects::nonNull)
+                    .max(Comparator.comparing(StopPoint::getPosition))
+                    .ifPresent(lastStopPoint ->
+                            exportableNetexData.getDirections().add(directionProducer.produce(lastStopPoint))
+                    );
         }
     }
 

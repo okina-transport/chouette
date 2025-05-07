@@ -66,7 +66,7 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
     }
 
     private boolean isFlexible(Line line){
-        return !TadEnum.NO_TAD.equals(line.getTad());
+        return line.getTad() != null && !TadEnum.NO_TAD.equals(line.getTad());
     }
 }
 

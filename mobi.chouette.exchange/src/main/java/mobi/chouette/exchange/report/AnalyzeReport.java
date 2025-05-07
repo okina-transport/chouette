@@ -134,7 +134,8 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "inconsistentTimeProgress")
     private List<String> inconsistentTimeProgress = new ArrayList<>();
 
-
+	@XmlElement(name = "notEnoughRoutePointsForTrip")
+	private List<String> notEnoughRoutePointsForTrip = new ArrayList<>();
 
     @XmlTransient
     private Date date = new Date(0);
@@ -281,6 +282,11 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             canLaunchImport = false;
             analyzeReportMap.put("inconsistentTimeProgress", buildStringList(inconsistentTimeProgress, "sequence"));
         }
+
+		if (!notEnoughRoutePointsForTrip.isEmpty()) {
+			canLaunchImport = false;
+			analyzeReportMap.put("notEnoughRoutePointsForTrip", buildStringList(notEnoughRoutePointsForTrip, "tripId"));
+		}
 
         if (selfReferencingStops != null && !selfReferencingStops.isEmpty()){
             canLaunchImport = false;

@@ -47,6 +47,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     private Map<String, List<String>> duplicateTripStructureInStopTimesWithSameHourlyAndStop;
     private List<Map<String, List<Map<String, Object>>>> stopPointsPassingTimesDifference;
     private List<String> inconsistentTimeProgress;
+	private List<String> notEnoughRoutePointsForTrip;
 
     public static final String _1_NETEX_MISSING_LINE_NETWORK_ASSOCIATION = "1-NETEXPROFILE-MissingLineNetworkAssociation";
 
@@ -113,6 +114,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         duplicateTripStructureInStopTimesWithSameHourlyAndStop = analyzeReport.getDuplicateTripStructureInStopTimesWithSameHourlyAndStop();
         stopPointsPassingTimesDifference = analyzeReport.getStopPointsPassingTimesDifference();
         inconsistentTimeProgress = analyzeReport.getInconsistentTimeProgress();
+		notEnoughRoutePointsForTrip = analyzeReport.getNotEnoughRoutePointsForTrip();
 
         Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -121,6 +123,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         feedAnalysisWithLineData(context, newValue);
         feedAnalysisWithStopAreaData(newValue);
 
+		containsNotEnoughRoutePointsForTrip(context);
         containsRouteLinksUsedInMutipleFiles(context);
         containsRouteLinksUsedMutipleTimesInTheSameFile(context);
         containsRouteLinksUsedSameFromAndToScheduledStopPoint(context);
@@ -444,6 +447,14 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
             wrongRouteLinksUsedInMutipleFiles.putAll(routeSectionsMultipleFiles);
         }
     }
+
+	private void containsNotEnoughRoutePointsForTrip(Context context) {
+		List<String> notEnounghRoutePoints = (List<String>) context.get(NOT_ENOUGH_ROUTE_POINTS);
+
+		if (notEnounghRoutePoints != null) {
+			notEnoughRoutePointsForTrip.addAll(notEnounghRoutePoints);
+		}
+	}
 
     private void containsRouteLinksUsedMutipleTimesInTheSameFile(Context context) {
         List<String> routeSectionsUsedMutipleTimesInTheSameFile = (List<String>) context.get(ROUTE_LINKS_USED_MULTIPLE_TIMES_IN_THE_SAME_FILE);
