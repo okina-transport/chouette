@@ -5504,45 +5504,6 @@ ALTER TABLE chouette_gui.fare_attributes DROP COLUMN IF EXISTS agency_id;
 ALTER TABLE chouette_gui.fare_attributes ADD COLUMN company_id bigint;
 ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KEY (company_id) REFERENCES chouette_gui.companies (id);
 
--- Suppression des contraintes existantes
-ALTER TABLE chouette_gui.attributions DROP CONSTRAINT IF EXISTS attributions_agency_fkey;
-ALTER TABLE chouette_gui.attributions DROP CONSTRAINT IF EXISTS attributions_line_fkey;
-ALTER TABLE chouette_gui.attributions DROP CONSTRAINT IF EXISTS attributions_vj_fkey;
-
--- Recréation des contraintes avec ON DELETE CASCADE
-ALTER TABLE chouette_gui.attributions
-  ADD CONSTRAINT attributions_agency_fkey
-  FOREIGN KEY (agency_id) REFERENCES chouette_gui.agency(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.attributions
-  ADD CONSTRAINT attributions_line_fkey
-  FOREIGN KEY (line_id) REFERENCES chouette_gui.lines(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.attributions
-  ADD CONSTRAINT attributions_vj_fkey
-  FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.vehicle_journeys_facilities DROP CONSTRAINT IF EXISTS vj_facilities_vehicle_journey_fk;
-
-ALTER TABLE chouette_gui.vehicle_journeys_facilities
-  ADD CONSTRAINT vj_facilities_vehicle_journey_fk
-  FOREIGN KEY (vehicle_journey_id) REFERENCES chouette_gui.vehicle_journeys(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.vehicle_journeys_facilities_key_values DROP CONSTRAINT IF EXISTS vj_facilities_key_values_vj_facilities_fk;
-
-ALTER TABLE chouette_gui.vehicle_journeys_facilities_key_values
-  ADD CONSTRAINT vj_facilities_key_values_vj_facilities_fk
-  FOREIGN KEY (vehicle_journeys_facility_id) REFERENCES chouette_gui.vehicle_journeys_facilities(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.profile_osrm_inter_stop_journey_pattern DROP CONSTRAINT IF EXISTS fk_profile_osrm_inter_stop_journey_pattern_departure_stop_areas;
-ALTER TABLE chouette_gui.profile_osrm_inter_stop_journey_pattern DROP CONSTRAINT IF EXISTS fk_profile_osrm_inter_stop_journey_pattern_arrival_stop_areas_i;
-
-ALTER TABLE chouette_gui.profile_osrm_inter_stop_journey_pattern
-  ADD CONSTRAINT fk_profile_osrm_inter_stop_journey_pattern_arrival_stop_areas_i FOREIGN KEY (arrival_stop_point_id) REFERENCES chouette_gui.stop_points(id) ON DELETE CASCADE;
-
-ALTER TABLE chouette_gui.profile_osrm_inter_stop_journey_pattern
- ADD CONSTRAINT fk_profile_osrm_inter_stop_journey_pattern_departure_stop_areas FOREIGN KEY (departure_stop_point_id) REFERENCES chouette_gui.stop_points(id) ON DELETE CASCADE;
-
 -- Completed on 2016-01-04 11:09:57 CET
 
 --
