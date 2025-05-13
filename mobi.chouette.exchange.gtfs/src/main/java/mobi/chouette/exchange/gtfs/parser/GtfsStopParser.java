@@ -106,13 +106,21 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 			for (GtfsStop bean : parser) {
 				try {
 					if (parameters.isRemoveParentStations() && parentStopIds.contains(bean.getStopId())) {
-						// Do not valide parent stops when removing parent stations
+						// Do not validate parent stops when removing parent stations
 						continue;
 					}
 					if (!parameters.isRemoveParentStations() && bean.getParentStation() != null && bean.getStopId().equals(bean.getParentStation().replaceFirst("^"+parameters.getCommercialPointIdPrefixToRemove(),"").trim())){
 						selfReferencingStops.add(bean.getStopId());
 					}
 					hasLocationType = bean.getLocationType() != null;
+					if (bean.getStopLon() != null && bean.getStopLon().intValue() == 0 && bean.getStopLat() != null && bean.getStopLat().intValue() == 0) {
+						List<String> wrongStopPointCoordinatesList = (List<String>) context.get(WRONG_SCHEDULE_STOP_POINT_COORDINATES);
+						if (wrongStopPointCoordinatesList == null) {
+							wrongStopPointCoordinatesList = new ArrayList<>();
+							context.put(WRONG_SCHEDULE_STOP_POINT_COORDINATES, wrongStopPointCoordinatesList);
+						}
+						wrongStopPointCoordinatesList.add(bean.getStopId());
+					}
 					parser.validate(bean, importer);
 				} catch (Exception ex) {
 					if (ex instanceof GtfsException) {
