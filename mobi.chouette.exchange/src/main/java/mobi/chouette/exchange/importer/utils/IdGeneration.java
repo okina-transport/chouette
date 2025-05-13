@@ -17,7 +17,7 @@ public class IdGeneration {
 
 	public static String translateType(NeptuneObject v) {
 		if (v instanceof VehicleJourney) {
-			return "ServiceJourney";
+			return "VehicleJourney";
 		}
 		return null;
 	}
