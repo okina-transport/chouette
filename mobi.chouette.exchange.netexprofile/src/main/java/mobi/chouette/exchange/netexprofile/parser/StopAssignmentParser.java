@@ -4,11 +4,7 @@ import javax.xml.bind.JAXBElement;
 
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
-import org.rutebanken.netex.model.PassengerStopAssignment;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.StopAssignment_VersionStructure;
-import org.rutebanken.netex.model.StopAssignmentsInFrame_RelStructure;
+import org.rutebanken.netex.model.*;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
@@ -37,27 +33,29 @@ public class StopAssignmentParser extends NetexParser implements Parser, Constan
 
 				// TODO à revoir pour changement de profil
 //				ScheduledStopPointRefStructure scheduledStopPointRef = stopAssignment.getScheduledStopPointRef();
-
-				QuayRefStructure quayRef = stopAssignment.getQuayRef().getValue();
-
-
 				NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
-				String generatedId = NetexImportUtil.composeObjectId("Quay",parameters.getObjectIdPrefix(),quayRef.getRef());
 
-				mobi.chouette.model.StopArea quay = ObjectFactory.getStopArea(referential, generatedId);
-				if(quay.getAreaType() == null) {
-					quay.setAreaType(ChouetteAreaEnum.BoardingPosition);
+				if (stopAssignment.getQuayRef() != null){
+					QuayRefStructure quayRef = stopAssignment.getQuayRef().getValue();
+					String generatedId = NetexImportUtil.composeObjectId("Quay",parameters.getObjectIdPrefix(),quayRef.getRef());
+					mobi.chouette.model.StopArea quay = ObjectFactory.getStopArea(referential, generatedId);
+					if(quay.getAreaType() == null) {
+						quay.setAreaType(ChouetteAreaEnum.BoardingPosition);
+					}
+					String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",scheduledStopPointRef.getValue().getRef());
+					ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
+					scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(quay));
+				}else if (stopAssignment.getStopPlaceRef() != null){
+					StopPlaceRefStructure stopPlaceRef = stopAssignment.getStopPlaceRef().getValue();
+					String generatedId = NetexImportUtil.composeObjectId("StopPlace",parameters.getObjectIdPrefix(),stopPlaceRef.getRef());
+					mobi.chouette.model.StopArea sp = ObjectFactory.getStopArea(referential, generatedId);
+					String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",scheduledStopPointRef.getValue().getRef());
+					ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
+					scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(sp));
 				}
-
-				String scheduledStopPointId = NetexImportUtil.composeObjectIdFromNetexId(context,"ScheduledStopPoint",scheduledStopPointRef.getValue().getRef());
-				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointId);
-
 				// TODO à revoir pour changement de profil
 //				ScheduledStopPoint scheduledStopPoint = ObjectFactory.getScheduledStopPoint(referential, scheduledStopPointRef.getRef());
 
-				scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference<>(quay));
-
-				
 			}
 		}
 	}

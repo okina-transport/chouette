@@ -42,6 +42,7 @@ public class NetexSplitFileCommand implements Command, Constant {
 
     private static Set<String> scheduledStopPointsToCopy = new HashSet<>();
     private static Set<String> journeyPatternsToCopy = new HashSet<>();
+    private static Set<String> operatorsToCopy = new HashSet<>();
     private static Set<String> trainNumbersToCopy = new HashSet<>();
     private static Set<String> journeyPartsCoupleToCopy = new HashSet<>();
     private static Set<String> journeyPartsToCopy = new HashSet<>();
@@ -242,6 +243,10 @@ public class NetexSplitFileCommand implements Command, Constant {
             copyDestinationDisplays(netexJava, serviceFrame);
         }
 
+        if (!operatorsToCopy.isEmpty()) {
+            copyOperators(frameList, netexJava);
+        }
+
 
         PublicationDeliveryStructure.DataObjects dataObj = new PublicationDeliveryStructure.DataObjects();
         frameList.add(objectFact.createServiceFrame(serviceFrame));
@@ -255,6 +260,42 @@ public class NetexSplitFileCommand implements Command, Constant {
         pubDelivery.setPublicationTimestamp(LocalDateTime.now());
         pubDelivery.setParticipantRef("MOBIITI");
         return pubDelivery;
+    }
+
+    private void copyOperators(List<JAXBElement<? extends Common_VersionFrameStructure>> frameList, PublicationDeliveryStructure netexJava) {
+        ResourceFrame resourceFrame = new ResourceFrame();
+        resourceFrame.setId(UUID.randomUUID().toString());
+        resourceFrame.setVersion("any");
+
+        ObjectFactory netexFactory = new ObjectFactory();
+
+        OrganisationsInFrame_RelStructure organisationsInMembers = netexFactory.createOrganisationsInFrame_RelStructure();
+        List<ResourceFrame> originalResourcesFrames = extractResourceFramesFromPublicationDelivery(netexJava);
+        List<Operator> operators = new ArrayList<>();
+
+        for (ResourceFrame originalResourcesFrame : originalResourcesFrames) {
+
+            for (JAXBElement<? extends DataManagedObjectStructure> jaxbElement : originalResourcesFrame.getOrganisations().getOrganisation_()) {
+                if (!(jaxbElement.getValue() instanceof Operator)) {
+                    continue;
+                }
+                Operator currentOperator = (Operator) jaxbElement.getValue();
+                if (operatorsToCopy.contains(currentOperator.getId())){
+                    operators.add(currentOperator);
+                }
+            }
+        }
+
+        List<JAXBElement<? extends DataManagedObjectStructure>> jaxbOperatorList = operators.stream()
+                .map(netexFactory::createOperator)
+                .collect(Collectors.toList());
+
+
+        organisationsInMembers.withOrganisation_(jaxbOperatorList);
+
+
+        resourceFrame.setOrganisations(organisationsInMembers);
+        frameList.add(objectFact.createResourceFrame(resourceFrame));
     }
 
 
@@ -516,6 +557,10 @@ public class NetexSplitFileCommand implements Command, Constant {
 
                         serviceJourney.setParts(null);
                         serviceJourneysToCopy.add(serviceJourney);
+
+                        if (serviceJourney.getOperatorRef() != null) {
+                            operatorsToCopy.add(serviceJourney.getOperatorRef().getRef());
+                        }
                     }
                 }
             }
@@ -834,6 +879,23 @@ public class NetexSplitFileCommand implements Command, Constant {
             for (JAXBElement<? extends Common_VersionFrameStructure> jaxbFrame : compositeFrame.getFrames().getCommonFrame()) {
                 if (jaxbFrame.getValue() instanceof ServiceFrame) {
                     results.add((ServiceFrame) jaxbFrame.getValue());
+                }
+            }
+        }
+        return results;
+    }
+
+
+    private List<ResourceFrame> extractResourceFramesFromPublicationDelivery(PublicationDeliveryStructure publicationDelivery) {
+        List<ResourceFrame> results = new ArrayList<>();
+        PublicationDeliveryStructure.DataObjects dataObjects = publicationDelivery.getDataObjects();
+        List<JAXBElement<? extends Common_VersionFrameStructure>> dataObjectFrames = dataObjects.getCompositeFrameOrCommonFrame();
+        List<CompositeFrame> compositeFrames = NetexObjectUtil.getFrames(CompositeFrame.class, dataObjectFrames);
+
+        for (CompositeFrame compositeFrame : compositeFrames) {
+            for (JAXBElement<? extends Common_VersionFrameStructure> jaxbFrame : compositeFrame.getFrames().getCommonFrame()) {
+                if (jaxbFrame.getValue() instanceof ResourceFrame) {
+                    results.add((ResourceFrame) jaxbFrame.getValue());
                 }
             }
         }
