@@ -226,8 +226,8 @@ public class StopAreaService {
                                 .forEach(keyValue -> Arrays.stream(keyValue.getValue().split(","))
                                         .forEach(id -> {
                                             try{
-                                                log.info(Color.CYAN + "Deleting stop area " + id);
-                                                stopAreaUpdateService.deleteStopArea(id);
+                                                log.info(Color.CYAN + "Deleting stop area " + id + ", disabled");
+                                                //stopAreaUpdateService.deleteStopArea(id);
                                             }catch(Exception e){
                                                 log.error("Error while deleting stopArea:" + id, e);
                                             }
@@ -242,7 +242,7 @@ public class StopAreaService {
 
     public void deleteStopArea(String objectId) {
         ContextHolder.clear();
-        stopAreaUpdateService.deleteStopArea(objectId);
+        //stopAreaUpdateService.deleteStopArea(objectId);
     }
 
     public void deleteUnusedStopAreas() {
@@ -296,7 +296,7 @@ public class StopAreaService {
             log.info("Starting stopArea delete on schema: " + referential);
             ContextHolder.clear();
             ContextHolder.setContext(referential);
-            stopAreaUpdateService.deleteStopArea(objectid);
+           // stopAreaUpdateService.deleteStopArea(objectid);
             log.info("Delete completed on schema: " + referential);
         }
     }
