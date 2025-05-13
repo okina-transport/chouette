@@ -353,7 +353,6 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         }
 
         if (!wrongScheduleStopPointCoordinates.isEmpty()) {
-            canLaunchImport = false;
             analyzeReportMap.put("wrongScheduleStopPointCoordinates", buildWrongScheduleStopPointCoordinates());
         }
 
