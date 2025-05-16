@@ -50,9 +50,6 @@ public class RouteMergerCommand implements Command {
 
         LocalDateTime start = LocalDateTime.now();
 
-        // remove all routeSection because it causes errors while merging 2 routes with different shapes.
-        // route section will be recalculated later
-        routeSectionDAO.deleteAll();
 
 
         Monitor monitor = MonitorFactory.start(COMMAND);
@@ -479,6 +476,23 @@ public class RouteMergerCommand implements Command {
         }
 
         replaceStopPointInVehicleJourneyAtStops(journeyPattern, oldStopPoint, newStopPoint);
+        replaceStopPointInRouteSections(journeyPattern, oldStopPoint, newStopPoint);
+    }
+
+    private void replaceStopPointInRouteSections(JourneyPattern journeyPattern, StopPoint oldStopPoint, StopPoint newStopPoint) {
+
+        for (RouteSection routeSection : journeyPattern.getRouteSections()) {
+
+            if(routeSection.getFromScheduledStopPoint().equals(oldStopPoint.getScheduledStopPoint())){
+                routeSection.setFromScheduledStopPoint(newStopPoint.getScheduledStopPoint());
+            }
+
+            if (routeSection.getToScheduledStopPoint().equals(oldStopPoint.getScheduledStopPoint())){
+                routeSection.setToScheduledStopPoint(newStopPoint.getScheduledStopPoint());
+            }
+
+        }
+
     }
 
     /***
