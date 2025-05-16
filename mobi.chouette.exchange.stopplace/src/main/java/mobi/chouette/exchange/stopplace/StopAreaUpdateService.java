@@ -54,7 +54,12 @@ public class StopAreaUpdateService {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void createOrUpdateStopAreas(Context context, StopAreaUpdateContext updateContext) throws CoreException {
-		new StopAreaUpdateTask(stopAreaDAO, stopAreaUpdater, context, updateContext).update();
+		StopAreaUpdateTask stopAreaUpdateTask = new StopAreaUpdateTask(stopAreaDAO, stopAreaUpdater, context, updateContext);
+		stopAreaUpdateTask.update();
+		List<String> stopAreasToDelete = stopAreaUpdateTask.getStopAreasToDelete();
+		for (String objectid : stopAreasToDelete) {
+			stopAreaDAO.safeDeleteStopArea(objectid);
+		}
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -85,9 +90,9 @@ public class StopAreaUpdateService {
 
 
 	private void cascadeDeleteStopArea(StopArea stopArea) {
-		stopArea.getContainedStopAreas().forEach(child -> cascadeDeleteStopArea(child));
-		stopAreaDAO.delete(stopArea);
-		log.info("Deleted stop area: " + stopArea.getObjectId());
+			stopArea.getContainedStopAreas().forEach(child -> cascadeDeleteStopArea(child));
+			stopAreaDAO.safeDeleteStopArea(stopArea.getObjectId());
+			log.info("Deleted stop area: " + stopArea.getObjectId());
 	}
 
 	public void setStopPlaceRegistryIdFetcher(StopPlaceRegistryIdFetcher stopPlaceRegistryIdFetcher) {
@@ -135,8 +140,8 @@ public class StopAreaUpdateService {
 				.filter(stop -> stop.getContainedStopAreas().stream().allMatch(boardingPosition -> allUnusedBoardingPositionObjectIds.contains(boardingPosition.getObjectId())))
 				.peek(stop -> log.debug("Deleting unused stop area: " + stop)).collect(Collectors.toList());
 
-		unusedBoardingPositions.stream().peek(boardingPosition -> boardingPosition.setParent(null)).forEach(boardingPosition -> stopAreaDAO.delete(boardingPosition));
-		unusedStopAreas.forEach(stop -> stopAreaDAO.delete(stop));
+		unusedBoardingPositions.stream().peek(boardingPosition -> boardingPosition.setParent(null)).forEach(boardingPosition -> stopAreaDAO.safeDeleteStopArea(boardingPosition.getObjectId()));
+		unusedStopAreas.forEach(stop -> stopAreaDAO.safeDeleteStopArea(stop.getObjectId()));
 
 		return unusedStopAreas.size() + unusedBoardingPositions.size();
 	}

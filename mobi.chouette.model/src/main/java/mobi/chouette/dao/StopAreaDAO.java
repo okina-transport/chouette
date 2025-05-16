@@ -15,4 +15,5 @@ public interface StopAreaDAO extends GenericDAO<StopArea> {
     boolean isStopAreaUsed(String stopAreaNetexId);
     int deleteEmptyStopPlaces();
     List<SearchAddressFeatures> findByNamePatternSearchAddressFeatures(String namePattern);
+    int safeDeleteStopArea(String objectId);
 }

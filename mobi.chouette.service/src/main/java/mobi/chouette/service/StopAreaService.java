@@ -13,6 +13,7 @@ import mobi.chouette.exchange.stopplace.PublicationDeliveryStopPlaceParser;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateContext;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateService;
 import mobi.chouette.exchange.validation.report.ValidationReport;
+import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
@@ -87,8 +88,11 @@ public class StopAreaService {
 
         for (String impactedSchema : updateContext.getImpactedSchemas()) {
             //deleted schemas are ignored
-            if (!isSchemaExisting(impactedSchema))
+            if (!isSchemaExisting(impactedSchema)){
+                log.info("schema does not exist: " + impactedSchema);
                 continue;
+            }
+
 
             log.info("Starting update on schema: " + impactedSchema);
             Context chouetteDbContext = createContext();
@@ -220,20 +224,29 @@ public class StopAreaService {
                 log.info("Updating stop area references for stop points for referential " + referential);
                 int updatedCnt = stopAreaUpdateService.updateStopAreaReferences(replacementMap);
                 log.info("Updated stop area references for " + updatedCnt + " stop points for referential " + referential);
-                updateContext.getActiveStopAreas()
-                        .forEach(stopArea -> stopArea.getKeyValues().stream()
-                                .filter(keyValue -> keyValue.getKey() != null && keyValue.getKey().equals("merged-id"))
-                                .forEach(keyValue -> Arrays.stream(keyValue.getValue().split(","))
-                                        .forEach(id -> {
-                                            try{
-                                                log.info(Color.CYAN + "Deleting stop area " + id + ", disabled");
-                                                //stopAreaUpdateService.deleteStopArea(id);
-                                            }catch(Exception e){
-                                                log.error("Error while deleting stopArea:" + id, e);
-                                            }
 
-                                        })));
 
+                for (StopArea activeStopArea : updateContext.getActiveStopAreas()) {
+
+                    for (KeyValue keyValue : activeStopArea.getKeyValues()) {
+                        if (keyValue.getKey() == null ||  !keyValue.getKey().equals("merged-id")) {
+                            continue;
+                        }
+
+                        for (String id : keyValue.getValue().split(",")) {
+                            if (id .equals(activeStopArea.getObjectId())){
+                                // current activeStopArea must not be deleted
+                                continue;
+                            }
+                            try{
+                                log.info(Color.CYAN + "Deleting stop area " + id + ", disabled.origin:" + activeStopArea.getObjectId()+ "," + activeStopArea.getObjectVersion());
+                                stopAreaUpdateService.deleteStopArea(id);
+                            }catch(Exception e){
+                                log.error("Error while deleting stopArea:" + id, e);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -242,7 +255,7 @@ public class StopAreaService {
 
     public void deleteStopArea(String objectId) {
         ContextHolder.clear();
-        //stopAreaUpdateService.deleteStopArea(objectId);
+        stopAreaUpdateService.deleteStopArea(objectId);
     }
 
     public void deleteUnusedStopAreas() {
@@ -296,7 +309,7 @@ public class StopAreaService {
             log.info("Starting stopArea delete on schema: " + referential);
             ContextHolder.clear();
             ContextHolder.setContext(referential);
-           // stopAreaUpdateService.deleteStopArea(objectid);
+            stopAreaUpdateService.deleteStopArea(objectid);
             log.info("Delete completed on schema: " + referential);
         }
     }

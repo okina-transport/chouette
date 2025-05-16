@@ -36,6 +36,8 @@ public class StopAreaUpdateTask {
 
 	private StopAreaUpdateContext updateContext;
 
+	List<String> stopAreasToDelete = new ArrayList<>();
+
 
 	private Map<String, StopArea> removedContainedStopAreas = new HashMap<>();
 
@@ -269,7 +271,7 @@ public class StopAreaUpdateTask {
 		StopArea stopArea = stopAreaDAO.findByObjectId(objectId);
 		if (stopArea != null) {
 			new ArrayList<>(stopArea.getContainedStopAreas()).forEach(containedStopArea -> registerRemovedContainedStopArea(containedStopArea));
-			stopAreaDAO.delete(stopArea);
+			stopAreasToDelete.add(stopArea.getObjectId());
 		} else {
 			log.warn("Could not remove unknown stopArea: " + objectId);
 		}
@@ -278,7 +280,7 @@ public class StopAreaUpdateTask {
 
 	private void removeContainedStopArea(StopArea containedStopArea) {
 		log.info("Deleting obsolete contained StopArea: " + containedStopArea.getObjectId());
-		stopAreaDAO.delete(containedStopArea);
+		stopAreasToDelete.add(containedStopArea.getObjectId());
 		if (containedStopArea.getContainedStopAreas() != null) {
 			containedStopArea.getContainedStopAreas().forEach(grandChild -> removeContainedStopArea(grandChild));
 		}
@@ -292,4 +294,11 @@ public class StopAreaUpdateTask {
 		removedContainedStopAreas.put(obsoleteStopArea.getObjectId(), obsoleteStopArea);
 	}
 
+	public List<String> getStopAreasToDelete() {
+		return stopAreasToDelete;
+	}
+
+	public void setStopAreasToDelete(List<String> stopAreasToDelete) {
+		this.stopAreasToDelete = stopAreasToDelete;
+	}
 }
