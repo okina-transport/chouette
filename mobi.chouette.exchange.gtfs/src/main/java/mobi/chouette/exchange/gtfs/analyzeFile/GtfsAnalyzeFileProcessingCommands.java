@@ -21,6 +21,7 @@ import mobi.chouette.exchange.gtfs.model.importer.Index;
 import mobi.chouette.exchange.importer.TargetNetworkPreprocessCommand;
 import mobi.chouette.exchange.importer.UncompressCommand;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.naming.InitialContext;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Log4j
@@ -68,6 +70,7 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
 		List<Command> commands = new ArrayList<>();
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		Index<GtfsRoute> index = importer.getRouteById();
+		Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
 
 		try {
 			{
@@ -75,32 +78,37 @@ public class GtfsAnalyzeFileProcessingCommands implements ProcessingCommands, Co
 				chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
 				commands.add(chain);
 			}
-
 			ArrayList<String> savedLines = new ArrayList<>();
 
 			String splitCharacter = parameters.getSplitCharacter();
 			context.put(TOTAL_NB_OF_LINES, index.getLength());
 			for (GtfsRoute gtfsRoute : index) {
+				if (CollectionUtils.isEmpty(targetRouteIds) || targetRouteIds.contains(gtfsRoute.getRouteId())) {
+					if (StringUtils.isNotEmpty(splitCharacter)) {
+						String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
+						if (parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
+						savedLines.add(newRouteId);
+						gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					}
 
-				if (StringUtils.isNotEmpty(splitCharacter)) {
-					String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
-					if (parameters.getRouteMerge() && savedLines.contains(newRouteId)) continue;
-					savedLines.add(newRouteId);
-					gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+					GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
+							GtfsRouteParserCommand.class.getName());
+					parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					chain.add(parser);
+
+					// register
+					Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
+					chain.add(analyzeCommand);
+
+					commands.add(chain);
+				} else {
+					log.info("Target routes enabled - Skipping analyze for line " + gtfsRoute.getRouteId());
+					int numberOfLines = (int) context.get(TOTAL_NB_OF_LINES);
+					numberOfLines -= 1;
+					context.put(TOTAL_NB_OF_LINES, numberOfLines);
 				}
-
-				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-
-				GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext,
-						GtfsRouteParserCommand.class.getName());
-				parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-				chain.add(parser);
-
-				// register
-				Command analyzeCommand = CommandFactory.create(initialContext, ProcessAnalyzeCommand.class.getName());
-				chain.add(analyzeCommand);
-
-				commands.add(chain);
 			}
 
 

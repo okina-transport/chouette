@@ -35,6 +35,7 @@ public class GtfsValidationReporter implements Constant {
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W", "W", "W", "W");
 
 		reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
+		reporter.addItemToValidationReport(context, GTFS_TARGET_ROUTE, "W");
 	}
 
 	public void dispose() {
@@ -498,7 +499,10 @@ public class GtfsValidationReporter implements Constant {
 				checkPointName = checkPointName(GtfsException.ERROR.DUPLICATE_CONSECUTIVE_STOP_TIME);
 				validationReporter.addCheckPointReportError(context, checkPointName, buildDataLocation(context, new DataLocation(filenameInfo, ex.getId(), ex.getColumn(), ex.getField()), routeId), ex.getValue(), ex.getField());
 				throw ex;
-
+			case UNMATCHED_TARGET_ROUTE_ID:
+				checkPointName = checkPointName(GtfsException.ERROR.UNMATCHED_TARGET_ROUTE_ID);
+				validationReporter.addCheckPointReportError(context, checkPointName,"Target routes not found : " + ex.getValue(), null);
+				break;
 			case MISSING_FOREIGN_KEY: // THIS CAN NEVER OCCUR !
 			case SYSTEM: // THIS CAN NEVER OCCUR !
 			default:
@@ -602,6 +606,8 @@ public class GtfsValidationReporter implements Constant {
 				return GTFS_2_GTFS_Stop_7;
 			case DUPLICATE_CONSECUTIVE_STOP_TIME:
 				return GTFS_2_GTFS_StopTime_1;
+			case UNMATCHED_TARGET_ROUTE_ID:
+				return GTFS_TARGET_ROUTE;
 			default:
 				return null;
 		}

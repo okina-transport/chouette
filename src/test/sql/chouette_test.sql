@@ -5506,6 +5506,24 @@ ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KE
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys ADD COLUMN IF NOT EXISTS block_id VARCHAR(255);
 
+ALTER TABLE chouette_gui.import_parameters
+    ADD CONSTRAINT import_parameters_pkey PRIMARY KEY (id);
+
+CREATE TABLE chouette_gui.import_route_identifier
+(
+    id                   INT PRIMARY KEY,
+    import_parameters_id INT,
+    route_id             VARCHAR(255),
+    FOREIGN KEY (import_parameters_id) REFERENCES chouette_gui.import_parameters (id)
+);
+
+CREATE SEQUENCE IF NOT EXISTS chouette_gui.import_route_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 -- Completed on 2016-01-04 11:09:57 CET
 
 --

@@ -34,7 +34,8 @@ import java.util.Arrays;
         "railUICprocessing",
         "routeSortOrder",
         "renameRoutesAfterMerge",
-        "importFareFiles"
+        "importFareFiles",
+        "importTargetRoutes"
 })
 @Getter
 @Setter
@@ -86,6 +87,9 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "rename_routes_after_merge", defaultValue = "false")
     private boolean renameRoutesAfterMerge = false;
+
+    @XmlElement(name = "import_target_routes", defaultValue = "")
+    private String importTargetRoutes = "";
 
     public boolean isValid(Logger log, String[] allowedTypes) {
         if (!super.isValid(log)) return false;

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Data
 @Log4j
@@ -68,22 +69,25 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
 		List<Command> commands = new ArrayList<>();
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
 
 		try {
 			if (parameters.isImportFareFiles()) {
 				if (importer.hasFareRuleImporter()) {
-					ArrayList<String> savedLines = new ArrayList<String>();
+					ArrayList<String> savedLines = new ArrayList<>();
 					String splitCharacter = parameters.getSplitCharacter();
 
 					Index<GtfsFareRule> indexFareRules = importer.getFareRuleById();
 					for (GtfsFareRule gtfsFareRule : indexFareRules) {
-						if (StringUtils.isNotEmpty(splitCharacter)) {
-							if (gtfsFareRule.getRouteId() != null) {
+						if (StringUtils.isNotEmpty(splitCharacter) && gtfsFareRule.getRouteId() != null) {
+							if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsFareRule.getRouteId())) {
 								String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
 								if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
 									continue;
 								savedLines.add(newRouteId);
 								gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							} else {
+								log.info("Target routes enabled - Skipping import for route " + gtfsFareRule.getRouteId());
 							}
 						}
 					}
@@ -167,6 +171,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 		List<Command> commands = new ArrayList<>();
 		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
 		Index<GtfsRoute> index = importer.getRouteById();
+		Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
 
 		try {
 			{
@@ -183,45 +188,51 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 				commands.add(chain);
 			}
 
-			ArrayList<String> savedLines = new ArrayList<String>();
+			ArrayList<String> savedLines = new ArrayList<>();
 			String splitCharacter = parameters.getSplitCharacter();
 			context.put(TOTAL_NB_OF_LINES, index.getLength());
 
 			for (GtfsRoute gtfsRoute : index) {
+				if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsRoute.getRouteId())) {
+					if (StringUtils.isNotEmpty(splitCharacter)) {
+						String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
+						if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
+							continue;
+						savedLines.add(newRouteId);
+						gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					}
 
-				if (StringUtils.isNotEmpty(splitCharacter)) {
-					String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
-					if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
-						continue;
-					savedLines.add(newRouteId);
-					gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+					GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext, GtfsRouteParserCommand.class.getName());
+					parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					chain.add(parser);
+					if (withDao && !parameters.isNoSave()) {
+
+						// register
+						Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
+						chain.add(register);
+
+						Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
+						chain.add(copy);
+					}
+					if (level3validation) {
+						// add validation
+						Command validate = CommandFactory.create(initialContext, ImportedLineValidatorCommand.class.getName());
+						chain.add(validate);
+					}
+
+
+					Command clean = CommandFactory.create(initialContext, CleanLineInCacheCommand.class.getName());
+					chain.add(clean);
+
+					commands.add(chain);
+				} else {
+					log.info("Target routes enabled - Skipping import for route " + gtfsRoute.getRouteId());
+					int numberOfLines = (int) context.get(TOTAL_NB_OF_LINES);
+					numberOfLines -= 1;
+					context.put(TOTAL_NB_OF_LINES, numberOfLines);
 				}
-
-				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-
-				GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext, GtfsRouteParserCommand.class.getName());
-				parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-				chain.add(parser);
-				if (withDao && !parameters.isNoSave()) {
-
-					// register
-					Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
-					chain.add(register);
-
-					Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
-					chain.add(copy);
-				}
-				if (level3validation) {
-					// add validation
-					Command validate = CommandFactory.create(initialContext, ImportedLineValidatorCommand.class.getName());
-					chain.add(validate);
-				}
-
-
-				Command clean = CommandFactory.create(initialContext, CleanLineInCacheCommand.class.getName());
-				chain.add(clean);
-
-				commands.add(chain);
 			}
 			Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 

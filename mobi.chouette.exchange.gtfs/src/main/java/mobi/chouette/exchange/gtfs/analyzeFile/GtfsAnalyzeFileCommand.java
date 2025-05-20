@@ -17,7 +17,10 @@ import mobi.chouette.model.StopArea;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Log4j
 public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements Command, Constant {
@@ -57,6 +60,8 @@ public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements C
 
             Map<String, List<String>> tripStructureInStopTimesWithSameHourlyAndStop = (Map<String, List<String>>) context.get(DUPLICATE_TRIP_STRUCTURE_IN_STOP_TIMES_WITH_SAME_HOURLY_AND_STOP);
             analyzeReport.setDuplicateTripStructureInStopTimesWithSameHourlyAndStop(tripStructureInStopTimesWithSameHourlyAndStop);
+
+            analyzeReport.setTargetRouteIdNotFound((Set<String>) context.get(GTFS_UNMATCHED_TARGET_ROUTE_ID));
 
             report.setResult("OK");
             progression.saveAnalyzeReport(context,true);

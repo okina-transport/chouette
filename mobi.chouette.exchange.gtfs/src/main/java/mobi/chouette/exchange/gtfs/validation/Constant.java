@@ -55,4 +55,5 @@ public interface Constant extends mobi.chouette.exchange.gtfs.Constant {
 	String GTFS_2_GTFS_StopTime_1 =  "2-GTFS-StopTime-1";
 
 	String GTFS_3_Route_6		  = "3-Route-6";
+	String GTFS_TARGET_ROUTE	  = "3-GTFS-Route";
 }
