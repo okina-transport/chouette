@@ -28,6 +28,7 @@ public class LineRegisterCommandTest implements Constant {
 		
 		StringWriter buffer = new StringWriter(); 
 		VehicleJourney neptuneObject = new VehicleJourney();
+		neptuneObject.setObjectId("4321L");
 	    neptuneObject.setId(4321L);
 	    StopPoint sp = new StopPoint();
 	    sp.setId(1001L);

@@ -60,7 +60,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 				continue;
 			}
 			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
-			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"ServiceJourney", serviceJourney.getId());
+			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"VehicleJourney", serviceJourney.getId());
 
 			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
 				String brandingRef = serviceJourney.getBrandingRef().getRef();
