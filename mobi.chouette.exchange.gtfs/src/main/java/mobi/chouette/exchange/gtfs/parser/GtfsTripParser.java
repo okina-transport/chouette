@@ -758,8 +758,11 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 				setBikeValue(referential, gtfsTrip, vehicleJourney);
 			}
 
-			vehicleJourney.setFilled(true);
 			vehicleJourney.setPublishedJourneyIdentifier(gtfsTrip.getTripShortName());
+
+			vehicleJourney.setBlockId(gtfsTrip.getBlockId());
+
+			vehicleJourney.setFilled(true);
 
 			// VehicleJourneyAtStop
 			boolean afterMidnight = true;

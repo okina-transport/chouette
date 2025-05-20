@@ -325,6 +325,8 @@ public class GtfsTripProducer extends AbstractProducer {
 			trip.setWheelchairAccessible(GtfsTrip.WheelchairAccessibleType.NoInformation);
 		}
 
+		trip.setBlockId(vj.getBlockId());
+
 		updateBikeAllowedForTrip(vj);
 
 		// add StopTimes

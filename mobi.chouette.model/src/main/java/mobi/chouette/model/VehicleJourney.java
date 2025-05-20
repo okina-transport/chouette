@@ -441,6 +441,11 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "vehicleJourney")
 	private List<VehicleJourneyFacility> vehicleJourneyFacilities = new ArrayList<>(0);
 
+	@Getter
+	@Setter
+	@Column(name = "block_id")
+	private String blockId;
+
 	public void addVehicleJourneyFacility(VehicleJourneyFacility vehicleJourneyFacility) {
 		vehicleJourneyFacility.setVehicleJourney(this);
 		this.vehicleJourneyFacilities.add(vehicleJourneyFacility);
