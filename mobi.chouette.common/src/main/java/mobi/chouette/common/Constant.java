@@ -138,4 +138,7 @@ public interface Constant {
 
 	String FARE_ATTRIBUTE = "fare_attribute";
 	String FARE_ATTRIBUTE_ID = "fare_attribute_id";
+
+	String GTFS_TARGET_ROUTE_ID = "import_target_route_id";
+	String GTFS_UNMATCHED_TARGET_ROUTE_ID = "unmatchedTargetRouteId";
 }

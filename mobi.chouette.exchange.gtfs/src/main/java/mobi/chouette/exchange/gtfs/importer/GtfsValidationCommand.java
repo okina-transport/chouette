@@ -18,14 +18,13 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.FILE_STATE;
 import mobi.chouette.exchange.report.IO_TYPE;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class GtfsValidationCommand implements Command, Constant {
@@ -63,6 +62,13 @@ public class GtfsValidationCommand implements Command, Constant {
 		boolean all = !(parameters.getReferencesType().equalsIgnoreCase("stop_area"));
 
 		boolean importFareFiles = parameters.isImportFareFiles();
+
+		Set<String> targetRouteId = new HashSet<>();
+		if (StringUtils.isNotBlank(parameters.getImportTargetRoutes())) {
+			String[] routeIds = parameters.getImportTargetRoutes().split(",");
+            targetRouteId.addAll(Arrays.asList(routeIds));
+		}
+		context.put(GTFS_TARGET_ROUTE_ID, targetRouteId);
 
 		List<String> processableFiles = processableAllFiles;
 		if (!all) {

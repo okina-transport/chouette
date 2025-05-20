@@ -137,6 +137,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
 	@XmlElement(name = "notEnoughRoutePointsForTrip")
 	private List<String> notEnoughRoutePointsForTrip = new ArrayList<>();
 
+    @XmlElement(name = "targetRouteIdNotFound")
+    private Set<String> targetRouteIdNotFound = new HashSet<>();
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -405,6 +408,10 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         if (stopPointsPassingTimesDifference != null && !stopPointsPassingTimesDifference.isEmpty()) {
             canLaunchImport = false;
             analyzeReportMap.put("stopPointsPassingTimesDifference", stopPointsPassingTimesDifference.stream().distinct().collect(Collectors.toList()));
+        }
+
+        if (targetRouteIdNotFound != null && !targetRouteIdNotFound.isEmpty()) {
+            analyzeReportMap.put("targetRouteIdNotFound", buildTargetRouteIdNotFound());
         }
 
 
@@ -759,10 +766,17 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         }
     }
 
-
     @Override
     public void print(PrintStream stream) {
         print(stream, new StringBuilder(), 1, true);
 
+    }
+
+    private List<String> buildTargetRouteIdNotFound() {
+        List<String> result = new ArrayList<>(0);
+        if (this.targetRouteIdNotFound != null && !this.targetRouteIdNotFound.isEmpty()) {
+            result = this.targetRouteIdNotFound.stream().map(targetRouteId -> "\""+ targetRouteId + "\"").collect(Collectors.toList());
+        }
+        return result;
     }
 }
