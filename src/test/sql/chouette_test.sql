@@ -5504,6 +5504,8 @@ ALTER TABLE chouette_gui.fare_attributes DROP COLUMN IF EXISTS agency_id;
 ALTER TABLE chouette_gui.fare_attributes ADD COLUMN company_id bigint;
 ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KEY (company_id) REFERENCES chouette_gui.companies (id);
 
+ALTER TABLE ONLY chouette_gui.vehicle_journeys ADD COLUMN IF NOT EXISTS block_id VARCHAR(255);
+
 -- Completed on 2016-01-04 11:09:57 CET
 
 --
