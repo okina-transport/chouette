@@ -10,4 +10,5 @@ import lombok.Setter;
 public class GtfsRouteNamePosition {
     private int routeShortNameIndex;
     private int routeLongNameIndex;
+    private String path;
 }

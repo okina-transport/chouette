@@ -1,15 +1,11 @@
 package mobi.chouette.exchange.gtfs.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.HashSet;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
@@ -64,16 +60,11 @@ public class GtfsRoute extends GtfsObject implements Serializable
 	   this(bean.getRouteId(), bean.getAgencyId(), bean.getRouteShortName(), bean.getRouteLongName(), bean.getRouteDesc(), bean.getRouteType(), bean.getRouteUrl(), bean.getRouteColor(), bean.getRouteTextColor(), bean.getPosition());
 	   this.setId(bean.getId());
    }
-   
-//   public enum RouteType implements Serializable
-//   {
-//      Tram, Subway, Rail, Bus, Ferry, Cable, Gondola, Funicular;
-//
-//   }
 
-   // @Override
-   // public String toString()
-   // {
-   // return id + ":" + RouteExporter.CONVERTER.to(new Context(),this);
-   // }
+   public GtfsRoute copy() {
+      GtfsRoute copy = new GtfsRoute(this);
+      copy.errors = new HashSet<>(this.errors);
+      copy.okTests = new HashSet<>(this.okTests);
+      return copy;
+   }
 }

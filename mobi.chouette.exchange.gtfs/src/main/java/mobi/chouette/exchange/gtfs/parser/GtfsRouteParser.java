@@ -105,7 +105,7 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 			GtfsException fatalException = null;
 			parser.setWithValidation(true);
 			Map<String, String> routeNamesMap = new HashMap<>();
-			Map<String, GtfsRoute> parsedRoutes = new HashMap<>();
+			Map<String, GtfsRoute> parsedRoutes = new LinkedHashMap<>();
 			Map<String, GtfsRouteNamePosition> parsedRoutesNameIndex = new HashMap<>();
 			for (GtfsRoute bean : parser) {
 				try {
@@ -121,8 +121,8 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 				if (!targetRoute.isEmpty() && targetRoute.contains(bean.getRouteId())) {
 					unmatchedRouteIds.remove(bean.getRouteId());
 				}
-				parsedRoutesNameIndex.put(bean.getRouteId(), new GtfsRouteNamePosition(parser.getIndex(FIELDS.route_short_name.name()), parser.getIndex(FIELDS.route_long_name.name())));
-				parsedRoutes.put(bean.getRouteId(), bean);
+				parsedRoutesNameIndex.put(bean.getRouteId(), new GtfsRouteNamePosition(parser.getIndex(FIELDS.route_short_name.name()), parser.getIndex(FIELDS.route_long_name.name()), parser.getPath()));
+				parsedRoutes.put(bean.getRouteId(), bean.copy());
 			}
 			if (!unmatchedRouteIds.isEmpty()) {
 				GtfsException gtfsException = new GtfsException("routes.txt", 1, "route_id", GtfsException.ERROR.UNMATCHED_TARGET_ROUTE_ID, GTFS_TARGET_ROUTE_ID, String.join(",", unmatchedRouteIds));
@@ -140,7 +140,7 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 					setAgencyInfo(bean, agencyIds);
 					gtfsRouteNamePosition = parsedRoutesNameIndex.get(parsedRouteEntry.getKey());
 					if (gtfsRouteNamePosition != null) {
-						setRouteInfo(bean, routeNamesMap, parser.getPath(), gtfsRouteNamePosition.getRouteLongNameIndex(), gtfsRouteNamePosition.getRouteLongNameIndex());
+						setRouteInfo(bean, routeNamesMap, gtfsRouteNamePosition.getPath(), gtfsRouteNamePosition.getRouteLongNameIndex(), gtfsRouteNamePosition.getRouteLongNameIndex());
 					} else {
 						setRouteInfo(bean, routeNamesMap, parser.getPath(), -1, -1);
 					}
