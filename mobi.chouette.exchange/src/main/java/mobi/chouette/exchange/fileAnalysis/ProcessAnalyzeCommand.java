@@ -10,7 +10,6 @@ import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.importer.AbstractImporterCommand;
 import mobi.chouette.exchange.report.AnalyzeReport;
-
 import mobi.chouette.model.*;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.type.TransportModeNameEnum;
@@ -573,7 +572,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
      */
     private void feedAnalysisWithLineData(Context context, Line line){
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
-
+        Set<String> alreadyAnalyzedLine = (Set) context.get(ALREADY_ANALYZED_LINE_SET);
         List<String> vehicleJourneys = new ArrayList<>();
 
         String networkName = "";
@@ -597,14 +596,18 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         String lineName = line.getName();
 
         //If line is not part of the incoming file or if line has already been analyzed, we skip it
-        if (!incomingLineList.contains(line.getObjectId()) || analyzeReport.getLines().contains(lineName))
+        String registrationNumber = line.getRegistrationNumber();
+        if (!incomingLineList.contains(line.getObjectId()) || alreadyAnalyzedLine.contains(registrationNumber)) {
             return;
+        }
 
+        alreadyAnalyzedLine.add(registrationNumber);
 
         analyzeReport.getLines().add(lineName);
-        analyzeReport.addLineTextColor(lineName,line.getTextColor());
-        analyzeReport.addLineBackgroundColor(lineName,line.getColor());
-        analyzeReport.addLineShortName(lineName,line.getNumber());
+        analyzeReport.addLineRegistration(registrationNumber, lineName);
+        analyzeReport.addLineTextColor(registrationNumber,line.getTextColor());
+        analyzeReport.addLineBackgroundColor(registrationNumber,line.getColor());
+        analyzeReport.addLineShortName(registrationNumber,line.getNumber());
 
         for (Route route : line.getRoutes()) {
 
