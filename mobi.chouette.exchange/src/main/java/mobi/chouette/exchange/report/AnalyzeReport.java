@@ -146,6 +146,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     private Map<String, String> lineTextColorMap = new HashMap<>();
     private Map<String, String> lineBackgroundColorMap = new HashMap<>();
     private Map<String, String> lineShortNameMap = new HashMap<>();
+    private Map<String, String> registrationNameMap = new LinkedHashMap<>();
 
 
     // used to store each quay transport mode
@@ -213,19 +214,20 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     }
 
 
+    public void addLineRegistration(String lineRegistration, String lineName) {
+        registrationNameMap.computeIfAbsent(lineRegistration, key -> lineName);
+    }
+
     public void addLineTextColor(String lineName, String lineTextColor) {
-        if (!lineTextColorMap.containsKey(lineName))
-            lineTextColorMap.put(lineName, lineTextColor);
+        lineTextColorMap.computeIfAbsent(lineName, key -> lineTextColor);
     }
 
     public void addLineBackgroundColor(String lineName, String lineBackgroundColor) {
-        if (!lineBackgroundColorMap.containsKey(lineName))
-            lineBackgroundColorMap.put(lineName, lineBackgroundColor);
+        lineBackgroundColorMap.computeIfAbsent(lineName, key -> lineBackgroundColor);
     }
 
     public void addLineShortName(String lineName, String shortName) {
-        if (!lineShortNameMap.containsKey(lineName))
-            lineShortNameMap.put(lineName, shortName);
+        lineShortNameMap.computeIfAbsent(lineName, key -> shortName);
     }
 
 
@@ -644,17 +646,16 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     private List<Object> buildLinesList() {
         List<Object> lineList = new ArrayList<>();
 
-        for (int i = 0; i < lines.size(); i++) {
+        for (Map.Entry<String, String> entry : registrationNameMap.entrySet()) {
             Map<String,Object> lineMap = new HashMap<>();
 
-            String lineName = lines.get(i);
-            String lineTextColor = lineTextColorMap.containsKey(lineName) ? lineTextColorMap.get(lineName) : "000000";
-            String lineBackgroundColor = lineBackgroundColorMap.containsKey(lineName) ? lineBackgroundColorMap.get(lineName) : "FFFFFF";
-            String lineShortName = lineShortNameMap.containsKey(lineName) ? lineShortNameMap.get(lineName) : "";
+            String lineName = entry.getValue();
+            String registrationNumber = entry.getKey();
+            String lineTextColor = lineTextColorMap.getOrDefault(registrationNumber, "000000");
+            String lineBackgroundColor = lineBackgroundColorMap.getOrDefault(registrationNumber, "FFFFFF");
+            String lineShortName = lineShortNameMap.getOrDefault(registrationNumber, "");
 
-
-
-            lineMap.put("lineName", lines.get(i) );
+            lineMap.put("lineName", lineName );
             lineMap.put("lineTextColor", lineTextColor);
             lineMap.put("lineBackgroundColor", lineBackgroundColor);
             lineMap.put("shortName", lineShortName);

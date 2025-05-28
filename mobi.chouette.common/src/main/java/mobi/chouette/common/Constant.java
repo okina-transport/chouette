@@ -94,6 +94,7 @@ public interface Constant {
 	String SANITIZED_REPLACEMENT_CODE = "__3A__";
 
 	String INCOMING_LINE_LIST = "incomingLineList";
+	String ALREADY_ANALYZED_LINE_SET = "alreadyAnalyzedLineSet";
 
 	String TOTAL_NB_OF_LINES = "totalNbOfLines";
 	String CURRENT_LINE_NB = "currentLineNb";

@@ -17,10 +17,7 @@ import mobi.chouette.model.StopArea;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Log4j
 public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements Command, Constant {
@@ -39,6 +36,7 @@ public class GtfsAnalyzeFileCommand extends AbstractImporterCommand implements C
         AnalyzeReport analyzeReport = new AnalyzeReport();
         context.put(ANALYSIS_REPORT, analyzeReport);
         context.put(INCOMING_LINE_LIST, new ArrayList());
+        context.put(ALREADY_ANALYZED_LINE_SET, new HashSet<>());
 
         // check params
         Object configuration = context.get(CONFIGURATION);
