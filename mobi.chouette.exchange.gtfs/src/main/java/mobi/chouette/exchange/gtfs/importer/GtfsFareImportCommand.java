@@ -74,7 +74,7 @@ public class GtfsFareImportCommand implements Command, Constant {
         try (Response response = client.newCall(request).execute()) {
             int status = response.code();
             String responseBody = response.body() != null ? response.body().string() : "";
-            if (response.code() != 200) {
+            if (!response.isSuccessful()) {
                 log.error("Error starting GTFS fares import job (resp HTTP status: " + status + ") (resp body: " + responseBody +
                         ")");
             } else {
