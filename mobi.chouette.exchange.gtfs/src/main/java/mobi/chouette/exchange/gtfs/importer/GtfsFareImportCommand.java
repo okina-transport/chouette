@@ -23,7 +23,7 @@ import static mobi.chouette.exchange.gtfs.Constant.GTFS_FARE_RULES_FILE;
 @Log4j
 public class GtfsFareImportCommand implements Command, Constant {
 
-    private static final HttpUrl FARES_BASE_URL = HttpUrl.parse(System.getenv("FARES_BASE_URL"));
+    private static final String FARES_BASE_URL = System.getenv("FARES_BASE_URL");
     private static final String FARES_IMPORT_GTFS_PATH = "fares-referential/fares/import/gtfs";
 
     private static final String HEADER_PROVIDER = "provider";
@@ -37,6 +37,15 @@ public class GtfsFareImportCommand implements Command, Constant {
 
     @Override
     public boolean execute(Context context) throws Exception {
+        if (StringUtils.isEmpty(FARES_BASE_URL)) {
+            log.warn("FARES_BASE_URL not set, skip import");
+            return true;
+        }
+        HttpUrl faresBaseUrl = HttpUrl.parse(FARES_BASE_URL);
+        if (faresBaseUrl == null) {
+            log.error("Error parsing FARES_BASE_URL " + FARES_BASE_URL + ", skip import");
+            return true;
+        }
         JobData jobData = (JobData) context.get(JOB_DATA);
         Path folder = Paths.get(jobData.getPathName());
         Path inputGtfs = folder.resolve(jobData.getInputFilename());
@@ -64,7 +73,7 @@ public class GtfsFareImportCommand implements Command, Constant {
                 .build();
         String agencyId = (String) context.get(TARGET_COMPANY_OBJECT_ID);
         Request request = new Request.Builder().post(requestBody)
-                .url(Objects.requireNonNull(FARES_BASE_URL.resolve(FARES_IMPORT_GTFS_PATH)))
+                .url(Objects.requireNonNull(faresBaseUrl.resolve(FARES_IMPORT_GTFS_PATH)))
                 .addHeader(HEADER_PROVIDER, jobData.getReferential())
                 .addHeader(HEADER_FOLDER, folder.getFileName().toString())
                 .addHeader(HEADER_AGENCY_ID, StringUtils.trimToEmpty(agencyId))
