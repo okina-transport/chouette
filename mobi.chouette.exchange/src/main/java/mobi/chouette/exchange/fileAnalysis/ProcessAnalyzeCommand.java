@@ -572,7 +572,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
      */
     private void feedAnalysisWithLineData(Context context, Line line){
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
-        Set<String> alreadyAnalyzedLine = (Set) context.get(ALREADY_ANALYZED_LINE_SET);
+        Set<String> alreadyAnalyzedLine = context.get(ALREADY_ANALYZED_LINE_SET) == null ? new HashSet<>() : (Set) context.get(ALREADY_ANALYZED_LINE_SET);
         List<String> vehicleJourneys = new ArrayList<>();
 
         String networkName = "";
