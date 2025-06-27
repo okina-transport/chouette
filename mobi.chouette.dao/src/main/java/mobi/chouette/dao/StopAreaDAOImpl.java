@@ -202,13 +202,14 @@ public class StopAreaDAOImpl extends GenericDAOImpl<StopArea> implements StopAre
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public int safeDeleteStopArea(String objectId) {
-        return em.createNativeQuery("DELETE FROM stop_areas s WHERE s.objectid = :objectIdParam " +
-                               " AND NOT EXISTS  (SELECT 1 FROM stop_points sp WHERE sp.stop_area_id = s.id) " +
-                        " AND NOT EXISTS  (SELECT 1 FROM stop_areas s2, stop_points sp2 WHERE s2.parent_id = s.id AND  sp2.stop_area_id = s2.id ) " +
-                        " AND NOT EXISTS  (SELECT 1 FROM scheduled_stop_points ssp WHERE ssp.stop_area_objectid_key = :objectIdParam ) " +
-                        " AND NOT EXISTS  (SELECT 1 FROM stop_areas s3,scheduled_stop_points ssp2 WHERE s3.parent_id = s.id AND ssp2.stop_area_objectid_key = s3.objectid ) " )
-                .setParameter("objectIdParam", objectId )
-                .executeUpdate();
+//        return em.createNativeQuery("DELETE FROM stop_areas s WHERE s.objectid = :objectIdParam " +
+//                               " AND NOT EXISTS  (SELECT 1 FROM stop_points sp WHERE sp.stop_area_id = s.id) " +
+//                        " AND NOT EXISTS  (SELECT 1 FROM stop_areas s2, stop_points sp2 WHERE s2.parent_id = s.id AND  sp2.stop_area_id = s2.id ) " +
+//                        " AND NOT EXISTS  (SELECT 1 FROM scheduled_stop_points ssp WHERE ssp.stop_area_objectid_key = :objectIdParam ) " +
+//                        " AND NOT EXISTS  (SELECT 1 FROM stop_areas s3,scheduled_stop_points ssp2 WHERE s3.parent_id = s.id AND ssp2.stop_area_objectid_key = s3.objectid ) " )
+//                .setParameter("objectIdParam", objectId )
+//                .executeUpdate();
+        return 0;
     }
 
     public List<StopArea> findByNamePatternWithLazyDepsAllAreaType(String namePattern) {
