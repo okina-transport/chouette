@@ -65,10 +65,11 @@ public class GtfsFareImportCommand implements Command, Constant {
         }
 
         RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
                 .addFormDataPart(
                         "file",
-                        "file",
-                        RequestBody.create(inputGtfs.toFile(), MediaType.parse("multipart/form-data"))
+                        "file.zip",
+                        RequestBody.create(inputGtfs.toFile(), MediaType.parse("application/zip"))
                 )
                 .build();
         String agencyId = (String) context.get(TARGET_COMPANY_OBJECT_ID);
