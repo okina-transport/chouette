@@ -17,6 +17,7 @@ public class RouteLinkProducer extends NetexProducer implements NetexEntityProdu
         org.rutebanken.netex.model.RouteLink netexLink = netexFactory.createRouteLink();
         cleanObjectId(neptuneRouteSection);
         NetexProducerUtils.populateIdAndVersion(neptuneRouteSection, netexLink);
+        NetexProducerUtils.addAlternateIdentifier(netexLink, neptuneRouteSection.getObjectId());
         netexLink.setDistance(neptuneRouteSection.getDistance());
         netexLink.setLineString(getLineStringFromRouteSection(neptuneRouteSection));
 

@@ -119,6 +119,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         netexServiceJourneyPattern.setServiceJourneyPatternType(ServiceJourneyPatternTypeEnumeration.PASSENGER);
 
         netexServiceJourneyPattern.setKeyList(keyListStructureProducer.produce(journeyPattern.getKeyValues()));
+        NetexProducerUtils.addAlternateIdentifier(netexServiceJourneyPattern, journeyPattern.getObjectId());
 
         return netexServiceJourneyPattern;
     }

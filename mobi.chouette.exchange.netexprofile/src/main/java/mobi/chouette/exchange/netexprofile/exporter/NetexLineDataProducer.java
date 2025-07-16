@@ -330,6 +330,7 @@ public class NetexLineDataProducer extends NetexProducer implements Constant {
 
 			DestinationDisplay netexDestinationDisplay = netexFactory.createDestinationDisplay();
 			NetexProducerUtils.populateId(dd, netexDestinationDisplay);
+			NetexProducerUtils.addAlternateIdentifier(netexDestinationDisplay,dd.getObjectId());
 
 			netexDestinationDisplay.setName(ConversionUtil.getMultiLingualString(dd.getName()));
 			netexDestinationDisplay.setFrontText(ConversionUtil.getMultiLingualString(dd.getFrontText()));

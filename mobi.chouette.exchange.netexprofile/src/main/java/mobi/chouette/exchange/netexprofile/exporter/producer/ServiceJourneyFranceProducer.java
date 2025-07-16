@@ -172,6 +172,7 @@ public class ServiceJourneyFranceProducer {
         }
 
         serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues()));
+        NetexProducerUtils.addAlternateIdentifier(serviceJourney,vehicleJourney.getObjectId());
         serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));
 
         getAccessibility(vehicleJourney, serviceJourney);

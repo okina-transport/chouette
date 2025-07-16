@@ -28,6 +28,7 @@ public class CalendarFranceProducer extends NetexProducer {
                 if (!dayOfWeekEnumerations.isEmpty()) {
                     if (timetable.getPeriods().stream().allMatch(period -> period.getStartDate().isBefore(period.getEndDate()))) {
                         dayType.setProperties(createPropertiesOfDay_RelStructure(dayOfWeekEnumerations));
+                        NetexProducerUtils.addAlternateIdentifier(dayType, timetable.getObjectId());
                     }
                 }
 
@@ -54,6 +55,8 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withId(operatingPeriodId)
                                 .withFromDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay())
                                 .withToDate(toDate);
+
+                        NetexProducerUtils.addAlternateIdentifier(operatingPeriod, operatingPeriodId);
                         if (!exportableNetexData.getSharedOperatingPeriods().containsKey(operatingPeriodId)) {
                             exportableNetexData.getSharedOperatingPeriods().put(operatingPeriodId, operatingPeriod);
                         }
@@ -74,6 +77,7 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                                 .withDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay());
                     }
+                    NetexProducerUtils.addAlternateIdentifier(dayTypeAssignment, dayTypeAssignmentId);
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
                 }
 
@@ -88,6 +92,7 @@ public class CalendarFranceProducer extends NetexProducer {
                             .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                             .withDate(TimeUtil.toLocalDateFromJoda(day.getDate()).atStartOfDay());
 
+                    NetexProducerUtils.addAlternateIdentifier(dayTypeAssignment, dayTypeAssignmentId);
                     if (day.getIncluded() != null && !day.getIncluded()) {
                         dayTypeAssignment.setIsAvailable(day.getIncluded());
                     }

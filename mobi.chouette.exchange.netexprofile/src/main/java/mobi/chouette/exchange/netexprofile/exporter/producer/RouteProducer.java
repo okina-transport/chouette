@@ -28,6 +28,7 @@ public class RouteProducer extends NetexProducer implements NetexEntityProducer<
 	public org.rutebanken.netex.model.Route produce(Context context, mobi.chouette.model.Route neptuneRoute) {
 		org.rutebanken.netex.model.Route netexRoute = netexFactory.createRoute();
 		NetexProducerUtils.populateId(neptuneRoute, netexRoute);
+		NetexProducerUtils.addAlternateIdentifier(netexRoute, neptuneRoute.getObjectId());
 
 		netexRoute.setName(ConversionUtil.getMultiLingualString(neptuneRoute.getName()));
 		netexRoute.setShortName(ConversionUtil.getMultiLingualString(neptuneRoute.getPublishedName()));

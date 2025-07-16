@@ -15,6 +15,7 @@ public class DirectionProducer extends NetexProducer {
         MultilingualString directionName = new MultilingualString();
         directionName.setValue(stopArea.getObject().getName());
         netexDirection.setName(directionName);
+        NetexProducerUtils.addAlternateIdentifier(netexDirection, netexDirection.getId().replace(":LOC", ""));
 
         return netexDirection;
     }

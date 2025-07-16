@@ -330,6 +330,34 @@ public class NetexProducerUtils {
         return netexFactory.createLineRef(lrs);
     }
 
+    public static void addAlternateIdentifier(DataManagedObjectStructure objectToFill, String alternateIdentifier) {
+
+        if (objectToFill.getKeyList() == null){
+            objectToFill.setKeyList(new KeyListStructure());
+        }
+        KeyValueStructure alternateIdKey = new KeyValueStructure();
+        alternateIdKey.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+        alternateIdKey.setKey("internal-identifier");
+        alternateIdKey.setValue(alternateIdentifier);
+        objectToFill.getKeyList().getKeyValue().add(alternateIdKey);
+    }
+
+    public static void revertPrefixInAlternateIdentifier(DataManagedObjectStructure objectToModify, String originalPrefix, String customPrefix) {
+
+        if (objectToModify.getKeyList() == null){
+            return;
+        }
+
+        for (KeyValueStructure keyValueStructure : objectToModify.getKeyList().getKeyValue()) {
+            if ("internal-identifier".equals(keyValueStructure.getKey())){
+                String rawId = keyValueStructure.getValue();
+                if (rawId.startsWith(customPrefix + ":")){
+                    keyValueStructure.setValue(rawId.replace(customPrefix + ":", originalPrefix + ":"));
+                }
+            }
+        }
+    }
+
     public static void populateIdAndVersion(NeptuneIdentifiedObject source, EntityInVersionStructure destination) {
         if (source == null || destination == null) {
             log.error("Cannot set id since either source or destination is null");

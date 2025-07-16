@@ -19,6 +19,7 @@ public class RouteFranceProducer extends NetexProducer implements NetexEntityPro
     public org.rutebanken.netex.model.Route produce(Context context, mobi.chouette.model.Route neptuneRoute) {
         org.rutebanken.netex.model.Route netexRoute = netexFactory.createRoute();
         NetexProducerUtils.populateIdAndVersion(neptuneRoute, netexRoute);
+        NetexProducerUtils.addAlternateIdentifier(netexRoute, neptuneRoute.getObjectId());
 
         netexRoute.setName(ConversionUtil.getMultiLingualString(neptuneRoute.getName()));
 

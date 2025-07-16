@@ -105,13 +105,14 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         }
 
         netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues()));
+        NetexProducerUtils.addAlternateIdentifier(netexLine, neptuneLine.getObjectId());
 
         if (neptuneLine.getPosition() != null) {
             KeyValueStructure netexKeyValue = new KeyValueStructure();
             netexKeyValue.setKey("route_sort_order");
             netexKeyValue.setValue(String.valueOf(neptuneLine.getPosition()));
 
-            if (CollectionUtils.isNotEmpty(neptuneLine.getKeyValues())) {
+            if (netexLine.getKeyList() != null) {
                 netexLine.getKeyList().getKeyValue().add(netexKeyValue);
             } else {
                 netexLine.setKeyList(new KeyListStructure().withKeyValue(netexKeyValue));

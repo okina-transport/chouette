@@ -17,6 +17,7 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.*;
@@ -28,10 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
@@ -71,6 +69,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         // Pour info il n'y a pas de produceAndCollectCommonData car les notices utilisés pour créer ce fichier sont récupérés dans les deux méthodes ci dessous
         produceAndCollectLineData(context, exportableData, exportableNetexData);
         produceAndCollectCalendarData(exportableData, exportableNetexData);
+        revertCodeSpacePrefixInAlternateIds(context, exportableNetexData);
 
         String fileName = ExportedFilenamer.createNetexFranceLineFilename(context, neptuneLine);
         reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);
@@ -93,6 +92,73 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
                         metadata.new Resource(fileName, NeptuneObjectPresenter.getName(neptuneLine.getNetwork()), NeptuneObjectPresenter.getName(neptuneLine)));
             }
         }
+    }
+
+    private void revertCodeSpacePrefixInAlternateIds(Context context, ExportableNetexData exportableNetexData) {
+        NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
+        if (StringUtils.isEmpty(parameters.getDefaultCodespacePrefix()) || StringUtils.isEmpty(parameters.getReferentialName())) {
+            return ;
+        }
+
+        String customPrefix = parameters.getDefaultCodespacePrefix();
+        String originalPrefix = parameters.getReferentialName().replace("mobiiti_","").toUpperCase();
+
+        for (DayType dayType : exportableNetexData.getSharedDayTypes().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(dayType,originalPrefix, customPrefix );
+        }
+
+        for (OperatingPeriod operatingPeriod : exportableNetexData.getSharedOperatingPeriods().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(operatingPeriod,originalPrefix, customPrefix);
+        }
+
+        for (DayTypeAssignment sharedDayTypeAssignment : exportableNetexData.getSharedDayTypeAssignments()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(sharedDayTypeAssignment,originalPrefix, customPrefix);
+        }
+
+        for (org.rutebanken.netex.model.Network network : exportableNetexData.getSharedNetworks().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(network,originalPrefix, customPrefix);
+        }
+
+        for (Line_VersionStructure line : exportableNetexData.getSharedLines().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(line,originalPrefix, customPrefix);
+        }
+
+        for (Organisation_VersionStructure organisation : exportableNetexData.getSharedOrganisations().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(organisation,originalPrefix, customPrefix);
+        }
+
+        for (RouteLink routeLink : exportableNetexData.getRouteLinks()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(routeLink,originalPrefix, customPrefix);
+        }
+
+        for (org.rutebanken.netex.model.Route route : exportableNetexData.getRoutes()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(route,originalPrefix, customPrefix);
+        }
+
+        for (Direction direction : exportableNetexData.getDirections()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(direction,originalPrefix, customPrefix);
+        }
+
+        for (ServiceJourney_VersionStructure serviceJourney : exportableNetexData.getServiceJourneys()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(serviceJourney,originalPrefix, customPrefix);
+        }
+
+        for (org.rutebanken.netex.model.JourneyPattern journeyPattern : exportableNetexData.getJourneyPatterns()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(journeyPattern,originalPrefix, customPrefix);
+        }
+
+        for (PassengerStopAssignment passengerStopAssignment : exportableNetexData.getStopAssignments().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(passengerStopAssignment,originalPrefix, customPrefix);
+        }
+
+        for (DestinationDisplay destinationDisplay : exportableNetexData.getSharedDestinationDisplays().values()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(destinationDisplay,originalPrefix, customPrefix);
+        }
+
+        for (ServiceJourneyPattern serviceJourneyPattern : exportableNetexData.getServiceJourneyPatterns()) {
+            NetexProducerUtils.revertPrefixInAlternateIdentifier(serviceJourneyPattern,originalPrefix, customPrefix);
+        }
+
     }
 
     private void produceAndCollectCalendarData(ExportableData exportableData, ExportableNetexData exportableNetexData) {
@@ -335,6 +401,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             String passengerStopAssignmentIdSuffix = scheduledStopPoint.objectIdSuffix();
             String passengerStopAssignmentId = netexId(scheduledStopPoint.objectIdPrefix(), PASSENGER_STOP_ASSIGNMENT, passengerStopAssignmentIdSuffix);
             PassengerStopAssignment stopAssignment = createPassengerStopAssignment(scheduledStopPoint, passengerStopAssignmentId, parameters);
+            NetexProducerUtils.addAlternateIdentifier(stopAssignment,passengerStopAssignmentId);
             exportableNetexData.getStopAssignments().put(stopAssignment.getId(), stopAssignment);
         } else {
             throw new RuntimeException(
