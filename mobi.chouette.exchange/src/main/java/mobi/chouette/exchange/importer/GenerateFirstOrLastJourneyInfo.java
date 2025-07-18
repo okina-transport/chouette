@@ -13,7 +13,7 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.joda.time.DateTimeZone;
+import org.apache.commons.lang3.StringUtils;import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
@@ -29,8 +29,8 @@ import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;import java.util.List;
+import java.util.Map;import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.importer.utils.ProviderPredicate.isProviderForCsvGeneration;
 
@@ -75,6 +75,21 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
         ) {
             CSVPrinter csvPrinter = new CSVPrinter(csvWriter,
                     CSVFormat.Builder.create().setHeader(CSV_HEADERS).build());
+
+			List<Provider> providers = providerDAO.getAllProviders();
+			Map<String, String> netexPrefixMap = new HashMap<>();
+
+			List<Provider> filteredProviders = providers.stream()
+									.filter(prov -> prov.getCode().startsWith("mobiiti") && !prov.getCode().equals("technique"))
+									.collect(Collectors.toList());
+
+			for (Provider provider : filteredProviders) {
+				if (StringUtils.isNotEmpty(provider.getPrefixNetex())){
+					netexPrefixMap.put(provider.getCode().replace("mobiiti_","").toUpperCase(), provider.getPrefixNetex().toUpperCase());
+				}
+
+			}
+
             for (Provider referential : referentials) {
 
                 try {
@@ -96,14 +111,18 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
                     }
 
                     for (FirstOrLastJourneyInfo entity : all) {
+						String upperReferentialCode = referential.getCode().toUpperCase();
+						String vjIdToWrite = (!netexPrefixMap.isEmpty() && netexPrefixMap.containsKey(upperReferentialCode)) ? entity.getVehicleJourneyId().replace(upperReferentialCode + ":", netexPrefixMap.get(upperReferentialCode) + ":") : entity.getVehicleJourneyId();
+						String lineIdToWrite = (!netexPrefixMap.isEmpty() && netexPrefixMap.containsKey(upperReferentialCode)) ? entity.getLineId().replace(upperReferentialCode + ":", netexPrefixMap.get(upperReferentialCode) + ":") : entity.getLineId();
+
                         csvPrinter.printRecord(
                                 dateFormatyyyyMMdd.format(entity.getDate()),
-                                entity.getLineId(),
-                                entity.getVehicleJourneyId() + ":LOC",
+                                lineIdToWrite,
+                                vjIdToWrite + ":LOC",
                                 entity.getServicePosition().name()
                         );
                     }
-                }catch(Exception e){
+                } catch(Exception e){
                     log.error("Error while generating firstOrLastJourneyInfo for provider:" + referential.getName(), e);
                 }
             }
