@@ -69,7 +69,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         // Pour info il n'y a pas de produceAndCollectCommonData car les notices utilisés pour créer ce fichier sont récupérés dans les deux méthodes ci dessous
         produceAndCollectLineData(context, exportableData, exportableNetexData);
         produceAndCollectCalendarData(exportableData, exportableNetexData);
-        revertCodeSpacePrefixInAlternateIds(context, exportableNetexData);
+        processAlternateIdentifiers(context, exportableNetexData);
 
         String fileName = ExportedFilenamer.createNetexFranceLineFilename(context, neptuneLine);
         reporter.addFileReport(context, fileName, IO_TYPE.OUTPUT);
@@ -94,69 +94,41 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         }
     }
 
-    private void revertCodeSpacePrefixInAlternateIds(Context context, ExportableNetexData exportableNetexData) {
+    private void processAlternateIdentifiers(Context context, ExportableNetexData exportableNetexData) {
         NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
-        if (StringUtils.isEmpty(parameters.getDefaultCodespacePrefix()) || StringUtils.isEmpty(parameters.getReferentialName())) {
+        if (StringUtils.isEmpty(parameters.getReferentialName())) {
             return ;
         }
+
+        processAlternateIdentifier(exportableNetexData.getSharedDayTypes().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedOperatingPeriods().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedDayTypeAssignments(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedNetworks().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedLines().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedOrganisations().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getRouteLinks(), parameters);
+        processAlternateIdentifier(exportableNetexData.getRoutes(), parameters);
+        processAlternateIdentifier(exportableNetexData.getDirections(), parameters);
+        processAlternateIdentifier(exportableNetexData.getServiceJourneys(), parameters);
+        processAlternateIdentifier(exportableNetexData.getJourneyPatterns(), parameters);
+        processAlternateIdentifier(exportableNetexData.getStopAssignments().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getSharedDestinationDisplays().values(), parameters);
+        processAlternateIdentifier(exportableNetexData.getServiceJourneyPatterns(), parameters);
+
+    }
+    
+    private void processAlternateIdentifier(Collection<? extends DataManagedObjectStructure> objectsToModify, NetexprofileExportParameters parameters) {
 
         String customPrefix = parameters.getDefaultCodespacePrefix();
         String originalPrefix = parameters.getReferentialName().replace("mobiiti_","").toUpperCase();
 
-        for (DayType dayType : exportableNetexData.getSharedDayTypes().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(dayType,originalPrefix, customPrefix );
-        }
 
-        for (OperatingPeriod operatingPeriod : exportableNetexData.getSharedOperatingPeriods().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(operatingPeriod,originalPrefix, customPrefix);
-        }
-
-        for (DayTypeAssignment sharedDayTypeAssignment : exportableNetexData.getSharedDayTypeAssignments()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(sharedDayTypeAssignment,originalPrefix, customPrefix);
-        }
-
-        for (org.rutebanken.netex.model.Network network : exportableNetexData.getSharedNetworks().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(network,originalPrefix, customPrefix);
-        }
-
-        for (Line_VersionStructure line : exportableNetexData.getSharedLines().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(line,originalPrefix, customPrefix);
-        }
-
-        for (Organisation_VersionStructure organisation : exportableNetexData.getSharedOrganisations().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(organisation,originalPrefix, customPrefix);
-        }
-
-        for (RouteLink routeLink : exportableNetexData.getRouteLinks()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(routeLink,originalPrefix, customPrefix);
-        }
-
-        for (org.rutebanken.netex.model.Route route : exportableNetexData.getRoutes()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(route,originalPrefix, customPrefix);
-        }
-
-        for (Direction direction : exportableNetexData.getDirections()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(direction,originalPrefix, customPrefix);
-        }
-
-        for (ServiceJourney_VersionStructure serviceJourney : exportableNetexData.getServiceJourneys()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(serviceJourney,originalPrefix, customPrefix);
-        }
-
-        for (org.rutebanken.netex.model.JourneyPattern journeyPattern : exportableNetexData.getJourneyPatterns()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(journeyPattern,originalPrefix, customPrefix);
-        }
-
-        for (PassengerStopAssignment passengerStopAssignment : exportableNetexData.getStopAssignments().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(passengerStopAssignment,originalPrefix, customPrefix);
-        }
-
-        for (DestinationDisplay destinationDisplay : exportableNetexData.getSharedDestinationDisplays().values()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(destinationDisplay,originalPrefix, customPrefix);
-        }
-
-        for (ServiceJourneyPattern serviceJourneyPattern : exportableNetexData.getServiceJourneyPatterns()) {
-            NetexProducerUtils.revertPrefixInAlternateIdentifier(serviceJourneyPattern,originalPrefix, customPrefix);
+        for (DataManagedObjectStructure dataManagedObjectStructure : objectsToModify) {
+            if (customPrefix.equals(originalPrefix)){
+                NetexProducerUtils.removeAlternateIdentifier(dataManagedObjectStructure);
+            }else{
+                NetexProducerUtils.revertPrefixInAlternateIdentifier(dataManagedObjectStructure,originalPrefix, customPrefix);
+            }
         }
 
     }

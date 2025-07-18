@@ -358,6 +358,27 @@ public class NetexProducerUtils {
         }
     }
 
+    public static void removeAlternateIdentifier(DataManagedObjectStructure objectToModify) {
+
+        if (objectToModify.getKeyList() == null){
+            return;
+        }
+
+        KeyListStructure keyListStruct = new KeyListStructure();
+
+        for (KeyValueStructure keyValueStructure : objectToModify.getKeyList().getKeyValue()) {
+            if (!"internal-identifier".equals(keyValueStructure.getKey())){
+                keyListStruct.getKeyValue().add(keyValueStructure);
+            }
+        }
+        if (keyListStruct.getKeyValue().isEmpty()){
+            objectToModify.setKeyList(null);
+        }else{
+            objectToModify.setKeyList(keyListStruct);
+        }
+
+    }
+
     public static void populateIdAndVersion(NeptuneIdentifiedObject source, EntityInVersionStructure destination) {
         if (source == null || destination == null) {
             log.error("Cannot set id since either source or destination is null");
