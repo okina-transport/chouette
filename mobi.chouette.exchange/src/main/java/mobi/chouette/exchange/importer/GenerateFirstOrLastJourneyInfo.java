@@ -118,7 +118,7 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
                         csvPrinter.printRecord(
                                 dateFormatyyyyMMdd.format(entity.getDate()),
                                 lineIdToWrite,
-                                vjIdToWrite + ":LOC",
+                                vjIdToWrite.replace(COLON_REPLACEMENT_CODE, "-").replace("|", "_") + ":LOC",
                                 entity.getServicePosition().name()
                         );
                     }
