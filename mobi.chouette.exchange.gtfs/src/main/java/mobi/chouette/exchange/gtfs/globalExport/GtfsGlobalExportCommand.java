@@ -181,9 +181,7 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
         String headerLine = null;
         Set<String> alreadyProcessedIds = new HashSet<>();
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(mergedFileName));
-             CSVPrinter csvPrinter = new CSVPrinter(writer,
-                     CSVFormat.Builder.create().setHeader(headerLine.split(",")).build())) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(mergedFileName))) {
             for (String fileToAggregate : filesToAggregate) {
                 File currentFile = new File(fileToAggregate);
                 Iterable<CSVRecord> records = CSVUtils.getRecords(currentFile);
@@ -201,9 +199,14 @@ public class GtfsGlobalExportCommand extends AbstractImporterCommand implements 
                 }
             }
 
+            CSVPrinter csvPrinter = new CSVPrinter(writer,
+                    CSVFormat.Builder.create().setHeader(headerLine.split(",")).build());
+
             for (CSVRecord record : finalRecords) {
                 csvPrinter.printRecord(record);
             }
+
+            csvPrinter.close();
 
         }
         log.info("Generation completed. file : {}", txtFile);
