@@ -306,18 +306,13 @@ public class FileUtil {
 
     private static void writeGTFSZipFile(File path, String zipName, List<File> fileList, String type) {
 
-        try {
-            FileOutputStream fos = new FileOutputStream(zipName);
-            ZipOutputStream zos = new ZipOutputStream(fos);
-
+        try (FileOutputStream fos = new FileOutputStream(zipName);
+             ZipOutputStream zos = new ZipOutputStream(fos)) {
             for (File file : fileList) {
                 if (!file.isDirectory()) { // we only zip files, not directories
                     addGTFSFileToZip(path, file, zos, zipName, type);
                 }
             }
-
-            zos.close();
-            fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
