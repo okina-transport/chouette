@@ -357,6 +357,7 @@ public class MapmatchingCommand implements Command, Constant {
 	private OSRMProfile getOSRMProfile(JourneyPattern journeyPattern) {
 		switch (journeyPattern.getRoute().getLine().getTransportModeName()) {
 			case Tram:
+				return OSRMProfile.TRAM;
 			case Rail:
 				return OSRMProfile.RAIL;
 			case Bus:
