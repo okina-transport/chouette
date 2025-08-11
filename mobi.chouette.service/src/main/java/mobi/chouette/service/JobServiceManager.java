@@ -54,31 +54,21 @@ public class JobServiceManager {
 	public static final String BEAN_NAME = "JobServiceManager";
 
 	public static final String CONFIG_LOCATION_PROPERTY = "config.location";
-
+	private final Set<Object> referentials = Collections.synchronizedSet(new HashSet<>());
 	@EJB
 	JobDAO jobDAO;
-
 	@EJB
 	StatDAO statDAO;
-
 	@EJB(beanName = LineService.BEAN_NAME)
 	LineService lineService;
-
-	@EJB
-	private ProviderDAO providerDAO;	
-
 	@EJB(beanName = ContenerChecker.NAME)
 	ContenerChecker checker;
-
 	@EJB
 	Scheduler scheduler;
-
 	@EJB
 	CompanyDAO companyDAO;
-
-	private Set<Object> referentials = Collections.synchronizedSet(new HashSet<>());
-
-
+	@EJB
+	private ProviderDAO providerDAO;
     @Getter
     private String rootDirectory;
 
@@ -232,7 +222,7 @@ public class JobServiceManager {
 			throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, ex);
 		}
 	}
-	
+
 	public void validateReferential(final String referential) throws ServiceException {
 
 		if (referentials.contains(referential))
@@ -396,7 +386,7 @@ public class JobServiceManager {
 				String linePrefix = line.objectIdPrefix();
 				String objectIdToWrite = netexPrefixMap.containsKey(linePrefix) ? line.getObjectId().replace(linePrefix + ":", netexPrefixMap.get(linePrefix) + ":") : line.getObjectId();
 				boolean isFlexible = !TadEnum.NO_TAD.equals(line.getTad());
-				writer.write(objectIdToWrite + "," + isFlexible + "," + line.getName() + "\n");
+				writer.write(objectIdToWrite + "," + isFlexible + "," + line.getName() + "," + line.getNumber() + "\n");
 			}
 		} catch (IOException e) {
 		log.error("Error while trying to write line file", e);
@@ -508,7 +498,7 @@ public class JobServiceManager {
 		{
 			// log.info("BEGIN ADDING STAT referential : " + jobService.getReferential() + " action : " + jobService.getAction() + " type :" + jobService.getType());
 			LocalDate now = LocalDate.now();
-			
+
 			// Suppression des lignes de statistiques pour n'avoir que 12 mois glissants
 			statDAO.removeObsoleteStatFromDatabase(now);
 
@@ -602,7 +592,7 @@ public class JobServiceManager {
 		throw new RequestServiceException(RequestExceptionCode.UNKNOWN_JOB, " id = " + id);
 	}
 
-	public List<JobService> jobs(String referential, String action[], final Long version, Job.STATUS[] status) throws ServiceException {
+	public List<JobService> jobs(String referential, String[] action, final Long version, Job.STATUS[] status) throws ServiceException {
 		if (referential!=null) {
 			validateReferential(referential);
 		}
