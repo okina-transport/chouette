@@ -29,5 +29,7 @@ public interface PropertyNames {
     String KC_CLIENT_REALM = ".keycloak.realm";
     String KC_CLIENT_AUTH_URL = ".keycloak.auth-server-url";
 
+    String MDM_URL = ".mdm.url";
+
 
 }

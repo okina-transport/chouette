@@ -144,4 +144,6 @@ public interface Constant {
 	String GTFS_UNMATCHED_TARGET_ROUTE_ID = "unmatchedTargetRouteId";
 
     String TTS_NAME_KEY = "Libellé de la synthèse vocale";
+    String CHOUETTE_DATA_TO_MDM = "chouetteDataToMdm";
+
 }

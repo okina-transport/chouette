@@ -4,13 +4,17 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.exchange.gtfs.model.GtfsTrip;
+import mobi.chouette.exchange.importer.updater.MdmUpdater;
 import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.AccessibilityLimitation;
+import mobi.chouette.model.ChouetteData;
+import mobi.chouette.model.ChouetteIdentifier;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 
@@ -36,8 +40,11 @@ public class AccessibilityCommand implements Command, Constant {
     @EJB
     VehicleJourneyDAO vehicleJourneyDAO;
 
+    @EJB(beanName = MdmUpdater.BEAN_NAME)
+    private MdmUpdater mdmUpdater;
 
     public static final String COMMAND = "AccessibilityCommand";
+
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -45,8 +52,16 @@ public class AccessibilityCommand implements Command, Constant {
         LocalDateTime start = LocalDateTime.now();
         GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
         String prefix = parameters.getObjectIdPrefix();
-
+        JobData jobData = (JobData) context.get(JOB_DATA);
         createGTFSAccessibilityAssessment(prefix);
+
+        ChouetteData chouetteData = (ChouetteData) context.get(CHOUETTE_DATA_TO_MDM);
+        addAssessmentToChouetteData(chouetteData, prefix + ":AccessibilityAssessment:GTFS_0", jobData.getReferential());
+        addAssessmentToChouetteData(chouetteData, prefix + ":AccessibilityAssessment:GTFS_1", jobData.getReferential());
+        addAssessmentToChouetteData(chouetteData, prefix + ":AccessibilityAssessment:GTFS_2", jobData.getReferential());
+        addLimitationToChouetteData(chouetteData, prefix + ":AccessibilityLimitation:GTFS_0", jobData.getReferential());
+        addLimitationToChouetteData(chouetteData, prefix + ":AccessibilityLimitation:GTFS_1", jobData.getReferential());
+        addLimitationToChouetteData(chouetteData, prefix + ":AccessibilityLimitation:GTFS_2", jobData.getReferential());
 
         Map<GtfsTrip.WheelchairAccessibleType, List<String>> gtfsAccessibilityMap = (Map) context.get(GTFS_ACCESSIBILITY_MAP);
 
@@ -73,6 +88,20 @@ public class AccessibilityCommand implements Command, Constant {
         long seconds = duration.getSeconds() % 60;
         log.info("AccessibilityCommand duration:" + " - " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
         return SUCCESS;
+    }
+
+    private void addAssessmentToChouetteData(ChouetteData chouetteData, String accessibilityId, String dataset) {
+        ChouetteIdentifier chouetteIdentifier = new ChouetteIdentifier();
+        chouetteIdentifier.setId(accessibilityId);
+        chouetteIdentifier.setDataset(dataset);
+        chouetteData.getAccessibilityAssessments().add(chouetteIdentifier);
+    }
+
+    private void addLimitationToChouetteData(ChouetteData chouetteData, String limitationId, String dataset) {
+        ChouetteIdentifier chouetteIdentifier = new ChouetteIdentifier();
+        chouetteIdentifier.setId(limitationId);
+        chouetteIdentifier.setDataset(dataset);
+        chouetteData.getAccessibilityLimitations().add(chouetteIdentifier);
     }
 
     private void updateIdsByBatch(Long id, List<String> objectIds) {

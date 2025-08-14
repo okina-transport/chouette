@@ -3,12 +3,14 @@ package mobi.chouette.exchange.importer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessibilityAssessmentDAO;
 import mobi.chouette.dao.AccessibilityLimitationDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
+import mobi.chouette.exchange.importer.updater.MdmUpdater;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.model.*;
@@ -24,8 +26,7 @@ import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.model.type.VehicleJourneyFacilityEnum.LUGGAGE_CARRIAGE_ENUMERATION;
@@ -46,12 +47,22 @@ public class UpdateLineInfosCommand implements Command, Constant {
     @EJB
     AccessibilityLimitationDAO accessibilityLimitationDAO;
 
+    @EJB(beanName = MdmUpdater.BEAN_NAME)
+    private MdmUpdater mdmUpdater;
+
     public static final String COMMAND = "UpdateLineInfosCommand";
+
+    public static final boolean IS_MDM_ACTIVATED = Boolean.parseBoolean(System.getenv("IS_MDM_ACTIVATED"));
 
     @Override
     public boolean execute(Context context) throws Exception {
         deleteUnusedPMR();
         AbstractImportParameter parameters = (AbstractImportParameter) context.get(CONFIGURATION);
+
+        ChouetteData chouetteData = (ChouetteData) context.get(CHOUETTE_DATA_TO_MDM);
+        JobData jobData = (JobData) context.get(JOB_DATA);
+
+
         lineDAO.findAll().forEach(line -> {
             List<VehicleJourney> vehicleJourneyList = line.getRoutes().stream()
                     .map((Route::getJourneyPatterns))
@@ -74,9 +85,29 @@ public class UpdateLineInfosCommand implements Command, Constant {
             }
 
             lineDAO.update(lineToUpdate);
+
+
+            if (lineToUpdate.getAccessibilityAssessment() != null){
+                ChouetteIdentifier identifier = new ChouetteIdentifier();
+                identifier.setId(lineToUpdate.getAccessibilityAssessment().getObjectId());
+                identifier.setDataset(jobData.getReferential());
+                chouetteData.getAccessibilityAssessments().add(identifier);
+
+                if (lineToUpdate.getAccessibilityAssessment().getAccessibilityLimitation() != null){
+                    ChouetteIdentifier limitationIdentifier = new ChouetteIdentifier();
+                    limitationIdentifier.setId(lineToUpdate.getAccessibilityAssessment().getAccessibilityLimitation().getObjectId());
+                    limitationIdentifier.setDataset(jobData.getReferential());
+                    chouetteData.getAccessibilityLimitations().add(limitationIdentifier);
+                }
+            }
         });
         lineDAO.flush(); // to prevent SQL error outside method
         vehicleJourneyDAO.flush();
+
+        if (IS_MDM_ACTIVATED){
+            mdmUpdater.sendDataToMdm(chouetteData);
+        }
+
 
         return SUCCESS;
     }

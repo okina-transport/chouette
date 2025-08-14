@@ -6,10 +6,12 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AttributionDAO;
 import mobi.chouette.dao.LineDAO;
+import mobi.chouette.exchange.importer.utils.MdmUtils;
 import mobi.chouette.model.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,6 +22,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless(name = GenerateAttributionsCommand.COMMAND)
@@ -34,6 +37,8 @@ public class GenerateAttributionsCommand implements Command, Constant {
     @EJB
     private LineDAO lineDAO;
 
+    public static final boolean IS_MDM_ACTIVATED = Boolean.parseBoolean(System.getenv("IS_MDM_ACTIVATED"));
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean execute(Context context) throws Exception {
@@ -41,7 +46,7 @@ public class GenerateAttributionsCommand implements Command, Constant {
         log.info("Generating attributions for all lines and vehicle journeys");
 
         try {
-            createAttributions();
+            createAttributions(context);
         } catch (Exception e) {
             log.warn("Attribution generation failed with exception : " + e.getMessage(), e);
         } finally {
@@ -50,8 +55,11 @@ public class GenerateAttributionsCommand implements Command, Constant {
         return SUCCESS;
     }
 
-    private void createAttributions() {
+    private void createAttributions(Context context) {
         attributionDAO.deleteAll();
+        ChouetteData chouetteData = (ChouetteData) context.get(CHOUETTE_DATA_TO_MDM);
+        JobData jobData = (JobData) context.get(JOB_DATA);
+        List<Attribution> createdAttributions = new ArrayList<>();
 
         List<Line> lines = lineDAO.findAll();
         for (Line l : lines) {
@@ -63,6 +71,7 @@ public class GenerateAttributionsCommand implements Command, Constant {
             lineAttribution.setIsProducer(true);
             lineAttribution.setIsOperator(true);
             attributionDAO.insertAttribution(lineAttribution);
+            createdAttributions.add(lineAttribution);
 
             for (Route r : l.getRoutes()) {
                 for (JourneyPattern jp : r.getJourneyPatterns()) {
@@ -74,9 +83,16 @@ public class GenerateAttributionsCommand implements Command, Constant {
                         }
                         vehicleJourneyAttribution.setIsProducer(true);
                         vehicleJourneyAttribution.setIsOperator(true);
+                        createdAttributions.add(vehicleJourneyAttribution);
                         attributionDAO.insertAttribution(vehicleJourneyAttribution);
                     }
                 }
+            }
+        }
+
+        if (IS_MDM_ACTIVATED){
+            for (Attribution createdAttribution : createdAttributions) {
+                MdmUtils.fillMdmDataWithAttribution(chouetteData, jobData.getReferential(), createdAttribution);
             }
         }
     }

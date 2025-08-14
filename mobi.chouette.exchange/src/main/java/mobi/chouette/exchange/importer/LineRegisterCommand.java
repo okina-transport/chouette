@@ -3,10 +3,7 @@ package mobi.chouette.exchange.importer;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.ContenerChecker;
-import mobi.chouette.common.Context;
-import mobi.chouette.common.PropertyNames;
+import mobi.chouette.common.*;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AccessPointDAO;
@@ -14,7 +11,9 @@ import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyAtStopDAO;
 import mobi.chouette.exchange.importer.updater.*;
-import mobi.chouette.exchange.importer.utils.IdGeneration;import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.importer.utils.IdGeneration;
+import mobi.chouette.exchange.importer.utils.MdmUtils;
+import mobi.chouette.exchange.parameters.AbstractImportParameter;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
@@ -72,6 +71,8 @@ public class LineRegisterCommand implements Command {
 	@EJB(beanName = NeTExStopPlaceRegisterUpdater.BEAN_NAME)
 	private NeTExStopPlaceRegisterUpdater stopPlaceRegisterUpdater;
 
+	public static final boolean IS_MDM_ACTIVATED = Boolean.parseBoolean(System.getenv("IS_MDM_ACTIVATED"));
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public boolean execute(Context context) throws Exception {
@@ -85,9 +86,13 @@ public class LineRegisterCommand implements Command {
 		Boolean optimized = (Boolean) context.get(OPTIMIZED);
 		Referential cache = new Referential();
 		context.put(CACHE, cache);
+		JobData jobData = (JobData) context.get(JOB_DATA);
+		ChouetteData chouetteData = new ChouetteData();
 
 		String ref = ContextHolder.getContext();
 		context.put("ref", ref);
+
+		context.put(CHOUETTE_DATA_TO_MDM, chouetteData);
 
 		Referential referential = (Referential) context.get(REFERENTIAL);
 
@@ -168,6 +173,10 @@ public class LineRegisterCommand implements Command {
 				persistAccessPoints(oldValue);
 				lineDAO.flush(); // to prevent SQL error outside method
 
+				if (IS_MDM_ACTIVATED){
+					MdmUtils.fillMdmData(chouetteData, jobData.getReferential(), oldValue);
+				}
+
 				if (optimized) {
 					Monitor wMonitor = MonitorFactory.start("prepareCopy");
 					StringWriter bufferVjas = new StringWriter(1024);
@@ -179,7 +188,9 @@ public class LineRegisterCommand implements Command {
 
 						List<VehicleJourneyAtStop> vehicleJourneyAtStops = vj.getVehicleJourneyAtStops();
 						for (VehicleJourneyAtStop vehicleJourneyAtStop : vehicleJourneyAtStops) {
-
+							if (IS_MDM_ACTIVATED){
+								MdmUtils.fillMdmDataWithVjas(chouetteData, jobData.getReferential(), vehicleJourneyAtStop);
+							}
 							StopPoint stopPoint = cache.getStopPoints().get(vehicleJourneyAtStop.getStopPoint().getObjectId());
 
 							writeVjas(bufferVjas, vehicleJourney, stopPoint, vehicleJourneyAtStop, importParameter.isKeepBoardingAlighting());
@@ -220,6 +231,7 @@ public class LineRegisterCommand implements Command {
 		}
 		return result;
 	}
+
 
 	/**
 	 * Read a line and remove routes that have no journey patterns associated
