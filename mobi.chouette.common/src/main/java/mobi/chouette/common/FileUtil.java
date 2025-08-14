@@ -10,13 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -241,26 +235,22 @@ public class FileUtil {
     private static void writeZipFile(File path, String zipName, List<File> fileList, String type) {
         if (!type.equals("gtfs")) {
             // NETETX
-            writeNetexZipFile(path, zipName, fileList, type);
+            writeNetexZipFile(path, zipName, fileList);
         } else {
             // GTFS
-            writeGTFSZipFile(path, zipName, fileList, type);
+            writeGTFSZipFile(path, zipName, fileList);
         }
     }
 
-    private static void writeNetexZipFile(File path, String zipName, List<File> fileList, String type) {
+    private static void writeNetexZipFile(File path, String zipName, List<File> fileList) {
 
         try {
             FileOutputStream fos = new FileOutputStream(zipName);
             ZipOutputStream zos = new ZipOutputStream(fos);
-            String folder = "";
-
-            folder = zipName.substring(zipName.lastIndexOf("/") + 1).replace(".zip", "");
-            zos.putNextEntry(new ZipEntry(folder + "/"));
 
             for (File file : fileList) {
                 if (!file.isDirectory()) { // we only zip files, not directories
-                    addNetexFileToZip(path, file, zos, folder);
+                    addNetexFileToZip(path, file, zos);
                 }
             }
             zos.flush();
@@ -274,7 +264,7 @@ public class FileUtil {
         }
     }
 
-    private static void addNetexFileToZip(File directoryToZip, File file, ZipOutputStream zos, String folder) throws FileNotFoundException, IOException {
+    private static void addNetexFileToZip(File directoryToZip, File file, ZipOutputStream zos) throws IOException {
 
         FileInputStream fis = null;
         try {
@@ -282,10 +272,9 @@ public class FileUtil {
 
             // we want the zipEntry's path to be a relative path that is relative
             // to the directory being zipped, so chop off the rest of the path
-            String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1,
-                    file.getCanonicalPath().length());
+            String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1);
 
-            ZipEntry zipEntry = new ZipEntry(folder + "/" + zipFilePath);
+            ZipEntry zipEntry = new ZipEntry(zipFilePath);
             zos.putNextEntry(zipEntry);
 
             byte[] bytes = new byte[1024];
@@ -304,13 +293,13 @@ public class FileUtil {
         }
     }
 
-    private static void writeGTFSZipFile(File path, String zipName, List<File> fileList, String type) {
+    private static void writeGTFSZipFile(File path, String zipName, List<File> fileList) {
 
         try (FileOutputStream fos = new FileOutputStream(zipName);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
             for (File file : fileList) {
                 if (!file.isDirectory()) { // we only zip files, not directories
-                    addGTFSFileToZip(path, file, zos, zipName, type);
+                    addGTFSFileToZip(path, file, zos, zipName);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -343,7 +332,7 @@ public class FileUtil {
         }
     }
 
-    private static void addGTFSFileToZip(File directoryToZip, File file, ZipOutputStream zos, String zipName, String type) throws FileNotFoundException,
+    private static void addGTFSFileToZip(File directoryToZip, File file, ZipOutputStream zos, String zipName) throws
             IOException {
 
         FileInputStream fis = new FileInputStream(file);
@@ -353,8 +342,7 @@ public class FileUtil {
 
         // we want the zipEntry's path to be a relative path that is relative
         // to the directory being zipped, so chop off the rest of the path
-        String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1,
-                file.getCanonicalPath().length());
+        String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1);
 
         ZipEntry zipEntry;
         zipEntry = new ZipEntry(zipFilePath);
