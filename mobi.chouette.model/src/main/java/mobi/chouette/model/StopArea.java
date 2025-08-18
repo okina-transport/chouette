@@ -4,34 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import mobi.chouette.model.type.ChouetteAreaEnum;
-import mobi.chouette.model.type.StopAreaImportModeEnum;
-import mobi.chouette.model.type.StopAreaTypeEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
-import mobi.chouette.model.type.UserNeedEnum;
+import mobi.chouette.model.type.*;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -372,7 +348,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	 * @return UserNeeds
 	 */
 	public List<UserNeedEnum> getUserNeeds() {
-		List<UserNeedEnum> result = new ArrayList<UserNeedEnum>();
+		List<UserNeedEnum> result = new ArrayList<>();
 		if (intUserNeeds == null) return result;
 		for (UserNeedEnum userNeed : UserNeedEnum.values()) {
 			int mask = 1 << userNeed.ordinal();
@@ -440,7 +416,7 @@ public class StopArea extends NeptuneLocalizedObject {
 //	@ManyToMany
 //	@JoinTable(name = "routing_constraints_lines", joinColumns = { @JoinColumn(name = "stop_area_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "line_id", nullable = false, updatable = false) })
 	@Transient
-	private List<Line> routingConstraintLines = new ArrayList<Line>(0);
+	private List<Line> routingConstraintLines = new ArrayList<>(0);
 
 	/**
 	 * stops grouped in a routing constraints <br/>
@@ -455,7 +431,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Setter
 	@ManyToMany(cascade = { CascadeType.PERSIST})
 	@JoinTable(name = "stop_areas_stop_areas", joinColumns = { @JoinColumn(name = "parent_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "child_id", nullable = false, updatable = false) })
-	private List<StopArea> routingConstraintAreas = new ArrayList<StopArea>(0);
+	private List<StopArea> routingConstraintAreas = new ArrayList<>(0);
 
 	/**
 	 * stop area children<br/>
@@ -468,7 +444,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Getter
 	@Setter
 	@OneToMany(mappedBy = "parent",cascade = { CascadeType.PERSIST })
-	private List<StopArea> containedStopAreas = new ArrayList<StopArea>(0);
+	private List<StopArea> containedStopAreas = new ArrayList<>(0);
 
 	/**
 	 * stop points children<br/>
@@ -495,7 +471,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Setter
 	@OneToMany(cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "stop_area_id", updatable = false)
-	private List<AccessLink> accessLinks = new ArrayList<AccessLink>(0);
+	private List<AccessLink> accessLinks = new ArrayList<>(0);
 
 
 	/**
@@ -510,7 +486,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Setter
 	@OneToMany(cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "departure_id") //, updatable = false)
-	private List<ConnectionLink> connectionStartLinks = new ArrayList<ConnectionLink>(
+	private List<ConnectionLink> connectionStartLinks = new ArrayList<>(
 			0);
 
 	/**
@@ -525,7 +501,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Setter
 	@OneToMany(cascade = { CascadeType.PERSIST })
 	@JoinColumn(name = "arrival_id") //, updatable = false)
-	private List<ConnectionLink> connectionEndLinks = new ArrayList<ConnectionLink>(
+	private List<ConnectionLink> connectionEndLinks = new ArrayList<>(
 			0);
 
 	/**
@@ -539,7 +515,7 @@ public class StopArea extends NeptuneLocalizedObject {
 	@Getter
 	@Setter
 	@OneToMany(mappedBy = "containedIn", cascade = { CascadeType.PERSIST })
-	private List<AccessPoint> accessPoints = new ArrayList<AccessPoint>(0);
+	private List<AccessPoint> accessPoints = new ArrayList<>(0);
 
 	@Getter
 	@Setter
@@ -594,8 +570,12 @@ public class StopArea extends NeptuneLocalizedObject {
 	@CollectionTable(name = "stop_areas_key_values", joinColumns = @JoinColumn(name = "stop_area_id"))
 	private List<KeyValue> keyValues = new ArrayList<>(0);
 
+    @Getter
+    @Setter
+    @Column(name = "tts_stop_name")
+    private String ttsStopName;
 
-	/**
+    /**
 	 * add a line if not already present
 	 * <p>
 	 * stop
@@ -625,6 +605,7 @@ public class StopArea extends NeptuneLocalizedObject {
 
 		if(this.getLatitude().compareTo(newArea.getLatitude()) != 0 || this.getLongitude().compareTo(newArea.getLongitude()) != 0) variations =  addVariation(variations, "Les coordonnées du point d'arrêt " + newArea.getName() + " ont changé");
 		if(!StringUtils.equals(this.getName(),               newArea.getName()))               variations =  addVariation(variations, "Changement de nom("                    + this.getName()               + " => " + newArea.getName() + ")");
+		if(!StringUtils.equals(this.getTtsStopName(),               newArea.getTtsStopName()))               variations =  addVariation(variations, "Changement de libellé synthèse vocale("                    + this.getTtsStopName()               + " => " + newArea.getTtsStopName() + ")");
 		if(!StringUtils.equals(this.getComment(),             newArea.getComment()))             variations =  addVariation(variations, "Changement de description("                 + this.getComment()             + " => " + newArea.getComment() + ")");
 		if(!StringUtils.equals(this.getRegistrationNumber(),             newArea.getRegistrationNumber()))             variations =  addVariation(variations, "Changement de stop code("                 + this.getRegistrationNumber()             + " => " + newArea.getRegistrationNumber() + ")");
 

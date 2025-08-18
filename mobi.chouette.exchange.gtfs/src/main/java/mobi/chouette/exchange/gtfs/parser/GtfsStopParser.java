@@ -206,6 +206,7 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 		stopArea.setLongitude(gtfsStop.getStopLon());
 		stopArea.setLongLatType(LongLatTypeEnum.WGS84);
 		stopArea.setName(StringUtils.trimToNull(gtfsStop.getStopName()));
+		stopArea.setTtsStopName(StringUtils.trimToNull(gtfsStop.getTtsStopName()));
 
 		stopArea.setUrl(AbstractConverter.toString(gtfsStop.getStopUrl()));
 		stopArea.setComment(StringUtils.trimToNull(gtfsStop.getStopDesc()));

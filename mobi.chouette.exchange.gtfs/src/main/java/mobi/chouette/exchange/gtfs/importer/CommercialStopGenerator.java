@@ -25,7 +25,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 
-		List<StopArea> boardingPositions = new ArrayList<StopArea>();
+		List<StopArea> boardingPositions = new ArrayList<>();
 		for (StopArea stopArea : referential.getSharedStopAreas().values()) {
 			if (stopArea.getAreaType() != null && (stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition) || stopArea.getAreaType().equals(ChouetteAreaEnum.Quay))) {
 				boardingPositions.add(stopArea);
@@ -35,9 +35,9 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		boolean ignoreLastWord = configuration.isIgnoreLastWord();
 		int ignoreEndCharacters = configuration.getIgnoreEndChars();
 
-		Map<String, StopArea> areaMap = new HashMap<String, StopArea>();
+		Map<String, StopArea> areaMap = new HashMap<>();
 
-		Set<String> keys = new HashSet<String>();
+		Set<String> keys = new HashSet<>();
 		for (StopArea stop : boardingPositions) {
 			String key = stop.getName();
 			if (ignoreLastWord) {
@@ -86,13 +86,13 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		}
 
 		// check distance to explode areas
-		List<StopArea> dividedAreas = new ArrayList<StopArea>();
+		List<StopArea> dividedAreas = new ArrayList<>();
 		for (StopArea area : areaMap.values()) {
 			explodeArea(referential, dividedAreas, area, 1, area.getObjectId(), distanceMax);
 		}
 
 		// save area
-		List<StopArea> areas = new ArrayList<StopArea>();
+		List<StopArea> areas = new ArrayList<>();
 		areas.addAll(areaMap.values());
 		areas.addAll(dividedAreas);
 
@@ -126,6 +126,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 			objectId = ObjectIdUtil.generateCommercialStopId(stop.getObjectId());
 		StopArea area = ObjectFactory.getStopArea(referential, objectId);
 		area.setName(stop.getName());
+		area.setTtsStopName(stop.getTtsStopName());
 		area.setObjectId(objectId);
 		area.setObjectVersion(stop.getObjectVersion());
 		area.setCreationTime(LocalDateTime.now());
@@ -168,7 +169,7 @@ public class CommercialStopGenerator extends AbstractGenerator {
 	 * @return a list of removed boarding positions
 	 */
 	private List<StopArea> excludeLongDistanceStops(StopArea area, double distanceMax) {
-		List<StopArea> excludedStops = new ArrayList<StopArea>();
+		List<StopArea> excludedStops = new ArrayList<>();
 
 		// remove stop most away from area while distance id invalid
 		while (!checkDistance(area, distanceMax)) {
@@ -207,8 +208,8 @@ public class CommercialStopGenerator extends AbstractGenerator {
 		}
 		double areaLong = sigmaLong / area.getContainedStopAreas().size();
 		double areaLat = sigmaLat / area.getContainedStopAreas().size();
-		area.setLongitude(new BigDecimal(areaLong));
-		area.setLatitude(new BigDecimal(areaLat));
+		area.setLongitude(BigDecimal.valueOf(areaLong));
+		area.setLatitude(BigDecimal.valueOf(areaLat));
 		area.setLongLatType(LongLatTypeEnum.WGS84);
 	}
 

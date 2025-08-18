@@ -1,21 +1,19 @@
 package mobi.chouette.exchange.importer.updater.netex;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.exchange.importer.updater.NeTExIdfmStopPlaceRegisterUpdater;
 import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.rutebanken.netex.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
+import static mobi.chouette.common.Constant.TTS_NAME_KEY;
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.*;
 
 /**
@@ -37,7 +35,7 @@ public class StopPlaceMapper {
      */
     public StopPlace mapStopAreaToStopPlace(StopArea stopArea) {
         StopPlace stopPlace = mapStopPlace(stopArea);
-        if (stopArea.getContainedStopAreas().size() > 0) {
+        if (CollectionUtils.isNotEmpty(stopArea.getContainedStopAreas())) {
             List<String> alreadyProcessedQuays = new ArrayList<>();
             stopPlace.setQuays(new Quays_RelStructure());
             for (StopArea children : stopArea.getContainedStopAreas()) {
@@ -68,13 +66,27 @@ public class StopPlaceMapper {
         mapMobilityRestrictedSuitable(stopArea, quay);
         addExternalRefInfo(stopArea, quay);
         addZoneIdInfo(stopArea, quay);
-
+        setTtsStopNameAsAlternativeName(stopArea, quay);
         return quay;
+    }
+
+    private void setTtsStopNameAsAlternativeName(StopArea stopArea, SiteElement_VersionStructure target) {
+        Optional<AlternativeName> alternativeName = mapTtsStopName(stopArea);
+        if (alternativeName.isPresent()) {
+            AlternativeName alternativeNameValue = alternativeName.get();
+            if (target.getAlternativeNames() == null) {
+                AlternativeNames_RelStructure alternativeNamesRelStructure = new AlternativeNames_RelStructure();
+                alternativeNamesRelStructure.getAlternativeName().add(alternativeNameValue);
+                target.setAlternativeNames(alternativeNamesRelStructure);
+            } else {
+                target.getAlternativeNames().getAlternativeName().add(alternativeNameValue);
+            }
+        }
     }
 
     public void mapMobilityRestrictedSuitable(StopArea stopArea, Quay quay) {
         AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
-        AccessibilityLimitations_RelStructure accessibilityLimitations_relStructure = new AccessibilityLimitations_RelStructure();
+        AccessibilityLimitations_RelStructure accessibilityLimitationsRelStructure = new AccessibilityLimitations_RelStructure();
         AccessibilityLimitation accessibilityLimitation = new AccessibilityLimitation();
         if (stopArea.getMobilityRestrictedSuitable() == null) {
             accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.UNKNOWN);
@@ -84,8 +96,8 @@ public class StopPlaceMapper {
             accessibilityLimitation.setWheelchairAccess(LimitationStatusEnumeration.TRUE);
         }
         accessibilityLimitation.setVersion(VERSION);
-        accessibilityLimitations_relStructure.setAccessibilityLimitation(accessibilityLimitation);
-        accessibilityAssessment.setLimitations(accessibilityLimitations_relStructure);
+        accessibilityLimitationsRelStructure.setAccessibilityLimitation(accessibilityLimitation);
+        accessibilityAssessment.setLimitations(accessibilityLimitationsRelStructure);
         accessibilityAssessment.setVersion(VERSION);
         quay.setAccessibilityAssessment(accessibilityAssessment);
     }
@@ -138,7 +150,21 @@ public class StopPlaceMapper {
         addZoneIdInfo(stopArea, stopPlace);
         addRailUICinfo(stopArea, stopPlace);
         mapTarifZoneRef(stopArea, stopPlace);
+        setTtsStopNameAsAlternativeName(stopArea, stopPlace);
         return stopPlace;
+    }
+
+    private Optional<AlternativeName> mapTtsStopName(StopArea stopArea) {
+        Optional<AlternativeName> alternativeNameResult = Optional.empty();
+        if (StringUtils.isNotBlank(stopArea.getTtsStopName())) {
+            AlternativeName alternativeName = new AlternativeName();
+            MultilingualString multilingualString = new MultilingualString();
+            multilingualString.setValue(stopArea.getTtsStopName());
+            alternativeName.setName(multilingualString);
+            alternativeName.setTypeOfName(TTS_NAME_KEY);
+            alternativeNameResult =  Optional.of(alternativeName);
+        }
+        return alternativeNameResult;
     }
 
     private void addRailUICinfo(StopArea stopArea, StopPlace zone) {
@@ -160,7 +186,7 @@ public class StopPlaceMapper {
 
     private void mapCompassBearing(StopArea stopArea, Quay quay) {
         if (stopArea.getCompassBearing() != null) {
-            quay.setCompassBearing(new Float(stopArea.getCompassBearing()));
+            quay.setCompassBearing(Float.valueOf(stopArea.getCompassBearing()));
         }
     }
 

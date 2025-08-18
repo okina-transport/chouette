@@ -8,6 +8,7 @@
 
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
 import mobi.chouette.exchange.gtfs.model.GtfsStop;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.WheelchairBoardingType;
@@ -26,6 +27,7 @@ import java.util.TimeZone;
  * <p>
  * optimise multiple period timetable with calendarDate inclusion or exclusion
  */
+@Slf4j
 public class GtfsStopProducer extends AbstractProducer {
 	GtfsStop stop = new GtfsStop();
 
@@ -74,6 +76,8 @@ public class GtfsStopProducer extends AbstractProducer {
 			return false;
 		}
 		stop.setStopName(neptuneObject.getName());
+
+        stop.setTtsStopName(neptuneObject.getTtsStopName());
 
 		if (neptuneObject.getLatitude() == null)
 		{
@@ -155,7 +159,7 @@ public class GtfsStopProducer extends AbstractProducer {
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			log.error("Error while exporting stop", e);
 			return false;
 		}
 		return true;

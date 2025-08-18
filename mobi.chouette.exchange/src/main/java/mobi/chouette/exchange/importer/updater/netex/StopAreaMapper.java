@@ -9,6 +9,7 @@ import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.*;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static mobi.chouette.common.Constant.TTS_NAME_KEY;
 import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpdater.*;
 
 /**
@@ -26,7 +28,7 @@ import static mobi.chouette.exchange.importer.updater.NeTExStopPlaceRegisterUpda
 public class StopAreaMapper {
 
     public StopArea mapCommercialStopPoint(Referential referential, StopArea stopArea) {
-        String split[] = stopArea.getObjectId().split(":");
+        String[] split = stopArea.getObjectId().split(":");
         String parentId = split[0] + ":StopPlace:" + split[2];
 
         StopArea parent = ObjectFactory.getStopArea(referential, parentId);
@@ -35,6 +37,7 @@ public class StopAreaMapper {
         parent.setLongitude(stopArea.getLongitude());
         parent.setLongLatType(stopArea.getLongLatType());
         parent.setName(stopArea.getName());
+        parent.setTtsStopName(stopArea.getTtsStopName());
 
         stopArea.setParent(parent);
 
@@ -110,6 +113,7 @@ public class StopAreaMapper {
         boardingPosition.setStopAreaType(StopAreaTypeEnum.valueOf(StringUtils.capitalize(stopPlace.getStopPlaceType().value())));
         mapKeyValuesExternalRef(quay, boardingPosition);
         mapFareZone(quay, boardingPosition);
+        mapTtsStopName(quay, boardingPosition);
         return boardingPosition;
     }
 
@@ -156,7 +160,19 @@ public class StopAreaMapper {
         mapOriginalStopId(stopPlace, stopArea);
         mapKeyValuesExternalRef(stopPlace, stopArea);
         mapFareZone(stopPlace, stopArea);
+        mapTtsStopName(stopPlace, stopArea);
         return stopArea;
+    }
+
+    private void mapTtsStopName(SiteElement_VersionStructure stopPlace, StopArea stopArea) {
+        if (stopPlace.getAlternativeNames() != null && CollectionUtils.isNotEmpty(stopPlace.getAlternativeNames().getAlternativeName())) {
+          for (AlternativeName alternativeName : stopPlace.getAlternativeNames().getAlternativeName()) {
+              if (TTS_NAME_KEY.equals(alternativeName.getTypeOfName())) {
+                  stopArea.setTtsStopName(alternativeName.getName().getValue());
+                  break;
+              }
+          }
+        }
     }
 
 

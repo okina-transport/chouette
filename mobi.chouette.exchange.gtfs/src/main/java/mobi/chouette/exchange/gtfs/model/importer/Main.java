@@ -173,7 +173,6 @@ public class Main {
 
                 Index<GtfsStopTime> stopTimes = dao.getStopTimeByTrip();
                 for (GtfsStopTime stopTime : stopTimes.values(trip.getTripId())) {
-                    // System.out.println(stopTime);
                     stopTimes.validate(stopTime, dao);
 
                     GtfsStop stop = _map.get(stopTime.getStopId());
@@ -183,6 +182,7 @@ public class Main {
                         stops.validate(stop, dao);
                         GtfsStop clone = new GtfsStop(stop.getStopId(),
                                 stop.getStopCode(), stop.getStopName(),
+                                stop.getTtsStopName(),
                                 stop.getStopDesc(), stop.getStopLat(),
                                 stop.getStopLon(), stop.getZoneId(),
                                 stop.getStopUrl(), stop.getLocationType(),
