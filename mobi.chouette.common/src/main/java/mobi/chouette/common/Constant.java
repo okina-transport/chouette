@@ -142,4 +142,6 @@ public interface Constant {
 
 	String GTFS_TARGET_ROUTE_ID = "import_target_route_id";
 	String GTFS_UNMATCHED_TARGET_ROUTE_ID = "unmatchedTargetRouteId";
+
+    String TTS_NAME_KEY = "Libellé de la synthèse vocale";
 }

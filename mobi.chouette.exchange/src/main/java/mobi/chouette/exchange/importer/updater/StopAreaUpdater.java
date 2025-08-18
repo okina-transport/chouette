@@ -6,11 +6,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.CollectionUtil;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.Pair;
-import mobi.chouette.dao.AccessLinkDAO;
-import mobi.chouette.dao.AccessPointDAO;
-import mobi.chouette.dao.ConnectionLinkDAO;
-import mobi.chouette.dao.StopAreaDAO;
-import mobi.chouette.dao.VariationsDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
 import mobi.chouette.model.AccessLink;
@@ -130,6 +126,7 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				oldValue.setDetached(false);
 
 				oldValue.setName(newValue.getName());
+				oldValue.setTtsStopName(newValue.getTtsStopName());
 				oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
 				oldValue.setComment(newValue.getComment());
 				oldValue.setLongLatType(newValue.getLongLatType());
@@ -165,6 +162,9 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName())) {
 					oldValue.setName(newValue.getName());
 				}
+                if (!Objects.equals(newValue.getTtsStopName(), oldValue.getTtsStopName())) {
+                    oldValue.setTtsStopName(newValue.getTtsStopName());
+                }
 				if (newValue.getComment() != null && !newValue.getComment().equals(oldValue.getComment()) ) {
 					oldValue.setComment(newValue.getComment());
 				}
@@ -248,7 +248,9 @@ public class StopAreaUpdater implements Updater<StopArea> {
 				if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
 					oldValue.setTransportSubMode(newValue.getTransportSubMode());
 				}
-
+                if (!Objects.equals(newValue.getTtsStopName(), oldValue.getTtsStopName())) {
+                    oldValue.setTtsStopName(newValue.getTtsStopName());
+                }
 
 				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
 					oldValue.setLongitude(newValue.getLongitude());

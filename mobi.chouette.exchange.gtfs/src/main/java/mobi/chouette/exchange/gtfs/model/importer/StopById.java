@@ -120,6 +120,12 @@ public class StopById extends IndexImpl<GtfsStop> implements GtfsConverter {
         }
 
         value = array[i++];
+        testExtraSpace(FIELDS.tts_stop_name.name(), value, bean);
+        if (value != null && !value.trim().isEmpty()) {
+            bean.setTtsStopName(STRING_CONVERTER.from(context, FIELDS.tts_stop_name, value, false));
+        }
+
+        value = array[i++];
         testExtraSpace(FIELDS.stop_desc.name(), value, bean);
         if (value != null && !value.trim().isEmpty()) {
             bean.setStopDesc(STRING_CONVERTER.from(context, FIELDS.stop_desc, value, false));
@@ -409,6 +415,7 @@ public class StopById extends IndexImpl<GtfsStop> implements GtfsConverter {
         bean.setStopLat(null);
         bean.setStopLon(null);
         bean.setStopName(null);
+        bean.setTtsStopName(null);
         bean.setStopTimezone(null);
         bean.setStopUrl(null);
         bean.setWheelchairBoarding(null);
@@ -417,7 +424,7 @@ public class StopById extends IndexImpl<GtfsStop> implements GtfsConverter {
     }
 
     public enum FIELDS {
-        stop_id, stop_code, stop_name, stop_desc, stop_lat, stop_lon, zone_id, stop_url, location_type, parent_station, stop_timezone, wheelchair_boarding, address_line, locality, postal_code, platform_code, vehicle_type
+        stop_id, stop_code, stop_name, tts_stop_name, stop_desc, stop_lat, stop_lon, zone_id, stop_url, location_type, parent_station, stop_timezone, wheelchair_boarding, address_line, locality, postal_code, platform_code, vehicle_type
     }
 
     public static class DefaultImporterFactory extends IndexFactory {

@@ -1,16 +1,11 @@
 package mobi.chouette.exchange.gtfs.model;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.TimeZone;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
@@ -32,6 +27,10 @@ public class GtfsStop extends GtfsObject implements Serializable
    @Getter
    @Setter
    private String stopName;
+
+    @Getter
+    @Setter
+    private String ttsStopName;
 
    @Getter
    @Setter
@@ -96,7 +95,7 @@ public class GtfsStop extends GtfsObject implements Serializable
    // }
 
    public GtfsStop(GtfsStop bean) {
-	   this(bean.getStopId(), bean.getStopCode(), bean.getStopName(), bean.getStopDesc(),
+	   this(bean.getStopId(), bean.getStopCode(), bean.getStopName(), bean.getTtsStopName(), bean.getStopDesc(),
 			   bean.getStopLat(), bean.getStopLon(), bean.getZoneId(), bean.getStopUrl(), bean.getLocationType(),
 			   bean.getParentStation(), bean.getStopTimezone(), bean.getWheelchairBoarding(),
 			   bean.getAddressLine(), bean.getLocality(), bean.getPostalCode(),bean.getPlatformCode(),bean.getVehicleType());

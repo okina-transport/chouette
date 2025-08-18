@@ -1,21 +1,21 @@
 package mobi.chouette.exchange.gtfs.model.exporter;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import mobi.chouette.exchange.gtfs.model.GtfsStop;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.LocationType;
 import mobi.chouette.exchange.gtfs.model.GtfsStop.WheelchairBoardingType;
 import mobi.chouette.exchange.gtfs.model.importer.Context;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsConverter;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 public class StopExporter extends ExporterImpl<GtfsStop> implements
 		GtfsConverter {
-	public static enum FIELDS {
-		stop_id, stop_code, stop_name, stop_desc, stop_lat, stop_lon, zone_id, stop_url, location_type, parent_station, stop_timezone, wheelchair_boarding, level_id, platform_code
-	};
+	public enum FIELDS {
+		stop_id, stop_code, stop_name, tts_stop_name, stop_desc, stop_lat, stop_lon, zone_id, stop_url, location_type, parent_station, stop_timezone, wheelchair_boarding, level_id, platform_code
+	}
 
 	public static final String FILENAME = "stops.txt";
 
@@ -37,7 +37,7 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 		write(CONVERTER.to(_context, bean));
 	}
 
-	public static Converter<String, GtfsStop> CONVERTER = new Converter<String, GtfsStop>() {
+	public static final Converter<String, GtfsStop> CONVERTER = new Converter<String, GtfsStop>() {
 
 		@Override
 		public GtfsStop from(Context context, String input) {
@@ -51,6 +51,8 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 					values.get(i++), false));
 			bean.setStopName(STRING_CONVERTER.from(context, FIELDS.stop_name,
 					values.get(i++), true));
+            bean.setTtsStopName(STRING_CONVERTER.from(context, FIELDS.tts_stop_name,
+                    values.get(i++), false));
 			bean.setStopDesc(STRING_CONVERTER.from(context, FIELDS.stop_desc,
 					values.get(i++), false));
 			bean.setStopLat(BigDecimal.valueOf(FLOAT_CONVERTER.from(context,
@@ -74,7 +76,7 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 			bean.setPlatformCode(STRING_CONVERTER.from(context, FIELDS.platform_code,
 					values.get(i++), false));
 			bean.setVehicleType(ROUTETYPE_CONVERTER.from(context, FIELDS.level_id,
-					values.get(i++), false));
+					values.get(i), false));
 
 			return bean;
 		}
@@ -82,10 +84,11 @@ public class StopExporter extends ExporterImpl<GtfsStop> implements
 		@Override
 		public String to(Context context, GtfsStop input) {
 			String result = null;
-			List<String> values = new ArrayList<String>();
+			List<String> values = new ArrayList<>();
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_id,                             input.getStopId(), true));
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_code,                           input.getStopCode(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_name,                           input.getStopName(), true));
+			values.add(STRING_CONVERTER.to(context, FIELDS.tts_stop_name,                       input.getTtsStopName(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.stop_desc,                           input.getStopDesc(), false));
 			values.add(convertFloat(input.getStopLat().floatValue()));
 			values.add(convertFloat(input.getStopLon().floatValue()));
