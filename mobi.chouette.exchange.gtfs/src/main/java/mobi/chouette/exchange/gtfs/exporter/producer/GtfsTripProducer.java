@@ -111,6 +111,8 @@ public class GtfsTripProducer extends AbstractProducer {
 					// Always set if tripheadSign is null
 					time.setStopHeadsign(stopHeadSign);
 				}
+			} else {
+				time.setStopHeadsign(null);
 			}
 			addDropOffAndPickUpType(time, l, vj, vjas);
 

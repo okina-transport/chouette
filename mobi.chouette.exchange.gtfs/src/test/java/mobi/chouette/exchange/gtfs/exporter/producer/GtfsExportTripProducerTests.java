@@ -440,11 +440,11 @@ public class GtfsExportTripProducerTests {
 		Assert.assertNull(mock.getExportedStopTimes().get(0).getStopHeadsign());
 		Assert.assertNull(mock.getExportedStopTimes().get(1).getStopHeadsign());
 		Assert.assertEquals(mock.getExportedStopTimes().get(2).getStopHeadsign(), "UpdatedDestination1");
-		Assert.assertEquals(mock.getExportedStopTimes().get(3).getStopHeadsign(), "UpdatedDestination1");
+		Assert.assertEquals(mock.getExportedStopTimes().get(3).getStopHeadsign(), null);
 		Assert.assertNull(mock.getExportedStopTimes().get(4).getStopHeadsign());
 		Assert.assertNull(mock.getExportedStopTimes().get(5).getStopHeadsign());
 		Assert.assertEquals(mock.getExportedStopTimes().get(6).getStopHeadsign(), "UpdatedDestination");
-		Assert.assertEquals(mock.getExportedStopTimes().get(7).getStopHeadsign(), "UpdatedDestination");
+		Assert.assertEquals(mock.getExportedStopTimes().get(7).getStopHeadsign(), null);
 
 	}
 
