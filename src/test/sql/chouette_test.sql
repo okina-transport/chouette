@@ -5506,6 +5506,29 @@ ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KE
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys ADD COLUMN IF NOT EXISTS block_id VARCHAR(255);
 
+ALTER TABLE chouette_gui.stop_areas
+ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE chouette_gui_transfer.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE public.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE sky.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE nri.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE akt.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE rut.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
+
+ALTER TABLE tro.stop_areas
+    ADD if not exists tts_stop_name varchar(255);
 -- Completed on 2016-01-04 11:09:57 CET
 
 --
