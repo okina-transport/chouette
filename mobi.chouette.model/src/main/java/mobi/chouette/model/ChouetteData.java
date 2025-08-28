@@ -26,6 +26,7 @@ public class ChouetteData {
     Set<ChouetteIdentifier> vehicleJourneyAtStops;
     Set<ChouetteIdentifier> vehicleJourneyFacilities;
     Set<ChouetteIdentifier> attributions;
+    Set<ChouetteIdentifier> connectionLinks;
 
     String lineId;
     String datasetId;
@@ -122,5 +123,12 @@ public class ChouetteData {
             attributions = new HashSet<>();
         }
         return attributions;
+    }
+
+    public Set<ChouetteIdentifier> getConnectionLinks() {
+        if (connectionLinks == null) {
+            connectionLinks = new HashSet<>();
+        }
+        return connectionLinks;
     }
 }

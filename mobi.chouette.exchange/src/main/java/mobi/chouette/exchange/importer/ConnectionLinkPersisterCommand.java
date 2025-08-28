@@ -3,10 +3,13 @@ package mobi.chouette.exchange.importer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.model.ChouetteData;
+import mobi.chouette.model.ChouetteIdentifier;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.util.Referential;
@@ -41,6 +44,9 @@ public class ConnectionLinkPersisterCommand implements Command, Constant {
         if (fileToReferentialStopIdMap == null)
             return SUCCESS;
 
+        ChouetteData chouetteData = (ChouetteData) context.get(CHOUETTE_DATA_TO_MDM);
+        JobData jobData = (JobData) context.get(JOB_DATA);
+
         referential.getSharedConnectionLinks().forEach((key,connectionLink)->{
 
             String originalStartID = connectionLink.getStartOfLink().getObjectId();
@@ -55,6 +61,11 @@ public class ConnectionLinkPersisterCommand implements Command, Constant {
             }
 
             createConnectionLink(connectionLink,startIdtoLookUp,endIdtoLookUp);
+
+            ChouetteIdentifier chouetteIdentifier = new ChouetteIdentifier();
+            chouetteIdentifier.setDataset(jobData.getReferential());
+            chouetteIdentifier.setId(connectionLink.getObjectId());
+            chouetteData.getConnectionLinks().add(chouetteIdentifier);
 
         });
 
