@@ -332,6 +332,8 @@ public class JobServiceManager {
 		List<Job> completedJobsExportGTFS = getCompletedJobsByActionAndType("exporter", "gtfs");
 		List<Job> completedJobsExportNeptune = getCompletedJobsByActionAndType("exporter", "neptune");
 		List<Job> completedJobsExportNetex = getCompletedJobsByActionAndType("exporter", "netexprofile");
+		List<Job> completedJobsExportGlobalNetex = getCompletedJobsByActionAndType("globalExport", "netexprofile");
+		List<Job> completedJobsExportGlobalGtfs = getCompletedJobsByActionAndType("globalExport", "gtfs");
 
 		int jobsDeleted = 0;
 
@@ -342,6 +344,8 @@ public class JobServiceManager {
 		jobsDeleted += deleteOldJobs(completedJobsExportGTFS, keepDays, keepJobsPerReferential);
 		jobsDeleted += deleteOldJobs(completedJobsExportNeptune, keepDays, keepJobsPerReferential);
 		jobsDeleted += deleteOldJobs(completedJobsExportNetex, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsExportGlobalNetex, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedJobsExportGlobalGtfs, keepDays, keepJobsPerReferential);
 
 		log.info("Removed old jobs. Cnt: " + jobsDeleted);
 	}
