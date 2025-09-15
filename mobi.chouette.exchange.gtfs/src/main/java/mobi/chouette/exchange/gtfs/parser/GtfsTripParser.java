@@ -1212,6 +1212,14 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 					// projection inside segment
 					projection = segments.get(rank).project(point);
 				}
+			if (previous == null && previousLocation == null && previousScheduledStopPoint == null ){
+				segmentRank =0;
+				previous = projection;
+				previousLocation = location;
+				previousScheduledStopPoint = stop.getScheduledStopPoint();
+				continue;
+			}
+
 			if (previous != null) {
 				List<Coordinate> coords = new ArrayList<>();
 				coords.add(previous);
