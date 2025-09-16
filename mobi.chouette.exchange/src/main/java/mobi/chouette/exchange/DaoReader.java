@@ -36,9 +36,9 @@ public class DaoReader {
 
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Set<Long> loadLines(String type, List<Long> ids) {
+	public Set<Long> loadLines(String type, List<Long> ids, boolean exportAllLines) {
 		List<Line> lines = new ArrayList<>();
-		if (ids == null || ids.isEmpty()) {
+		if (exportAllLines) {
 			lines.addAll(lineDAO.findAll());
 		} else {
             switch (type) {

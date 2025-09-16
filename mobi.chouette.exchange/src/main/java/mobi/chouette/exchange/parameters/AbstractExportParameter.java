@@ -20,7 +20,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials", "exportConfigurationId"}, name = "actionExportParameter")
+@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials", "exportConfigurationId", "exportAllLines"}, name = "actionExportParameter")
 public class AbstractExportParameter extends AbstractParameter {
 
 	@XmlElement(name = "references_type", required = true)
@@ -46,6 +46,10 @@ public class AbstractExportParameter extends AbstractParameter {
 
 	@XmlElement(name = "export_configuration_id")
 	protected Long exportConfigurationId;
+
+	@XmlElement(name = "export_all_lines", defaultValue = "false")
+	private boolean exportAllLines = false;
+
 
 	/**
 	 * Return a list with all additional referentials that must be locked for this job to execute. Defaults to empty.

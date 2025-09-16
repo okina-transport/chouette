@@ -1026,7 +1026,7 @@ public class DaoReaderTest {
 
         try {
             // act
-            Set<Long> output = tested.loadLines("", new ArrayList<>());
+            Set<Long> output = tested.loadLines("", new ArrayList<>(), true);
 
             // assert
             List<Long> expectedIds = lines.stream().map(Line::getId).collect(Collectors.toList());

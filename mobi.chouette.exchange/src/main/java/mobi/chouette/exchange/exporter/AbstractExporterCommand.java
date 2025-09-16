@@ -68,7 +68,7 @@ public class AbstractExporterCommand implements Constant {
                     ids = new ArrayList<>(parameters.getIds());
                 }
 
-                Set<Long> lines = reader.loadLines(type, ids);
+                Set<Long> lines = reader.loadLines(type, ids, parameters.isExportAllLines());
                 if (lines.isEmpty()) {
                     reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data selected");
                     return ERROR;

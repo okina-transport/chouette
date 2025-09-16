@@ -147,7 +147,7 @@ public class ValidatorCommand implements Command, Constant {
 			ids = new ArrayList<Long>(parameters.getIds());
 		}
 
-		Set<Long> lines = reader.loadLines(type, ids);
+		Set<Long> lines = reader.loadLines(type, ids, true);
 		if (lines.isEmpty()) {
 			reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data selected");
 			reportNoDataValidationError(context);
