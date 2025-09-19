@@ -27,4 +27,6 @@ public interface LineDAO extends GenericDAO<Line> {
     Line findByObjectIdAndInitialize(String objectId);
 
     Map<String, String> findColorLines();
+
+    boolean checkHasAnyLineInNewTransaction();
 }

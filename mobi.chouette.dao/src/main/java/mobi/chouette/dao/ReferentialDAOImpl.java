@@ -1,8 +1,7 @@
 package mobi.chouette.dao;
 
-import mobi.chouette.core.CoreException;
-import mobi.chouette.core.CoreExceptionCode;
 import mobi.chouette.model.Referential;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -11,15 +10,13 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static mobi.chouette.common.Constant.SUPERSPACE_PREFIX;
-
 @Stateless
 public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements ReferentialDAO {
 
-    public ReferentialDAOImpl() { super(Referential.class); }
-
     @PersistenceContext(unitName = "public")
     EntityManager em;
+
+    public ReferentialDAOImpl() { super(Referential.class); }
 
 
 //    @PersistenceContext(unitName = "public")
@@ -44,13 +41,25 @@ public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements R
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void dropSchema(String schema) {
-        em.createNativeQuery("DROP SCHEMA " + schema + " CASCADE" ).executeUpdate();
+    @Override
+    public void dropSchemaIfExists(String schema) {
+        // can't use a parametrized query parameter for 'schema'
+        em.createNativeQuery("DROP SCHEMA IF EXISTS " + StringEscapeUtils.escapeSql(schema)  + " CASCADE").executeUpdate();
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void renameSchemaForSimulation(String schema) {
-        em.createNativeQuery("ALTER SCHEMA " + schema + " RENAME TO " + SUPERSPACE_PREFIX + "_" + schema).executeUpdate();
+    @Override
+    public void renameSchema(String from,  String to) {
+        // can't use a parametrized query parameter for 'from' and 'to'
+        em.createNativeQuery("ALTER SCHEMA " + StringEscapeUtils.escapeSql(from) + " RENAME TO " + StringEscapeUtils.escapeSql(to)).executeUpdate();
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Override
+    public Boolean checkSchemaExists(String schema) {
+        return (Boolean) em.createNativeQuery("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = :schema);")
+                .setParameter("schema", schema)
+                .getSingleResult();
     }
 
 

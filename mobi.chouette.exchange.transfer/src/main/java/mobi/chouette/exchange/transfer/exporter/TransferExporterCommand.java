@@ -33,10 +33,14 @@ import java.io.IOException;
 public class TransferExporterCommand extends AbstractExporterCommand implements Command, Constant, ReportConstant {
 
 
+	public static final String COMMAND = "TransferExporterCommand";
+
+	static {
+		CommandFactory.factories.put(TransferExporterCommand.class.getName(), new DefaultCommandFactory());
+	}
+
 	@EJB
 	private JobServiceManager jobServiceManager;
-
-	public static final String COMMAND = "TransferExporterCommand";
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.NEVER)
@@ -70,6 +74,9 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 					jobServiceManager.cancel(job.getReferential(), job.getId());
 				}
 			}
+			Command preTransferCommand = CommandFactory.create(initialContext, PreTransferCommand.class.getName());
+			preTransferCommand.execute(context);
+
 
 			Command transfertByDump = CommandFactory.create(initialContext, TransferExportByDump.class.getName());
 			transfertByDump.execute(context);
@@ -107,7 +114,6 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 		return result;
 	}
 
-
 	public static class DefaultCommandFactory extends CommandFactory {
 
 		@Override
@@ -127,9 +133,5 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 			}
 			return result;
 		}
-	}
-
-	static {
-		CommandFactory.factories.put(TransferExporterCommand.class.getName(), new DefaultCommandFactory());
 	}
 }

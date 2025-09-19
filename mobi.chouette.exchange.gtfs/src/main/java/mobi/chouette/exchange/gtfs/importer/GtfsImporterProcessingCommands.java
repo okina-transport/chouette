@@ -282,6 +282,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 		try {
 			commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
 		} catch (Exception e) {
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
@@ -299,6 +300,7 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
 		try {
 			commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
 			if (level3validation && !(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
 				// add shared data validation
 				commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));

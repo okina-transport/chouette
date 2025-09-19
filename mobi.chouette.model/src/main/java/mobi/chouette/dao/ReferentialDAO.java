@@ -1,9 +1,8 @@
 package mobi.chouette.dao;
 
-import java.util.List;
-
-import mobi.chouette.core.CoreException;
 import mobi.chouette.model.Referential;
+
+import java.util.List;
 
 public interface ReferentialDAO extends GenericDAO<Referential> {
 
@@ -11,8 +10,10 @@ public interface ReferentialDAO extends GenericDAO<Referential> {
 
     String getReferentialNameBySlug(String slug);
 
-    void dropSchema(String schema);
+    void dropSchemaIfExists(String schema);
 
-    void renameSchemaForSimulation(String schema);
+    void renameSchema(String from, String to);
+
+    Boolean checkSchemaExists(String schema);
 
 }

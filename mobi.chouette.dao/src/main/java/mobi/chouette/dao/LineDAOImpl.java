@@ -151,4 +151,10 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 					result -> (String) result[1]
 		));
 	}
+
+	@Override
+	@Transactional(Transactional.TxType.REQUIRES_NEW)
+	public boolean checkHasAnyLineInNewTransaction() {
+		return (Boolean) em.createNativeQuery("SELECT EXISTS (SELECT 1 FROM lines l)").getSingleResult();
+	}
 }

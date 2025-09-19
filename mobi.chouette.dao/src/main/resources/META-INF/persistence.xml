@@ -74,6 +74,7 @@
         <class>mobi.chouette.model.RouteSection</class>
         <class>mobi.chouette.model.StopArea</class>
         <class>mobi.chouette.model.StopPoint</class>
+        <class>mobi.chouette.model.Storage</class>
         <class>mobi.chouette.model.ScheduledStopPoint</class>
         <class>mobi.chouette.model.StopArea</class>
         <class>mobi.chouette.model.Timeband</class>

@@ -167,6 +167,7 @@ public class NeptuneImporterProcessingCommands implements ProcessingCommands, Co
 		try {
 			commands.add(CommandFactory.create(initialContext, DeleteLineWithoutOfferCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
 		} catch (Exception e) {
 			log.error(e, e);
 			throw new RuntimeException("unable to call factories");
