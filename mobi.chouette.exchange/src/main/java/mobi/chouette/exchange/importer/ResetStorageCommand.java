@@ -5,12 +5,14 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.StorageDAO;
+import mobi.chouette.model.Storage;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.Optional;
 
 @Log4j
 @Stateless(name = ResetStorageCommand.COMMAND)
@@ -27,7 +29,11 @@ public class ResetStorageCommand implements Command {
 
     @Override
     public boolean execute(Context context) throws Exception {
-        storageDAO.truncate();
+        Optional<Storage> storage = storageDAO.findByMaxStoredAt();
+        if (storage.isPresent()) {
+            storage.get().setRestoredAt(null);
+            storageDAO.update(storage.get());
+        }
         return true;
     }
 
