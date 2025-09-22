@@ -40,12 +40,13 @@ public class StorageService {
     /**
      * Store a referential. Steps:
      * Before:
-     *  <ul>
-     *      <li>create storage dumps directory (and parent directories) if it does not exist</li>
-     *      <li>generate DUMP for production referential</li>
-     *      <li>production schema = mobiiti_toto (must exist)</li>
-     *      <li>storage schema = null | storage_toto</li>
-     *  </ul>
+     * <ul>
+     *     <li>create storage dumps directory (and parent directories) if it does not exist</li>
+     *     <li>generate DUMP for production referential</li>
+     *     <li>production schema = mobiiti_toto (must exist)</li>
+     *     <li>storage schema = null | storage_toto</li>
+     * </ul>
+     *
      * @param validationReferential validation referential
      * @param productionReferential production referential to store
      */
@@ -81,16 +82,16 @@ public class StorageService {
      * <li>import stored production DUMP into {productionSchema}</li>
      * <li>rename {productionSchema} into {validationSchema}</li>
      * <li>rename 'tmp_{productionSchema}' into {productionSchema}</li>
-     * <li>delete DUMP file</li>
      * </ul>
+     *
      * @param validationReferential validation referential to restore to
      */
     public void restoreReferential(String validationReferential) throws ServiceException {
         log.info("Restore referential " + validationReferential);
-        String productionReferential =  SUPERSPACE_PREFIX + "_" + validationReferential;
+        String productionReferential = SUPERSPACE_PREFIX + "_" + validationReferential;
         Path dumpFilepath = STORAGE_DUMPS.resolve(productionReferential);
         try {
-            String tmpProductionReferential = "tmp_"  + productionReferential;
+            String tmpProductionReferential = "tmp_" + productionReferential;
             referentialDAO.dropSchemaIfExists(tmpProductionReferential);
             referentialDAO.renameSchema(productionReferential, tmpProductionReferential);
             try {
@@ -107,7 +108,7 @@ public class StorageService {
             referentialDAO.renameSchema(tmpProductionReferential, productionReferential);
             ContextHolder.setContext(validationReferential);
             Optional<Storage> latestStorage =
-                    storageDAO.findByMaxStoredAtAndRestoredAtNull();
+                    storageDAO.findByMaxStoredAt();
             if (latestStorage.isPresent()) {
                 latestStorage.get().setRestoredAt(Instant.now());
                 storageDAO.update(latestStorage.get());
@@ -122,11 +123,6 @@ public class StorageService {
         } catch (Exception e) {
             log.error("Error restoring referential " + validationReferential, e);
             throw new ServiceException(ServiceExceptionCode.INTERNAL_ERROR, "Error restoring referential " + validationReferential, e);
-        }
-        try {
-            postgresDumpService.deleteDumpFile(dumpFilepath.toString());
-        } catch (Exception e) {
-            // pass - error logged by service
         }
         log.info("Restored referential " + validationReferential + " successfully");
     }
@@ -158,7 +154,7 @@ public class StorageService {
     public Optional<Instant> getLatestStorageTime(String referential) throws ServiceException {
         if (referentialDAO.checkSchemaExists(referential)) {
             ContextHolder.setContext(referential);
-            return storageDAO.findByMaxStoredAtAndRestoredAtNull().map(Storage::getStoredAt);
+            return storageDAO.findByMaxStoredAt().map(Storage::getStoredAt);
         } else {
             throw new ServiceException(ServiceExceptionCode.INVALID_REQUEST, String.format("Schema %s does not " +
                     "exist", referential));

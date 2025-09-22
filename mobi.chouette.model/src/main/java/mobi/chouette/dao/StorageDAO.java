@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface StorageDAO extends GenericDAO<Storage> {
 
-    Optional<Storage> findByMaxStoredAtAndRestoredAtNull();
+    Optional<Storage> findByMaxStoredAt();
 
     Optional<Storage> findByMaxStoredAtAndRestoredAtNotNull();
 
