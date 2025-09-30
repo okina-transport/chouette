@@ -68,7 +68,7 @@ public class AbstractExporterCommand implements Constant {
                     ids = new ArrayList<>(parameters.getIds());
                 }
 
-				boolean exportAllLines = parameters.isExportAllLines() || jobData.getType().equals("netexprofile");
+				boolean exportAllLines = parameters.isExportAllLines() || !jobData.getType().equals("gtfs");
                 Set<Long> lines = reader.loadLines(type, ids, exportAllLines);
                 if (lines.isEmpty()) {
                     reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "no data selected");
