@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version de l'image de base. Décorellé de la version applicative, n'évolue pas souvent.
-CHOUETTE_BASE_VERSION=1.5
+CHOUETTE_BASE_VERSION=1.6
 
 MVN_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 MVN_VERSION=`echo ${MVN_VERSION} | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g"`
