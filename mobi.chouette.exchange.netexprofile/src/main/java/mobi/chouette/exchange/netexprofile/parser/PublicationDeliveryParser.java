@@ -71,20 +71,19 @@ public class PublicationDeliveryParser extends NetexParser implements Parser, Co
 
 	@Override
 	public void parse(Context context) throws Exception {
-
 		lineParser = (LineParser) ParserFactory.create(LineParser.class.getName());
 		organisationParser = (OrganisationParser) ParserFactory.create(OrganisationParser.class.getName());
 		serviceCalendarParser = ParserFactory.create(ServiceCalendarFrameParser.class.getName());
 		routeParser = (RouteParser) ParserFactory.create(RouteParser.class.getName());
 		directionParser = (DirectionParser) ParserFactory.create(DirectionParser.class.getName());
 		journeyPatternParser = (JourneyPatternParser) ParserFactory.create(JourneyPatternParser.class.getName());
-		scheduledStopPointParser = (ScheduledStopPointParser) ParserFactory.create(ScheduledStopPointParser.class.getName());
 		destinationDisplayParser = (DestinationDisplayParser) ParserFactory.create(DestinationDisplayParser.class.getName());
 		headwayJourneyGroupParser = (HeadwayJourneyGroupParser) ParserFactory.create(HeadwayJourneyGroupParser.class.getName());
 		serviceJourneyParser = (ServiceJourneyParser) ParserFactory.create(ServiceJourneyParser.class.getName());
 		templateServiceJourneyParser = (TemplateServiceJourneyParser) ParserFactory.create(TemplateServiceJourneyParser.class.getName());
-		stopAssignmentParser = (StopAssignmentParser) ParserFactory.create(StopAssignmentParser.class.getName());
 		stopPlaceParser = (StopPlaceParser) ParserFactory.create(StopPlaceParser.class.getName());
+		stopAssignmentParser = (StopAssignmentParser) ParserFactory.create(StopAssignmentParser.class.getName());
+		scheduledStopPointParser = (ScheduledStopPointParser) ParserFactory.create(ScheduledStopPointParser.class.getName());
 		routeLinkParser = (RouteLinkParser) ParserFactory.create(RouteLinkParser.class.getName());
 		siteConnectionParser = (SiteConnectionParser) ParserFactory.create(SiteConnectionParser.class.getName());
 

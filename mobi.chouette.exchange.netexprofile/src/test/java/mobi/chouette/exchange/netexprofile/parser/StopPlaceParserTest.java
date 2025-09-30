@@ -34,7 +34,7 @@ public class StopPlaceParserTest {
         netexStopPlace.setStopPlaceType(StopTypeEnumeration.RAIL_STATION);
         netexStopPlace.setTransportMode(AllVehicleModesOfTransportEnumeration.RAIL);
 //        netexStopPlace.setRailSubmode(RailSubmodeEnumeration.INTERMATIONAL);
-        parser.parseStopPlace(context, netexStopPlace, new HashMap<>(), new HashMap<>());
+        parser.parseStopPlace(context, netexStopPlace, new HashMap<>());
 
         StopArea stopArea = ObjectFactory.getStopArea(referential, netexStopPlace.getId());
         Assert.assertEquals(netexStopPlace.getId(), stopArea.getObjectId());

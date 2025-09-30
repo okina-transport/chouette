@@ -793,7 +793,7 @@ public abstract class AbstractValidation<T extends NeptuneIdentifiedObject> impl
 			testLevel3DatabaseList = new ArrayList<TestDescription>();
 
 			testLevel3DatabaseList.add(new TestDescription(3, STOP_POINT_1, "ERROR"));
-			testLevel3DatabaseList.add(new TestDescription(3, STOP_POINT_2, "ERROR"));
+			testLevel3DatabaseList.add(new TestDescription(3, STOP_POINT_2, "WARNING"));
 			testLevel3DatabaseList.add(new TestDescription(3, STOP_POINT_3, "WARNING"));
 			testLevel3DatabaseList.add(new TestDescription(3, STOP_AREA_1, "ERROR"));
 			testLevel3DatabaseList.add(new TestDescription(3, STOP_AREA_2, "WARNING"));

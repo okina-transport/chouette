@@ -10,7 +10,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.rutebanken.netex.model.*;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.IMPORTED_ID;
 import static mobi.chouette.common.Constant.TTS_NAME_KEY;
@@ -43,7 +45,19 @@ public class StopPlaceMapper {
                 if (alreadyProcessedQuays.contains(children.getObjectId()))
                     continue;
 
+				Boolean isQuayGenerated = children.getKeyValues().stream()
+                                                                  .anyMatch(keyValue -> keyValue.getKey().equals("automaticaly-created-missing-quay"));
+				if (isQuayGenerated) {
+                    if (children.getLongitude().equals(new BigDecimal(0))) {
+                       children.setLongitude(children.getParent().getLongitude());
+                    }
+					if (children.getLatitude().equals(new BigDecimal(0))) {
+					   children.setLatitude(children.getParent().getLatitude());
+					}
+                }
+
                 Quay quay = mapQuay(children);
+
                 stopPlace.getQuays().getQuayRefOrQuay().add(netexObjectFactory.createQuay(quay));
                 alreadyProcessedQuays.add(children.getObjectId());
             }
@@ -66,6 +80,7 @@ public class StopPlaceMapper {
         mapMobilityRestrictedSuitable(stopArea, quay);
         addExternalRefInfo(stopArea, quay);
         addZoneIdInfo(stopArea, quay);
+		addIsGeneratedQuayInfo(stopArea, quay);;
         setTtsStopNameAsAlternativeName(stopArea, quay);
         return quay;
     }
@@ -288,6 +303,16 @@ public class StopPlaceMapper {
             }
         }
     }
+
+	public void addIsGeneratedQuayInfo(StopArea stopArea, Zone_VersionStructure zone) {
+		for (KeyValue keyValue : stopArea.getKeyValues()) {
+			if(StringUtils.equals(keyValue.getKey(), AUTO_CREATED_QUAY_SUFFIX) && StringUtils.isNotEmpty(keyValue.getValue())){
+				zone.setKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
+						.withKey(AUTO_CREATED_QUAY_SUFFIX)
+						.withValue(keyValue.getValue())));
+			}
+		}
+	}
 
     public void addZoneIdInfo(StopArea stopArea, Zone_VersionStructure zone) {
         if (StringUtils.isNotBlank(stopArea.getZoneId())) {

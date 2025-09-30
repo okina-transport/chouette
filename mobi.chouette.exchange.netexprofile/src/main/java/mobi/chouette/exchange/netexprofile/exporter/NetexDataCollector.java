@@ -14,8 +14,8 @@ import mobi.chouette.model.Route;
 @Log4j
 public class NetexDataCollector extends DataCollector {
 
-	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate) {
-		boolean res = collect(collection, line, startDate, endDate, false, false);
+	public boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate, boolean exportGeneratedMissingQuays) {
+		boolean res = collect(collection, line, startDate, endDate, false, false, exportGeneratedMissingQuays);
 
 		if (line.getNetwork().getCompany() != null) {
 			collection.getCompanies().add(line.getNetwork().getCompany());
