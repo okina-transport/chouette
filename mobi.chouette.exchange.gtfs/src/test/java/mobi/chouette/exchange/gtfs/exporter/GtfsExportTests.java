@@ -223,6 +223,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 		configuration.setOrganisationName("organisation");
 		configuration.setReferentialName("test");
 		configuration.setValidateAfterExport(true);
+        configuration.setExportAllLines(true);
 		JobDataTest test = new JobDataTest();
 		context.put(JOB_DATA, test);
 		test.setPathName("target/referential/test");

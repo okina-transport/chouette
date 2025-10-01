@@ -35,7 +35,10 @@ import java.util.Arrays;
         "routeSortOrder",
         "renameRoutesAfterMerge",
         "importFareFiles",
-        "importTargetRoutes"
+        "importTargetRoutes",
+        "allowNonStandardGtfs",
+        "fillMissingStopName",
+        "fillMissingCoordinates"
 })
 @Getter
 @Setter
@@ -90,6 +93,15 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "import_target_routes", defaultValue = "")
     private String importTargetRoutes = "";
+
+    @XmlElement(name = "allow_non_standard_gtfs", defaultValue = "false")
+    private boolean allowNonStandardGtfs = false;
+
+    @XmlElement(name = "fill_missing_stop_name", defaultValue = "")
+    private String fillMissingStopName = "";
+
+    @XmlElement(name = "fill_missing_coordinates", defaultValue = "")
+    private String fillMissingCoordinates = "";
 
     public boolean isValid(Logger log, String[] allowedTypes) {
         if (!super.isValid(log)) return false;
