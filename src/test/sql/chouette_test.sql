@@ -5506,29 +5506,29 @@ ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KE
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys ADD COLUMN IF NOT EXISTS block_id VARCHAR(255);
 
-ALTER TABLE chouette_gui.stop_areas
-ADD if not exists tts_stop_name varchar(255);
+DO
+$$
+DECLARE
+    schema_names TEXT[] := ARRAY['chouette_gui', 'public', 'sky', 'nri', 'akt', 'rut', 'tro'];
+    schema_name TEXT;
+BEGIN
+    FOREACH schema_name IN ARRAY schema_names
+    LOOP
+        EXECUTE format('CREATE TABLE IF NOT EXISTS %I.storage (
+            id          INT PRIMARY KEY,
+            stored_at   TIMESTAMP WITH TIME ZONE NOT NULL,
+            restored_at TIMESTAMP WITH TIME ZONE
+        );', schema_name);
+        EXECUTE format('CREATE SEQUENCE IF NOT EXISTS %I.storage_id_seq START WITH 1
+            INCREMENT BY 1
+            NO MINVALUE
+            NO MAXVALUE
+            CACHE 1;', schema_name);
+        EXECUTE format('ALTER TABLE  %I.stop_areas ADD if not exists tts_stop_name varchar(255);', schema_name);
+    END LOOP;
+END;
+$$;
 
-ALTER TABLE chouette_gui_transfer.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE public.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE sky.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE nri.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE akt.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE rut.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
-
-ALTER TABLE tro.stop_areas
-    ADD if not exists tts_stop_name varchar(255);
 -- Completed on 2016-01-04 11:09:57 CET
 
 --
