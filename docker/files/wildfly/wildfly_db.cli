@@ -16,6 +16,7 @@ data-source add \
 --password=${env.CHOUETTE_IEV_DB_PASSWORD} \
 --use-fast-fail=true \
 --validate-on-match=false \
+--background-validation=true \
 --background-validation-millis=10000 \
 --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
 --share-prepared-statements=false \
@@ -33,6 +34,7 @@ data-source add \
 --max-pool-size=60 \
 --use-fast-fail=true \
 --validate-on-match=false \
+--background-validation=true \
 --background-validation-millis=10000 \
 --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
 --share-prepared-statements=false \
