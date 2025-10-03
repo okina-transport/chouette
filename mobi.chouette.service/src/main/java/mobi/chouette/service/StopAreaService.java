@@ -49,6 +49,8 @@ public class StopAreaService {
 
     private ExecutorService executor;
 
+    private Set<String> alreadyDeletedStopPlaces = new HashSet<>();
+
     public StopAreaService() {
         final AtomicInteger counter = new AtomicInteger(0);
         ThreadFactory threadFactory = (r) -> {
@@ -64,7 +66,7 @@ public class StopAreaService {
     }
 
     public void createOrUpdateStopPlacesFromNetexStopPlaces(InputStream inputStream) throws CoreException {
-        PublicationDeliveryStopPlaceParser parser = new PublicationDeliveryStopPlaceParser(inputStream);
+        PublicationDeliveryStopPlaceParser parser = new PublicationDeliveryStopPlaceParser(inputStream, alreadyDeletedStopPlaces);
 
         StopAreaUpdateContext updateContext = parser.getUpdateContext();
 

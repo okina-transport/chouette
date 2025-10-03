@@ -44,12 +44,14 @@ public class PublicationDeliveryStopPlaceParser {
     private InputStream inputStream;
     private ZonedDateTime now;
     private Set<String> importedIds = new HashSet<>();
+    private Set<String> alreadyDeletedStopAreas;
 
     @Getter
     private StopAreaUpdateContext updateContext;
 
-    public PublicationDeliveryStopPlaceParser(InputStream inputStream) {
+    public PublicationDeliveryStopPlaceParser(InputStream inputStream, Set<String> alreadyDeletedStopAreas) {
         this.inputStream = inputStream;
+        this.alreadyDeletedStopAreas = alreadyDeletedStopAreas;
         now = ZonedDateTime.now();
         updateContext = new StopAreaUpdateContext();
         parseStopPlaces();
@@ -61,11 +63,11 @@ public class PublicationDeliveryStopPlaceParser {
      * Read importedId set (with values like "PROVIDER1:StopPlace:123")
      * to extract the schema name (PROVIDER1)
      */
-    private void extractImpactedSchemas(){
+    private void extractImpactedSchemas() {
         updateContext.getImpactedSchemas().addAll(importedIds.stream()
-                                                             .filter(id->id.contains(":") && id.split(":").length == 3)
-                                                             .map(id-> id.split(":")[0].toLowerCase())
-                                                             .collect(Collectors.toList()));
+                .filter(id -> id.contains(":") && id.split(":").length == 3)
+                .map(id -> id.split(":")[0].toLowerCase())
+                .collect(Collectors.toList()));
     }
 
 
@@ -106,10 +108,13 @@ public class PublicationDeliveryStopPlaceParser {
                     for (StopPlace stopPlace : siteFrame.getStopPlaces().getStopPlace_().stream().map(sp -> (StopPlace) sp.getValue()).collect(Collectors.toList())) {
                         feedImportedIds(stopPlace);
 
-                        if (!isActive(stopPlace, now)) {
-                            updateContext.getInactiveStopAreaIds().add(stopPlace.getId());
-                            referential.getStopAreas().remove(stopPlace.getId());
-                        } else if (stopPlace.getQuays() != null && !CollectionUtils.isEmpty(stopPlace.getQuays().getQuayRefOrQuay())) {
+                        if (!isActive(stopPlace, now) && !alreadyDeletedStopAreas.contains(stopPlace.getId())) {
+                            String stopPlaceIdToDelete = stopPlace.getId();
+                            updateContext.getInactiveStopAreaIds().add(stopPlaceIdToDelete);
+                            referential.getStopAreas().remove(stopPlaceIdToDelete);
+                            alreadyDeletedStopAreas.add(stopPlaceIdToDelete);
+
+                        } else if (isActive(stopPlace, now) && stopPlace.getQuays() != null && !CollectionUtils.isEmpty(stopPlace.getQuays().getQuayRefOrQuay())) {
                             stopPlace.getQuays().getQuayRefOrQuay().forEach(this::collectMergedIdForQuay);
                         }
                     }
@@ -126,10 +131,9 @@ public class PublicationDeliveryStopPlaceParser {
      * Read all imported-id values to feed importedId set
      * (used later to know on which schemas update must be applied
      *
-     * @param stopPlace
-     *  Stop place That contain imported-ids
+     * @param stopPlace Stop place That contain imported-ids
      */
-    private void feedImportedIds(StopPlace stopPlace){
+    private void feedImportedIds(StopPlace stopPlace) {
         stopPlace.getKeyList().getKeyValue().stream()
                 .filter(kv -> IMPORT_ID_KEY.equals(kv.getKey()))
                 .forEach(kv -> splitAndCollectIds(kv.getValue(), stopPlace.getId()));
@@ -140,10 +144,11 @@ public class PublicationDeliveryStopPlaceParser {
     /**
      * Split concatained ids and collect them
      * (because imported-id key contains all ids in a string(e.g:"provider1:StopPlace:123,provider2:StopPlace:415")
+     *
      * @param rawId
      * @param netexId
      */
-    private void splitAndCollectIds(String rawId, String netexId){
+    private void splitAndCollectIds(String rawId, String netexId) {
 
         List<String> importedIdsList = Arrays.asList(rawId.split(","));
         importedIds.addAll(importedIdsList);
@@ -159,9 +164,9 @@ public class PublicationDeliveryStopPlaceParser {
 
             List<String> impactedStopAreasForSchema;
 
-            if (updateContext.getImpactedStopAreasBySchema().containsKey(schemaName)){
+            if (updateContext.getImpactedStopAreasBySchema().containsKey(schemaName)) {
                 impactedStopAreasForSchema = updateContext.getImpactedStopAreasBySchema().get(schemaName);
-            } else{
+            } else {
                 impactedStopAreasForSchema = new ArrayList<>();
                 updateContext.getImpactedStopAreasBySchema().put(schemaName, impactedStopAreasForSchema);
             }
@@ -172,7 +177,7 @@ public class PublicationDeliveryStopPlaceParser {
 
     }
 
-    private void collectImportedIds(String netexId, String importedId){
+    private void collectImportedIds(String netexId, String importedId) {
         Map<String, List<String>> importedIdByNetex = updateContext.getImportedIdsByNetexId();
         List<String> importedIds;
         if (importedIdByNetex.containsKey(netexId)) {
@@ -184,7 +189,7 @@ public class PublicationDeliveryStopPlaceParser {
         importedIds.add(importedId);
     }
 
-    private void collectSelectedIds(String netexId, String rawSelectedIds){
+    private void collectSelectedIds(String netexId, String rawSelectedIds) {
         Map<String, List<String>> selectIdByNetex = updateContext.getSelectedIdsByNetexId();
         List<String> selectedIdToCollect = Arrays.asList(rawSelectedIds.split(","));
 
@@ -204,12 +209,12 @@ public class PublicationDeliveryStopPlaceParser {
             if (quay.getKeyList() != null && quay.getKeyList().getKeyValue() != null) {
                 quay.getKeyList().getKeyValue().stream().filter(kv -> MERGED_ID_KEY.equals(kv.getKey())).forEach(kv -> addMergedIds(quay.getId(), kv.getValue()));
                 quay.getKeyList().getKeyValue().stream().filter(kv -> IMPORT_ID_KEY.equals(kv.getKey())).forEach(kv -> {
-                                                                                                                addMergedIds(quay.getId(), kv.getValue());
-                                                                                                                splitAndCollectIds(kv.getValue(),quay.getId());
-                                                                                                                });
+                    addMergedIds(quay.getId(), kv.getValue());
+                    splitAndCollectIds(kv.getValue(), quay.getId());
+                });
                 quay.getKeyList().getKeyValue().stream()
-                                               .filter(kv -> SELECTED_ID_KEY.equals(kv.getKey()))
-                                               .forEach(kv -> collectSelectedIds(quay.getId(),kv.getValue()));
+                        .filter(kv -> SELECTED_ID_KEY.equals(kv.getKey()))
+                        .forEach(kv -> collectSelectedIds(quay.getId(), kv.getValue()));
             }
         }
     }

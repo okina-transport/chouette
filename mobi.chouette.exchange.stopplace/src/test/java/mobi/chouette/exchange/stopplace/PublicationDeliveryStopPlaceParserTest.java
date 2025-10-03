@@ -34,7 +34,7 @@ public class PublicationDeliveryStopPlaceParserTest {
     public void testParseStopPlacesFromPublicationDelivery() throws Exception {
         Set<String> expectedActiveIds = Sets.newHashSet("NSR:StopPlace:51566", "NSR:StopPlace:11001");
         Set<String> expectedRemovedIds = Sets.newHashSet("NSR:StopPlace:10089");
-        PublicationDeliveryStopPlaceParser parser = new PublicationDeliveryStopPlaceParser(new FileInputStream("src/test/resources/netex/PublicationDeliveryWithStopPlaces.xml"));
+        PublicationDeliveryStopPlaceParser parser = new PublicationDeliveryStopPlaceParser(new FileInputStream("src/test/resources/netex/PublicationDeliveryWithStopPlaces.xml"), new HashSet<>());
 
         Collection<StopArea> activeStopAreas = parser.getUpdateContext().getActiveStopAreas();
         Assert.assertEquals(activeStopAreas.size(), expectedActiveIds.size());
