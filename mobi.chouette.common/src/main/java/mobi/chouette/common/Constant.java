@@ -46,6 +46,7 @@ public interface Constant {
 	String LINE_NUMBER = "line_number";
 
 	String LINE_COLOR = "line_color";
+	String OVERWRITE_LINE_INFORMATION = "overwrite_line_information";
 	// String OBJECT_LOCALISATION = "object_localisation";
 	String VALIDATION_CONTEXT = "validation_context";
 

@@ -102,9 +102,11 @@ public class LineRegisterCommand implements Command {
 		context.put(CURRENT_LINE_ID, newValue.getObjectId());
 
 		// Read Line color, usefull for Neptune Import using purge to keep color line
-		if (context.get(LINE_COLOR) != null) {
-			HashMap<String, String> lineColorMap = context.get(LINE_COLOR) instanceof HashMap<?, ?> ? (HashMap<String, String>) context.get(LINE_COLOR) : new HashMap<>();
-			lineColorMap.entrySet().stream().filter(entry -> entry.getKey().equals(newValue.getObjectId())).forEach(entry -> newValue.setColor(entry.getValue()));
+		if (!Boolean.parseBoolean(String.valueOf(context.get(OVERWRITE_LINE_INFORMATION)))) {
+			if (context.get(LINE_COLOR) != null) {
+				HashMap<String, String> lineColorMap = context.get(LINE_COLOR) instanceof HashMap<?, ?> ? (HashMap<String, String>) context.get(LINE_COLOR) : new HashMap<>();
+				lineColorMap.entrySet().stream().filter(entry -> entry.getKey().equals(newValue.getObjectId())).forEach(entry -> newValue.setColor(entry.getValue()));
+			}
 		}
 
 		if (newValue.getNetwork() == null) {

@@ -38,7 +38,8 @@ import java.util.Arrays;
         "importTargetRoutes",
         "allowNonStandardGtfs",
         "fillMissingStopName",
-        "fillMissingCoordinates"
+        "fillMissingCoordinates",
+        "overwriteLineInformation"
 })
 @Getter
 @Setter
@@ -102,6 +103,9 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "fill_missing_coordinates", defaultValue = "")
     private String fillMissingCoordinates = "";
+	
+	@XmlElement(name = "overwrite_line_information", defaultValue = "false")
+	private boolean overwriteLineInformation = false;
 
     public boolean isValid(Logger log, String[] allowedTypes) {
         if (!super.isValid(log)) return false;

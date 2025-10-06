@@ -67,10 +67,8 @@ public class LineUpdater implements Updater<Line> {
 
 	@Override
 	public void update(Context context, Line oldValue, Line newValue) throws Exception {
-
-		String dataRouteIdfmProperty = "iev.data.route.idfm";
-		dataRouteIdfm = Boolean.parseBoolean(System.getProperty(dataRouteIdfmProperty));
-
+		Boolean isOverwriteLineInformation = Boolean.parseBoolean(String.valueOf(context.get(OVERWRITE_LINE_INFORMATION)));
+		
 		if (newValue.isSaved()) {
 			return;
 		}
@@ -122,16 +120,16 @@ public class LineUpdater implements Updater<Line> {
 			if (newValue.getCreatorId() != null && !newValue.getCreatorId().equals(oldValue.getCreatorId())) {
 				oldValue.setCreatorId(newValue.getCreatorId());
 			}
-			if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName()) && !dataRouteIdfm) {
+			if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName()) && isOverwriteLineInformation) {
 				oldValue.setName(newValue.getName());
 			}
-			if (newValue.getComment() != null && !newValue.getComment().equals(oldValue.getComment()) && !dataRouteIdfm) {
+			if (newValue.getComment() != null && !newValue.getComment().equals(oldValue.getComment()) && isOverwriteLineInformation) {
 				oldValue.setComment(newValue.getComment());
 			}
-			if (newValue.getNumber() != null && !newValue.getNumber().equals(oldValue.getNumber()) && !dataRouteIdfm) {
+			if (newValue.getNumber() != null && !newValue.getNumber().equals(oldValue.getNumber()) && isOverwriteLineInformation) {
 				oldValue.setNumber(newValue.getNumber());
 			}
-			if (newValue.getPublishedName() != null && !newValue.getPublishedName().equals(oldValue.getPublishedName()) && !dataRouteIdfm) {
+			if (newValue.getPublishedName() != null && !newValue.getPublishedName().equals(oldValue.getPublishedName()) && isOverwriteLineInformation) {
 				oldValue.setPublishedName(newValue.getPublishedName());
 			}
 			if (newValue.getRegistrationNumber() != null
@@ -145,13 +143,13 @@ public class LineUpdater implements Updater<Line> {
 			if (newValue.getIntUserNeeds() != null && !newValue.getIntUserNeeds().equals(oldValue.getIntUserNeeds())) {
 				oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
 			}
-			if (newValue.getUrl() != null && !newValue.getUrl().equals(oldValue.getUrl()) && !dataRouteIdfm) {
+			if (newValue.getUrl() != null && !newValue.getUrl().equals(oldValue.getUrl()) && isOverwriteLineInformation) {
 				oldValue.setUrl(newValue.getUrl());
 			}
-			if (newValue.getColor() != null && !newValue.getColor().equals(oldValue.getColor()) && !dataRouteIdfm) {
+			if (newValue.getColor() != null && !newValue.getColor().equals(oldValue.getColor()) && isOverwriteLineInformation) {
 				oldValue.setColor(newValue.getColor());
 			}
-			if (newValue.getTextColor() != null && !newValue.getTextColor().equals(oldValue.getTextColor()) && !dataRouteIdfm) {
+			if (newValue.getTextColor() != null && !newValue.getTextColor().equals(oldValue.getTextColor()) && isOverwriteLineInformation) {
 				oldValue.setTextColor(newValue.getTextColor());
 			}
 			if (newValue.getKeyValues() != null && !newValue.getKeyValues().equals(oldValue.getKeyValues())) {

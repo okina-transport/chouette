@@ -86,7 +86,7 @@ public class GtfsInitImportCommand implements Command, Constant {
 
 			context.put(DETECT_CHANGED_TRIPS, parameters.getCleanMode()!= null && !CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE));
 
-
+			context.put(OVERWRITE_LINE_INFORMATION, parameters.isOverwriteLineInformation());
 			result = SUCCESS;
 
 		} catch (Exception e) {
