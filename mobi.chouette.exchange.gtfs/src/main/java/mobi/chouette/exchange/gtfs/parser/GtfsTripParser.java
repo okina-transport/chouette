@@ -1126,7 +1126,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 	}
 
-	private List<RouteSection> createRouteSections(Referential referential, JourneyPattern journeyPattern, Iterable<GtfsShape> gtfsShapes) {
+	protected List<RouteSection> createRouteSections(Referential referential, JourneyPattern journeyPattern, Iterable<GtfsShape> gtfsShapes) {
 		List<RouteSection> sections = new ArrayList<>();
 		GeometryFactory factory = new GeometryFactory(new PrecisionModel(10), 4326);
 		List<OrderedCoordinate> coordinates = new ArrayList<>();
