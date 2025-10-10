@@ -68,7 +68,9 @@ public class DestinationDisplayParserTest {
 		context.put(Constant.NETEX_REFERENTIAL, netexReferential);
 
 		context.put(Constant.NETEX_WITH_COMMON_DATA, false);
-		context.put(Constant.CONFIGURATION, new NetexprofileImportParameters());
+        NetexprofileImportParameters netexprofileImportParameters = new NetexprofileImportParameters();
+        netexprofileImportParameters.setObjectIdPrefix("AVI");
+		context.put(Constant.CONFIGURATION, netexprofileImportParameters);
 
 		PublicationDeliveryStructure pubDelivery = netexImporter.unmarshal(new File(netedFilePath), new HashSet<>());
 

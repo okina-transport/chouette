@@ -1127,7 +1127,8 @@ CREATE TABLE stop_areas (
     compass_bearing integer,
     rail_uic character varying(255),
     zone_id character varying (255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 

@@ -35,7 +35,7 @@ public class ServiceCalendarFrameParserTest {
 
 		parseIntoReferential(referential, "src/test/data/ServiceCalendarFrameWithOpenEnd.xml");
 
-		Timetable t1 = referential.getTimetables().get("KOL:DayType:1");
+		Timetable t1 = referential.getTimetables().get("KOL:Timetable:1");
 		Assert.assertNotNull(t1);
 		Assert.assertEquals(t1.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-08-18")); // Start date in validity condition
 		Assert.assertEquals(t1.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-12-23")); // Limited by last date in dayTypeAssignments
@@ -49,7 +49,7 @@ public class ServiceCalendarFrameParserTest {
 
 		parseIntoReferential(referential, "src/test/data/ServiceCalendarFrameWithOpenStart.xml");
 
-		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
+		Timetable t2 = referential.getTimetables().get("KOL:Timetable:2");
 		Assert.assertNotNull(t2);
 		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-10-27")); // Start date as first usable date in calendar
 		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
@@ -62,7 +62,7 @@ public class ServiceCalendarFrameParserTest {
 
 		parseIntoReferential(referential, "src/test/data/ServiceCalendarFrameWithCompleteValidityCondition.xml");
 
-		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
+		Timetable t2 = referential.getTimetables().get("KOL:Timetable:2");
 		Assert.assertNotNull(t2);
 		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2017-08-18")); // Start date as start date in validity condition
 		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2017-11-01")); // End date in validitiy condition
@@ -76,7 +76,7 @@ public class ServiceCalendarFrameParserTest {
 
 		parseIntoReferential(referential, "src/test/data/ServiceCalendarFrameWithServiceCalendarDatesOutsideCalendarBoundary.xml");
 
-		Timetable t2 = referential.getTimetables().get("KOL:DayType:2");
+		Timetable t2 = referential.getTimetables().get("KOL:Timetable:2");
 		Assert.assertNotNull(t2);
 		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2016-10-17")); // Start date of service calendar
 		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2016-12-23")); // End date in service calendar
@@ -91,10 +91,10 @@ public class ServiceCalendarFrameParserTest {
 
 		parseIntoReferential(referential, "src/test/data/ServiceCalendarFrameWithServiceCalendar.xml");
 
-		Timetable t2 = referential.getTimetables().get("BRA:DayType:2");
+		Timetable t2 = referential.getTimetables().get("KOL:Timetable:2");
 		Assert.assertNotNull(t2);
 		Assert.assertEquals(t2.getStartOfPeriod(), org.joda.time.LocalDate.parse("2016-09-19")); // Start date of service calendar
-		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2016-12-22")); // End date in service calendar // TODO 1 day off, must be fixed when date/time parsing is on local time
+		Assert.assertEquals(t2.getEndOfPeriod(), org.joda.time.LocalDate.parse("2016-12-23")); // End date in service calendar
 		Assert.assertEquals(t2.getEffectiveDates().size(), 0);
 	}
 
@@ -107,8 +107,9 @@ public class ServiceCalendarFrameParserTest {
 		context.put(Constant.NETEX_REFERENTIAL, netexReferential);
 
 		context.put(Constant.NETEX_WITH_COMMON_DATA, true);
-		context.put(Constant.CONFIGURATION, new NetexprofileImportParameters());
-
+        NetexprofileImportParameters netexprofileImportParameters = new NetexprofileImportParameters();
+        netexprofileImportParameters.setObjectIdPrefix("KOL");
+        context.put(Constant.CONFIGURATION, netexprofileImportParameters);
 		PublicationDeliveryStructure pubDelivery = netexImporter.unmarshal(new File(netedFilePath), new HashSet<>());
 
 		context.put(Constant.NETEX_DATA_JAVA, pubDelivery);

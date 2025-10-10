@@ -110,7 +110,7 @@ public class NetexParser implements Constant {
 		if (validBetween != null) {
 			LocalDateTime toDate = validBetween.getToDate();
 
-			if (toDate.getHour() == 0 && toDate.getMinute() == 0) {
+			if (toDate != null && toDate.getHour() == 0 && toDate.getMinute() == 0) {
 				// Mettre à jour l'heure et les minutes
 				toDate = toDate.withHour(23).withMinute(59);
 				validBetween.setToDate(toDate);

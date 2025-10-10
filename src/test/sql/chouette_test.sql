@@ -1382,7 +1382,8 @@ CREATE TABLE public.stop_areas (
     compass_bearing integer,
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 
@@ -1545,7 +1546,8 @@ CREATE TABLE chouette_gui.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 -- Route points
@@ -3417,7 +3419,8 @@ CREATE TABLE tro.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 
@@ -3586,7 +3589,8 @@ CREATE TABLE sky.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 ALTER TABLE ONLY sky.stop_areas
@@ -3747,7 +3751,8 @@ CREATE TABLE rut.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 
@@ -3909,7 +3914,8 @@ CREATE TABLE nri.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 
@@ -4071,7 +4077,8 @@ CREATE TABLE akt.stop_areas (
     platform_code character varying(255),
     rail_uic character varying(255),
     zone_id character varying(255),
-    private_code character varying (255)
+    private_code character varying (255),
+    is_quay_auto_generated boolean default false
 );
 
 ALTER TABLE ONLY akt.stop_areas

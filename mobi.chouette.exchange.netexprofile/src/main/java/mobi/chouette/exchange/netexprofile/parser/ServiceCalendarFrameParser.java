@@ -54,10 +54,9 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
         }
         if (serviceCalendarFrame.getDayTypeAssignments() != null) {
             for (DayTypeAssignment dayTypeAssignment : serviceCalendarFrame.getDayTypeAssignments().getDayTypeAssignment()) {
-                String dayTypeIdRef = dayTypeAssignment.getDayTypeRef().getValue().getRef();
                 String generatedDayTypeId = NetexImportUtil.composeObjectIdFromNetexId(context, "Timetable", dayTypeAssignment.getDayTypeRef().getValue().getRef());
                 dayTypeAssignment.getDayTypeRef().getValue().setRef(generatedDayTypeId);
-                NetexObjectUtil.addDayTypeAssignmentRef(netexReferential, dayTypeIdRef, dayTypeAssignment);
+                NetexObjectUtil.addDayTypeAssignmentRef(netexReferential, generatedDayTypeId, dayTypeAssignment);
             }
         }
         if (serviceCalendarFrame.getOperatingPeriods() != null) {
@@ -85,14 +84,17 @@ public class ServiceCalendarFrameParser extends NetexParser implements Parser, C
             if (serviceCalendar.getDayTypes() != null) {
                 for (JAXBElement<?> dayTypeElement : serviceCalendar.getDayTypes().getDayTypeRefOrDayType_()) {
                     DayType dayType = (DayType) dayTypeElement.getValue();
+                    String generatedDayTypeId = NetexImportUtil.composeObjectIdFromNetexId(context, "Timetable", dayType.getId());
+                    dayType.setId(generatedDayTypeId);
                     NetexObjectUtil.addDayTypeRef(netexReferential, dayType.getId(), dayType);
                     addValidBetween(context, dayType.getId(), calendarValidBetween);
                 }
             }
             if (serviceCalendar.getDayTypeAssignments() != null) {
                 for (DayTypeAssignment dayTypeAssignment : serviceCalendar.getDayTypeAssignments().getDayTypeAssignment()) {
-                    String dayTypeIdRef = dayTypeAssignment.getDayTypeRef().getValue().getRef();
-                    NetexObjectUtil.addDayTypeAssignmentRef(netexReferential, dayTypeIdRef, dayTypeAssignment);
+                    String generatedDayTypeId = NetexImportUtil.composeObjectIdFromNetexId(context, "Timetable", dayTypeAssignment.getDayTypeRef().getValue().getRef());
+                    dayTypeAssignment.getDayTypeRef().getValue().setRef(generatedDayTypeId);
+                    NetexObjectUtil.addDayTypeAssignmentRef(netexReferential, generatedDayTypeId, dayTypeAssignment);
                 }
             }
             if (serviceCalendar.getOperatingPeriods() != null) {
