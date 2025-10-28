@@ -26,6 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,9 +74,13 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
         String currentContext = ContextHolder.getContext();
         ContextHolder.clear();
         ContextHolder.setContext("admin");
+
+		List<String> datasetIds = Arrays.asList(System.getenv("GENERATE_TH_SM_DATASETS").toLowerCase().split(","));
+
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
                 .filter(isProviderForCsvGeneration())
+                .filter(provider -> datasetIds.contains(provider.getCode()))
                 .collect(Collectors.toList());
 
 
