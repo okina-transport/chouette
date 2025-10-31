@@ -637,7 +637,7 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
         stopsListToWrite.stream().forEach(stopArea -> {
             Map<String, String> stopMap = new HashMap<>();
             stopMap.put("stopName", StringUtils.isEmpty(stopArea.getName()) ? "Aucun nom" :  stopArea.getName());
-            stopMap.put("stopId", StringUtils.isNotEmpty(stopArea.getOriginalStopId()) ? stopArea.getOriginalStopId() :  stopArea.getObjectId());
+            stopMap.put("stopId", stopArea.getOriginalStopId());
             stopResults.add(stopMap);
         });
         return stopResults;
