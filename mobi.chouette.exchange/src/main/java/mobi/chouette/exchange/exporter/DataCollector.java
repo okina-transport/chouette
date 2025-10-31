@@ -35,12 +35,7 @@ public class DataCollector {
 	private ConnectionLinkDAO connectionLinkDAO;
 
 	protected boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate,
-    							  boolean skipNoCoordinate, boolean followLinks) {
-		return collect(collection, line, startDate, endDate, skipNoCoordinate, followLinks, false);
-    }
-
-	protected boolean collect(ExportableData collection, Line line, LocalDate startDate, LocalDate endDate,
-							  boolean skipNoCoordinate, boolean followLinks, boolean exportGeneratedMissingQuays) {
+							  boolean skipNoCoordinate, boolean followLinks) {
 		boolean validLine = false;
 		collection.setLine(null);
 		collection.getRoutes().clear();
@@ -83,7 +78,7 @@ public class DataCollector {
 						if (isValid) {
 							collection.getTimetables().addAll(vehicleJourney.getTimetables());
 							collection.getVehicleJourneys().add(vehicleJourney);
-							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate, exportGeneratedMissingQuays);
+							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
 							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
 								collection.getFootnotes().addAll(vjas.getFootnotes());
 							}
@@ -117,7 +112,7 @@ public class DataCollector {
 						}
 						if (isVehicleJourneyValid) {
 							collection.getVehicleJourneys().add(vehicleJourney);
-							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate,exportGeneratedMissingQuays);
+							collectInterchanges(collection, vehicleJourney, skipNoCoordinate, followLinks, startDate, endDate);
 							collection.getFootnotes().addAll(vehicleJourney.getFootnotes());
 							for(VehicleJourneyAtStop vjas : vehicleJourney.getVehicleJourneyAtStops()) {
 								collection.getFootnotes().addAll(vjas.getFootnotes());
@@ -145,7 +140,7 @@ public class DataCollector {
 					collection.getStopPoints().add(stopPoint);
 					collection.getAllParsedStopPoints().add(stopPoint);
 					if (stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject()!=null)
-						collectStopAreas(collection, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+						collectStopAreas(collection, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks);
 					collection.getFootnotes().addAll(stopPoint.getFootnotes());
 				}
 			}
@@ -186,7 +181,7 @@ public class DataCollector {
 		this.connectionLinkDAO = connectionLinkDAO;
 	}
 
-	private void collectInterchanges(ExportableData collection, VehicleJourney vehicleJourney, boolean skipNoCoordinate, boolean followLinks, LocalDate startDate, LocalDate endDate, boolean exportGeneratedMissingQuays) {
+	private void collectInterchanges(ExportableData collection, VehicleJourney vehicleJourney, boolean skipNoCoordinate, boolean followLinks, LocalDate startDate, LocalDate endDate) {
 		for (Interchange interchange : vehicleJourney.getConsumerInterchanges()) {
 			if (interchange.getFeederVehicleJourney() != null && !isVehicleJourneyValid(interchange.getFeederVehicleJourney(), collection, startDate, endDate)) {
 				continue;
@@ -195,15 +190,15 @@ public class DataCollector {
 			collection.getInterchanges().add(interchange);
 
 			if (interchange.getFeederStopPoint() !=null && interchange.getFeederStopPoint().getContainedInStopAreaRef().getObject() != null) {
-				collectStopAreas(collection, interchange.getFeederStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+				collectStopAreas(collection, interchange.getFeederStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks);
 			}
 		}
 	}
 
 	protected boolean collect(ExportableData collection, Collection<StopArea> stopAreas, boolean skipNoCoordinate,
-			boolean followLinks, boolean exportGeneratedMissingQuays) {
+			boolean followLinks) {
 		for (StopArea stopArea : stopAreas) {
-			collectStopAreas(collection, stopArea, skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+			collectStopAreas(collection, stopArea, skipNoCoordinate, followLinks);
 		}
 		completeSharedData(collection);
 		return !collection.getPhysicalStops().isEmpty();
@@ -221,22 +216,13 @@ public class DataCollector {
 			// So, we have te recover connection link from DB (using connection link ID) to avoid lazy exceptions
 			ConnectionLink connectionLink = connectionLinkDAO.findByObjectId(link.getObjectId());
 
-			collectStopAreas(collection, connectionLink.getStartOfLink(), false, false, false);
-			collectStopAreas(collection, connectionLink.getEndOfLink(), false, false, false);
+			collectStopAreas(collection, connectionLink.getStartOfLink(), false, false);
+			collectStopAreas(collection, connectionLink.getEndOfLink(), false, false);
 		}
 	}
 
 	protected void collectStopAreas(ExportableData collection, StopArea stopArea, boolean skipNoCoordinate,
-			boolean followLinks, boolean exportGeneratedMissingQuays) {
-
-		 boolean isAutoGenerated = stopArea.getKeyValues().stream()
-                                    .anyMatch(keyValue -> "automaticaly-created-missing-quay".equals(keyValue.getKey())
-                                            && "true".equals(keyValue.getValue()));
-
-		if (exportGeneratedMissingQuays || !isAutoGenerated) {
-			collection.getStopAreas().remove(stopArea);
-		}
-
+			boolean followLinks) {
 		if (collection.getStopAreas().contains(stopArea))
 			return;
 		if (!skipNoCoordinate || stopArea.hasCoordinates()) {
@@ -257,12 +243,12 @@ public class DataCollector {
 				break;
 			default:
 			}
-			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
-			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinate, followLinks);
+			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinate, followLinks);
 			addAccessPoints(collection, stopArea.getAccessPoints(), skipNoCoordinate);
 			addAccessLinks(collection, stopArea.getAccessLinks());
 			if (stopArea.getParent() != null)
-				collectStopAreas(collection, stopArea.getParent(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+				collectStopAreas(collection, stopArea.getParent(), skipNoCoordinate, followLinks);
 		}
 	}
 
@@ -274,7 +260,7 @@ public class DataCollector {
 
 
 	protected void addConnectionLinks(ExportableData collection, List<ConnectionLink> links, boolean skipNoCoordinate,
-			boolean followLinks, boolean exportGeneratedMissingQuays) {
+			boolean followLinks) {
 		for (ConnectionLink link : links) {
 			if (collection.getConnectionLinks().contains(link))
 				continue;
@@ -285,8 +271,8 @@ public class DataCollector {
 			initializeLazyObjects(link);
 			collection.getConnectionLinks().add(link);
 			if (followLinks) {
-				collectStopAreas(collection, link.getStartOfLink(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
-				collectStopAreas(collection, link.getEndOfLink(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
+				collectStopAreas(collection, link.getStartOfLink(), skipNoCoordinate, followLinks);
+				collectStopAreas(collection, link.getEndOfLink(), skipNoCoordinate, followLinks);
 			}
 		}
 	}

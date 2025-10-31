@@ -20,7 +20,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials", "exportConfigurationId", "exportAllLines", "exportGeneratedMissingQuays"}, name = "actionExportParameter")
+@XmlType(propOrder = { "referencesType", "ids", "startDate", "endDate", "addMetadata" ,"validateAfterExport", "exportedReferentials", "exportConfigurationId", "exportAllLines"}, name = "actionExportParameter")
 public class AbstractExportParameter extends AbstractParameter {
 
 	@XmlElement(name = "references_type", required = true)
@@ -49,9 +49,6 @@ public class AbstractExportParameter extends AbstractParameter {
 
 	@XmlElement(name = "export_all_lines", defaultValue = "false")
 	private boolean exportAllLines = false;
-
-	@XmlElement(name = "export_generated_missing_quays", defaultValue = "false")
-	private boolean exportGeneratedMissingQuays;
 
 
 	/**

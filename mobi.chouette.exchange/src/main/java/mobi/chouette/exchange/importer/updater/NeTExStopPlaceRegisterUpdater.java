@@ -57,7 +57,6 @@ import static mobi.chouette.common.PropertyNames.*;
 @Singleton(name = NeTExStopPlaceRegisterUpdater.BEAN_NAME)
 public class NeTExStopPlaceRegisterUpdater {
     public static final String MERGED_ID = "merged-id";
-	public static final String AUTO_CREATED_QUAY_SUFFIX = "automaticaly-created-missing-quay";
     public static final String EXTERNAL_REF = "external-ref";
     public static final String FARE_ZONE = "fare-zone";
     public static final String RAIL_UIC = "RAIL-UIC";
@@ -704,12 +703,6 @@ public class NeTExStopPlaceRegisterUpdater {
                         map.put(id, newStopPlaceId);
                     }
                 }
-//				if (s != null && AUTO_CREATED_QUAY_SUFFIX.equals(s.getKey())) {
-//					String[] existingIds = StringUtils.split(s.getValue(), IMPORTED_ID_VALUE_SEPARATOR);
-//					for (String id : existingIds) {
-//						map.put(id, newStopPlaceId);
-//					}
-//				}
             }
         }
     }
