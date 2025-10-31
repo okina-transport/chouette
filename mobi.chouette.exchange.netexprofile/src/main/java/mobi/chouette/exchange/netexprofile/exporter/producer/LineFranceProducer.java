@@ -5,7 +5,7 @@ import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.model.BookingArrangement;
+import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.type.TadEnum;
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
-import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
+import static mobi.chouette.common.Constant.CONFIGURATION;import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 
 
 public class LineFranceProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Line_VersionStructure, mobi.chouette.model.Line> {
@@ -41,6 +41,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
     public org.rutebanken.netex.model.Line_VersionStructure produce(Context context, mobi.chouette.model.Line neptuneLine) {
 
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
+		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
         org.rutebanken.netex.model.Line_VersionStructure netexLine;
         if (TadEnum.NO_TAD.equals(neptuneLine.getTad()) || neptuneLine.getTad() == null) {
@@ -104,7 +105,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
             netexLine.setPresentation(presentation);
         }
 
-        netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues()));
+        netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues(), configuration.isExportExternalIds()));
         NetexProducerUtils.addAlternateIdentifier(netexLine, neptuneLine.getObjectId());
 
         if (neptuneLine.getPosition() != null) {

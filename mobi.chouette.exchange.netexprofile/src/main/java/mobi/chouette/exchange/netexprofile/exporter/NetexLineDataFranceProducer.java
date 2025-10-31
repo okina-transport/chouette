@@ -251,7 +251,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         producerAndCollectDirection(exportableData.getRoutes(), exportableNetexData);
 
         for (JourneyPattern neptuneJourneyPattern : exportableData.getJourneyPatterns()) {
-            exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternFranceProducer.produce(neptuneJourneyPattern));
+            exportableNetexData.getServiceJourneyPatterns().add(serviceJourneyPatternFranceProducer.produce(neptuneJourneyPattern, context));
 
             for (RouteSection routeSection : neptuneJourneyPattern.getRouteSections()) {
 
@@ -272,7 +272,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
-            exportableNetexData.getServiceJourneys().add(serviceJourneyFranceProducer.produce(context, vehicleJourney));
+            exportableNetexData.getServiceJourneys().add(serviceJourneyFranceProducer.produce(context, vehicleJourney, configuration.isExportExternalIds()));
         }
 
     }

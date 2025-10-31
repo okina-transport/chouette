@@ -7,20 +7,24 @@ import mobi.chouette.model.KeyValue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
+import org.rutebanken.netex.model.KeyValueStructure;import static mobi.chouette.common.Constant.EXTERNAL_REF;
 
 /**
  * Transform local KeyValue lists to NeTEx KeyListStructure.
  */
 public class KeyListStructureProducer {
 
-	public KeyListStructure produce(List<KeyValue> chouetteKeyValues) {
+	public KeyListStructure produce(List<KeyValue> chouetteKeyValues, Boolean exportExternalIds) {
 		if (CollectionUtils.isEmpty(chouetteKeyValues)) {
 			return null;
 		}
 
-		List<KeyValueStructure> netexKeyValues = chouetteKeyValues.stream().map(kv -> produce(kv)).collect(Collectors.toList());
-		return new KeyListStructure().withKeyValue(netexKeyValues);
+	   List<KeyValueStructure> netexKeyValues = chouetteKeyValues.stream()
+		   .filter(kv -> exportExternalIds || !EXTERNAL_REF.equals(kv.getKey()))
+		   .map(kv -> produce(kv))
+		   .collect(Collectors.toList());
+
+	   return new KeyListStructure().withKeyValue(netexKeyValues);
 	}
 
 	private KeyValueStructure produce(KeyValue chouetteKeyValue) {

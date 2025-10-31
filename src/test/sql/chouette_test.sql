@@ -5513,6 +5513,19 @@ ALTER TABLE chouette_gui.fare_attributes ADD CONSTRAINT company_id_fk FOREIGN KE
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys ADD COLUMN IF NOT EXISTS block_id VARCHAR(255);
 
+CREATE TABLE chouette_gui.companies_key_values (
+                                company_id bigint,
+                                type_of_key character varying,
+                                key character varying,
+                                value character varying
+);
+
+ALTER TABLE chouette_gui.companies_key_values OWNER TO chouette;
+
+ALTER TABLE ONLY chouette_gui.companies_key_values
+  ADD CONSTRAINT companies_key_values_lines_fkey FOREIGN KEY (company_id) REFERENCES chouette_gui.companies(id) ON DELETE CASCADE;
+
+
 DO
 $$
 DECLARE
