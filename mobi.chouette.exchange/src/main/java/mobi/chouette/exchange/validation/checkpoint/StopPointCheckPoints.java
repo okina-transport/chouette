@@ -26,7 +26,7 @@ public class StopPointCheckPoints extends AbstractValidation<StopPoint> implemen
             return;
         }
         initCheckPoint(context, STOP_POINT_1, SEVERITY.E);
-        initCheckPoint(context, STOP_POINT_2, SEVERITY.W);
+        initCheckPoint(context, STOP_POINT_2, SEVERITY.E);
         initCheckPoint(context, STOP_POINT_3, SEVERITY.W);
         prepareCheckPoint(context, STOP_POINT_1);
         prepareCheckPoint(context, STOP_POINT_2);
@@ -52,7 +52,7 @@ public class StopPointCheckPoints extends AbstractValidation<StopPoint> implemen
     }
 
     private void validateStopPointIsBoardingPosition(Context context, StopPoint stopPoint) {
-        if (stopPoint != null && stopPoint.getScheduledStopPoint() != null && stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject().getAreaType() != ChouetteAreaEnum.BoardingPosition) {
+        if (stopPoint != null && stopPoint.getScheduledStopPoint() != null && stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() != null && stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() .getAreaType() != ChouetteAreaEnum.BoardingPosition) {
             ValidationReporter reporter = ValidationReporter.Factory.getInstance();
             DataLocation locationStopPoint = buildLocation(context, stopPoint);
             DataLocation locationStopArea = buildLocation(context, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject() );
