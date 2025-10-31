@@ -236,15 +236,6 @@ public class StopAreaMapper {
                     createdStopArea.setKeyValues(keyValues);
                 }
 
-				if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), AUTO_CREATED_QUAY_SUFFIX) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
-					KeyValue keyValue = new KeyValue();
-					keyValue.setKey(AUTO_CREATED_QUAY_SUFFIX);
-					keyValue.setValue(keyValueStructure.getValue());
-					List<KeyValue> keyValues = new ArrayList<>();
-					keyValues.add(keyValue);
-					createdStopArea.setKeyValues(keyValues);
-				}
-
                 if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), RAIL_UIC) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
                     createdStopArea.setRailUic(keyValueStructure.getValue());
                 }

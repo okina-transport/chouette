@@ -36,7 +36,6 @@ public class StopPlaceParser implements Parser, Constant {
     private Map<String, Properties> tariffZoneProperties;
 
     private KeyValueParser keyValueParser = new KeyValueParser();
-	public static org.rutebanken.netex.model.ObjectFactory netexFactory = null;
 
     public static final String FARE_ZONE = "fare-zone";
 
@@ -71,7 +70,7 @@ public class StopPlaceParser implements Parser, Constant {
             Map<String, String> parentZoneMap = new HashMap<>();
             Map<String, String> parentSiteMap = new HashMap<>();
             for (StopPlace stopPlace : stopPlaces) {
-                parseStopPlace(context, stopPlace, parentZoneMap);
+                parseStopPlace(context, stopPlace, parentZoneMap, parentSiteMap);
             }
 
 
@@ -103,10 +102,14 @@ public class StopPlaceParser implements Parser, Constant {
     }
 
 
-    void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap) throws Exception {
+    void parseStopPlace(Context context, StopPlace stopPlace, Map<String, String> parentZoneMap, Map<String, String> parentSiteMap) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
         String stopPlaceId;
+
+        if (stopPlace.getQuays() == null) {
+            return;
+        }
 
         if (parameters != null){
             //Netex file import by application : parameters are available
@@ -173,15 +176,13 @@ public class StopPlaceParser implements Parser, Constant {
             parseTariffZoneRefs(tariffZonesStruct, stopArea);
         }
 
-		if(stopPlace.getQuays() != null) {
-			Quays_RelStructure quaysStruct = stopPlace.getQuays();
-			if (quaysStruct != null) {
-				List<Object> quayObjects = quaysStruct.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList());
-				for (Object quayObject : quayObjects) {
-					parseQuay(context, stopArea, (Quay) quayObject);
-				}
-			}
-		}
+        Quays_RelStructure quaysStruct = stopPlace.getQuays();
+        if (quaysStruct != null) {
+            List<Object> quayObjects = quaysStruct.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList());
+            for (Object quayObject : quayObjects) {
+                parseQuay(context, stopArea, (Quay) quayObject);
+            }
+        }
 
         stopArea.setFilled(true);
         stopArea.setKeyValues(keyValueParser.parse(stopPlace.getKeyList()));
