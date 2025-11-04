@@ -4,6 +4,7 @@ import static mobi.chouette.common.Constant.REFERENTIAL;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.xml.bind.JAXBException;
@@ -74,6 +75,7 @@ public class DestinationDisplayParserTest {
 		PublicationDeliveryStructure pubDelivery = netexImporter.unmarshal(new File(netedFilePath), new HashSet<>());
 
 		context.put(Constant.NETEX_DATA_JAVA, pubDelivery);
+		context.put(Constant.INCOMING_LINE_LIST, new ArrayList());
 
 		parser.parse(context);
 	}
