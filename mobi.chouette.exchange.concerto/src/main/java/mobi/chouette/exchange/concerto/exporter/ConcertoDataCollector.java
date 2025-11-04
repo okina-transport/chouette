@@ -27,7 +27,7 @@ public class ConcertoDataCollector extends DataCollector {
 	}
 
 	public boolean collect(ExportableData collection, Collection<StopArea> stopAreas) {
-		return collect(collection, stopAreas, false, false);
+		return collect(collection, stopAreas, false, false, false);
 
 	}
 
@@ -65,27 +65,27 @@ public class ConcertoDataCollector extends DataCollector {
 	}
 
 	@Override
-	protected void collectStopAreas(mobi.chouette.exchange.exporter.ExportableData collection, StopArea stopArea, boolean skipNoCoordinates, boolean followLinks) {
+	protected void collectStopAreas(mobi.chouette.exchange.exporter.ExportableData collection, StopArea stopArea, boolean skipNoCoordinates, boolean followLinks, boolean exportGeneratedMissingQuays) {
 		if (stopArea.getAreaType().equals(ChouetteAreaEnum.BoardingPosition)
 				|| stopArea.getAreaType().equals(ChouetteAreaEnum.Quay)) {
 			if (stopArea.getParent() != null) {
-				collectStopAreas(collection, stopArea.getParent(), skipNoCoordinates, followLinks);
+				collectStopAreas(collection, stopArea.getParent(), skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
 			}
 			if (collection.getPhysicalStops().contains(stopArea)) {
 				return;
 			}
 			collection.getPhysicalStops().add(stopArea);
-			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks);
-			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks);
+			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
+			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
 		} else if (stopArea.getAreaType().equals(ChouetteAreaEnum.CommercialStopPoint)) {
 			if (collection.getCommercialStops().contains(stopArea)) {
 				return;
 			}
 			collection.getCommercialStops().add(stopArea);
-			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks);
-			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks);
+			addConnectionLinks(collection, stopArea.getConnectionStartLinks(), skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
+			addConnectionLinks(collection, stopArea.getConnectionEndLinks(), skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
 			for (StopArea sa : stopArea.getContainedStopAreas()) {
-				collectStopAreas(collection, sa, skipNoCoordinates, followLinks);
+				collectStopAreas(collection, sa, skipNoCoordinates, followLinks, exportGeneratedMissingQuays);
 			}
 		}
 	}
