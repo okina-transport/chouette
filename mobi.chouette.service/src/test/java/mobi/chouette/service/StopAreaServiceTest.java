@@ -1,20 +1,5 @@
 package mobi.chouette.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
-
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.core.CoreException;
@@ -23,17 +8,12 @@ import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.StopAreaDAO;
 import mobi.chouette.dao.StopPointDAO;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateService;
-import mobi.chouette.model.Provider;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.SimpleObjectReference;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -47,666 +27,674 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 @Log4j
 public class StopAreaServiceTest extends Arquillian {
 
 
-	@EJB
-	StopAreaService stopAreaService;
-
-	@EJB
-	StopAreaDAO stopAreaDAO;
-
-	@EJB
-	StopPointDAO stopPointDAO;
-
-	@EJB
-	ScheduledStopPointDAO scheduledStopPointDAO;
-
-	@EJB(beanName = StopAreaUpdateService.BEAN_NAME)
-	StopAreaUpdateService stopAreaUpdateService;
-
-	@EJB
-	StopAreaServiceUtils stopAreaServiceUtils;
-
-	@EJB
-	private ProviderDAO providerDAO;
-
-	@PersistenceContext(unitName = "public")
-	private EntityManager em;
-
-	@Inject
-	UserTransaction utx;
-
-	@Deployment
-	public static EnterpriseArchive createDeployment() {
-
-
-		EnterpriseArchive result;
-		File[] files = Maven.resolver().loadPomFromFile("pom.xml").resolve("mobi.chouette:mobi.chouette.service")
-				.withTransitivity().asFile();
-		List<File> jars = new ArrayList<>();
-		List<JavaArchive> modules = new ArrayList<>();
-		for (File file : files) {
-			if (file.getName().startsWith("mobi.chouette.exchange")
-					|| file.getName().startsWith("mobi.chouette.service")
-					|| file.getName().startsWith("mobi.chouette.dao")) {
-				String name = file.getName().split("\\-")[0] + ".jar";
-				JavaArchive archive = ShrinkWrap.create(ZipImporter.class, name).importFrom(file).as(JavaArchive.class);
-				modules.add(archive);
-			} else {
-				jars.add(file);
-			}
-		}
-		File[] filesDao = Maven.resolver().loadPomFromFile("pom.xml").resolve("mobi.chouette:mobi.chouette.dao")
-				.withTransitivity().asFile();
-		if (filesDao.length == 0) {
-			throw new NullPointerException("no dao");
-		}
-		for (File file : filesDao) {
-			if (file.getName().startsWith("mobi.chouette.dao")) {
-				String name = file.getName().split("\\-")[0] + ".jar";
-
-				JavaArchive archive = ShrinkWrap.create(ZipImporter.class, name).importFrom(file).as(JavaArchive.class);
-				modules.add(archive);
-				if (!modules.contains(archive))
-					modules.add(archive);
-			} else {
-				if (!jars.contains(file))
-					jars.add(file);
-			}
-		}
-
-		List<File> jarsWithoutAntLR = jars.stream().filter(f -> !f.getName().contains("antlr"))
-				.collect(Collectors.toList());
-
-
-		final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war")
-				.addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-				.addAsWebInfResource("postgres-ds.xml").addClass(DummyChecker.class)
-				.addClass(StopAreaServiceUtils.class)
-				.addClass(StopPlaceRegistryIdFetcherMock.class)
-				.addClass(StopAreaServiceTest.class);
-
-		result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibraries(jarsWithoutAntLR.toArray(new File[0]))
-				.addAsModules(modules.toArray(new JavaArchive[0])).addAsModule(testWar)
-				.addAsResource(EmptyAsset.INSTANCE, "beans.xml");
-		return result;
-	}
-
-
-	@Test
-	public void testUpdateQuaysOnChildStop() throws Exception {
-		initProducers();
-		cleanAllschemas();
-		ContextHolder.setContext("rut");
-		stopAreaDAO.truncate();
-		utx.begin();
-		em.joinTransaction();
-
-		StopArea alreadyExistingParent = new StopArea();
-		alreadyExistingParent.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
-		alreadyExistingParent.setObjectId("NSR:StopPlace:58291");
-		stopAreaDAO.create(alreadyExistingParent);
-
-
-		StopArea alreadyExistingChild = new StopArea();
-		alreadyExistingChild.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
-		alreadyExistingChild.setObjectId("NSR:StopPlace:62034");
-
-		alreadyExistingChild.setParent(alreadyExistingParent);
-		stopAreaDAO.create(alreadyExistingChild);
-
-		utx.commit();
-		utx.begin();
-		em.joinTransaction();
-
-
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMergedQuaysInChildStop.xml"));
-
-		utx.commit();
-		utx.begin();
-		em.joinTransaction();
+    @EJB
+    StopAreaService stopAreaService;
+
+    @EJB
+    StopAreaDAO stopAreaDAO;
+
+    @EJB
+    StopPointDAO stopPointDAO;
+
+    @EJB
+    ScheduledStopPointDAO scheduledStopPointDAO;
+
+    @EJB(beanName = StopAreaUpdateService.BEAN_NAME)
+    StopAreaUpdateService stopAreaUpdateService;
+
+    @EJB
+    StopAreaServiceUtils stopAreaServiceUtils;
+    @Inject
+    UserTransaction utx;
+    @EJB
+    private ProviderDAO providerDAO;
+    @PersistenceContext(unitName = "public")
+    private EntityManager em;
+
+    @Deployment
+    public static EnterpriseArchive createDeployment() {
+
+
+        EnterpriseArchive result;
+        File[] files = Maven.resolver().loadPomFromFile("pom.xml").resolve("mobi.chouette:mobi.chouette.service")
+                .withTransitivity().asFile();
+        List<File> jars = new ArrayList<>();
+        List<JavaArchive> modules = new ArrayList<>();
+        for (File file : files) {
+            if (file.getName().startsWith("mobi.chouette.exchange")
+                    || file.getName().startsWith("mobi.chouette.service")
+                    || file.getName().startsWith("mobi.chouette.dao")) {
+                String name = file.getName().split("\\-")[0] + ".jar";
+                JavaArchive archive = ShrinkWrap.create(ZipImporter.class, name).importFrom(file).as(JavaArchive.class);
+                modules.add(archive);
+            } else {
+                jars.add(file);
+            }
+        }
+        File[] filesDao = Maven.resolver().loadPomFromFile("pom.xml").resolve("mobi.chouette:mobi.chouette.dao")
+                .withTransitivity().asFile();
+        if (filesDao.length == 0) {
+            throw new NullPointerException("no dao");
+        }
+        for (File file : filesDao) {
+            if (file.getName().startsWith("mobi.chouette.dao")) {
+                String name = file.getName().split("\\-")[0] + ".jar";
+
+                JavaArchive archive = ShrinkWrap.create(ZipImporter.class, name).importFrom(file).as(JavaArchive.class);
+                modules.add(archive);
+                if (!modules.contains(archive))
+                    modules.add(archive);
+            } else {
+                if (!jars.contains(file))
+                    jars.add(file);
+            }
+        }
+
+        List<File> jarsWithoutAntLR = jars.stream().filter(f -> !f.getName().contains("antlr"))
+                .collect(Collectors.toList());
+
+
+        final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war")
+                .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
+                .addAsWebInfResource("postgres-ds.xml").addClass(DummyChecker.class)
+                .addClass(StopAreaServiceUtils.class)
+                .addClass(StopPlaceRegistryIdFetcherMock.class)
+                .addClass(StopAreaServiceTest.class);
+
+        result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear").addAsLibraries(jarsWithoutAntLR.toArray(new File[0]))
+                .addAsModules(modules.toArray(new JavaArchive[0])).addAsModule(testWar)
+                .addAsResource(EmptyAsset.INSTANCE, "beans.xml");
+        return result;
+    }
+
+
+    @Test
+    public void testUpdateQuaysOnChildStop() throws Exception {
+        initProducers();
+        cleanAllschemas();
+        ContextHolder.setContext("rut");
+        stopAreaDAO.truncate();
+        utx.begin();
+        em.joinTransaction();
+
+        StopArea alreadyExistingParent = new StopArea();
+        alreadyExistingParent.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
+        alreadyExistingParent.setObjectId("NSR:StopPlace:58291");
+        stopAreaDAO.create(alreadyExistingParent);
+
+
+        StopArea alreadyExistingChild = new StopArea();
+        alreadyExistingChild.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
+        alreadyExistingChild.setObjectId("NSR:StopPlace:62034");
+
+        alreadyExistingChild.setParent(alreadyExistingParent);
+        stopAreaDAO.create(alreadyExistingChild);
+
+        utx.commit();
+        utx.begin();
+        em.joinTransaction();
+
+
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMergedQuaysInChildStop.xml"));
+
+        utx.commit();
+        utx.begin();
+        em.joinTransaction();
+
+        ContextHolder.setContext("rut");
+        assertStopPlace(alreadyExistingChild.getObjectId(), "NSR:Quay:104061", "NSR:Quay:8128");
 
-		ContextHolder.setContext("rut");
-		assertStopPlace(alreadyExistingChild.getObjectId(), "NSR:Quay:104061", "NSR:Quay:8128");
+    }
 
-	}
+    private void cleanAllschemas() {
+        ContextHolder.setContext("chouette_gui");
+        stopAreaServiceUtils.cleanSchema();
+        ContextHolder.setContext("sky");
+        stopAreaServiceUtils.cleanSchema();
+        ContextHolder.setContext("rut");
+        stopAreaServiceUtils.cleanSchema();
+        ContextHolder.setContext("nri");
+        stopAreaServiceUtils.cleanSchema();
+        ContextHolder.setContext("tro");
+        stopAreaServiceUtils.cleanSchema();
+        ContextHolder.setContext("akt");
+        stopAreaServiceUtils.cleanSchema();
+    }
 
-	private void cleanAllschemas(){
-		ContextHolder.setContext("chouette_gui");
-		stopAreaServiceUtils.cleanSchema();
-		ContextHolder.setContext("sky");
-		stopAreaServiceUtils.cleanSchema();
-		ContextHolder.setContext("rut");
-		stopAreaServiceUtils.cleanSchema();
-		ContextHolder.setContext("nri");
-		stopAreaServiceUtils.cleanSchema();
-		ContextHolder.setContext("tro");
-		stopAreaServiceUtils.cleanSchema();
-		ContextHolder.setContext("akt");
-		stopAreaServiceUtils.cleanSchema();
-	}
+    private void initProducers() {
+        ContextHolder.setContext("admin");
+        providerDAO.truncate();
+        Provider prov1 = new Provider();
+        prov1.setCode("tro");
+        prov1.setSchemaName("tro");
+        providerDAO.create(prov1);
+
+        Provider prov2 = new Provider();
+        prov2.setCode("rut");
+        prov2.setSchemaName("rut");
+        providerDAO.create(prov2);
 
-	private void initProducers(){
-		ContextHolder.setContext("admin");
-		providerDAO.truncate();
-		Provider prov1 = new Provider();
-		prov1.setCode("tro");
-		prov1.setSchemaName("tro");
-		providerDAO.create(prov1);
+        Provider prov3 = new Provider();
+        prov3.setCode("sky");
+        prov3.setSchemaName("sky");
+        providerDAO.create(prov3);
 
-		Provider prov2 = new Provider();
-		prov2.setCode("rut");
-		prov2.setSchemaName("rut");
-		providerDAO.create(prov2);
+        Provider prov4 = new Provider();
+        prov4.setCode("nri");
+        prov4.setSchemaName("nri");
+        providerDAO.create(prov4);
 
-		Provider prov3 = new Provider();
-		prov3.setCode("sky");
-		prov3.setSchemaName("sky");
-		providerDAO.create(prov3);
+        Provider prov5 = new Provider();
+        prov5.setCode("akt");
+        prov5.setSchemaName("akt");
+        providerDAO.create(prov5);
+    }
 
-		Provider prov4 = new Provider();
-		prov4.setCode("nri");
-		prov4.setSchemaName("nri");
-		providerDAO.create(prov4);
 
-		Provider prov5 = new Provider();
-		prov5.setCode("akt");
-		prov5.setSchemaName("akt");
-		providerDAO.create(prov5);
-	}
+    @Test
+    public void testStopAreaUpdate() throws Exception {
+        initProducers();
+        cleanAllschemas();
+        ContextHolder.setContext("chouette_gui"); // set tenant schema
+        utx.begin();
+        em.joinTransaction();
 
 
-	@Test
-	public void testStopAreaUpdate() throws Exception {
-		initProducers();
-		cleanAllschemas();
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
-		utx.begin();
-		em.joinTransaction();
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
 
+        utx.commit();
+        utx.begin();
+        ContextHolder.setContext("sky");
+        assertTrue(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()));
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
+        utx.commit();
+        utx.begin();
+        ContextHolder.setContext("tro");
+        assertStopPlace("NSR:StopPlace:1", "NSR:Quay:1a", "NSR:Quay:1b");
+        assertStopPlace("NSR:StopPlace:2", "NSR:Quay:2a");
+        assertStopPlace("NSR:StopPlace:3", "NSR:Quay:3a");
 
-		utx.commit();
-		utx.begin();
-		ContextHolder.setContext("sky");
-		assertTrue(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()));
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4"), "Did not expect to find inactive stop place");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4a"), "Did not expect to find quay for inactive stop place");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4b"), "Did not expect to find quay for inactive stop place");
 
-		utx.commit();
-		utx.begin();
-		ContextHolder.setContext("tro");
-		assertStopPlace("NSR:StopPlace:1", "NSR:Quay:1a", "NSR:Quay:1b");
-		assertStopPlace("NSR:StopPlace:2", "NSR:Quay:2a");
-		assertStopPlace("NSR:StopPlace:3", "NSR:Quay:3a");
+        utx.commit();
 
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4"), "Did not expect to find inactive stop place");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4a"), "Did not expect to find quay for inactive stop place");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4b"), "Did not expect to find quay for inactive stop place");
+        utx.begin();
+        em.joinTransaction();
 
-		utx.commit();
+        // Update stop places
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasUpdate.xml"));
+        utx.commit();
 
-		utx.begin();
-		em.joinTransaction();
+        utx.begin();
 
-		// Update stop places
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasUpdate.xml"));
-		utx.commit();
+        ContextHolder.setContext("sky"); // need to go back on sky schema after all modifications to recover NSR stop places
 
-		utx.begin();
+        Assert.assertFalse(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()), "Expected quay name to be updated");
 
-		ContextHolder.setContext("sky"); // need to go back on sky schema after all modifications to recover NSR stop places
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1"), "Did not expect to find deactivated stop place");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Did not expect to find quay for deactivated stop place");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Did not expect to find quay for deactivated stop place");
 
-		Assert.assertFalse(StringUtils.isEmpty(stopAreaDAO.findByObjectId("NSR:Quay:7").getName()), "Expected quay name to be updated");
+        utx.commit();
 
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1"), "Did not expect to find deactivated stop place");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Did not expect to find quay for deactivated stop place");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Did not expect to find quay for deactivated stop place");
+        utx.begin();
 
-		utx.commit();
+        ContextHolder.setContext("tro");
 
-		utx.begin();
+        // New quay, removed quay and moved quay for 2
+        assertStopPlace("NSR:StopPlace:2", "NSR:Quay:3a", "NSR:Quay:2b");
+        //disabled test : delete removed from irkalla update
+        //Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Did not expect to find removed quay");
+        assertStopPlace("NSR:StopPlace:3");
 
-		ContextHolder.setContext("tro");
+        utx.commit();
 
-		// New quay, removed quay and moved quay for 2
-		assertStopPlace("NSR:StopPlace:2", "NSR:Quay:3a", "NSR:Quay:2b");
-		//disabled test : delete removed from irkalla update
-		//Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Did not expect to find removed quay");
-		assertStopPlace("NSR:StopPlace:3");
+        utx.begin();
 
-		utx.commit();
+        ContextHolder.setContext("sky");
+        cleanStopPoints();
+        // Create stop point contained in quay 5, later to be merged into quay 6.
+        StopPoint spToHaveStopAreaRefReplacedByMerger = createStopPoint("1", stopAreaDAO.findByObjectId("NSR:Quay:5"));
+        // Create stop point with ref to non NSR-id to be replaced by new Quay whit org id as import_id
 
-		utx.begin();
+        StopArea stopAreaWithImportId = new StopArea();
+        stopAreaWithImportId.setAreaType(ChouetteAreaEnum.BoardingPosition);
+        stopAreaWithImportId.setObjectId("SKY:Quay:777777");
+        stopAreaDAO.create(stopAreaWithImportId);
+        StopPoint spToHaveStopAreaRefReplacedByAddedOriginalId = createStopPoint("2", stopAreaWithImportId);
 
-		ContextHolder.setContext("sky");
-		cleanStopPoints();
-		// Create stop point contained in quay 5, later to be merged into quay 6.
-		StopPoint spToHaveStopAreaRefReplacedByMerger = createStopPoint("1", stopAreaDAO.findByObjectId("NSR:Quay:5"));
-		// Create stop point with ref to non NSR-id to be replaced by new Quay whit org id as import_id
+        utx.commit();
+        utx.begin();
+        em.joinTransaction();
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasUpdateMergedStops.xml"));
 
-		StopArea stopAreaWithImportId = new StopArea();
-		stopAreaWithImportId.setAreaType(ChouetteAreaEnum.BoardingPosition);
-		stopAreaWithImportId.setObjectId("SKY:Quay:777777");
-		stopAreaDAO.create(stopAreaWithImportId);
-		StopPoint spToHaveStopAreaRefReplacedByAddedOriginalId = createStopPoint("2", stopAreaWithImportId);
 
-		utx.commit();
-		utx.begin();
-		em.joinTransaction();
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasUpdateMergedStops.xml"));
+        utx.commit();
 
+        utx.begin();
 
-		utx.commit();
+        ContextHolder.setContext("sky");
+        // Quay 5 merged with quay 6
+        //delete disabled from irkalla update
+        //Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Did not expect to find quay merged into another quay");
+        assertStopPlace("NSR:StopPlace:6", "NSR:Quay:6");
 
-		utx.begin();
+        assertStopPlace("NSR:StopPlace:7", "NSR:Quay:7");
+        utx.commit();
 
-		ContextHolder.setContext("sky");
-		// Quay 5 merged with quay 6
-		//delete disabled from irkalla update
-		//Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Did not expect to find quay merged into another quay");
-		assertStopPlace("NSR:StopPlace:6", "NSR:Quay:6");
+        utx.begin();
+        em.joinTransaction();
+        ContextHolder.setContext("sky");
+        StopPoint spWithReplacedStopAreaRefByMerger = stopPointDAO.findByObjectId(spToHaveStopAreaRefReplacedByMerger.getObjectId());
+        Assert.assertEquals(spWithReplacedStopAreaRefByMerger.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(), "NSR:Quay:6", "Expected stop point to updated when quays have been merged.");
 
-		assertStopPlace("NSR:StopPlace:7", "NSR:Quay:7");
-		utx.commit();
+        StopPoint spWithReplacedStopAreaRefByAddedOriginalId = stopPointDAO.findByObjectId(spToHaveStopAreaRefReplacedByAddedOriginalId.getObjectId());
+        Assert.assertEquals(spWithReplacedStopAreaRefByAddedOriginalId.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(), "NSR:Quay:7", "Expected stop point to updated when quay id has been added as original id to another quay.");
 
-		utx.begin();
-		em.joinTransaction();
-		ContextHolder.setContext("sky");
-		StopPoint spWithReplacedStopAreaRefByMerger = stopPointDAO.findByObjectId(spToHaveStopAreaRefReplacedByMerger.getObjectId());
-		Assert.assertEquals(spWithReplacedStopAreaRefByMerger.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(), "NSR:Quay:6", "Expected stop point to updated when quays have been merged.");
 
-		StopPoint spWithReplacedStopAreaRefByAddedOriginalId = stopPointDAO.findByObjectId(spToHaveStopAreaRefReplacedByAddedOriginalId.getObjectId());
-		Assert.assertEquals(spWithReplacedStopAreaRefByAddedOriginalId.getScheduledStopPoint().getContainedInStopAreaRef().getObjectId(), "NSR:Quay:7", "Expected stop point to updated when quay id has been added as original id to another quay.");
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMovedQuay.xml"));
 
+        utx.commit();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMovedQuay.xml"));
+        utx.begin();
+        em.joinTransaction();
+        ContextHolder.setContext("nri");
 
-		utx.commit();
+        Assert.assertEquals(stopAreaDAO.findByObjectId("NSR:Quay:99319").getParent().getObjectId(), "NSR:StopPlace:62006", "Expected quay to have moved to new parent stop area");
 
-		utx.begin();
-		em.joinTransaction();
-		ContextHolder.setContext("nri");
+        StopArea knownStopArea = stopAreaDAO.findByObjectId("NSR:StopPlace:62006");
 
-		Assert.assertEquals(stopAreaDAO.findByObjectId("NSR:Quay:99319").getParent().getObjectId(), "NSR:StopPlace:62006", "Expected quay to have moved to new parent stop area");
+        assertCodeValuesForKnownStop(knownStopArea);
 
-		StopArea knownStopArea = stopAreaDAO.findByObjectId("NSR:StopPlace:62006");
 
-		assertCodeValuesForKnownStop(knownStopArea);
+        utx.commit();
+    }
 
+    private void assertCodeValuesForKnownStop(StopArea knownStopArea) {
+        Assert.assertEquals(knownStopArea.getStopAreaType(), StopAreaTypeEnum.RailStation);
+        Assert.assertEquals(knownStopArea.getTransportModeName(), TransportModeNameEnum.Rail);
+        Assert.assertEquals(knownStopArea.getTransportSubMode(), TransportSubModeNameEnum.TouristRailway);
+    }
 
-		utx.commit();
-	}
 
-	private void assertCodeValuesForKnownStop(StopArea knownStopArea) {
-		Assert.assertEquals(knownStopArea.getStopAreaType(), StopAreaTypeEnum.RailStation);
-		Assert.assertEquals(knownStopArea.getTransportModeName(), TransportModeNameEnum.Rail);
-		Assert.assertEquals(knownStopArea.getTransportSubMode(), TransportSubModeNameEnum.TouristRailway);
-	}
+    @Ignore
+    //Multi modal points are not saved into the database that stores offer. Only stored in Stop point database
+    public void testStopAreaUpdateForMultiModalStop() throws Exception {
+        cleanAllschemas();
+        ContextHolder.setContext("chouette_gui"); // set tenant schema
+        stopAreaDAO.truncate();
+        utx.begin();
+        em.joinTransaction();
 
+        String parentName = "Super stop place name";
 
-	@Ignore
-	//Multi modal points are not saved into the database that stores offer. Only stored in Stop point database
-	public void testStopAreaUpdateForMultiModalStop() throws Exception {
-		cleanAllschemas();
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
-		stopAreaDAO.truncate();
-		utx.begin();
-		em.joinTransaction();
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMultiModalImport.xml"));
 
-		String parentName = "Super stop place name";
+        utx.commit();
+        utx.begin();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMultiModalImport.xml"));
+        ContextHolder.setContext("tro");
 
-		utx.commit();
-		utx.begin();
+        StopArea stopAreaParent = assertStopPlace("NSR:StopPlace:4000");
+        Assert.assertEquals(stopAreaParent.getName(), parentName);
 
-		ContextHolder.setContext("tro");
+        StopArea stopAreaChild1 = assertStopPlace("NSR:StopPlace:1000", "NSR:Quay:1000");
+        Assert.assertEquals(stopAreaChild1.getParent(), stopAreaParent, "Expected child to have parent set");
+        Assert.assertEquals(stopAreaChild1.getName(), parentName, "Expected child to get parents name");
+        StopArea stopAreaChild2 = assertStopPlace("NSR:StopPlace:2000");
+        Assert.assertEquals(stopAreaChild2.getParent(), stopAreaParent, "Expected child to have parent set");
+        Assert.assertEquals(stopAreaChild2.getName(), parentName, "Expected child to get parents name");
 
-		StopArea stopAreaParent = assertStopPlace("NSR:StopPlace:4000");
-		Assert.assertEquals(stopAreaParent.getName(), parentName);
 
-		StopArea stopAreaChild1 = assertStopPlace("NSR:StopPlace:1000", "NSR:Quay:1000");
-		Assert.assertEquals(stopAreaChild1.getParent(), stopAreaParent, "Expected child to have parent set");
-		Assert.assertEquals(stopAreaChild1.getName(), parentName, "Expected child to get parents name");
-		StopArea stopAreaChild2 = assertStopPlace("NSR:StopPlace:2000");
-		Assert.assertEquals(stopAreaChild2.getParent(), stopAreaParent, "Expected child to have parent set");
-		Assert.assertEquals(stopAreaChild2.getName(), parentName, "Expected child to get parents name");
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMultiModalRemoval.xml"));
 
+        utx.commit();
+        utx.begin();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasMultiModalRemoval.xml"));
+        ContextHolder.setContext("tro");
 
-		utx.commit();
-		utx.begin();
-
-		ContextHolder.setContext("tro");
-
-		//delete de-activated from irkalla
+        //delete de-activated from irkalla
 //		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:4000"), "Did not expect to find deactivated parent stop place");
 //		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:2000"), "Did not expect to find stop with deactivated parent ");
 //		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1000"), "Did not expect to find stop with deactivated parent");
 //		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1000"), "Did not expect to find quay with deactivated stop place parent");
 
-		utx.rollback();
-	}
+        utx.rollback();
+    }
 
 
-	@Test(enabled = false, description = "Delete no longer used in irkalla")
-	public void deleteExistingBoardingPositionsNoLongerValidForStopOnlyIfInSameCodeSpaceAsStop() throws Exception {
+    @Test(enabled = false, description = "Delete no longer used in irkalla")
+    public void deleteExistingBoardingPositionsNoLongerValidForStopOnlyIfInSameCodeSpaceAsStop() throws Exception {
 
-		cleanAllschemas();
-		initProducers();
-		ContextHolder.setContext("tro"); // set tenant schema
-		ContextHolder.setDefaultSchema("tro");
-		stopAreaDAO.truncate();
+        cleanAllschemas();
+        initProducers();
+        ContextHolder.setContext("tro"); // set tenant schema
+        ContextHolder.setDefaultSchema("tro");
+        stopAreaDAO.truncate();
 
-		StopArea bpInStopCodeSpace = new StopArea();
-		bpInStopCodeSpace.setAreaType(ChouetteAreaEnum.BoardingPosition);
-		bpInStopCodeSpace.setObjectId("NSR:Quay:1");
+        StopArea bpInStopCodeSpace = new StopArea();
+        bpInStopCodeSpace.setAreaType(ChouetteAreaEnum.BoardingPosition);
+        bpInStopCodeSpace.setObjectId("NSR:Quay:1");
 
-		StopArea bpInAnotherCodeSpace = new StopArea();
-		bpInAnotherCodeSpace.setAreaType(ChouetteAreaEnum.BoardingPosition);
-		bpInAnotherCodeSpace.setObjectId("SKY:Quay:2");
+        StopArea bpInAnotherCodeSpace = new StopArea();
+        bpInAnotherCodeSpace.setAreaType(ChouetteAreaEnum.BoardingPosition);
+        bpInAnotherCodeSpace.setObjectId("SKY:Quay:2");
 
-		StopArea commercialStop = new StopArea();
-		commercialStop.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
-		commercialStop.setObjectId("NSR:StopPlace:1");
+        StopArea commercialStop = new StopArea();
+        commercialStop.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
+        commercialStop.setObjectId("NSR:StopPlace:1");
 
-		bpInAnotherCodeSpace.setParent(commercialStop);
-		bpInStopCodeSpace.setParent(commercialStop);
+        bpInAnotherCodeSpace.setParent(commercialStop);
+        bpInStopCodeSpace.setParent(commercialStop);
 
-		stopAreaDAO.create(commercialStop);
+        stopAreaDAO.create(commercialStop);
 
 
-		utx.begin();
-		em.joinTransaction();
+        utx.begin();
+        em.joinTransaction();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasDeleteExistingBoardingPositionsNoLongerValidForStopOnlyIfInSameCodeSpaceAsStop.xml"));
-		utx.commit();
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasDeleteExistingBoardingPositionsNoLongerValidForStopOnlyIfInSameCodeSpaceAsStop.xml"));
+        utx.commit();
 
-		utx.begin();
+        utx.begin();
 
-		ContextHolder.setContext("tro"); //
-		Assert.assertNull(stopAreaDAO.findByObjectId(bpInStopCodeSpace.getObjectId()), "Did not expect to find NSR quay no longer in latest version of stop");
+        ContextHolder.setContext("tro"); //
+        Assert.assertNull(stopAreaDAO.findByObjectId(bpInStopCodeSpace.getObjectId()), "Did not expect to find NSR quay no longer in latest version of stop");
 
-		utx.rollback();
-	}
+        utx.rollback();
+    }
 
-	@Test(enabled=false)
-	//TODO : problème à creuser sur ce test
-	//le test passe en unitaire mais plante depuis MVN (jenkins ou lancement mvn -i sur le package)
-	//probablement une embrouille sur le changement de schéma qui n'est pas correctement fait. Essayer des méthodes avec NewTransactions pour voir si ça règle le problème
-	public void testDeleteStopAreaWithQuays() throws Exception {
-		cleanAllschemas();
-		ContextHolder.setContext("tro"); // set tenant schema
-		ContextHolder.setDefaultSchema("chouette_gui");
-		stopAreaDAO.truncate();
+    @Test(enabled = false)
+    //TODO : problème à creuser sur ce test
+    //le test passe en unitaire mais plante depuis MVN (jenkins ou lancement mvn -i sur le package)
+    //probablement une embrouille sur le changement de schéma qui n'est pas correctement fait. Essayer des méthodes avec NewTransactions pour voir si ça règle le problème
+    public void testDeleteStopAreaWithQuays() throws Exception {
+        cleanAllschemas();
+        ContextHolder.setContext("tro"); // set tenant schema
+        ContextHolder.setDefaultSchema("chouette_gui");
+        stopAreaDAO.truncate();
 
-		String stopAreaId = "NSR:StopPlace:1";
-		utx.begin();
-		em.joinTransaction();
+        String stopAreaId = "NSR:StopPlace:1";
+        utx.begin();
+        em.joinTransaction();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
 
-		utx.commit();
+        utx.commit();
 
-		utx.begin();
-		ContextHolder.setContext("tro");
-		assertStopPlace(stopAreaId, "NSR:Quay:1a", "NSR:Quay:1b");
+        utx.begin();
+        ContextHolder.setContext("tro");
+        assertStopPlace(stopAreaId, "NSR:Quay:1a", "NSR:Quay:1b");
 
-		stopAreaService.deleteStopArea(stopAreaId);
+        stopAreaService.deleteStopArea(stopAreaId);
 
-		utx.commit();
+        utx.commit();
 
-		utx.begin();
-		ContextHolder.setContext("tro");
+        utx.begin();
+        ContextHolder.setContext("tro");
 
-		Assert.assertNull(stopAreaDAO.findByObjectId(stopAreaId));
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Expected quay to have been cascade deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Expected quay to have been cascade deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId(stopAreaId));
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Expected quay to have been cascade deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Expected quay to have been cascade deleted");
 
-		utx.rollback();
-	}
+        utx.rollback();
+    }
 
 
-	@Test
-	public void testDeleteUnusedStopAreas() throws Exception {
+    @Test
+    public void testDeleteUnusedStopAreas() throws Exception {
 
-		cleanAllschemas();
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
-		utx.begin();
-		em.joinTransaction();
+        cleanAllschemas();
+        ContextHolder.setContext("chouette_gui"); // set tenant schema
+        utx.begin();
+        em.joinTransaction();
 
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasInitialSynch.xml"));
 
-		StopPlaceRegistryIdFetcherMock idfetcher = new StopPlaceRegistryIdFetcherMock();
-		System.setProperty("iev.superspace.prefix", "mobiiti");
-		Set<String> quayIds = new HashSet<>();
-		quayIds.add("MOBIITI:Quay:12345");
-		idfetcher.setQuayIds(quayIds);
-		stopAreaUpdateService.setStopPlaceRegistryIdFetcher(idfetcher);
-		stopAreaService.setStopAreaUpdateService(stopAreaUpdateService);
+        StopPlaceRegistryIdFetcherMock idfetcher = new StopPlaceRegistryIdFetcherMock();
+        System.setProperty("iev.superspace.prefix", "mobiiti");
+        Set<String> quayIds = new HashSet<>();
+        quayIds.add("MOBIITI:Quay:12345");
+        idfetcher.setQuayIds(quayIds);
+        stopAreaService.setStopPlaceRegistryIdFetcher(idfetcher);
+        stopAreaService.setStopAreaUpdateService(stopAreaUpdateService);
 
 
-		stopAreaService.deleteUnusedStopAreas();
+        stopAreaService.deleteUnusedStopAreas();
 
 
-		utx.commit();
-		utx.begin();
-		ContextHolder.setContext("tro");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:3a"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:2"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:3"), "Expected unused stop area to be deleted");
+        utx.commit();
+        utx.begin();
+        ContextHolder.setContext("tro");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1a"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:1b"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:2a"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:3a"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:1"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:2"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:3"), "Expected unused stop area to be deleted");
 
 
+        utx.commit();
+        utx.begin();
+        ContextHolder.setContext("sky");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Expected unused stop area to be deleted");
+        Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:5"), "Expected unused stop area to be deleted");
+    }
 
-		utx.commit();
-		utx.begin();
-		ContextHolder.setContext("sky");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:Quay:5"), "Expected unused stop area to be deleted");
-		Assert.assertNull(stopAreaDAO.findByObjectId("NSR:StopPlace:5"), "Expected unused stop area to be deleted");
-	}
+    private void cleanStopPoints() {
+        stopPointDAO.truncate();
+        scheduledStopPointDAO.truncate();
+    }
 
-	private void cleanStopPoints() {
-		stopPointDAO.truncate();
-		scheduledStopPointDAO.truncate();
-	}
 
+    private StopArea commercialStopWithTwoBoardingPositions(String id) {
+        StopArea bp1 = new StopArea();
+        bp1.setAreaType(ChouetteAreaEnum.BoardingPosition);
+        bp1.setObjectId("SKY:Quay:" + id + "a");
 
-	private StopArea commercialStopWithTwoBoardingPositions(String id) {
-		StopArea bp1 = new StopArea();
-		bp1.setAreaType(ChouetteAreaEnum.BoardingPosition);
-		bp1.setObjectId("SKY:Quay:" + id + "a");
+        StopArea bp2 = new StopArea();
+        bp2.setAreaType(ChouetteAreaEnum.BoardingPosition);
+        bp2.setObjectId("SKY:Quay:" + id + "b");
 
-		StopArea bp2 = new StopArea();
-		bp2.setAreaType(ChouetteAreaEnum.BoardingPosition);
-		bp2.setObjectId("SKY:Quay:" + id + "b");
+        StopArea commercialStop = new StopArea();
+        commercialStop.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
+        commercialStop.setObjectId("SKY:StopPlace:" + id);
 
-		StopArea commercialStop = new StopArea();
-		commercialStop.setAreaType(ChouetteAreaEnum.CommercialStopPoint);
-		commercialStop.setObjectId("SKY:StopPlace:" + id);
+        bp1.setParent(commercialStop);
+        bp2.setParent(commercialStop);
 
-		bp1.setParent(commercialStop);
-		bp2.setParent(commercialStop);
+        stopAreaDAO.create(commercialStop);
+        return commercialStop;
+    }
 
-		stopAreaDAO.create(commercialStop);
-		return commercialStop;
-	}
 
+    private StopArea assertStopPlace(String stopPlaceId, String... quayIds) {
+        StopArea stopPlace = stopAreaDAO.findByObjectId(stopPlaceId);
+        Assert.assertNotNull(stopPlace, "Expected to find stop place with known id: " + stopPlaceId);
+        if (quayIds != null) {
 
-	private StopArea assertStopPlace(String stopPlaceId, String... quayIds) {
-		StopArea stopPlace = stopAreaDAO.findByObjectId(stopPlaceId);
-		Assert.assertNotNull(stopPlace, "Expected to find stop place with known id: " + stopPlaceId);
-		if (quayIds != null) {
+            for (String quayId : quayIds) {
+                StopArea quay = stopAreaDAO.findByObjectId(quayId);
+                Assert.assertNotNull(quay, "Expected stop to have quay with known id: " + quayId);
+                Assert.assertEquals(quay.getParent(), stopPlace);
+            }
+        }
 
-			for (String quayId : quayIds) {
-				StopArea quay = stopAreaDAO.findByObjectId(quayId);
-				Assert.assertNotNull(quay, "Expected stop to have quay with known id: " + quayId);
-				Assert.assertEquals(quay.getParent(), stopPlace);
-			}
-		}
+        return stopPlace;
+    }
 
-		return stopPlace;
-	}
+    private StopPoint createStopPoint(String id, StopArea containedStopArea) {
+        StopPoint sp = new StopPoint();
+        sp.setObjectId("XXX:StopPoint:" + id);
 
-	private StopPoint createStopPoint(String id, StopArea containedStopArea) {
-		StopPoint sp = new StopPoint();
-		sp.setObjectId("XXX:StopPoint:" + id);
+        ScheduledStopPoint scheduledStopPoint = new ScheduledStopPoint();
+        scheduledStopPoint.setObjectId("XXX:ScheduledStopPoint:" + id);
 
-		ScheduledStopPoint scheduledStopPoint = new ScheduledStopPoint();
-		scheduledStopPoint.setObjectId("XXX:ScheduledStopPoint:" + id);
+        scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(containedStopArea));
+        sp.setScheduledStopPoint(scheduledStopPoint);
+        stopPointDAO.create(sp);
+        return sp;
+    }
 
-		scheduledStopPoint.setContainedInStopAreaRef(new SimpleObjectReference(containedStopArea));
-		sp.setScheduledStopPoint(scheduledStopPoint);
-		stopPointDAO.create(sp);
-		return sp;
-	}
+    @Test(enabled = false)
+    //TODO : problème à creuser sur ce test
+    //le test passe en unitaire mais plante depuis MVN (jenkins ou lancement mvn -i sur le package)
+    //probablement une embrouille sur le changement de schéma qui n'est pas correctement fait. Essayer des méthodes avec NewTransactions pour voir si ça règle le problème
+    public void testFeedOriginalStopIdAfterRestore() throws Exception {
+        cleanAllschemas();
+        ContextHolder.setContext("tro"); // set tenant schema
+        stopAreaDAO.truncate();
+        utx.begin();
+        em.joinTransaction();
 
-	@Test(enabled=false)
-	//TODO : problème à creuser sur ce test
-	//le test passe en unitaire mais plante depuis MVN (jenkins ou lancement mvn -i sur le package)
-	//probablement une embrouille sur le changement de schéma qui n'est pas correctement fait. Essayer des méthodes avec NewTransactions pour voir si ça règle le problème
-	public void testFeedOriginalStopIdAfterRestore() throws Exception {
-		cleanAllschemas();
-		ContextHolder.setContext("tro"); // set tenant schema
-		stopAreaDAO.truncate();
-		utx.begin();
-		em.joinTransaction();
 
+        stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasOriginalStopIdTest.xml"));
 
+        utx.commit();
+        utx.begin();
 
-		stopAreaService.createOrUpdateStopPlacesFromNetexStopPlaces(new FileInputStream("src/test/data/StopAreasOriginalStopIdTest.xml"));
+        ContextHolder.setContext("tro");
+        StopArea createdParent = assertStopPlace("NSR:StopPlace:1000", "NSR:Quay:1000");
 
-		utx.commit();
-		utx.begin();
+        assertNotNull(createdParent.getOriginalStopId(), "Original stop id should have been feeded during restoration with imported-id from xml");
+        Assert.assertEquals(createdParent.getOriginalStopId(), "14758", "Original stop id should be equal to imported id from the xml file");
 
-		ContextHolder.setContext("tro");
-		StopArea createdParent = assertStopPlace("NSR:StopPlace:1000","NSR:Quay:1000");
+        StopArea createdQuay = createdParent.getContainedStopAreas().get(0);
+        assertNotNull(createdQuay.getOriginalStopId(), "Original stop id should have been feeded during restoration with imported-id from xml");
+        Assert.assertEquals(createdQuay.getOriginalStopId(), "12345", "Original stop id should be equal to imported id from the xml file");
 
-		assertTrue(createdParent.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
-		Assert.assertEquals(createdParent.getOriginalStopId(),"14758","Original stop id should be equal to imported id from the xml file");
+        utx.commit();
+        utx.begin();
 
-		StopArea createdQuay = createdParent.getContainedStopAreas().get(0);
-		assertTrue(createdQuay.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
-		Assert.assertEquals(createdQuay.getOriginalStopId(),"12345","Original stop id should be equal to imported id from the xml file");
+        ContextHolder.setContext("sky");
+        StopArea createdParentOnSecondSchema = assertStopPlace("NSR:StopPlace:1000", "NSR:Quay:1000");
 
-		utx.commit();
-		utx.begin();
+        assertNotNull(createdParentOnSecondSchema.getOriginalStopId(), "Original stop id should have been feeded during restoration with imported-id from xml");
+        Assert.assertEquals(createdParentOnSecondSchema.getOriginalStopId(), "89632", "Original stop id should be equal to imported id from the xml file");
 
-		ContextHolder.setContext("sky");
-		StopArea createdParentOnSecondSchema = assertStopPlace("NSR:StopPlace:1000","NSR:Quay:1000");
+        StopArea createdQuayOnSecondSchema = createdParentOnSecondSchema.getContainedStopAreas().get(0);
+        assertNotNull(createdQuayOnSecondSchema.getOriginalStopId(), "Original stop id should have been feeded during restoration with imported-id from xml");
+        Assert.assertEquals(createdQuayOnSecondSchema.getOriginalStopId(), "56374", "Original stop id should be equal to imported id from the xml file");
 
-		assertTrue(createdParentOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
-		Assert.assertEquals(createdParentOnSecondSchema.getOriginalStopId(),"89632","Original stop id should be equal to imported id from the xml file");
+    }
 
-		StopArea createdQuayOnSecondSchema = createdParentOnSecondSchema.getContainedStopAreas().get(0);
-		assertTrue(createdQuayOnSecondSchema.getOriginalStopId() != null, "Original stop id should have been feeded during restoration with imported-id from xml");
-		Assert.assertEquals(createdQuayOnSecondSchema.getOriginalStopId(),"56374","Original stop id should be equal to imported id from the xml file");
+    //	@Test
+    public void testDeleteStopAreasWS() {
 
-	}
+        cleanAllschemas();
+        createStopAreaInAllSchema("MOBIITI:Quay:1");
+        checkStopAreaExistence("MOBIITI:Quay:1");
+        System.setProperty("iev.superspace.prefix", "mobiiti");
+        stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
 
+        checkStopAreaAbsence("MOBIITI:Quay:1");
+    }
+
+    /**
+     * Try to delete a stop_area but should return an exception because stop_area is in use
+     *
+     * @throws FileNotFoundException
+     * @throws CoreException
+     */
 //	@Test
-	public void testDeleteStopAreasWS() {
+    public void testErrorIfStopAreaInUse() {
 
-		cleanAllschemas();
-		createStopAreaInAllSchema("MOBIITI:Quay:1");
-		checkStopAreaExistence("MOBIITI:Quay:1");
-		System.setProperty("iev.superspace.prefix", "mobiiti");
-		stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
+        cleanAllschemas();
+        createStopAreaInAllSchema("MOBIITI:Quay:1");
+        checkStopAreaExistence("MOBIITI:Quay:1");
 
-		checkStopAreaAbsence("MOBIITI:Quay:1");
-	}
+        System.setProperty("iev.superspace.prefix", "mobiiti");
 
-	/**
-	 * Try to delete a stop_area but should return an exception because stop_area is in use
-	 * @throws FileNotFoundException
-	 * @throws CoreException
-	 */
-//	@Test
-	public void testErrorIfStopAreaInUse() {
+        ContextHolder.setContext("akt");
+        stopAreaServiceUtils.addUsageToStopArea("MOBIITI:Quay:1");
 
-		cleanAllschemas();
-		createStopAreaInAllSchema("MOBIITI:Quay:1");
-		checkStopAreaExistence("MOBIITI:Quay:1");
+        boolean isExceptionRaised = false;
+        String message = "";
 
-		System.setProperty("iev.superspace.prefix", "mobiiti");
+        try {
+            stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
+        } catch (Exception e) {
+            isExceptionRaised = true;
+            message = e.getMessage();
+        }
 
-		ContextHolder.setContext("akt");
-		stopAreaServiceUtils.addUsageToStopArea("MOBIITI:Quay:1");
-
-		boolean isExceptionRaised = false;
-		String message = "";
-
-		try{
-			stopAreaService.deleteStopAreas("MOBIITI:Quay:1");
-		}catch (Exception e){
-			isExceptionRaised = true;
-			message = e.getMessage();
-		}
-
-		assertTrue(isExceptionRaised, "an exception should be raised because stop area is in use");
-		assertTrue(message.contains("One of the stop area is still in use"), "exception message should explain that stop area is in use");
+        assertTrue(isExceptionRaised, "an exception should be raised because stop area is in use");
+        assertTrue(message.contains("One of the stop area is still in use"), "exception message should explain that stop area is in use");
 
 
-	}
+    }
 
-	private void checkStopAreaAbsence(String netexId) {
-		checkStopAreaAbsenceOnSchema("sky", netexId);
-		checkStopAreaAbsenceOnSchema("rut", netexId);
-		checkStopAreaAbsenceOnSchema("nri", netexId);
-		checkStopAreaAbsenceOnSchema("tro", netexId);
-		checkStopAreaAbsenceOnSchema("akt", netexId);
-	}
+    private void checkStopAreaAbsence(String netexId) {
+        checkStopAreaAbsenceOnSchema("sky", netexId);
+        checkStopAreaAbsenceOnSchema("rut", netexId);
+        checkStopAreaAbsenceOnSchema("nri", netexId);
+        checkStopAreaAbsenceOnSchema("tro", netexId);
+        checkStopAreaAbsenceOnSchema("akt", netexId);
+    }
 
-	private void checkStopAreaAbsenceOnSchema(String schemaName, String netexId) {
-		log.info("Checking absence of stopArea : " + netexId + " on schema:" + schemaName);
-		ContextHolder.setContext(schemaName);
-		stopAreaServiceUtils.checkStopAreaAbsence(netexId);
-	}
+    private void checkStopAreaAbsenceOnSchema(String schemaName, String netexId) {
+        log.info("Checking absence of stopArea : " + netexId + " on schema:" + schemaName);
+        ContextHolder.setContext(schemaName);
+        stopAreaServiceUtils.checkStopAreaAbsence(netexId);
+    }
 
-	private void createStopAreaInAllSchema(String netexId){
+    private void createStopAreaInAllSchema(String netexId) {
 
-		createStopAreaInSchema("sky",netexId);
-		createStopAreaInSchema("rut",netexId);
-		createStopAreaInSchema("nri",netexId);
-		createStopAreaInSchema("tro",netexId);
-		createStopAreaInSchema("akt",netexId);
-	}
+        createStopAreaInSchema("sky", netexId);
+        createStopAreaInSchema("rut", netexId);
+        createStopAreaInSchema("nri", netexId);
+        createStopAreaInSchema("tro", netexId);
+        createStopAreaInSchema("akt", netexId);
+    }
 
-	private void createStopAreaInSchema(String schemaName, String netexId){
-		log.info("Creating stopArea : " + netexId + " on schema:" + schemaName);
-		ContextHolder.setContext(schemaName);
-		stopAreaServiceUtils.createStopArea(netexId);
-	}
+    private void createStopAreaInSchema(String schemaName, String netexId) {
+        log.info("Creating stopArea : " + netexId + " on schema:" + schemaName);
+        ContextHolder.setContext(schemaName);
+        stopAreaServiceUtils.createStopArea(netexId);
+    }
 
-	private void checkStopAreaExistence(String netexId){
-
-
-		checkStopAreaExistenceOnSchema("sky", netexId);
-		checkStopAreaExistenceOnSchema("rut", netexId);
-		checkStopAreaExistenceOnSchema("nri", netexId);
-		checkStopAreaExistenceOnSchema("tro", netexId);
-		checkStopAreaExistenceOnSchema("akt", netexId);
-
-	}
+    private void checkStopAreaExistence(String netexId) {
 
 
-	private void checkStopAreaExistenceOnSchema(String schemaName, String netexId){
-		log.info("Checking existence of stopArea : " + netexId + " on schema:" + schemaName);
-		ContextHolder.setContext(schemaName);
-		stopAreaServiceUtils.checkStopAreaExistence(netexId);
-	}
+        checkStopAreaExistenceOnSchema("sky", netexId);
+        checkStopAreaExistenceOnSchema("rut", netexId);
+        checkStopAreaExistenceOnSchema("nri", netexId);
+        checkStopAreaExistenceOnSchema("tro", netexId);
+        checkStopAreaExistenceOnSchema("akt", netexId);
+
+    }
 
 
-
+    private void checkStopAreaExistenceOnSchema(String schemaName, String netexId) {
+        log.info("Checking existence of stopArea : " + netexId + " on schema:" + schemaName);
+        ContextHolder.setContext(schemaName);
+        stopAreaServiceUtils.checkStopAreaExistence(netexId);
+    }
 
 
 }

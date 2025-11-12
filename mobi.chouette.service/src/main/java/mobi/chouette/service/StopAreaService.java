@@ -6,9 +6,8 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
-import mobi.chouette.dao.StopAreaDAO;
+import mobi.chouette.exchange.netexprofile.importer.util.StopPlaceRegistryIdFetcher;
 import mobi.chouette.exchange.report.ActionReport;
-import mobi.chouette.exchange.stopplace.PublicationDeliveryQuayParser;
 import mobi.chouette.exchange.stopplace.PublicationDeliveryStopPlaceParser;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateContext;
 import mobi.chouette.exchange.stopplace.StopAreaUpdateService;
@@ -16,7 +15,6 @@ import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
@@ -26,12 +24,7 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton(name = StopAreaService.BEAN_NAME)
@@ -40,20 +33,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StopAreaService {
 
     public static final String BEAN_NAME = "StopAreaService";
-
+    private final ExecutorService executor;
+    private final Set<String> alreadyDeletedStopPlaces = new HashSet<>();
     @EJB(beanName = StopAreaUpdateService.BEAN_NAME)
     StopAreaUpdateService stopAreaUpdateService;
-
     @EJB
     private ProviderDAO providerDAO;
-
-    private ExecutorService executor;
-
-    private Set<String> alreadyDeletedStopPlaces = new HashSet<>();
+    @EJB(beanName = StopPlaceRegistryIdFetcher.BEAN_NAME)
+    private StopPlaceRegistryIdFetcher stopPlaceRegistryIdFetcher;
 
     public StopAreaService() {
         final AtomicInteger counter = new AtomicInteger(0);
-        ThreadFactory threadFactory = (r) -> {
+        ThreadFactory threadFactory = r -> {
             Thread t = new Thread(r);
             t.setName("stop-area-reference-updater-thread-" + (counter.incrementAndGet()));
             t.setPriority(Thread.MIN_PRIORITY);
@@ -61,7 +52,6 @@ public class StopAreaService {
         };
         int processors = Runtime.getRuntime().availableProcessors();
         executor = Executors.newFixedThreadPool(processors, threadFactory);
-        ;
 
     }
 
@@ -90,7 +80,7 @@ public class StopAreaService {
 
         for (String impactedSchema : updateContext.getImpactedSchemas()) {
             //deleted schemas are ignored
-            if (!isSchemaExisting(impactedSchema)){
+            if (!isSchemaExisting(impactedSchema)) {
                 log.info("schema does not exist: " + impactedSchema);
                 continue;
             }
@@ -231,19 +221,19 @@ public class StopAreaService {
                 for (StopArea activeStopArea : updateContext.getActiveStopAreas()) {
 
                     for (KeyValue keyValue : activeStopArea.getKeyValues()) {
-                        if (keyValue.getKey() == null ||  !keyValue.getKey().equals("merged-id")) {
+                        if (keyValue.getKey() == null || !keyValue.getKey().equals("merged-id")) {
                             continue;
                         }
 
                         for (String id : keyValue.getValue().split(",")) {
-                            if (id .equals(activeStopArea.getObjectId())){
+                            if (id.equals(activeStopArea.getObjectId())) {
                                 // current activeStopArea must not be deleted
                                 continue;
                             }
-                            try{
-                                log.info(Color.CYAN + "Deleting stop area " + id + ", disabled.origin:" + activeStopArea.getObjectId()+ "," + activeStopArea.getObjectVersion());
+                            try {
+                                log.info(Color.CYAN + "Deleting stop area " + id + ", disabled.origin:" + activeStopArea.getObjectId() + "," + activeStopArea.getObjectVersion());
                                 stopAreaUpdateService.deleteStopArea(id);
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 log.error("Error while deleting stopArea:" + id, e);
                             }
                         }
@@ -264,12 +254,12 @@ public class StopAreaService {
         ContextHolder.clear();
         int deletedStopPointCnt = 0;
         List<Future<Integer>> futures = new ArrayList();
-
         ContextHolder.setContext("admin");
         List<String> schemaList = providerDAO.getAllWorkingSchemas();
+        Set<String> quayIds = stopPlaceRegistryIdFetcher.getQuayIds();
         for (String referential : schemaList) {
             //need to use a future, in order to force hibernate to reset the transaction to switch between 2 tenants. do not remove
-            StopAreaDeleteTask deleteTask = new StopAreaDeleteTask(referential);
+            StopAreaDeleteTask deleteTask = new StopAreaDeleteTask(referential, quayIds);
             futures.add(executor.submit(deleteTask));
 
         }
@@ -331,19 +321,26 @@ public class StopAreaService {
         this.stopAreaUpdateService = stopAreaUpdateService;
     }
 
+
+    public void setStopPlaceRegistryIdFetcher(StopPlaceRegistryIdFetcher stopPlaceRegistryIdFetcher) {
+        this.stopPlaceRegistryIdFetcher = stopPlaceRegistryIdFetcher;
+    }
+
     class StopAreaDeleteTask implements Callable<Integer> {
 
         private final String referential;
+        private final Set<String> quayIds;
 
-        public StopAreaDeleteTask(String referential) {
+        public StopAreaDeleteTask(String referential, Set<String> quayIds) {
             this.referential = referential;
+            this.quayIds = quayIds;
         }
 
         @Override
         public Integer call() throws Exception {
             ContextHolder.setContext(referential);
             log.info("Starting delete for referential:" + referential);
-            Integer count = stopAreaUpdateService.delete();
+            Integer count = stopAreaUpdateService.delete(quayIds);
             log.info("Delete completed for referential:" + referential);
             return count;
         }
