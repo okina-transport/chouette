@@ -13,6 +13,7 @@ import mobi.chouette.persistence.hibernate.ContextHolder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
@@ -75,7 +76,8 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
         ContextHolder.clear();
         ContextHolder.setContext("admin");
 
-		List<String> datasetIds = Arrays.asList(System.getenv("GENERATE_TH_SM_DATASETS").toLowerCase().split(","));
+        String generateThTRParam = System.getenv("GENERATE_TH_SM_DATASETS");
+		List<String> datasetIds = StringUtils.isEmpty(generateThTRParam) ? new ArrayList<>() : Arrays.asList(System.getenv("GENERATE_TH_SM_DATASETS").toLowerCase().split(","));
 
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
