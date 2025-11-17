@@ -1,21 +1,31 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
+import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
+import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.model.CalendarDay;
+import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import static mobi.chouette.common.Constant.CONFIGURATION;
+import static mobi.chouette.common.Constant.EXTERNAL_REF;
 
 public class CalendarFranceProducer extends NetexProducer {
 
-    public void produce(ExportableData exportableData, ExportableNetexData exportableNetexData) {
+	private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
+
+    public void produce(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
         int uniqueID = 0;
+		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+
         for (Timetable timetable : exportableData.getTimetables()) {
 
             String netexDaytypeId = NetexProducerUtils.generateNetexId(timetable);
@@ -78,6 +88,15 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay());
                     }
                     NetexProducerUtils.addAlternateIdentifier(dayTypeAssignment, dayTypeAssignmentId);
+
+					List<KeyValue> keyValues = new ArrayList<>();
+					KeyValue  keyValue = new KeyValue();
+					keyValue.setKey(EXTERNAL_REF);
+					keyValue.setValue(timetable.getObjectId().contains(":") && timetable.getObjectId().split(":")[2] !=null ? timetable.getObjectId().split(":")[2] : timetable.getObjectId());
+					keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+					keyValues.add(keyValue);
+					dayTypeAssignment.setKeyList(keyListStructureProducer.produce(keyValues, configuration.isExportExternalIds()));
+
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
                 }
 
@@ -96,6 +115,14 @@ public class CalendarFranceProducer extends NetexProducer {
                     if (day.getIncluded() != null && !day.getIncluded()) {
                         dayTypeAssignment.setIsAvailable(day.getIncluded());
                     }
+
+					List<KeyValue> keyValues = new ArrayList<>();
+					KeyValue  keyValue = new KeyValue();
+					keyValue.setKey(EXTERNAL_REF);
+					keyValue.setValue(timetable.getObjectId().contains(":") && timetable.getObjectId().split(":")[2] !=null ? timetable.getObjectId().split(":")[2] : timetable.getObjectId());
+					keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+					keyValues.add(keyValue);
+					dayTypeAssignment.setKeyList(keyListStructureProducer.produce(keyValues, configuration.isExportExternalIds()));
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
                 }
 
