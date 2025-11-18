@@ -9,7 +9,7 @@ import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;import mobi.chouette.model.BookingArrangement;
+import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
@@ -23,7 +23,7 @@ import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.PresentationStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 
-import static mobi.chouette.common.Constant.CONFIGURATION;import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.netexId;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GROUP_OF_LINES;
 
@@ -36,7 +36,6 @@ public class LineProducer extends NetexProducer implements NetexEntityProducer<o
 	@Override
 	public org.rutebanken.netex.model.Line_VersionStructure produce(Context context, mobi.chouette.model.Line neptuneLine) {
 		ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
 		org.rutebanken.netex.model.Line_VersionStructure netexLine;
 		if (Boolean.TRUE.equals(neptuneLine.getFlexibleService())) {
@@ -106,7 +105,7 @@ public class LineProducer extends NetexProducer implements NetexEntityProducer<o
 			netexLine.setPresentation(presentation);
 		}
 
-		netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues(), configuration.isExportExternalIds()));
+		netexLine.setKeyList(keyListStructureProducer.produce(neptuneLine.getKeyValues()));
 		NoticeProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, exportableNetexData.getNoticeAssignmentsTimetableFrame(), neptuneLine.getFootnotes(), neptuneLine);
 
 		return netexLine;

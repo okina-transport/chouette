@@ -6,7 +6,6 @@ import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
 import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
@@ -21,7 +20,6 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import static mobi.chouette.common.Constant.CONFIGURATION;
 
 public class ServiceJourneyProducer extends NetexProducer {
 
@@ -32,7 +30,6 @@ public class ServiceJourneyProducer extends NetexProducer {
 	public ServiceJourney produce(Context context, VehicleJourney vehicleJourney, Line line) {
 		ExportableData exportableData = (ExportableData) context.get(Constant.EXPORTABLE_DATA);
 		ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
 		ServiceJourney serviceJourney = netexFactory.createServiceJourney();
 		NetexProducerUtils.populateId(vehicleJourney, serviceJourney);
@@ -157,7 +154,7 @@ public class ServiceJourneyProducer extends NetexProducer {
 			serviceJourney.setPassingTimes(passingTimesStruct);
 		}
 
-		serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues(), configuration.isExportExternalIds()));
+		serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues()));
 		serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));
 
 		return serviceJourney;

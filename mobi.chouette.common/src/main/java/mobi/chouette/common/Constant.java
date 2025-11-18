@@ -87,7 +87,6 @@ public interface Constant {
 	String RAIL_UIC_REGEXP = "railUICregexp";
 
 	String IMPORTED_ID = "imported-id";
-	String EXTERNAL_REF = "external-ref";
 	String SELECTED_ID = "selected-id";
 	String NETEX_VALID_PREFIX = System.getenv("NETEX_VALID_PREFIX");
 	String IS_NETEX_IMPORTER = "is_netex_importer";

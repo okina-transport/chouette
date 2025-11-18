@@ -1,7 +1,5 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
-import mobi.chouette.common.Context;
-import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.VehicleJourneyAtStop;
@@ -26,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import static mobi.chouette.common.Constant.CONFIGURATION;
 
 public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
@@ -35,9 +32,8 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
     private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
 
 
-    public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern, Context context) {
+    public org.rutebanken.netex.model.ServiceJourneyPattern produce(JourneyPattern journeyPattern) {
         org.rutebanken.netex.model.ServiceJourneyPattern netexServiceJourneyPattern = netexFactory.createServiceJourneyPattern();
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
         NetexProducerUtils.populateIdAndVersion(journeyPattern, netexServiceJourneyPattern);
 
@@ -122,7 +118,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
 
         netexServiceJourneyPattern.setServiceJourneyPatternType(ServiceJourneyPatternTypeEnumeration.PASSENGER);
 
-        netexServiceJourneyPattern.setKeyList(keyListStructureProducer.produce(journeyPattern.getKeyValues(), configuration.isExportExternalIds()));
+        netexServiceJourneyPattern.setKeyList(keyListStructureProducer.produce(journeyPattern.getKeyValues()));
         NetexProducerUtils.addAlternateIdentifier(netexServiceJourneyPattern, journeyPattern.getObjectId());
 
         return netexServiceJourneyPattern;

@@ -764,12 +764,6 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 
 			vehicleJourney.setFilled(true);
 
-			KeyValue keyValue = new KeyValue();
-			keyValue.setKey(EXTERNAL_REF);
-			keyValue.setValue(gtfsTrip.getTripId());
-			keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
-			vehicleJourney.getKeyValues().add(keyValue);
-
 			// VehicleJourneyAtStop
 			boolean afterMidnight = true;
 
