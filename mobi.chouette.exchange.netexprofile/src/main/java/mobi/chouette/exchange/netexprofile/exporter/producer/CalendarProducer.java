@@ -1,11 +1,8 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
-import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
-import mobi.chouette.model.KeyValue;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.DayType;
 import org.rutebanken.netex.model.DayTypeAssignment;
@@ -22,15 +19,10 @@ import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.model.CalendarDay;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
-import static mobi.chouette.common.Constant.CONFIGURATION;
-import static mobi.chouette.common.Constant.EXTERNAL_REF;
 
 public class CalendarProducer extends NetexProducer {
 
-	private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
-
 	public void produce(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
 		for (Timetable timetable : exportableData.getTimetables()) {
 
@@ -71,14 +63,6 @@ public class CalendarProducer extends NetexProducer {
 					DayTypeAssignment dayTypeAssignment = netexFactory.createDayTypeAssignment()
 							.withId(NetexProducerUtils.translateObjectId(netexDaytypeId, "DayTypeAssignment") + "-" + counter).withVersion(NETEX_DEFAULT_OBJECT_VERSION)
 							.withOrder(BigInteger.ONE).withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef)).withOperatingPeriodRef(netexFactory.createOperatingPeriodRef(operatingPeriodRef));
-
-					List<KeyValue> keyValues = new ArrayList<>();
-					KeyValue  keyValue = new KeyValue();
-					keyValue.setKey(EXTERNAL_REF);
-					keyValue.setValue(timetable.getObjectId().split(":")[2]);
-					keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
-					keyValues.add(keyValue);
-					dayTypeAssignment.setKeyList(keyListStructureProducer.produce(keyValues, configuration.isExportExternalIds()));
 					exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
 
 				}
@@ -94,14 +78,6 @@ public class CalendarProducer extends NetexProducer {
 					if (day.getIncluded() != null && !day.getIncluded()) {
 						dayTypeAssignment.setIsAvailable(day.getIncluded());
 					}
-
-					List<KeyValue> keyValues = new ArrayList<>();
-					KeyValue  keyValue = new KeyValue();
-					keyValue.setKey(EXTERNAL_REF);
-					keyValue.setValue(timetable.getObjectId().contains(":") && timetable.getObjectId().split(":")[2] !=null ? timetable.getObjectId().split(":")[2] : timetable.getObjectId());
-					keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
-					keyValues.add(keyValue);
-					dayTypeAssignment.setKeyList(keyListStructureProducer.produce(keyValues, configuration.isExportExternalIds()));
 					exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
 				}
 

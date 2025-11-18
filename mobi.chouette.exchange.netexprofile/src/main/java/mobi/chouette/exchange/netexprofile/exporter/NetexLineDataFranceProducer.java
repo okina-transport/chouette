@@ -68,7 +68,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
         // Pour info il n'y a pas de produceAndCollectCommonData car les notices utilisés pour créer ce fichier sont récupérés dans les deux méthodes ci dessous
         produceAndCollectLineData(context, exportableData, exportableNetexData);
-        produceAndCollectCalendarData(context, exportableData, exportableNetexData);
+        produceAndCollectCalendarData(exportableData, exportableNetexData);
         processAlternateIdentifiers(context, exportableNetexData);
 
         String fileName = ExportedFilenamer.createNetexFranceLineFilename(context, neptuneLine);
@@ -133,8 +133,8 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
     }
 
-    private void produceAndCollectCalendarData(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
-        calendarFranceProducer.produce(context, exportableData, exportableNetexData);
+    private void produceAndCollectCalendarData(ExportableData exportableData, ExportableNetexData exportableNetexData) {
+        calendarFranceProducer.produce(exportableData, exportableNetexData);
     }
 
     /**
