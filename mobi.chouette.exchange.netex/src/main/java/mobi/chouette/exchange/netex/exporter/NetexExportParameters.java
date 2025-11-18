@@ -12,7 +12,7 @@ import mobi.chouette.exchange.parameters.AbstractExportParameter;
 
 
 @XmlRootElement(name = "netex-export")
-@XmlType(propOrder={"projectionType, exportGeneratedMissingQuays, exportExternalIds"})
+@XmlType(propOrder={"projectionType, exportGeneratedMissingQuays"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NetexExportParameters  extends AbstractExportParameter{
 	
@@ -24,8 +24,5 @@ public class NetexExportParameters  extends AbstractExportParameter{
 	@XmlElement(name = "export_generated_missing_quays")
 	private boolean exportGeneratedMissingQuays;
 
-	@Getter @Setter
-	@XmlElement(name = "export_external_ids")
-	private boolean exportExternalIds;
 
 }
