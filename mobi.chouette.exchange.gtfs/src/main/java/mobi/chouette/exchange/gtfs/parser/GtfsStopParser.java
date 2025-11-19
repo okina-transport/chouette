@@ -15,7 +15,7 @@ import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
 import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
-import mobi.chouette.model.StopArea;
+import mobi.chouette.model.KeyValue;import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
@@ -170,6 +170,13 @@ public class GtfsStopParser implements Parser, Validator, Constant {
 						gtfsStop.getLocationType() == LocationType.Station ? "StopPlace" : "Quay", gtfsStop.getStopId());
 
 				StopArea stopArea = ObjectFactory.getStopArea(referential, objectId);
+
+				KeyValue keyValue = new KeyValue();
+				keyValue.setKey(EXTERNAL_REF);
+				keyValue.setValue(gtfsStop.getStopId());
+				keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+				stopArea.getKeyValues().add(keyValue);
+
 				convert(context, gtfsStop, stopArea);
 			}
 		}

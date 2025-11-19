@@ -17,7 +17,7 @@ import mobi.chouette.exchange.importer.Parser;
 import mobi.chouette.exchange.importer.ParserFactory;
 import mobi.chouette.exchange.importer.Validator;
 import mobi.chouette.model.Company;
-import mobi.chouette.model.Line;
+import mobi.chouette.model.KeyValue;import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
@@ -314,6 +314,12 @@ public class GtfsRouteParser implements Parser, Validator, Constant {
 		if (configuration.isRouteSortOrder()) {
 			line.setPosition(gtfsRoute.getPosition());
 		}
+
+		KeyValue keyValue = new KeyValue();
+		keyValue.setKey(EXTERNAL_REF);
+		keyValue.setValue(getGtfsRouteId());
+		keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+		line.getKeyValues().add(keyValue);
 	}
 
 	private String toHexa(Color color) {

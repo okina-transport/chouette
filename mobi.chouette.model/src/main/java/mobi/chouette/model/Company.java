@@ -445,5 +445,18 @@ public class Company extends NeptuneIdentifiedObject {
 	@Setter
 	@Column(name = "fare_url")
 	private String fareUrl;
+	
+	/**
+	 * keyvalues
+	 *
+	 * @param keyvalue
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@ElementCollection(fetch = FetchType.LAZY)
+	@CollectionTable(name = "companies_key_values", joinColumns = @JoinColumn(name = "company_id"))
+	private List<KeyValue> keyValues = new ArrayList<>(0);
 
 }

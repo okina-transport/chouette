@@ -76,7 +76,7 @@ public class ServiceJourneyFranceProducer {
         }
     }
 
-    public ServiceJourney_VersionStructure produce(Context context, VehicleJourney vehicleJourney) {
+    public ServiceJourney_VersionStructure produce(Context context, VehicleJourney vehicleJourney, Boolean exportExternalIds) {
         ExportableData exportableData = (ExportableData) context.get(Constant.EXPORTABLE_DATA);
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
 
@@ -171,7 +171,7 @@ public class ServiceJourneyFranceProducer {
             serviceJourney.setFacilities(serviceFacilitySetStruct);
         }
 
-        serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues()));
+        serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues(), exportExternalIds));
         NetexProducerUtils.addAlternateIdentifier(serviceJourney,vehicleJourney.getObjectId());
         serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));
 
