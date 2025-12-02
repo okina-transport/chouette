@@ -144,18 +144,18 @@ public enum RouteTypeEnum {
     private TransportModeNameEnum transportMode;
     private TransportSubModeNameEnum subMode;
 
-    private RouteTypeEnum(final int value, TransportModeNameEnum transportMode, TransportSubModeNameEnum subMode) {
+    RouteTypeEnum(final int value, TransportModeNameEnum transportMode, TransportSubModeNameEnum subMode) {
         this.value = value;
         this.transportMode = transportMode;
         this.subMode = subMode;
     }
 
-    private RouteTypeEnum(final int value, TransportModeNameEnum transportMode) {
+    RouteTypeEnum(final int value, TransportModeNameEnum transportMode) {
         this.value = value;
         this.transportMode = transportMode;
     }
 
-    private RouteTypeEnum(final int value) {
+    RouteTypeEnum(final int value) {
         this.value = value;
     }
 
@@ -166,22 +166,6 @@ public enum RouteTypeEnum {
             }
         }
         throw new IllegalArgumentException(Integer.toString(value));
-    }
-
-    public int value() {
-        return this.value;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public TransportModeNameEnum getTransportMode() {
-        return transportMode;
-    }
-
-    public TransportSubModeNameEnum getSubMode() {
-        return subMode;
     }
 
     public static RouteTypeEnum from(TransportModeNameEnum transportMode, TransportSubModeNameEnum subMode) {
@@ -204,7 +188,7 @@ public enum RouteTypeEnum {
             }
             case Bus: {
                 if (subMode == null) {
-                    return BusService;
+                    return Bus;
                 } else {
                     switch (subMode) {
                         case AirportLinkBus:
@@ -254,7 +238,7 @@ public enum RouteTypeEnum {
                 return MetroService;
             case Rail:
                 if (subMode == null) {
-                    return RouteTypeEnum.RailwayService;
+                    return RouteTypeEnum.Rail;
                 } else {
                     switch (subMode) {
                         case International:
@@ -335,6 +319,22 @@ public enum RouteTypeEnum {
         // TODO HACK WARN TODO TODO
         // Using this category for anything that should be MiscellaneousService (1700) which is not supported by OTP
         return RouteTypeEnum.Gondola;
+    }
+
+    public int value() {
+        return this.value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public TransportModeNameEnum getTransportMode() {
+        return transportMode;
+    }
+
+    public TransportSubModeNameEnum getSubMode() {
+        return subMode;
     }
 
 }
