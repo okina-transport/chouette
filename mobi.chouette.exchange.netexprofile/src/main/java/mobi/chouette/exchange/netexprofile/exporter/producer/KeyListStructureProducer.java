@@ -24,7 +24,8 @@ public class KeyListStructureProducer {
 		   .map(kv -> produce(kv))
 		   .collect(Collectors.toList());
 
-	   return new KeyListStructure().withKeyValue(netexKeyValues);
+
+		return CollectionUtils.isNotEmpty(netexKeyValues) ? new KeyListStructure().withKeyValue(netexKeyValues) : null;
 	}
 
 	private KeyValueStructure produce(KeyValue chouetteKeyValue) {
