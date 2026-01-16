@@ -596,7 +596,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         String lineName = line.getName();
 
         //If line is not part of the incoming file or if line has already been analyzed, we skip it
-        String registrationNumber = line.getRegistrationNumber();
+        String registrationNumber = line.getRegistrationNumber() != null ? line.getRegistrationNumber() : line.getNumber();
         if (!incomingLineList.contains(line.getObjectId()) || alreadyAnalyzedLine.contains(registrationNumber)) {
             return;
         }
