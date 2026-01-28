@@ -18,8 +18,8 @@ import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
+import mobi.chouette.model.*;
+import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
@@ -27,6 +27,10 @@ import org.joda.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @Log4j
 public class GtfsRouteParserCommand implements Command, Constant {
@@ -115,6 +119,25 @@ public class GtfsRouteParserCommand implements Command, Constant {
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
 
 		Line line = referential.getLines().values().iterator().next();
+
+		Set<String> stopAreaIds = new HashSet<>();
+		if (line.getRoutes() != null) {
+			for (Route route : line.getRoutes()) {
+				if (route.getStopPoints() != null) {
+					for (StopPoint sp : route.getStopPoints()) {
+						Optional<StopArea> stopAreaOpt = Utils.getStopAreaFromScheduledStopPoint(sp);
+						stopAreaOpt.ifPresent(stopArea->stopAreaIds.add(stopArea.getObjectId()));
+					}
+				}
+			}
+		}
+
+		Map<String, StopArea> referentialStopArea = referential.getStopAreas();
+		Set<String> newStopAreaIds = new HashSet<>(stopAreaIds);
+		if (referentialStopArea != null) {
+			newStopAreaIds.removeAll(referentialStopArea.keySet());
+		}
+
 		reporter.addObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(line),
 				OBJECT_STATE.OK, IO_TYPE.INPUT);
 		reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.LINE, 1);
@@ -126,6 +149,10 @@ public class GtfsRouteParserCommand implements Command, Constant {
 				referential.getVehicleJourneys().size());
 		reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.INTERCHANGE,
 				referential.getInterchanges().size());
+		reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.STOP_AREA,
+				referential.getStopAreas().size());
+		reporter.setStatToObjectReport(context, line.getObjectId(), OBJECT_TYPE.LINE, OBJECT_TYPE.STOP_AREA_NEW,
+				newStopAreaIds.size());
 
 	}
 
