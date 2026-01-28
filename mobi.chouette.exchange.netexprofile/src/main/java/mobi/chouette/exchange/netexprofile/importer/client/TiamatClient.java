@@ -12,6 +12,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.rutebanken.netex.client.TokenService;
 
 import java.util.Set;
 
@@ -26,7 +27,8 @@ public class TiamatClient {
             HttpPost postRequest = new HttpPost(PROPERTY_TIAMAT_BASE_URL + QUAY_GEOCODE_RESOURCE);
             postRequest.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
             postRequest.setHeader(HttpHeaders.ACCEPT,  ContentType.APPLICATION_JSON.getMimeType());
-
+            TokenService tokenService = TokenServiceBuilder.init().build();
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken());
 
             String jsonArrayString = buildRequestBody(netexIdentifiers);
             StringEntity entity = new StringEntity(jsonArrayString);
