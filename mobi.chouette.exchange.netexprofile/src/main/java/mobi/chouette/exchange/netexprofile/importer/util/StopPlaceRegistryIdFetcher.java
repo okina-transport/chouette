@@ -1,5 +1,11 @@
 package mobi.chouette.exchange.netexprofile.importer.util;
 
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.exchange.netexprofile.importer.client.TokenServiceBuilder;
+import org.apache.http.HttpHeaders;
+import org.rutebanken.netex.client.TokenService;
+
+import javax.ejb.Singleton;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,9 +14,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ejb.Singleton;
-
-import lombok.extern.log4j.Log4j;
 @Singleton(name = StopPlaceRegistryIdFetcher.BEAN_NAME)
 @Log4j
 public class StopPlaceRegistryIdFetcher {
@@ -57,6 +60,8 @@ public class StopPlaceRegistryIdFetcher {
 			connection.setRequestMethod("GET");
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
+			TokenService tokenService = TokenServiceBuilder.init().build();
+			connection.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken());
 			connection.connect();
 
 			// Get Response
