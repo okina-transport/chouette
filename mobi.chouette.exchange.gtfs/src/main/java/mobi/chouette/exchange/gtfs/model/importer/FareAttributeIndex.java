@@ -2,6 +2,7 @@ package mobi.chouette.exchange.gtfs.model.importer;
 
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.exchange.gtfs.model.GtfsFareAttribute;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -102,7 +103,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.fare_id.name(), value, bean);
-		if (value != null || value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setFareId(STRING_CONVERTER.from(context, FIELDS.fare_id, value, false));
 			} catch (GtfsException ex) {
@@ -113,7 +114,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.price.name(), value, bean);
-		if (value != null || value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setPrice(FLOAT_CONVERTER.from(context, FIELDS.price, value, false));
 			} catch (GtfsException ex) {
@@ -124,7 +125,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.currency_type.name(), value, bean);
-		if (value != null && !value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setCurrencyType(STRING_CONVERTER.from(context, FIELDS.currency_type, value, false));
 			} catch (GtfsException ex) {
@@ -135,7 +136,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.payment_method.name(), value, bean);
-		if (value != null && !value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setPaymentMethod(PAYMENTMETHODTYPE_CONVERTER.from(context, FIELDS.payment_method, value, false));
 			} catch (GtfsException ex) {
@@ -146,7 +147,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.transfers.name(), value, bean);
-		if (value != null && !value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setTransfers(ATTRIBUTETRANSFERSTYPE_CONVERTER.from(context, FIELDS.transfers, value, false));
 			} catch (GtfsException ex) {
@@ -157,7 +158,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.agency_id.name(), value, bean);
-		if (value != null || !value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setAgencyId(STRING_CONVERTER.from(context, FIELDS.agency_id, value, false));
 			} catch (GtfsException ex) {
@@ -168,7 +169,7 @@ public class FareAttributeIndex extends IndexImpl<GtfsFareAttribute> implements 
 
 		value = array[i++];
 		testExtraSpace(FIELDS.transfer_duration.name(), value, bean);
-		if (value != null && !value.trim().isEmpty()) {
+		if (StringUtils.isNotEmpty(value)) {
 			try {
 				bean.setTransferDuration(FLOAT_CONVERTER.from(context, FIELDS.transfer_duration, value, false));
 			} catch (GtfsException ex) {

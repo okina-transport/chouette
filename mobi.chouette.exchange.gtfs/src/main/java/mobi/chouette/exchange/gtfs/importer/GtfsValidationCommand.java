@@ -10,6 +10,8 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
+import mobi.chouette.exchange.gtfs.model.fares.GtfsFareV1File;
+import mobi.chouette.exchange.gtfs.model.fares.GtfsFareV2File;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException;
 import mobi.chouette.exchange.gtfs.parser.*;
 import mobi.chouette.exchange.gtfs.validation.GtfsValidationReporter;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class GtfsValidationCommand implements Command, Constant {
@@ -34,6 +37,10 @@ public class GtfsValidationCommand implements Command, Constant {
 	private static final List<String> processableAllFiles = Arrays.asList(GTFS_AGENCY_FILE, GTFS_STOPS_FILE, GTFS_ROUTES_FILE, GTFS_SHAPES_FILE, GTFS_TRIPS_FILE, GTFS_STOP_TIMES_FILE, GTFS_CALENDAR_FILE, GTFS_CALENDAR_DATES_FILE, GTFS_FREQUENCIES_FILE, GTFS_TRANSFERS_FILE);
 
 	private static final List<String> processableStopAreaFiles = Arrays.asList(GTFS_STOPS_FILE, GTFS_TRANSFERS_FILE);
+
+	private static final List<String> GTFS_FARES_V2_FILE = Arrays.stream(GtfsFareV2File.values()).map(GtfsFareV2File::getFilename).collect(Collectors.toList());
+
+	private static final List<String> GTFS_FARES_V1_FILE = Arrays.stream(GtfsFareV1File.values()).map(GtfsFareV1File::getFilename).collect(Collectors.toList());
 
 	static {
 		CommandFactory.factories.put(GtfsValidationCommand.class.getName(), new DefaultCommandFactory());
@@ -70,7 +77,11 @@ public class GtfsValidationCommand implements Command, Constant {
 		}
 		context.put(GTFS_TARGET_ROUTE_ID, targetRouteId);
 
-		List<String> processableFiles = processableAllFiles;
+		List<String> processableFiles = new ArrayList<>(processableAllFiles);
+		if (importFareFiles) {
+			processableFiles.addAll(GTFS_FARES_V1_FILE);
+			processableFiles.addAll(GTFS_FARES_V2_FILE);
+		}
 		if (!all) {
 			processableFiles = processableStopAreaFiles;
 		}
@@ -105,6 +116,18 @@ public class GtfsValidationCommand implements Command, Constant {
 				// fare_rules.txt
 				GtfsFareRuleParser gtfsFareRuleParser = (GtfsFareRuleParser) ParserFactory.create(GtfsFareRuleParser.class.getName());
 				gtfsFareRuleParser.validate(context);
+
+				GtfsFareMediaParser gtfsFareMediaParser = (GtfsFareMediaParser) ParserFactory.create(GtfsFareMediaParser.class.getName());
+				gtfsFareMediaParser.validate(context);
+
+				GtfsFareRiderCategoriesParser riderCategoriesParser = (GtfsFareRiderCategoriesParser) ParserFactory.create(GtfsFareRiderCategoriesParser.class.getName());
+				riderCategoriesParser.validate(context);
+
+				GtfsFareProductsParser fareProductsParser = (GtfsFareProductsParser) ParserFactory.create(GtfsFareProductsParser.class.getName());
+				fareProductsParser.validate(context);
+
+				GtfsFareLegRulesParser gtfsFareLegRulesParser = (GtfsFareLegRulesParser) ParserFactory.create(GtfsFareLegRulesParser.class.getName());
+				gtfsFareLegRulesParser.validate(context);
 
 				if (!parameters.isParseConnectionLinks()) {
 					GtfsTransferParser transferParser = (GtfsTransferParser) ParserFactory.create(GtfsTransferParser.class.getName());
