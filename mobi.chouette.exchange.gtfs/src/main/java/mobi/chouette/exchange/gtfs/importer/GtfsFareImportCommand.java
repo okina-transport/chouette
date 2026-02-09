@@ -17,14 +17,16 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
-import static mobi.chouette.exchange.gtfs.Constant.GTFS_FARE_ATTRIBUTES_FILE;
-import static mobi.chouette.exchange.gtfs.Constant.GTFS_FARE_RULES_FILE;
+import static mobi.chouette.exchange.gtfs.model.fares.GtfsFareV1File.FARE_ATTRIBUTES;
+import static mobi.chouette.exchange.gtfs.model.fares.GtfsFareV1File.FARE_RULES;
+import static mobi.chouette.exchange.gtfs.model.fares.GtfsFareV2File.FARE_PRODUCTS;
 
 @Log4j
 public class GtfsFareImportCommand implements Command, Constant {
 
     private static final String FARES_BASE_URL = System.getenv("FARES_BASE_URL");
     private static final String FARES_IMPORT_GTFS_PATH = "fares-referential/fares/import/gtfs";
+    private static final String FARES_IMPORT_GTFS_PATH_V2 = "fares-referential/fares/v2/import/gtfs";
 
     private static final String HEADER_PROVIDER = "provider";
     private static final String HEADER_FOLDER = "folder";
@@ -53,10 +55,15 @@ public class GtfsFareImportCommand implements Command, Constant {
             log.info(String.format("GTFS file '%s' does not exist, skip fares import", inputGtfs));
             return true;
         }
+        boolean validFareV1Input;
+        boolean validFareV2Input;
         try (ZipFile zipFile = new ZipFile(inputGtfs.toFile())) {
-            if (zipFile.getEntry(GTFS_FARE_ATTRIBUTES_FILE) == null || zipFile.getEntry(GTFS_FARE_RULES_FILE) == null) {
+            validFareV1Input = zipFile.getEntry(FARE_ATTRIBUTES.getFilename()) != null
+                    && zipFile.getEntry(FARE_RULES.getFilename()) != null;
+            validFareV2Input = zipFile.getEntry(FARE_PRODUCTS.getFilename()) != null;
+            if (!validFareV1Input && !validFareV2Input) {
                 // fare V1 files are optional, so this is not an error
-                log.info(String.format("%s and/or %s is not present in GTFS archive there is no fare data to import", GTFS_FARE_ATTRIBUTES_FILE, GTFS_FARE_RULES_FILE));
+                log.info("GTFS fares files are not present in GTFS archive there is no fare data to import");
                 return true;
             }
         } catch (IOException e) {
@@ -73,13 +80,19 @@ public class GtfsFareImportCommand implements Command, Constant {
                 )
                 .build();
         String agencyId = (String) context.get(TARGET_COMPANY_OBJECT_ID);
-        Request request = new Request.Builder().post(requestBody)
-                .url(Objects.requireNonNull(faresBaseUrl.resolve(FARES_IMPORT_GTFS_PATH)))
+        Request.Builder requestBuilder = new Request.Builder().post(requestBody);
+        if (validFareV2Input) {
+            requestBuilder.url(Objects.requireNonNull(faresBaseUrl.resolve(FARES_IMPORT_GTFS_PATH_V2)));
+        } else {
+            requestBuilder.url(Objects.requireNonNull(faresBaseUrl.resolve(FARES_IMPORT_GTFS_PATH)));
+        }
+        Request request = requestBuilder
                 .addHeader(HEADER_PROVIDER, jobData.getReferential())
                 .addHeader(HEADER_FOLDER, folder.getFileName().toString())
                 .addHeader(HEADER_AGENCY_ID, StringUtils.trimToEmpty(agencyId))
                 .build();
         OkHttpClient client = new OkHttpClient();
+
         log.info("Send GTFS to fares GTFS import");
         try (Response response = client.newCall(request).execute()) {
             int status = response.code();

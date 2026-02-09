@@ -131,6 +131,19 @@ public interface GtfsConverter {
 		}
 
 	};
+	DefaultFieldConverter<java.time.LocalTime> LOCALTIME_CONVERTER = new DefaultFieldConverter<java.time.LocalTime>() {
+
+		@Override
+		protected java.time.LocalTime convertFrom(String input) {
+			return java.time.LocalTime.parse(input, java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
+		}
+
+		@Override
+		protected String convertTo(java.time.LocalTime input) {
+			return (input != null) ? input.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE) : "";
+		}
+
+	};
 	DefaultFieldConverter<URL> URL_CONVERTER = new DefaultFieldConverter<URL>() {
 
 		@Override

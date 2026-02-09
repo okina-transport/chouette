@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
 import mobi.chouette.exchange.gtfs.model.*;
+import mobi.chouette.exchange.gtfs.model.fares.GtfsFareV2File;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,6 +63,26 @@ public class GtfsImporter {
 
 	public boolean hasAgencyImporter() {
 		return hasImporter(AgencyById.FILENAME);
+	}
+
+	public boolean hasFareProductsImporter() {
+		return hasImporter(GtfsFareV2File.FARE_PRODUCTS.getFilename());
+	}
+
+	public boolean hasFareMediaImporter() {
+		return hasImporter(GtfsFareV2File.FARE_MEDIA.getFilename());
+	}
+
+	public boolean hasFareRiderCategoriesImporter() {
+		return hasImporter(GtfsFareV2File.RIDER_CATEGORIES.getFilename());
+	}
+
+	public boolean hasFareLegRulesImporter() {
+		return hasImporter(GtfsFareV2File.FARE_LEG_RULES.getFilename());
+	}
+
+	public boolean hasTimeBasedFaresFileImporter() {
+		return hasImporter(GtfsFareV2File.TIME_BASED_FARES.getFilename());
 	}
 
 	public boolean hasCalendarImporter() {
@@ -216,8 +237,30 @@ public class GtfsImporter {
 		return getImporter(INDEX.FARE_ID_BY_RULE.name(), FareRuleById.FILENAME, FareRuleById.class);
 	}
 
+	public Index<GtfsFareMedia> getFareMediaIndex() {
+		return getImporter(INDEX.FARE_MEDIA_TYPE.name(), FareMediaIndex.FILENAME, FareMediaIndex.class);
+	}
+
+	public Index<GtfsRiderCategories> getFareRiderCategoriesIndex() {
+		return getImporter(INDEX.FARE_RIDER_CATEGORIES.name(), FareRiderCategoriesIndex.FILENAME, FareRiderCategoriesIndex.class);
+	}
+
+	public Index<GtfsFareProducts> getFareProductsIndex() {
+		return getImporter(INDEX.FARE_PRODUCTS.name(), FareProductsIndex.FILENAME, FareProductsIndex.class);
+	}
+
+	public Index<GtfsFareLegRules> getFareLegRulesIndex() {
+		return getImporter(INDEX.FARE_LEG_RULES.name(), FareLegRulesIndex.FILENAME, FareLegRulesIndex.class);
+	}
+
+	public Index<GtfsTimeframe> getFareTimeframeIndex() {
+		return getImporter(INDEX.FARE_TIMEFRAME.name(), TimeframeIndex.FILENAME, TimeframeIndex.class);
+	}
+
 	public enum INDEX {
-		AGENCY_BY_ID, CALENDAR_BY_SERVICE, CALENDAR_DATE_BY_SERVICE, FREQUENCY_BY_TRIP, ROUTE_BY_ID, STOP_BY_ID, STOP_TIME_BY_TRIP, TRANSFER_BY_FROM_STOP, TRANSFER_BY_FROM_TRIP, TRANSFER_BY_TO_TRIP, SHAPE_BY_ID, TRIP_BY_ID, TRIP_BY_ROUTE, TRIP_BY_SERVICE, FARE_ID_BY_ATTRIBUTE, FARE_ID_BY_RULE
+		AGENCY_BY_ID, CALENDAR_BY_SERVICE, CALENDAR_DATE_BY_SERVICE, FREQUENCY_BY_TRIP, ROUTE_BY_ID, STOP_BY_ID, STOP_TIME_BY_TRIP,
+		TRANSFER_BY_FROM_STOP, TRANSFER_BY_FROM_TRIP, TRANSFER_BY_TO_TRIP, SHAPE_BY_ID, TRIP_BY_ID, TRIP_BY_ROUTE, TRIP_BY_SERVICE,
+		FARE_ID_BY_ATTRIBUTE, FARE_ID_BY_RULE, FARE_MEDIA_TYPE, FARE_RIDER_CATEGORIES, FARE_LEG_RULES, FARE_PRODUCTS, FARE_TIMEFRAME
 	}
 
 }
