@@ -13,6 +13,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
+
 public class LineRegisterCommandTest implements Constant {
 	
 	
@@ -99,9 +101,10 @@ public class LineRegisterCommandTest implements Constant {
 
 		lineRegister.setEmptyDestinationDisplayRefByLineIfNull(line);
 
-		org.junit.Assert.assertNotNull(destinationDisplay1.getFrontText());
-		org.junit.Assert.assertNotNull(destinationDisplay11.getFrontText());
-		org.junit.Assert.assertNotNull(destinationDisplay2.getFrontText());
-		org.junit.Assert.assertNotNull(destinationDisplay21.getFrontText());
+		for (Route route : line.getRoutes()) {
+			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+				assertNull(journeyPattern.getDestinationDisplay());
+			}
+		}
 	}
 }

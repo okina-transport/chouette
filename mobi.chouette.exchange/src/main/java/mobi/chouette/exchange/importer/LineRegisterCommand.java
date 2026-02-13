@@ -249,7 +249,7 @@ public class LineRegisterCommand implements Command {
 			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
 				if (journeyPattern.getDestinationDisplay() != null &&
 						org.apache.commons.lang3.StringUtils.isBlank(journeyPattern.getDestinationDisplay().getFrontText())) {
-					journeyPattern.getDestinationDisplay().setFrontText("");
+					journeyPattern.setDestinationDisplay(null);
 				}
 			}
 		}
