@@ -1,18 +1,17 @@
 package mobi.chouette.exchange.importer;
 
-import java.io.StringWriter;
-import javax.naming.InitialContext;
-
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
-import mobi.chouette.model.StopPoint;
-import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.VehicleJourneyAtStop;
-
+import mobi.chouette.model.*;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.naming.InitialContext;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LineRegisterCommandTest implements Constant {
 	
@@ -53,7 +52,56 @@ public class LineRegisterCommandTest implements Constant {
 		
 		
 		Assert.assertEquals(buffer.toString(), "ObjectID|1|2000-02-01T00:00:00|creatorId|4321|1001|23:59:00|00:05:00|0|1|\\N\n", "Invalid data entry for buffer");
-	
-		
+
+	}
+
+	@Test
+	public void setEmptyDestinationDisplayRefByLineIfNullTest() {
+		Line line = new Line();
+		Route route1 = new Route();
+		JourneyPattern journey1 = new JourneyPattern();
+		DestinationDisplay destinationDisplay1 = new DestinationDisplay();
+
+		JourneyPattern journey11 = new JourneyPattern();
+		DestinationDisplay destinationDisplay11 = new DestinationDisplay();
+
+		journey1.setDestinationDisplay(destinationDisplay1);
+		journey11.setDestinationDisplay(destinationDisplay11);
+
+		List<JourneyPattern> journeyPatterns = new ArrayList<>(2);
+		journeyPatterns.add(journey1);
+		journeyPatterns.add(journey11);
+		route1.setJourneyPatterns(journeyPatterns);
+
+
+		Route route2 = new Route();
+		JourneyPattern journey2 = new JourneyPattern();
+		DestinationDisplay destinationDisplay2 = new DestinationDisplay();
+
+		JourneyPattern journey21 = new JourneyPattern();
+		DestinationDisplay destinationDisplay21 = new DestinationDisplay();
+
+		journey2.setDestinationDisplay(destinationDisplay2);
+		journey21.setDestinationDisplay(destinationDisplay21);
+
+		List<JourneyPattern> journeyPatterns2 = new ArrayList<>(2);
+		journeyPatterns2.add(journey2);
+		journeyPatterns2.add(journey21);
+		route2.setJourneyPatterns(journeyPatterns2);
+
+		List<Route> routes = new ArrayList<>(2);
+		routes.add(route1);
+		routes.add(route2);
+
+		line.setRoutes(routes);
+
+		lineRegister = new LineRegisterCommand();
+
+		lineRegister.setEmptyDestinationDisplayRefByLineIfNull(line);
+
+		org.junit.Assert.assertNotNull(destinationDisplay1.getFrontText());
+		org.junit.Assert.assertNotNull(destinationDisplay11.getFrontText());
+		org.junit.Assert.assertNotNull(destinationDisplay2.getFrontText());
+		org.junit.Assert.assertNotNull(destinationDisplay21.getFrontText());
 	}
 }
