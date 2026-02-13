@@ -25,6 +25,7 @@ import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -146,6 +147,7 @@ public class LineRegisterCommand implements Command {
 				optimiser.initialize(cache, referential);
 
 				Line oldValue = cache.getLines().get(newValue.getObjectId());
+				setEmptyDestinationDisplayRefByLineIfNull(newValue);
 				lineUpdater.update(context, oldValue, newValue);
 				if (oldValue.getCategoriesForLine() == null) {
 					oldValue.setCategoriesForLine(categoriesForLinesDAO.find(0L));
@@ -232,6 +234,25 @@ public class LineRegisterCommand implements Command {
 			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
 		}
 		return result;
+	}
+
+	protected void setEmptyDestinationDisplayRefByLineIfNull(Line line) {
+		if (CollectionUtils.isNotEmpty(line.getRoutes())) {
+			for (Route route : line.getRoutes()) {
+				setEmptyDestinationDisplayRefByRouteIfNull(route);
+			}
+		}
+	}
+
+	private void setEmptyDestinationDisplayRefByRouteIfNull(Route route) {
+		if (CollectionUtils.isNotEmpty(route.getJourneyPatterns())) {
+			for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+				if (journeyPattern.getDestinationDisplay() != null &&
+						org.apache.commons.lang3.StringUtils.isBlank(journeyPattern.getDestinationDisplay().getFrontText())) {
+					journeyPattern.getDestinationDisplay().setFrontText("");
+				}
+			}
+		}
 	}
 
 
