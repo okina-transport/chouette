@@ -258,9 +258,9 @@ public class FileUtil {
             zos.close();
             fos.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error("Error while reading netex file : "+ e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error while adding netex file to zip : "+ e.getMessage());
         }
     }
 
@@ -303,9 +303,9 @@ public class FileUtil {
                 }
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error("Error reading gtfs file : " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error writing gtfs file : " + e.getMessage());
         }
     }
 
@@ -396,9 +396,9 @@ public class FileUtil {
                 FileUtils.forceDelete(file);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error("Error reading file : " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error writing file : " + e.getMessage());
         }
 
     }
