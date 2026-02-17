@@ -1,9 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>mobi.chouette</groupId>
     <artifactId>mobi.chouette</artifactId>
-    <version>5.8.3-mobi-iti</version>
+    <version>5.8.3-mobi-iti-SUBFOLDER</version>
 
     <packaging>pom</packaging>
 
@@ -942,8 +942,10 @@
         <profile>
             <id>sonar</id>
             <properties>
-                <sonar.dependencyCheck.jsonReportPath>target/dependency-check-report.json</sonar.dependencyCheck.jsonReportPath>
-                <sonar.dependencyCheck.htmlReportPath>target/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+                <sonar.dependencyCheck.jsonReportPath>target/dependency-check-report.json
+                </sonar.dependencyCheck.jsonReportPath>
+                <sonar.dependencyCheck.htmlReportPath>target/dependency-check-report.html
+                </sonar.dependencyCheck.htmlReportPath>
                 <sonar.dependencyCheck.securityHotspot>true</sonar.dependencyCheck.securityHotspot>
                 <sonar.dependencyCheck.summarize>true</sonar.dependencyCheck.summarize>
             </properties>
