@@ -44,7 +44,7 @@ public class GenerateIneoVJMappingCsv implements Command {
     public static final String INEO_VJ_MAPPING_CSV = "vehicleJourneyMapping.csv";
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
     protected static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
-            "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position" };
+            "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position", "datasetId"};
     private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
     private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
 
@@ -98,7 +98,9 @@ public class GenerateIneoVJMappingCsv implements Command {
                             StringUtils.trimToEmpty(entity.getOriginalParentStopId()),
                             // extract original id because there is only one AO for SEM in order to reduce size of output file
                             ObjectIdUtil.extractOriginalId(entity.getVehicleJourneyObjectId()),
-                            entity.getPosition()
+                            entity.getPosition(),
+                            referential.getCode().toUpperCase()
+
                     );
                 }
             }
