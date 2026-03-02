@@ -1,13 +1,16 @@
 package mobi.chouette.exchange.gtfs.importer;
 
+import com.google.common.net.HttpHeaders;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.exchange.utils.TokenServiceBuilder;
 import okhttp3.*;
 import org.apache.commons.lang.StringUtils;
+import org.rutebanken.netex.client.TokenService;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -86,10 +89,12 @@ public class GtfsFareImportCommand implements Command, Constant {
         } else {
             requestBuilder.url(Objects.requireNonNull(faresBaseUrl.resolve(FARES_IMPORT_GTFS_PATH)));
         }
+        TokenService tokenService = TokenServiceBuilder.init().build();
         Request request = requestBuilder
                 .addHeader(HEADER_PROVIDER, jobData.getReferential())
                 .addHeader(HEADER_FOLDER, folder.getFileName().toString())
                 .addHeader(HEADER_AGENCY_ID, StringUtils.trimToEmpty(agencyId))
+                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken())
                 .build();
         OkHttpClient client = new OkHttpClient();
 
