@@ -1,4 +1,4 @@
-package mobi.chouette.exchange.netexprofile.importer.client;
+package mobi.chouette.exchange.utils;
 
 import org.rutebanken.netex.client.TokenService;
 

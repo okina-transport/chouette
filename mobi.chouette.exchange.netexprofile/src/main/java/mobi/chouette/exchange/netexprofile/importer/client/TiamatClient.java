@@ -27,7 +27,7 @@ public class TiamatClient {
             HttpPost postRequest = new HttpPost(PROPERTY_TIAMAT_BASE_URL + QUAY_GEOCODE_RESOURCE);
             postRequest.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
             postRequest.setHeader(HttpHeaders.ACCEPT,  ContentType.APPLICATION_JSON.getMimeType());
-            TokenService tokenService = TokenServiceBuilder.init().build();
+            TokenService tokenService = mobi.chouette.exchange.utils.TokenServiceBuilder.init().build();
             postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken());
 
             String jsonArrayString = buildRequestBody(netexIdentifiers);
