@@ -8,7 +8,7 @@ RUN  yum list installed iproute \
         && yum -y install iproute \
         && yum install  -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
         && yum install -y http://static.okina.fr/epel-release-latest-7.noarch.rpm \
-        && yum-config-manager --disable pgdg12 \
+        && yum-config-manager --disable pgdg12 pgdg13 \
         && yum install -y libzstd \
         && yum -y install postgresql15
 
