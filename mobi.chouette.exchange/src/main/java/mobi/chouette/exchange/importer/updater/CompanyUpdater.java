@@ -12,6 +12,7 @@ import mobi.chouette.model.util.Referential;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = CompanyUpdater.BEAN_NAME)
 public class CompanyUpdater implements Updater<Company> {
@@ -124,6 +125,9 @@ public class CompanyUpdater implements Updater<Company> {
 		if (newValue.getOrganisationType() != null
 				&& !newValue.getOrganisationType().equals(oldValue.getOrganisationType())) {
 			oldValue.setOrganisationType(newValue.getOrganisationType());
+		}
+		if (StringUtils.isNotBlank(newValue.getLang()) && !StringUtils.equals(newValue.getLang(), oldValue.getLang())) {
+			oldValue.setLang(newValue.getLang());
 		}
 		oldValue.setActive(true);
 		// Branding
