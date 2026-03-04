@@ -71,15 +71,16 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
             return new ArrayList<>();
         }
 
-        List<Object[]> res = (List<Object[]>) em.createNativeQuery(
+        List<Object[]> res = em.createNativeQuery(
                         "select " +
-                                "	vjas.departure_time as departureTime, " +
-                                "	sa.original_stop_id as originalStopId, " +
-                                "   coalesce(psa.original_stop_id, '') as originalParentStopId, " +
-                                "	l.number as lineNumber, " +
-                                "	r.direction as routeDirection, " +
-                                "	vj.objectid as vehicleJourneyObjectId, " +
-                                "   sp.position +1 as position " +
+                                " vjas.departure_time as departureTime, " +
+                                " sa.original_stop_id as originalStopId, " +
+                                " coalesce(psa.original_stop_id, '') as originalParentStopId, " +
+                                " l.number as lineNumber, " +
+                                " r.direction as routeDirection, " +
+                                " vj.objectid as vehicleJourneyObjectId, " +
+                                " sp.position +1 as position, " +
+                                " vjas.departure_day_offset as departureDayOffset " +
                                 "from time_tables_vehicle_journeys ttvj " +
                                 "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
                                 "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
@@ -99,7 +100,9 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         }
 
         return res.stream().map(
-                        e -> new IneoVJMapping(date.toDate(), ((Time) e[0]).toLocalTime(), (String) e[1], (String) e[2],
+                        e -> new IneoVJMapping(date.plusDays((Integer) e[7]).toDate(), ((Time) e[0]).toLocalTime(),
+                                (String) e[1],
+                                (String) e[2],
                                 (String) e[3], e[4] != null ? PTDirectionEnum.valueOf((String) e[4]) : PTDirectionEnum.A, (String) e[5], (Integer) e[6]))
                 .collect(Collectors.toList());
     }
@@ -114,7 +117,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
             return new ArrayList<>();
         }
 
-        List<Object[]> res = (List<Object[]>) em.createNativeQuery(
+        List<Object[]> res = em.createNativeQuery(
                         " select " +
                                 "  min(vjas.departure_time) as minDepartureTime, " +
                                 "  l.objectid as lineId, " +
@@ -156,60 +159,61 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         }
 
         List<Object[]> res = em.createNativeQuery(
-                       "with vj_interval_info as (select " +
-                               "vjas.vehicle_journey_id as vjId, " +
-                               "min(vjas.departure_time )as minDepartureTime, " +
-                               "max(vjas.departure_time) as maxDepartureTime, " +
-                               "max(sp.\"position\") as maxPosition " +
-                               "from time_tables_vehicle_journeys ttvj " +
-                               "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
-                               "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
-                               "inner join stop_points sp on vjas.stop_point_id = sp.id " +
-                               "group by vjId), " +
-                               "vj_last_stop_name as ( " +
-                               "select " +
-                               "vjas.departure_time, " +
-                               "vjas.vehicle_journey_id as vjId, " +
-                               "sa.original_stop_id as destinationRef, " +
-                               "sa.\"name\" as destinationName " +
-                               "from stop_areas sa " +
-                               "inner join stop_points sp on sp.stop_area_id = sa.id " +
-                               "inner join vehicle_journey_at_stops vjas on vjas.stop_point_id = sp.id " +
-                               "inner join vj_interval_info fs on vjas.departure_time = fs.maxDepartureTime and vjas.vehicle_journey_id = fs.vjId and sp.position = fs.maxPosition " +
-                               "), " +
-                               "vj_first_stop_name as ( " +
-                               "select " +
-                               "vjas.departure_time, " +
-                               "vjas.vehicle_journey_id as vjId, " +
-                               "sa.original_stop_id as originRef, " +
-                               "sa.\"name\" as originName " +
-                               "from stop_areas sa " +
-                               "inner join stop_points sp on sp.stop_area_id = sa.id and sp.position = 0 " +
-                               "inner join vehicle_journey_at_stops vjas on vjas.stop_point_id = sp.id " +
-                               "inner join vj_interval_info fs on vjas.departure_time = fs.minDepartureTime and vjas.vehicle_journey_id = fs.vjId) " +
-                               "select " +
-                               "sa.original_stop_id as stopRef, " +
-                               "sa.\"name\" as stopName, " +
-                               "vj.objectid as vehicleJourneyRef, " +
-                               "l.objectid as lineRef, " +
-                               "l.published_name as lineName, " +
-                               "r.direction as directionName, " +
-                               "vjas.departure_time as departureTime, " +
-                               "vjas.arrival_time as arrivalTime, " +
-                               "vjfsn.originRef, " +
-                               "vjfsn.originName, " +
-                               "vjlsn.destinationRef, " +
-                               "vjlsn.destinationName " +
-                               "from time_tables_vehicle_journeys ttvj " +
-                               "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
-                               "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
-                               "inner join stop_points sp on vjas.stop_point_id = sp.id " +
-                               "inner join stop_areas sa on sp.stop_area_id = sa.id " +
-                               "inner join routes r on vj.route_id = r.id " +
-                               "inner join lines l on r.line_id = l.id " +
-                               "inner join vj_first_stop_name vjfsn on vjfsn.vjId = vjas.vehicle_journey_id " +
-                               "inner join vj_last_stop_name vjlsn on vjlsn.vjId = vjas.vehicle_journey_id " +
-                               "order by vjas.departure_time"
+                        "with vj_interval_info as (select " +
+                                "vjas.vehicle_journey_id as vjId, " +
+                                "min(vjas.departure_time )as minDepartureTime, " +
+                                "max(vjas.departure_time) as maxDepartureTime, " +
+                                "max(sp.\"position\") as maxPosition " +
+                                "from time_tables_vehicle_journeys ttvj " +
+                                "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
+                                "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
+                                "inner join stop_points sp on vjas.stop_point_id = sp.id " +
+                                "group by vjId), " +
+                                "vj_last_stop_name as ( " +
+                                "select " +
+                                "vjas.departure_time, " +
+                                "vjas.vehicle_journey_id as vjId, " +
+                                "sa.original_stop_id as destinationRef, " +
+                                "sa.\"name\" as destinationName " +
+                                "from stop_areas sa " +
+                                "inner join stop_points sp on sp.stop_area_id = sa.id " +
+                                "inner join vehicle_journey_at_stops vjas on vjas.stop_point_id = sp.id " +
+                                "inner join vj_interval_info fs on vjas.departure_time = fs.maxDepartureTime and vjas.vehicle_journey_id = fs.vjId and sp.position = fs.maxPosition " +
+                                "), " +
+                                "vj_first_stop_name as ( " +
+                                "select " +
+                                "vjas.departure_time, " +
+                                "vjas.vehicle_journey_id as vjId, " +
+                                "sa.original_stop_id as originRef, " +
+                                "sa.\"name\" as originName " +
+                                "from stop_areas sa " +
+                                "inner join stop_points sp on sp.stop_area_id = sa.id and sp.position = 0 " +
+                                "inner join vehicle_journey_at_stops vjas on vjas.stop_point_id = sp.id " +
+                                "inner join vj_interval_info fs on vjas.departure_time = fs.minDepartureTime and vjas.vehicle_journey_id = fs.vjId) " +
+                                "select " +
+                                "sa.original_stop_id as stopRef, " +
+                                "sa.\"name\" as stopName, " +
+                                "vj.objectid as vehicleJourneyRef, " +
+                                "l.objectid as lineRef, " +
+                                "l.published_name as lineName, " +
+                                "r.direction as directionName, " +
+                                "vjas.departure_time as departureTime, " +
+                                "vjas.arrival_time as arrivalTime, " +
+                                "vjfsn.originRef, " +
+                                "vjfsn.originName, " +
+                                "vjlsn.destinationRef, " +
+                                "vjlsn.destinationName, " +
+                                "vjas.departure_day_offset " +
+                                "from time_tables_vehicle_journeys ttvj " +
+                                "inner join vehicle_journeys vj on ttvj.time_table_id in :activeTimetableIds and vj.id = ttvj.vehicle_journey_id " +
+                                "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
+                                "inner join stop_points sp on vjas.stop_point_id = sp.id " +
+                                "inner join stop_areas sa on sp.stop_area_id = sa.id " +
+                                "inner join routes r on vj.route_id = r.id " +
+                                "inner join lines l on r.line_id = l.id " +
+                                "inner join vj_first_stop_name vjfsn on vjfsn.vjId = vjas.vehicle_journey_id " +
+                                "inner join vj_last_stop_name vjlsn on vjlsn.vjId = vjas.vehicle_journey_id " +
+                                "order by vjas.departure_time"
                 )
                 .setParameter("activeTimetableIds", activeTimetableIds)
                 .getResultList();
@@ -222,7 +226,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
         return res.stream().map(
                         e -> new TheoreticalStopMonitoringInfo(
-                                date.toDate(),
+                                date.plusDays((Integer) e[12]).toDate(),
                                 (String) e[0],
                                 (String) e[1],
                                 (String) e[2],

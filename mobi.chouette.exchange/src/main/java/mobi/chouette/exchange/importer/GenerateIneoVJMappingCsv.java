@@ -43,14 +43,17 @@ public class GenerateIneoVJMappingCsv implements Command {
     public static final String COMMAND = "GenerateIneoVJMappingCsv";
     public static final String INEO_VJ_MAPPING_CSV = "vehicleJourneyMapping.csv";
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
-    protected static final String[] CSV_HEADERS = { "dateyyyyMMdd", "timeHHmmss", "lineNumber",
+    protected static final String[] CSV_HEADERS = {"dateyyyyMMdd", "timeHHmmss", "lineNumber",
             "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position", "datasetId"};
     private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
-    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
 
+    static {
+        CommandFactory.factories.put(GenerateIneoVJMappingCsv.class.getName(), new GenerateIneoVJMappingCsv.DefaultCommandFactory());
+    }
+
+    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
     @EJB
     VehicleJourneyDAO vjDAO;
-
     @EJB
     ProviderDAO providerDAO;
 
@@ -78,9 +81,20 @@ public class GenerateIneoVJMappingCsv implements Command {
                 ContextHolder.clear();
                 ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
                 LocalDate today = LocalDate.now(ZONE_ID);
+                List<IneoVJMapping> yesterdayEntities = vjDAO.getIneoVJMappingData(today.minusDays(1));
+                if (CollectionUtils.isNotEmpty(yesterdayEntities)) {
+                    // certain passages associés aux courses de la veille peuvent avoir lieu le jour J
+                    // ex: bus qui commence sa course à 23h30 et la termine le lendemain à 1h du matin
+                    yesterdayEntities = yesterdayEntities.stream()
+                            .filter(e -> e.getDate().equals(today.toDate()))
+                            .collect(Collectors.toList());
+                }
                 List<IneoVJMapping> todayEntities = vjDAO.getIneoVJMappingData(today);
                 List<IneoVJMapping> tomorrowEntities = vjDAO.getIneoVJMappingData(today.plusDays(1));
                 List<IneoVJMapping> all = new ArrayList<>();
+                if (CollectionUtils.isNotEmpty(yesterdayEntities)) {
+                    all.addAll(yesterdayEntities);
+                }
                 if (CollectionUtils.isNotEmpty(todayEntities)) {
                     all.addAll(todayEntities);
                 }
@@ -111,9 +125,7 @@ public class GenerateIneoVJMappingCsv implements Command {
         } catch (IOException e) {
             log.error(String.format("Error generating %s file", INEO_VJ_MAPPING_CSV), e);
             return false;
-        }
-
-        finally {
+        } finally {
             ContextHolder.setContext(currentContext);
         }
     }
@@ -143,10 +155,6 @@ public class GenerateIneoVJMappingCsv implements Command {
             }
             return result;
         }
-    }
-
-    static {
-        CommandFactory.factories.put(GenerateIneoVJMappingCsv.class.getName(), new GenerateIneoVJMappingCsv.DefaultCommandFactory());
     }
 
 }

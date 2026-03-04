@@ -55,14 +55,15 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
             "destinationName"
     };
 
-    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
+    static {
+        CommandFactory.factories.put(GenerateTheoreticalStopMonitoringInfo.class.getName(), new GenerateTheoreticalStopMonitoringInfo.DefaultCommandFactory());
+    }
 
+    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
     @EJB
     private VehicleJourneyDAO vjDAO;
-
     @EJB
     private ProviderDAO providerDAO;
-
     @EJB
     private FileUtils fileUtils;
 
@@ -77,7 +78,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
         ContextHolder.setContext("admin");
 
         String generateThTRParam = System.getenv("GENERATE_TH_SM_DATASETS");
-		List<String> datasetIds = StringUtils.isEmpty(generateThTRParam) ? new ArrayList<>() : Arrays.asList(System.getenv("GENERATE_TH_SM_DATASETS").toLowerCase().split(","));
+        List<String> datasetIds = StringUtils.isEmpty(generateThTRParam) ? new ArrayList<>() : Arrays.asList(System.getenv("GENERATE_TH_SM_DATASETS").toLowerCase().split(","));
 
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
@@ -113,11 +114,20 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
             LocalDate today = LocalDate.now(ZONE_ID);
 
 
+            List<TheoreticalStopMonitoringInfo> yesterdayEntities = vjDAO.getAllTheoreticalStopMonitoringInfoByDate(today.minusDays(1));
+            if (CollectionUtils.isNotEmpty(yesterdayEntities)) {
+                yesterdayEntities = yesterdayEntities.stream()
+                        .filter(e -> e.getDate().equals(today.toDate()))
+                        .collect(Collectors.toList());
+            }
             List<TheoreticalStopMonitoringInfo> todayEntities = vjDAO.getAllTheoreticalStopMonitoringInfoByDate(today);
             List<TheoreticalStopMonitoringInfo> tomorrowEntities = vjDAO.getAllTheoreticalStopMonitoringInfoByDate(today.plusDays(1));
 
 
             List<TheoreticalStopMonitoringInfo> all = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(yesterdayEntities)) {
+                all.addAll(yesterdayEntities);
+            }
             if (CollectionUtils.isNotEmpty(todayEntities)) {
                 all.addAll(todayEntities);
             }
@@ -166,9 +176,5 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
             }
             return result;
         }
-    }
-
-    static {
-        CommandFactory.factories.put(GenerateTheoreticalStopMonitoringInfo.class.getName(), new GenerateTheoreticalStopMonitoringInfo.DefaultCommandFactory());
     }
 }
