@@ -1,4 +1,5 @@
 package mobi.chouette.model.admin;
+
 public enum ExportType {
     GTFS,
     CONCERTO,
@@ -6,5 +7,6 @@ public enum ExportType {
     ARRET,
     NEPTUNE,
     POI,
-    PARKING
+    PARKING,
+    NETEX_FARES
 }
