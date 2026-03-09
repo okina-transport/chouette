@@ -169,13 +169,17 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
                                 "inner join vehicle_journey_at_stops vjas on vjas.vehicle_journey_id = vj.id " +
                                 "inner join stop_points sp on vjas.stop_point_id = sp.id " +
                                 "group by vjId), " +
+                                "stop_area_name as (" +
+                                "select sa.id, sa.original_stop_id, sa2.\"name\" from stop_areas sa " +
+                                "inner join stop_areas sa2 on sa2.id = sa.parent_id " +
+                                "), " +
                                 "vj_last_stop_name as ( " +
                                 "select " +
                                 "vjas.departure_time, " +
                                 "vjas.vehicle_journey_id as vjId, " +
                                 "sa.original_stop_id as destinationRef, " +
                                 "sa.\"name\" as destinationName " +
-                                "from stop_areas sa " +
+                                "from stop_area_name sa " +
                                 "inner join stop_points sp on sp.stop_area_id = sa.id " +
                                 "inner join vehicle_journey_at_stops vjas on vjas.stop_point_id = sp.id " +
                                 "inner join vj_interval_info fs on vjas.departure_time = fs.maxDepartureTime and vjas.vehicle_journey_id = fs.vjId and sp.position = fs.maxPosition " +
