@@ -77,6 +77,11 @@ public class ObjectIdUtil {
         return token[0] + ":StopPlace:COM_" + token[2];
     }
 
+    public static String getLastPartOfTrident(String objectId){
+        String[] token = objectId.split(COLON);
+        return token.length < 3 ? objectId : token[2];
+    }
+
     /**
      * Replace colons(:) in input string by a special code handled by application (##3A##)
      * @param inputString
