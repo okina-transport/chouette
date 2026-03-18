@@ -3,6 +3,7 @@ package mobi.chouette.exchange.gtfs.importer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.ObjectIdUtil;
+import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
@@ -81,6 +82,16 @@ public class CommercialStopGenerator extends AbstractGenerator {
 					continue;
 				}
 			}
+
+			KeyValue keyValue = new KeyValue();
+			keyValue.setKey(EXTERNAL_REF);
+			keyValue.setValue(ObjectIdUtil.getLastPartOfTrident(mergeKey));
+			keyValue.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
+
+			if (area.getKeyValues() == null){
+				area.setKeyValues(new ArrayList<>());
+			}
+			area.getKeyValues().add(keyValue);
 			stop.setParent(area);
 
 		}
