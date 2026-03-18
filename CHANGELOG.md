@@ -1,4 +1,4 @@
-# Version 3.4.2 (01/12/2016)
+# Version 3.4.2 (01/12/2016) 
 * Correction
   * PullRequest #34 : When querying for jobs, expose job action and status as parameters
   * PullRequest #36 : Truncate all tables when cleaning before import
