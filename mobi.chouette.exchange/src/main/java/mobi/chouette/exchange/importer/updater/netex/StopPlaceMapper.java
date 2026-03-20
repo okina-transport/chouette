@@ -180,12 +180,21 @@ public class StopPlaceMapper {
         return alternativeNameResult;
     }
 
-    private void addRailUICinfo(StopArea stopArea, StopPlace zone) {
-        if (StringUtils.isNotBlank(stopArea.getRailUic())) {
-            zone.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-                    .withKey(RAIL_UIC)
-                    .withValue(stopArea.getRailUic())));
+    private void addKeyValue(Zone_VersionStructure zone, String key, String value) {
+        if (StringUtils.isBlank(value)) return;
+
+        KeyListStructure keyList = zone.getKeyList();
+        if (keyList == null) {
+            keyList = new KeyListStructure();
+            zone.setKeyList(keyList);
         }
+        keyList.getKeyValue().add(new KeyValueStructure()
+                .withKey(key)
+                .withValue(value));
+    }
+
+    private void addRailUICinfo(StopArea stopArea, StopPlace zone) {
+        addKeyValue(zone, RAIL_UIC, stopArea.getRailUic());
     }
 
     private void mapTarifZoneRef(StopArea stopArea, StopPlace stopPlace) {
@@ -284,39 +293,27 @@ public class StopPlaceMapper {
             stopAreaMappingInverse.put(entry.getValue(), entry.getKey());
         }
         String importedId = stopAreaMappingInverse.get(stopPlace.getId());
-        if (StringUtils.isNotBlank(importedId)) {
-            stopPlace.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-                    .withKey(IMPORTED_ID)
-                    .withValue(importedId)));
-        }
+        addKeyValue(stopPlace, IMPORTED_ID, importedId);
         return stopPlace;
     }
 
     public void addExternalRefInfo(StopArea stopArea, Zone_VersionStructure zone) {
         for (KeyValue keyValue : stopArea.getKeyValues()) {
-            if(StringUtils.equals(keyValue.getKey(), EXTERNAL_REF) && StringUtils.isNotEmpty(keyValue.getValue())){
-                zone.setKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-                        .withKey(EXTERNAL_REF)
-                        .withValue(keyValue.getValue())));
+            if (StringUtils.equals(keyValue.getKey(), EXTERNAL_REF) && StringUtils.isNotEmpty(keyValue.getValue())) {
+                addKeyValue(zone, EXTERNAL_REF, keyValue.getValue());
             }
         }
     }
 
-	public void addIsGeneratedQuayInfo(StopArea stopArea, Zone_VersionStructure zone) {
-		for (KeyValue keyValue : stopArea.getKeyValues()) {
-			if(StringUtils.equals(keyValue.getKey(), AUTO_CREATED_QUAY_SUFFIX) && StringUtils.isNotEmpty(keyValue.getValue())){
-				zone.setKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-						.withKey(AUTO_CREATED_QUAY_SUFFIX)
-						.withValue(keyValue.getValue())));
-			}
-		}
-	}
+    public void addIsGeneratedQuayInfo(StopArea stopArea, Zone_VersionStructure zone) {
+        for (KeyValue keyValue : stopArea.getKeyValues()) {
+            if (StringUtils.equals(keyValue.getKey(), AUTO_CREATED_QUAY_SUFFIX) && StringUtils.isNotEmpty(keyValue.getValue())) {
+                addKeyValue(zone, AUTO_CREATED_QUAY_SUFFIX, keyValue.getValue());
+            }
+        }
+    }
 
     public void addZoneIdInfo(StopArea stopArea, Zone_VersionStructure zone) {
-        if (StringUtils.isNotBlank(stopArea.getZoneId())) {
-            zone.withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure()
-                    .withKey(FARE_ZONE)
-                    .withValue(stopArea.getZoneId())));
-        }
+        addKeyValue(zone, FARE_ZONE, stopArea.getZoneId());
     }
 }
