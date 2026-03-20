@@ -298,11 +298,10 @@ public class StopPlaceMapper {
     }
 
     public void addExternalRefInfo(StopArea stopArea, Zone_VersionStructure zone) {
-        for (KeyValue keyValue : stopArea.getKeyValues()) {
-            if (StringUtils.equals(keyValue.getKey(), EXTERNAL_REF) && StringUtils.isNotEmpty(keyValue.getValue())) {
-                addKeyValue(zone, EXTERNAL_REF, keyValue.getValue());
-            }
-        }
+        stopArea.getKeyValues().stream()
+                .filter(kv -> StringUtils.equals(kv.getKey(), EXTERNAL_REF) && StringUtils.isNotEmpty(kv.getValue()))
+                .findFirst()
+                .ifPresent(kv -> addKeyValue(zone, EXTERNAL_REF, kv.getValue()));
     }
 
     public void addIsGeneratedQuayInfo(StopArea stopArea, Zone_VersionStructure zone) {
