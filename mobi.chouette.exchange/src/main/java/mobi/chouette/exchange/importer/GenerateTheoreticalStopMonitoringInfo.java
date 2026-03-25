@@ -88,6 +88,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
 
 
         for (Provider referential : referentials) {
+            log.info("Launching TH generation for provider : {}",referential.getCode());
             try (BufferedWriter csvWriter = Files.newBufferedWriter(TH_SM_CSV_DIRECTORY.resolve(referential.getCode() + TH_SM_CSV_FILE),
                     StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
             ) {
@@ -99,6 +100,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
                 log.error("Error generating {} file", referential.getCode() + TH_SM_CSV_FILE, e);
                 return false;
             }
+            log.info("Launching TH generation for provider : {} completed", referential.getCode());
         }
 
         log.info("Finished generation of all theoreticalStopMonitoringInfo");
