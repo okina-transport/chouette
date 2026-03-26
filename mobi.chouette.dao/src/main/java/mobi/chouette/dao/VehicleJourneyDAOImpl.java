@@ -1,10 +1,7 @@
 package mobi.chouette.dao;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.model.FirstOrLastJourneyInfo;
-import mobi.chouette.model.IneoVJMapping;
-import mobi.chouette.model.TheoreticalStopMonitoringInfo;
-import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.ServicePosition;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +25,9 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
     @EJB
     TimetableDAO timetableDAO;
+
+    @EJB
+    LineDAO lineDao;
 
     public VehicleJourneyDAOImpl() {
         super(VehicleJourney.class);
@@ -153,6 +153,29 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
     public List<TheoreticalStopMonitoringInfo> getAllTheoreticalStopMonitoringInfoByDate(LocalDate date) {
         Collection<? extends Number> activeTimetableIds = timetableDAO.getActiveTimetableIdsByDay(date);
 
+
+        if (CollectionUtils.isEmpty(activeTimetableIds)) {
+            log.warn(String.format(NO_TIMETABLE_FOUND_LOG, date));
+            return new ArrayList<>();
+        }
+
+        List<TheoreticalStopMonitoringInfo> results = new ArrayList<>();
+
+        List<Line> lines = lineDao.findAll();
+
+        for (Line line : lines) {
+            List<TheoreticalStopMonitoringInfo> lineTHData = getAllTheoreticalStopMonitoringInfoByDateAndLine(date, line.getId());
+            results.addAll(lineTHData);
+        }
+        return results;
+    }
+
+
+        public List<TheoreticalStopMonitoringInfo> getAllTheoreticalStopMonitoringInfoByDateAndLine(LocalDate date, Long lineId) {
+        Collection<? extends Number> activeTimetableIds = timetableDAO.getActiveTimetableIdsByDay(date);
+
+        log.info("Recovering TH data for date:" + date + " and lineId:" + lineId);
+
         if (CollectionUtils.isEmpty(activeTimetableIds)) {
             log.warn(String.format(NO_TIMETABLE_FOUND_LOG, date));
             return new ArrayList<>();
@@ -217,9 +240,11 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
                                 "inner join lines l on r.line_id = l.id " +
                                 "inner join vj_first_stop_name vjfsn on vjfsn.vjId = vjas.vehicle_journey_id " +
                                 "inner join vj_last_stop_name vjlsn on vjlsn.vjId = vjas.vehicle_journey_id " +
+                                "where l.id = :lineId " +
                                 "order by vjas.departure_time"
                 )
                 .setParameter("activeTimetableIds", activeTimetableIds)
+                .setParameter("lineId", lineId)
                 .getResultList();
 
         if (CollectionUtils.isEmpty(res)) {
