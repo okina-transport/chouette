@@ -14,18 +14,13 @@ data-source add \
 --driver-name=postgresql \
 --user-name=${env.CHOUETTE_IEV_DB_USER} \
 --password=${env.CHOUETTE_IEV_DB_PASSWORD} \
---min-pool-size=0 \
---max-pool-size=10 \
 --use-fast-fail=true \
---idle-timeout-minutes=5 \
---blocking-timeout-millis=30000 \
 --validate-on-match=false \
 --background-validation=true \
---background-validation-millis=30000 \
+--background-validation-millis=10000 \
 --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
 --share-prepared-statements=false \
 --check-valid-connection-sql="SELECT 1"
-
 
 data-source add \
 --jndi-name=java:jboss/datasources/chouette \
@@ -35,14 +30,12 @@ data-source add \
 --driver-name=postgresql \
 --user-name=${env.CHOUETTE_DB_USER} \
 --password=${env.CHOUETTE_DB_PASSWORD} \
---min-pool-size=0 \
---max-pool-size=10 \
+--min-pool-size=20 \
+--max-pool-size=60 \
 --use-fast-fail=true \
---idle-timeout-minutes=5 \
---blocking-timeout-millis=30000 \
 --validate-on-match=false \
 --background-validation=true \
---background-validation-millis=30000 \
+--background-validation-millis=10000 \
 --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
 --share-prepared-statements=false \
 --check-valid-connection-sql="SELECT 1"
