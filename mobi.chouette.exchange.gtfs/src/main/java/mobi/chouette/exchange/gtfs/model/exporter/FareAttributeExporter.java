@@ -40,7 +40,7 @@ public class FareAttributeExporter extends ExporterImpl<GtfsFareAttribute> imple
 			values.add(PAYMENTMETHODTYPE_CONVERTER.to(context, FIELDS.payment_method, input.getPaymentMethod(), true));
 			values.add(ATTRIBUTETRANSFERSTYPE_CONVERTER.to(context, FIELDS.transfers, input.getTransfers(), false));
 			values.add(STRING_CONVERTER.to(context, FIELDS.agency_id, input.getAgencyId(), false));
-			values.add(FLOAT_CONVERTER.to(context, FIELDS.transfer_duration, input.getTransferDuration(), false));
+			values.add(POSITIVE_INTEGER_CONVERTER.to(context, FIELDS.transfer_duration, input.getTransferDuration().intValue(), false));
 
 			result = Tokenizer.untokenize(values);
 			return result;
