@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles"})
+@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles", "serviceJourneyTripObjectName"})
 @Getter
 @Setter
 public class GtfsExportParameters extends AbstractExportParameter {
@@ -79,6 +79,9 @@ public class GtfsExportParameters extends AbstractExportParameter {
 
 	@XmlElement(name = "fare_files")
 	private boolean fareFiles = false;
+
+	@XmlElement(name = "service_journey_trip_object_name")
+	private boolean serviceJourneyTripObjectName = false;
 
 
 	public boolean isValid(Logger log, String[] allowedTypes) {

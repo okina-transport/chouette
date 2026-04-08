@@ -140,7 +140,7 @@ public class GtfsLineProducerCommand implements Command, Constant {
 				if (tmKey != null) {
 					IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
 
-					if (tripProducer.save(vj, tmKey, prefix, configuration.isKeepOriginalId(),idParams, configuration.getGoogleMapsCompatibility())) {
+					if (tripProducer.save(vj, tmKey, prefix, configuration,idParams)) {
 						hasVj = true;
 						jps.add(vj.getJourneyPattern());
 						if (!timetables.containsKey(tmKey)) {

@@ -11,6 +11,7 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.ObjectIdUtil;
+import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.exporter.GtfsStopUtils;
 import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -59,7 +60,7 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * @pram idParams
 	 * @return list of stoptimes
 	 */
-	private boolean saveTimes(VehicleJourney vj, String prefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams, Boolean googleMapsCompatibility) {
+	private boolean saveTimes(VehicleJourney vj, String prefix, boolean keepOriginalId, boolean changesDestinationDisplay, List<VehicleJourneyAtStop> lvjas, IdParameters idParams, Boolean googleMapsCompatibility, boolean serviceJourneyTripObjectName) {
 		if (vj.getVehicleJourneyAtStops().isEmpty())
 			return false;
 		Line l = vj.getRoute().getLine();
@@ -71,6 +72,9 @@ public class GtfsTripProducer extends AbstractProducer {
 		int arrivalOffset = 0;
 
 		String tripId = ObjectIdUtil.toGtfsId(vj.getObjectId(), prefix, keepOriginalId).replaceAll(Constant.COLON_REPLACEMENT_CODE, ":");
+		if (serviceJourneyTripObjectName){
+			tripId = tripId.replace(":VehicleJourney:", ":ServiceJourney:");
+		}
 		time.setTripId(tripId);
 		float distance = (float) 0.0;
 		List<RouteSection> routeSections = vj.getJourneyPattern().getRouteSections();
@@ -248,7 +252,7 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * @param serviceId
 	 * @param schemaPrefix
 	 * 			Prefix of the database schema
-	 * @param keepOriginalId
+	 * @param gtfsExportParameters
 	 * @param idParams
 	 * 			Parameters about IDs:
 	 * 		    -	Format for Ids : TRIDENT (e.g: PREFIX:StopPlace:10545) or identical to source (e.g:10545)
@@ -256,11 +260,18 @@ public class GtfsTripProducer extends AbstractProducer {
 	 * 		    - suffix
 	 * @return gtfs trip
 	 */
-	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, boolean keepOriginalId, IdParameters idParams, Boolean googleMapsCompatibility) {
+	public boolean save(VehicleJourney vj, String serviceId, String schemaPrefix, GtfsExportParameters gtfsExportParameters, IdParameters idParams) {
 
 		time.setStopHeadsign(null); // Clear between each journey
 
+		Boolean keepOriginalId = gtfsExportParameters.isKeepOriginalId();
+		Boolean googleMapsCompatibility = gtfsExportParameters.getGoogleMapsCompatibility();
+		Boolean serviceJourneyTripObjectName = gtfsExportParameters.isServiceJourneyTripObjectName();
+
 		String tripId = ObjectIdUtil.toGtfsId(vj.getObjectId(), schemaPrefix, keepOriginalId).replace(Constant.COLON_REPLACEMENT_CODE, ":");
+		if (serviceJourneyTripObjectName){
+			tripId = tripId.replace(":VehicleJourney:", ":ServiceJourney:");
+		}
 		trip.setTripId(tripId);
 
 		JourneyPattern jp = vj.getJourneyPattern();
@@ -332,7 +343,7 @@ public class GtfsTripProducer extends AbstractProducer {
 		updateBikeAllowedForTrip(vj);
 
 		// add StopTimes
-		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams, googleMapsCompatibility)) {
+		if (saveTimes(vj, schemaPrefix, keepOriginalId, changesDestinationDisplay, lvjas, idParams, googleMapsCompatibility, serviceJourneyTripObjectName)) {
 			try {
 				getExporter().getTripExporter().export(trip);
 			} catch (Exception e) {
