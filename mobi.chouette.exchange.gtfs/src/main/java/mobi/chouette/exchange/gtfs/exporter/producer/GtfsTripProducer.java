@@ -19,8 +19,8 @@ import mobi.chouette.exchange.gtfs.parameters.IdFormat;
 import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalTime;
+import org.apache.commons.collections4.CollectionUtils;
+import java.time.LocalTime;
 import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 
 import java.math.BigDecimal;
@@ -121,7 +121,7 @@ public class GtfsTripProducer extends AbstractProducer {
 			addDropOffAndPickUpType(time, l, vj, vjas);
 
 			if (vj.getJourneyPattern().getSectionStatus() == SectionStatusEnum.Completed) {
-				Float shapeDistTraveled = new Float(distance);
+				Float shapeDistTraveled = Float.valueOf(distance);
 				time.setShapeDistTraveled(shapeDistTraveled);
 				while (index < routeSections.size() && routeSections.get(index) == null) {
 					index++;
@@ -358,7 +358,7 @@ public class GtfsTripProducer extends AbstractProducer {
 					frequency.setEndTime(new GtfsTime(journeyFrequency.getLastDepartureTime(), 0));
 				else
 					frequency.setEndTime(new GtfsTime(journeyFrequency.getLastDepartureTime(), 1));
-				frequency.setHeadwaySecs((int) journeyFrequency.getScheduledHeadwayInterval().getStandardSeconds());
+				frequency.setHeadwaySecs((int) journeyFrequency.getScheduledHeadwayInterval().getSeconds());
 				try {
 					getExporter().getFrequencyExporter().export(frequency);
 				} catch (Exception e) {

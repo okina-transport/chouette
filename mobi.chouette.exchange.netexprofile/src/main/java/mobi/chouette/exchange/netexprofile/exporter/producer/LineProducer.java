@@ -14,7 +14,7 @@ import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.GroupOfLine;
 import mobi.chouette.model.Line;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.FlexibleLine;
 import org.rutebanken.netex.model.GroupOfLinesRefStructure;
@@ -130,8 +130,8 @@ public class LineProducer extends NetexProducer implements NetexEntityProducer<o
 				if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
 					flexibleLine.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
 				}
-				flexibleLine.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-				flexibleLine.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+				flexibleLine.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+				flexibleLine.setMinimumBookingPeriod(TimeUtil.toXmlDuration(bookingArrangement.getMinimumBookingPeriod()));
 
 				flexibleLine.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));
 			}

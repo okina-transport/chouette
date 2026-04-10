@@ -9,7 +9,7 @@ import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters
 import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.type.TadEnum;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rutebanken.netex.model.*;
@@ -148,8 +148,8 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
                 if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
                     flexibleLine.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
                 }
-                flexibleLine.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-                flexibleLine.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+                flexibleLine.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+                flexibleLine.setMinimumBookingPeriod(TimeUtil.toXmlDuration(bookingArrangement.getMinimumBookingPeriod()));
 
                 flexibleLine.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));
             }

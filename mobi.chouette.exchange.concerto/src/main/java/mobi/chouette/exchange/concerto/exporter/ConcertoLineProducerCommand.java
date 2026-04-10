@@ -5,6 +5,7 @@ import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.concerto.Constant;
@@ -19,11 +20,11 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -80,14 +81,14 @@ public class ConcertoLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate;
 			if (parameters.getStartDate() != null) {
-				startDate = LocalDate.fromDateFields(parameters.getStartDate());
+				startDate = TimeUtil.toLocalDate(parameters.getStartDate());
 			} else {
-				startDate = new LocalDate();
+				startDate = LocalDate.now();
 			}
 
 			LocalDate endDate;
 			if (parameters.getEndDate() != null) {
-				endDate = LocalDate.fromDateFields(parameters.getEndDate());
+				endDate = TimeUtil.toLocalDate(parameters.getEndDate());
 			} else if (parameters.getPeriodDays() != null) {
 				endDate = startDate.plusDays(parameters.getPeriodDays());
 			} else {
@@ -140,8 +141,7 @@ public class ConcertoLineProducerCommand implements Command, Constant {
 
 		@Override
 		protected Command create(InitialContext context) throws IOException {
-			Command result = new ConcertoLineProducerCommand();
-			return result;
+			return new ConcertoLineProducerCommand();
 		}
 	}
 

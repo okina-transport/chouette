@@ -17,7 +17,7 @@ public class NetexTimeConversionUtil {
 	    }
 
 		int dayOffset = arrival ? vj.getArrivalDayOffset() : vj.getDepartureDayOffset();
-		LocalTime localTime = TimeUtil.toLocalTimeFromJoda(arrival ? vj.getArrivalTime() : vj.getDepartureTime());
+		LocalTime localTime = arrival ? vj.getArrivalTime() : vj.getDepartureTime();
 
 		if(arrival) {
 			passingTime.setArrivalTime(localTime);
@@ -45,13 +45,13 @@ public class NetexTimeConversionUtil {
 
 	    
 		if(arrival) {
-			vj.setArrivalTime(TimeUtil.toJodaLocalTime(localTime));
+			vj.setArrivalTime(localTime);
 
 			if(!BigDecimal.ZERO.equals(dayOffset)) {
 				vj.setArrivalDayOffset(dayOffset.intValue());
 			}
 		} else {
-			vj.setDepartureTime(TimeUtil.toJodaLocalTime(localTime));
+			vj.setDepartureTime(localTime);
 
 			if(!BigDecimal.ZERO.equals(dayOffset)) {
 				vj.setDepartureDayOffset(dayOffset.intValue());

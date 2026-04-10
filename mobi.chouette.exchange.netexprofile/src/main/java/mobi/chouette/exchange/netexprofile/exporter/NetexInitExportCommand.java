@@ -18,7 +18,7 @@ import mobi.chouette.model.Codespace;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import javax.annotation.Resource;
 import javax.ejb.*;

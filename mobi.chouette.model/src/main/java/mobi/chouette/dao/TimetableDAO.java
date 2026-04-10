@@ -2,7 +2,7 @@ package mobi.chouette.dao;
 
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.statistics.LineAndTimetable;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.Collection;
 

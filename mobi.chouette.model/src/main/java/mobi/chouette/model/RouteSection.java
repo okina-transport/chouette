@@ -34,10 +34,8 @@ public class RouteSection extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "route_sections_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "route_sections_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
-	@GeneratedValue(generator = "route_sections_id_seq")
+	@SequenceGenerator(name = "route_sections_id_seq", sequenceName = "route_sections_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "route_sections_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

@@ -9,8 +9,8 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.utils.TokenServiceBuilder;
 import okhttp3.*;
-import org.apache.commons.lang.StringUtils;
-import org.rutebanken.netex.client.TokenService;
+import org.apache.commons.lang3.StringUtils;
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import javax.naming.InitialContext;
 import java.io.IOException;

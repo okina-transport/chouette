@@ -4,9 +4,9 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.ServicePosition;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -100,7 +100,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         }
 
         return res.stream().map(
-                        e -> new IneoVJMapping(date.plusDays((Integer) e[7]).toDate(), ((Time) e[0]).toLocalTime(),
+                        e -> new IneoVJMapping(date.plusDays((Integer) e[7]), ((Time) e[0]).toLocalTime(),
                                 (String) e[1],
                                 (String) e[2],
                                 (String) e[3], e[4] != null ? PTDirectionEnum.valueOf((String) e[4]) : PTDirectionEnum.A, (String) e[5], (Integer) e[6]))
@@ -139,7 +139,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
 
         List<FirstOrLastJourneyInfo> results = res.stream().map(
-                        e -> new FirstOrLastJourneyInfo(date.toDate(), ((Time) e[0]).toLocalTime(), (String) e[1], (String) e[2]))
+                        e -> new FirstOrLastJourneyInfo(date, ((Time) e[0]).toLocalTime(), (String) e[1], (String) e[2]))
                 .collect(Collectors.toList());
 
 
@@ -255,7 +255,7 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
 
         return res.stream().map(
                         e -> new TheoreticalStopMonitoringInfo(
-                                date.plusDays((Integer) e[12]).toDate(),
+                                date.plusDays((Integer) e[12]),
                                 (String) e[0],
                                 (String) e[1],
                                 (String) e[2],

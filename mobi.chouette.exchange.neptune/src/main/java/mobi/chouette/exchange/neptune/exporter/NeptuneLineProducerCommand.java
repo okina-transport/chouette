@@ -9,6 +9,7 @@ import javax.xml.bind.MarshalException;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.AlternativeRegistrationNumberDAO;
@@ -25,7 +26,7 @@ import mobi.chouette.model.util.NamingUtil;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.xml.sax.SAXParseException;
 
 @Log4j
@@ -63,12 +64,12 @@ public class NeptuneLineProducerCommand implements Command, Constant {
             }
             LocalDate startDate = null;
             if (configuration.getStartDate() != null) {
-                startDate = new LocalDate(configuration.getStartDate());
+                startDate = TimeUtil.toLocalDate(configuration.getStartDate());
             }
 
             LocalDate endDate = null;
             if (configuration.getEndDate() != null) {
-                endDate = new LocalDate(configuration.getEndDate());
+                endDate = TimeUtil.toLocalDate(configuration.getEndDate());
             }
 
             NeptuneDataCollector collector = new NeptuneDataCollector();

@@ -21,8 +21,6 @@ public class LineUpdater implements Updater<Line> {
 
 	public static final String BEAN_NAME = "LineUpdater";
 
-	private boolean dataRouteIdfm;
-
 	@EJB
 	private NetworkDAO ptNetworkDAO;
 
@@ -73,7 +71,6 @@ public class LineUpdater implements Updater<Line> {
 			return;
 		}
 		newValue.setSaved(true);
-//		Monitor monitor = MonitorFactory.start(BEAN_NAME);
 		Referential cache = (Referential) context.get(CACHE);
 		
 		// Database test init
@@ -317,7 +314,6 @@ public class LineUpdater implements Updater<Line> {
 		updateFootnotes(context, oldValue,newValue,cache);
 		updateAccessibilityAssessment(context, cache, oldValue, newValue);
 
-//		monitor.stop();
 	}
 
 	private void updateAccessibilityAssessment(Context context, Referential cache, Line oldValue, Line newValue) throws Exception {

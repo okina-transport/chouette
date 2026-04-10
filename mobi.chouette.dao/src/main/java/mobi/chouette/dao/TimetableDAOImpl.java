@@ -3,13 +3,13 @@ package mobi.chouette.dao;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.statistics.LineAndTimetable;
 import mobi.chouette.model.type.DayTypeEnum;
-import org.joda.time.LocalDate;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 
 @Stateless
@@ -54,7 +54,7 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 								") or (" +
 								"   ttd.\"date\" = cast(:date as date) and ttd.in_out = true" +
 								")")
-				.setParameter("date", date.toDate())
+				.setParameter("date", date)
 				.setParameter("dayBitMask", dayBitMask)
 				.getResultList();
 	}

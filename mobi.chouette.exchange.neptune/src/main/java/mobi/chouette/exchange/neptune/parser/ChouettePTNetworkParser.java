@@ -17,7 +17,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 import mobi.chouette.model.util.Referential;
 

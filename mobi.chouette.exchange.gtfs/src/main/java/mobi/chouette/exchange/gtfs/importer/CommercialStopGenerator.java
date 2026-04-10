@@ -9,7 +9,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.util.*;

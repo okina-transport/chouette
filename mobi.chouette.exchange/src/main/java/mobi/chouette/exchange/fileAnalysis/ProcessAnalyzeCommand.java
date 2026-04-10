@@ -17,14 +17,19 @@ import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -58,25 +63,15 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     @EJB
     StopAreaDAO stopAreaDAO;
 
-    public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = new Comparator<StopPoint>() {
-        @Override
-        public int compare(StopPoint sp1, StopPoint sp2) {
-            return Integer.compare(sp1.getPosition(), sp2.getPosition());
-        }
-    };
+    public static final Comparator<StopPoint> STOP_POINT_POSITION_COMPARATOR = Comparator.comparingInt(StopPoint::getPosition);
 
-    public static final Comparator<VehicleJourneyAtStop> VEHICLE_AT_STOP_COMPARATOR = new Comparator<VehicleJourneyAtStop>() {
-        @Override
-        public int compare(VehicleJourneyAtStop vas1, VehicleJourneyAtStop vas2) {
-            return vas1.getDepartureTime().compareTo(vas2.getDepartureTime());
-        }
-    };
+    public static final Comparator<VehicleJourneyAtStop> VEHICLE_AT_STOP_COMPARATOR = Comparator.comparing(VehicleJourneyAtStop::getDepartureTime);
 
     @Override
     public boolean execute(Context context) throws Exception {
         boolean result = ERROR;
 
-        DateTime startingTime = new DateTime();
+        LocalDateTime startingTime = LocalDateTime.now();
         int currentLineNb = context.get(CURRENT_LINE_NB) == null ? 1 : (int) context.get(CURRENT_LINE_NB) + 1;
         context.put(CURRENT_LINE_NB, currentLineNb);
 
@@ -143,9 +138,9 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         }
 
 
-        DateTime endingTime = new DateTime();
+        LocalDateTime endingTime = LocalDateTime.now();
 
-        Duration duration = new Duration(endingTime, startingTime);
+        Duration duration = Duration.between(endingTime, startingTime);
         log.info("analysis completed in:" + duration.toString());
         result = SUCCESS;
 
@@ -262,7 +257,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         if (first == null || last == null)
             return Long.MIN_VALUE; // TODO
 
-        return Seconds.secondsBetween(first, last).getSeconds() + (lastTimeOffset - firstTimeOffset) * DateTimeConstants.SECONDS_PER_DAY;
+        return ChronoUnit.SECONDS.between(first, last) + (lastTimeOffset - firstTimeOffset) * TimeUnit.DAYS.toSeconds(1);
     }
 
 

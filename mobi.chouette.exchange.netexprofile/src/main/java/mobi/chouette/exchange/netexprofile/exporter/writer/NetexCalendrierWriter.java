@@ -3,7 +3,7 @@ package mobi.chouette.exchange.netexprofile.exporter.writer;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.rutebanken.netex.model.DayTypeAssignment_VersionStructure;
 import org.rutebanken.netex.model.ValidBetween;

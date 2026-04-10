@@ -2,7 +2,7 @@ package mobi.chouette.exchange.gtfs.model.importer;
 
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.exchange.gtfs.model.GtfsFareAttribute;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;

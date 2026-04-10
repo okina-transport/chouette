@@ -11,12 +11,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.PTDirectionEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
-import javax.ws.rs.DefaultValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +38,8 @@ public class Route extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "routes_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {@Parameter(name = "sequence_name", value = "routes_id_seq"), @Parameter(name = "increment_size", value = "50")})
-	@GeneratedValue(generator = "routes_id_seq")
+	@SequenceGenerator(name = "routes_id_seq", sequenceName = "routes_id_seq", allocationSize = 50)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "routes_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -163,7 +162,6 @@ public class Route extends NeptuneIdentifiedObject {
 	private List<RoutePoint> routePoints = new ArrayList<>(0);
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 	/**

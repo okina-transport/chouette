@@ -8,6 +8,7 @@ import mobi.chouette.exchange.importer.updater.netex.NavigationPathMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopAreaMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopPlaceMapper;
 import mobi.chouette.exchange.importer.utils.MdmClient;
+import mobi.chouette.exchange.utils.PublicationDeliveryClient;
 import mobi.chouette.exchange.validation.ErrorCodeConverter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
@@ -22,10 +23,10 @@ import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.rutebanken.netex.client.PublicationDeliveryClient;
-import org.rutebanken.netex.client.TokenService;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import mobi.chouette.exchange.importer.utils.TokenService;
 import org.rutebanken.netex.model.*;
 import org.xml.sax.SAXException;
 
@@ -74,30 +75,28 @@ public class NeTExStopPlaceRegisterUpdater {
     private final StopAreaMapper stopAreaMapper = new StopAreaMapper();
     private final Set<TransportModeNameEnum> busEnums = new HashSet<>(Arrays.asList(TransportModeNameEnum.Coach, TransportModeNameEnum.Bus));
     private PublicationDeliveryClient client;
-    private NavigationPathMapper navigationPathMapper = null;
+    private final NavigationPathMapper navigationPathMapper = new NavigationPathMapper();
     @EJB
     private ContenerChecker contenerChecker;
     @EJB
     private MdmClient mdmClient;
 
-    public NeTExStopPlaceRegisterUpdater(PublicationDeliveryClient client) throws DatatypeConfigurationException {
-        this.client = client;
-        navigationPathMapper = new NavigationPathMapper();
-    }
-
-
-    public NeTExStopPlaceRegisterUpdater() throws DatatypeConfigurationException {
-        navigationPathMapper = new NavigationPathMapper();
-    }
-
     @PostConstruct
     public void postConstruct() {
-        initializeClient(null, false, false, false, true);
+        try {
+            initializeClient(null, false, false, false, true);
+        } catch (Exception e) {
+            log.error("Failed to initialize NeTExStopPlaceRegisterUpdater", e);
+        }
     }
 
     private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames,
                                   Boolean updateStopAccessibility, Boolean recomputeStopPlacesLocation){
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
+
+        if (url == null) {
+            return;
+        }
 
         if(!StringUtils.isEmpty(ref)) {
             if(url.contains("?"))
@@ -128,8 +127,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
         try {
             this.client = new PublicationDeliveryClient(url, false, new TokenService(clientId, clientSecret, realm, authServerUrl));
-        } catch (JAXBException | SAXException | IOException e) {
-            log.warn("Cannot initialize publication delivery client with URL '" + url + "'", e);
+        } catch (Throwable e) {
+            log.error("Cannot initialize publication delivery client with URL '" + url + "'", e);
         }
     }
 
@@ -148,7 +147,8 @@ public class NeTExStopPlaceRegisterUpdater {
                 recomputeStopPlacesLocation);
 
         if (client == null) {
-            throw new RuntimeException("Looks like PublicationDeliveryClient is not set up correctly. Aborting.");
+            log.error("PublicationDeliveryClient is not configured, skipping stop place register update.");
+            return;
         }
 
         // Use a correlation ID that will be set as ID on the site frame sent to

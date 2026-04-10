@@ -10,11 +10,10 @@ import mobi.chouette.exchange.importer.utils.FileUtils;
 import mobi.chouette.model.FirstOrLastJourneyInfo;
 import mobi.chouette.model.Provider;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.StringUtils;import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,11 +25,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;import java.util.List;
-import java.util.Map;import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static mobi.chouette.exchange.importer.utils.ProviderPredicate.isProviderForCsvGeneration;
 
@@ -42,8 +44,8 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/vehicleJourneys/");
     public static final String FIRST_OR_LAST_JOURNEY_CSV = "firstOrLastJourney.csv";
     protected static final String[] CSV_HEADERS = { "dateyyyyMMdd",  "lineId","vehicleJourneyId", "servicePosition" };
-    private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
-    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
+    private static final ZoneId ZONE_ID = ZoneId.of("Europe/Paris");
+    private final DateTimeFormatter dateFormatYYYYMMDD = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @EJB
     VehicleJourneyDAO vjDAO;
@@ -116,7 +118,7 @@ public class GenerateFirstOrLastJourneyInfo implements Command {
 						String lineIdToWrite = (!netexPrefixMap.isEmpty() && netexPrefixMap.containsKey(upperReferentialCode)) ? entity.getLineId().replace(upperReferentialCode + ":", netexPrefixMap.get(upperReferentialCode) + ":") : entity.getLineId();
 
                         csvPrinter.printRecord(
-                                dateFormatyyyyMMdd.format(entity.getDate()),
+                                entity.getDate().format(dateFormatYYYYMMDD),
                                 lineIdToWrite,
                                 vjIdToWrite.replace(COLON_REPLACEMENT_CODE, "-").replace("|", "_") + ":LOC",
                                 entity.getServicePosition().name()

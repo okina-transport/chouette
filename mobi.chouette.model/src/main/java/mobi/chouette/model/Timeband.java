@@ -7,8 +7,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -16,10 +18,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 /**
  * Models the time band for journies in timesheet category.
@@ -38,10 +40,8 @@ public class Timeband extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "timebands_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "timebands_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
-	@GeneratedValue(generator = "timebands_id_seq")
+	@SequenceGenerator(name = "timebands_id_seq", sequenceName = "timebands_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "timebands_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

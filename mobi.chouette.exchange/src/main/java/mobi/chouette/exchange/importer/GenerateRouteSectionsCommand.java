@@ -22,7 +22,7 @@ import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.type.SectionStatusEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

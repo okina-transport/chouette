@@ -3,7 +3,7 @@ package mobi.chouette.exchange.netexprofile.importer.util;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.exchange.utils.TokenServiceBuilder;
 import org.apache.http.HttpHeaders;
-import org.rutebanken.netex.client.TokenService;
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import javax.ejb.Singleton;
 import java.io.BufferedReader;

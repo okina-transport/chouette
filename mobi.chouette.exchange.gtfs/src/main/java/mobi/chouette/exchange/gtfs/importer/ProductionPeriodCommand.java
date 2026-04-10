@@ -20,7 +20,7 @@ import mobi.chouette.model.Company;
 import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

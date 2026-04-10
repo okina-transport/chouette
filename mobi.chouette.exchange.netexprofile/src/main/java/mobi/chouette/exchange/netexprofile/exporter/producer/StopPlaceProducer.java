@@ -4,7 +4,7 @@ import static mobi.chouette.exchange.netexprofile.Constant.NETEX_REFERENTIAL;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 
 import mobi.chouette.model.util.Coordinate;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.LocationStructure;
 import org.rutebanken.netex.model.PrivateCodeStructure;
 import org.rutebanken.netex.model.Quay;

@@ -13,6 +13,7 @@ import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.ConnectionLinkDAO;
@@ -31,7 +32,7 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
 import mobi.chouette.model.util.NamingUtil;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -75,12 +76,12 @@ public class GtfsLineProducerCommand implements Command, Constant {
 
 			LocalDate startDate = null;
 			if (configuration.getStartDate() != null) {
-				startDate = new LocalDate(configuration.getStartDate());
+				startDate = TimeUtil.toLocalDate(configuration.getStartDate());
 			}
 
 			LocalDate endDate = null;
 			if (configuration.getEndDate() != null) {
-				endDate = new LocalDate(configuration.getEndDate());
+				endDate = TimeUtil.toLocalDate(configuration.getEndDate());
 			}
 
 			GtfsDataCollector collector = new GtfsDataCollector();

@@ -8,14 +8,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -39,10 +41,8 @@ public class DestinationDisplay extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "destination_displays_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "destination_displays_id_seq"),
-			@Parameter(name = "increment_size", value = "10") })
-	@GeneratedValue(generator = "destination_displays_id_seq")
+	@SequenceGenerator(name = "destination_displays_id_seq", sequenceName = "destination_displays_id_seq", allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "destination_displays_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

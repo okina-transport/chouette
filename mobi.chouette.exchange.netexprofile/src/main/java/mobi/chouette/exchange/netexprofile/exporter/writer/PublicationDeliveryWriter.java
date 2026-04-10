@@ -1,13 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.writer;
 
-import java.time.LocalDateTime;
-
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
@@ -15,9 +8,13 @@ import mobi.chouette.exchange.netexprofile.exporter.NetexFragmentMode;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import mobi.chouette.model.util.NamingUtil;
-
 import org.rutebanken.netex.model.AvailabilityCondition;
 import org.rutebanken.netex.model.Codespace;
+
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.time.LocalDateTime;
 
 import static mobi.chouette.common.Constant.CONFIGURATION;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
@@ -76,7 +73,7 @@ public class PublicationDeliveryWriter extends AbstractNetexWriter {
 
 			if (fragmentMode.equals(NetexFragmentMode.LINE)) {
 				if (line.getNetwork().getVersionDate() != null) {
-					LocalDateTime createdDateTime = TimeUtil.toLocalDateFromJoda(line.getNetwork().getVersionDate()).atStartOfDay();
+					LocalDateTime createdDateTime = line.getNetwork().getVersionDate().atStartOfDay();
 					writer.writeAttribute(CREATED, formatter.format(createdDateTime));
 				} else {
 					writer.writeAttribute(CREATED, timestamp);

@@ -25,8 +25,8 @@ import java.io.Serializable;
 @ToString(callSuper = true)
 public class FareAttribute extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Id
-	@GenericGenerator(name = "fare_attribute_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {@org.hibernate.annotations.Parameter(name = "sequence_name", value = "fare_attribute_id_seq"), @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-	@GeneratedValue(generator = "fare_attribute_id_seq")
+	@SequenceGenerator(name = "fare_attribute_id_seq", sequenceName = "fare_attribute_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fare_attribute_id_seq")
 	@Column(name = "id", nullable = false)
 	protected Long id;
 

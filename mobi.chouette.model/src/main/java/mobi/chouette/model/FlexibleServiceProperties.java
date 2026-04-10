@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -31,10 +33,8 @@ public class FlexibleServiceProperties extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "flexible_service_properties_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "flexible_service_properties_id_seq"),
-			@Parameter(name = "increment_size", value = "100")})
-	@GeneratedValue(generator = "flexible_service_properties_id_seq")
+	@SequenceGenerator(name = "flexible_service_properties_id_seq", sequenceName = "flexible_service_properties_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "flexible_service_properties_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

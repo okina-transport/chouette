@@ -3,7 +3,7 @@ package mobi.chouette.exchange.netexprofile.parser;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.model.Period;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.AvailabilityCondition;
 import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.rutebanken.netex.model.ValidBetween;

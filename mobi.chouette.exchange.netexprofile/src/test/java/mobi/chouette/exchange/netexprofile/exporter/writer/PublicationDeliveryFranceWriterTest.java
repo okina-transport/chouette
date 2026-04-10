@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.netexprofile.exporter.writer;
 
 import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
@@ -44,11 +45,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static mobi.chouette.common.Constant.CONFIGURATION;
-import static mobi.chouette.common.Constant.CREATION_DATE;import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
+import static mobi.chouette.common.Constant.CREATION_DATE;
+import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
-import static org.jboss.util.property.jmx.SystemPropertyClassValue.log;
 
-
+@Slf4j
 public class PublicationDeliveryFranceWriterTest {
 
 
@@ -191,8 +192,7 @@ public class PublicationDeliveryFranceWriterTest {
                     writer.flush();
                     writer.close();
                 } catch (XMLStreamException e) {
-                    log.error("Error flushing and closing Netex Export XML file " + filePath.toString(), e);
-                    throw e;
+                    log.error("Error flushing and closing Netex Export XML file {}", filePath, e);
                 }
             }
 
@@ -202,28 +202,18 @@ public class PublicationDeliveryFranceWriterTest {
         try {
             content = Files.readAllLines(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         for (int i = 0; i < content.size(); i++) {
-            System.out.println(content.get(i));
+            log.info(content.get(i));
         }
 
         try {
             Files.delete(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
-
-    }
-
-    @Test
-    public void exportNetexCommun() {
-
-    }
-
-    @Test
-    public void exportNetexHoraire() {
 
     }
 

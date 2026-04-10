@@ -15,10 +15,9 @@ import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.*;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.joda.time.Instant;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -31,6 +30,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -675,7 +675,7 @@ public class RestService implements Constant {
         try {
             Optional<Instant> latestStorageTime = storageService.getLatestStorageTime(referential);
             ResponseBuilder builder =
-                    Response.ok(latestStorageTime.map(Instant::getMillis).orElse(null));
+                    Response.ok(latestStorageTime.map(Instant::toEpochMilli).orElse(null));
             MediaType type = MediaType.TEXT_PLAIN_TYPE;
             builder.header(api_version_key, api_version);
             return builder.type(type).build();
@@ -693,7 +693,7 @@ public class RestService implements Constant {
         try {
             Optional<Instant> latestStorageTime = storageService.getStorageTimeFromLastRestoration(referential);
             ResponseBuilder builder =
-                    Response.ok(latestStorageTime.map(Instant::getMillis).orElse(null));
+                    Response.ok(latestStorageTime.map(Instant::toEpochMilli).orElse(null));
             MediaType type = MediaType.TEXT_PLAIN_TYPE;
             builder.header(api_version_key, api_version);
             return builder.type(type).build();

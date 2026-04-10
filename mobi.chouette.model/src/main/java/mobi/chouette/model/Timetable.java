@@ -5,12 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.DayTypeEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,10 +35,8 @@ public class Timetable extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "time_tables_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "time_tables_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
-	@GeneratedValue(generator = "time_tables_id_seq")
+	@SequenceGenerator(name = "time_tables_id_seq", sequenceName = "time_tables_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "time_tables_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

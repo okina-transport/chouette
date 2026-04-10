@@ -25,7 +25,7 @@ import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.Utils;import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j
 public class NetexLineParserCommand implements Command, Constant {

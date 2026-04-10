@@ -28,7 +28,7 @@ import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;

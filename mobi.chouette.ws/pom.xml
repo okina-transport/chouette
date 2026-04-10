@@ -16,7 +16,20 @@
     </properties>
     <dependencies>
 
-        <!-- Default Dependencies -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mobi.chouette.service</artifactId>
+            <type>ejb</type>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+            <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -24,25 +37,29 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-7.0</artifactId>
-            <type>pom</type>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Others Dependencies -->
+
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- JBoss RESTEasy -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-core-spi</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
@@ -53,26 +70,19 @@
             <artifactId>resteasy-multipart-provider</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- 		<dependency> -->
-        <!-- 			<groupId>org.jboss.resteasy</groupId> -->
-        <!-- 			<artifactId>resteasy-cache-core</artifactId> -->
-        <!-- 			<scope>provided</scope> -->
-        <!-- 		</dependency> -->
+
         <dependency>
             <groupId>org.jboss.marshalling</groupId>
             <artifactId>jboss-marshalling-river</artifactId>
             <scope>provided</scope>
         </dependency>
 
-
-        <!-- Modules -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mobi.chouette.service</artifactId>
-            <type>ejb</type>
-            <version>${project.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

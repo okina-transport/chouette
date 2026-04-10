@@ -5,9 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -29,11 +31,8 @@ public class RoutePoint extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "route_points_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
-			parameters = {
-					@Parameter(name = "sequence_name", value = "route_points_id_seq"),
-					@Parameter(name = "increment_size", value = "100")})
-	@GeneratedValue(generator = "route_points_id_seq")
+	@SequenceGenerator(name = "route_points_id_seq", sequenceName = "route_points_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "route_points_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

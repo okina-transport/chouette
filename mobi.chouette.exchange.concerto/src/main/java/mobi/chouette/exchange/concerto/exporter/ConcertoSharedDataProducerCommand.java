@@ -13,6 +13,7 @@ import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.concerto.Constant;
@@ -26,7 +27,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.Timetable;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -84,14 +85,14 @@ public class ConcertoSharedDataProducerCommand implements Command, Constant {
 
 		LocalDate startDate;
 		if (parameters.getStartDate() != null) {
-			startDate = LocalDate.fromDateFields(parameters.getStartDate());
+			startDate = TimeUtil.toLocalDate(parameters.getStartDate());
 		} else {
-			startDate = new LocalDate();
+			startDate = LocalDate.now();
 		}
 
 		LocalDate endDate;
 		if (parameters.getEndDate() != null) {
-			endDate = LocalDate.fromDateFields(parameters.getEndDate());
+			endDate = TimeUtil.toLocalDate(parameters.getEndDate());
 		} else if (parameters.getPeriodDays() != null) {
 			endDate = startDate.plusDays(parameters.getPeriodDays());
 		} else {
@@ -101,7 +102,7 @@ public class ConcertoSharedDataProducerCommand implements Command, Constant {
 
 		for(Timetable t : collection.getTimetables().stream().collect(Collectors.toList())) {
 			if(t.getStartOfPeriod() == null || t.getEndOfPeriod() == null) {
-				List<org.joda.time.LocalDate> effectiveDates = t.getEffectiveDates();
+				List<java.time.LocalDate> effectiveDates = t.getEffectiveDates();
 				if(effectiveDates.size() > 0) {
 					Collections.sort(effectiveDates);
 					if(t.getStartOfPeriod() == null) {
@@ -117,8 +118,8 @@ public class ConcertoSharedDataProducerCommand implements Command, Constant {
 						t.setStartOfPeriod(t.getEndOfPeriod());
 					} else {
 						// Both empty
-						t.setStartOfPeriod(org.joda.time.LocalDate.now());
-						t.setEndOfPeriod(org.joda.time.LocalDate.now());
+						t.setStartOfPeriod(LocalDate.now());
+						t.setEndOfPeriod(LocalDate.now());
 					}
 				}
 			}

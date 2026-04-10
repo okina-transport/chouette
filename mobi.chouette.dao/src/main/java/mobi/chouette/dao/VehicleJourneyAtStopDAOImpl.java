@@ -2,7 +2,7 @@ package mobi.chouette.dao;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.VehicleJourneyAtStop;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Session;
 import org.jboss.jca.adapters.jdbc.WrappedConnection;
 import org.postgresql.PGConnection;

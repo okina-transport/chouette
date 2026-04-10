@@ -6,7 +6,6 @@ import mobi.chouette.dao.ReferentialDAO;
 import mobi.chouette.dao.StorageDAO;
 import mobi.chouette.model.Storage;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.joda.time.Instant;
 
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -15,6 +14,7 @@ import javax.ejb.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Optional;
 
 import static mobi.chouette.common.Constant.SUPERSPACE_PREFIX;
@@ -116,7 +116,7 @@ public class StorageService {
                 // there is no storage record in DB (shall not happen)
                 // use dump file last modification date as stored at date
                 Storage storage = new Storage();
-                storage.setStoredAt(new Instant().withMillis(dumpFilepath.toFile().lastModified()));
+                storage.setStoredAt(Instant.ofEpochMilli(dumpFilepath.toFile().lastModified()));
                 storage.setRestoredAt(Instant.now());
                 storageDAO.create(storage);
             }

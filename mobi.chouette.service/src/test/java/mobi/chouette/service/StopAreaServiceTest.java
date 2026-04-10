@@ -1,6 +1,5 @@
 package mobi.chouette.service;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.core.CoreException;
 import mobi.chouette.dao.ProviderDAO;
@@ -25,6 +24,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import javax.ejb.EJB;

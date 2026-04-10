@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.netex.parser;
 
 import java.text.ParseException;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.util.Referential;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.xmlpull.v1.XmlPullParser;
 
 @Log4j
@@ -161,15 +162,15 @@ public class TimetableParser implements Parser, Constant {
 				while (xpp.nextTag() == XmlPullParser.START_TAG) {
 					if (xpp.getName().equals("FromDate")) {
 						try {
-							period.setStartDate(NetexUtils.getLocalDate(xpp
+							period.setStartDate(ParserUtils.getLocalDate(xpp
 									.nextText()));
-						} catch (ParseException ignored) {
+						} catch (DateTimeParseException ignored) {
 						}
 					} else if (xpp.getName().equals("ToDate")) {
 						try {
-							period.setEndDate(NetexUtils.getLocalDate(xpp
+							period.setEndDate(ParserUtils.getLocalDate(xpp
 									.nextText()));
-						} catch (ParseException ignored) {
+						} catch (DateTimeParseException ignored) {
 						}
 					} else {
 						XPPUtil.skipSubTree(log, xpp);

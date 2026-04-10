@@ -9,7 +9,7 @@ import mobi.chouette.exchange.validation.report.ValidationReporter;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XdmNode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
 
 import javax.xml.xpath.XPathExpressionException;

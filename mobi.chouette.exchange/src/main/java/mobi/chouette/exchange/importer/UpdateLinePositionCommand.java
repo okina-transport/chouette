@@ -9,7 +9,7 @@ import mobi.chouette.dao.NetworkDAO;
 import mobi.chouette.exchange.LineComparator;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

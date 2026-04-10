@@ -1,7 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
@@ -15,12 +14,13 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import static mobi.chouette.common.Constant.CONFIGURATION;
 import static mobi.chouette.common.Constant.EXTERNAL_REF;
 
 public class CalendarFranceProducer extends NetexProducer {
 
-	private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
+	private static final KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
 
     public void produce(Context context, ExportableData exportableData, ExportableNetexData exportableNetexData) {
         int uniqueID = 0;
@@ -60,10 +60,10 @@ public class CalendarFranceProducer extends NetexProducer {
                         OperatingPeriodRefStructure operatingPeriodRef = netexFactory.createOperatingPeriodRefStructure();
                         // Create Operating period
                         String operatingPeriodId = netexDaytypeId.replace("DayType", "OperatingPeriod").replace(":LOC", "") + "-" + i + ":LOC";
-                        LocalDateTime toDate = TimeUtil.toLocalDateFromJoda(p.getEndDate()).atTime(23, 59, 59);
+                        LocalDateTime toDate =p.getEndDate().atTime(23, 59, 59);
                         OperatingPeriod operatingPeriod = new OperatingPeriod().withVersion(dayType.getVersion())
                                 .withId(operatingPeriodId)
-                                .withFromDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay())
+                                .withFromDate(p.getStartDate().atStartOfDay())
                                 .withToDate(toDate);
 
                         NetexProducerUtils.addAlternateIdentifier(operatingPeriod, operatingPeriodId);
@@ -85,7 +85,7 @@ public class CalendarFranceProducer extends NetexProducer {
                                 .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
                                 .withOrder(BigInteger.valueOf(i+1))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
-                                .withDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay());
+                                .withDate(p.getStartDate().atStartOfDay());
                     }
                     NetexProducerUtils.addAlternateIdentifier(dayTypeAssignment, dayTypeAssignmentId);
 
@@ -111,7 +111,7 @@ public class CalendarFranceProducer extends NetexProducer {
                             .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
                             .withOrder(BigInteger.valueOf(calendarIndex + 1))
                             .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
-                            .withDate(TimeUtil.toLocalDateFromJoda(day.getDate()).atStartOfDay());
+                            .withDate(day.getDate().atStartOfDay());
 
                     NetexProducerUtils.addAlternateIdentifier(dayTypeAssignment, dayTypeAssignmentId);
                     if (day.getIncluded() != null && !day.getIncluded()) {

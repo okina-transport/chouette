@@ -10,7 +10,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.Route;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 

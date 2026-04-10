@@ -11,9 +11,8 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ServiceCalendarFrameWriter extends AbstractWriter{
 	
@@ -21,7 +20,7 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 	
 	public static void write(Writer writer, ExportableData data ) throws IOException 
 	{
-		DateTimeFormatter shortDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTimeFormatter shortDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		ModelTranslator modelTranslator = new ModelTranslator();
 		Set<Timetable> timetables = data.getTimetables();
 
@@ -35,8 +34,8 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 			timetable.computeLimitOfPeriods();
 		writer.write("<ServiceCalendarFrame version=\"any\" id=\""+timetable.objectIdPrefix()+":ServiceCalendarFrame:SFC"+counter+"\">\n");
 		writer.write("  <ServiceCalendar version=\"any\" id=\""+timetable.objectIdPrefix()+":ServiceCalendar:SFC"+counter+"\">\n");
-		writer.write("    <FromDate>"+shortDateFormatter.print(timetable.getStartOfPeriod())+"</FromDate>\n");
-		writer.write("    <ToDate>"+shortDateFormatter.print(timetable.getEndOfPeriod())+"</ToDate>\n");
+		writer.write("    <FromDate>"+timetable.getStartOfPeriod().format(shortDateFormatter)+"</FromDate>\n");
+		writer.write("    <ToDate>"+timetable.getEndOfPeriod().format(shortDateFormatter)+"</ToDate>\n");
 		writer.write("  </ServiceCalendar>\n");
 		writer.write("  <!--- === Day Types ==== -->\n");
 		writer.write("  <dayTypes>\n");
@@ -73,8 +72,8 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 		writer.write("  <operatingDays>\n");
 		//    #foreach( $day in $timetable.peculiarDates )
 		for (LocalDate day : peculiarDates) {
-		writer.write("    <OperatingDay version=\"any\" id=\""+modelTranslator.netexMockId(timetable,"OperatingDay")+"D"+shortDateFormatter.print(day)+"\">\n");
-		writer.write("      <CalendarDate>"+shortDateFormatter.print(day)+"</CalendarDate>\n");
+		writer.write("    <OperatingDay version=\"any\" id=\""+modelTranslator.netexMockId(timetable,"OperatingDay")+"D"+day.format(shortDateFormatter)+"\">\n");
+		writer.write("      <CalendarDate>"+day.format(shortDateFormatter)+"</CalendarDate>\n");
 		writer.write("    </OperatingDay>\n");
 		}
 		//    #end		
@@ -88,9 +87,9 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 		writer.write("  <operatingPeriods>\n");
 		//    #foreach( $period in $timetable.effectivePeriods )
 		for (Period period : effectivePeriods) {
-		writer.write("    <OperatingPeriod version=\"any\" id=\""+modelTranslator.netexMockId(timetable,"OperatingPeriod")+"S"+shortDateFormatter.print(period.getStartDate())+"E"+shortDateFormatter.print(period.getEndDate())+"\">\n");
-		writer.write("      <FromDate>"+shortDateFormatter.print(period.getStartDate())+"</FromDate>\n");
-		writer.write("      <ToDate>"+shortDateFormatter.print(period.getEndDate())+"</ToDate>\n");
+		writer.write("    <OperatingPeriod version=\"any\" id=\""+modelTranslator.netexMockId(timetable,"OperatingPeriod")+"S"+period.getStartDate().format(shortDateFormatter)+"E"+period.getEndDate().format(shortDateFormatter)+"\">\n");
+		writer.write("      <FromDate>"+period.getStartDate().format(shortDateFormatter)+"</FromDate>\n");
+		writer.write("      <ToDate>"+period.getEndDate().format(shortDateFormatter)+"</ToDate>\n");
 		writer.write("    </OperatingPeriod>\n");
 		}
 		//    #end		
@@ -102,7 +101,7 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 		//    #foreach( $period in $timetable.effectivePeriods )
 		for (Period period : effectivePeriods) {
 		writer.write("    <DayTypeAssignment version=\"any\">\n");
-		writer.write("      <OperatingPeriodRef ref=\""+modelTranslator.netexMockId(timetable,"OperatingPeriod")+"S"+shortDateFormatter.print(period.getStartDate())+"E"+shortDateFormatter.print(period.getEndDate())+"\"/>\n");
+		writer.write("      <OperatingPeriodRef ref=\""+modelTranslator.netexMockId(timetable,"OperatingPeriod")+"S"+period.getStartDate().format(shortDateFormatter)+"E"+period.getEndDate().format(shortDateFormatter)+"\"/>\n");
 		writer.write("      <DayTypeRef version=\""+timetable.getObjectVersion()+"\" ref=\""+modelTranslator.netexId(timetable)+"\"/>\n");
 		writer.write("   </DayTypeAssignment>\n");
 		}
@@ -110,7 +109,7 @@ public class ServiceCalendarFrameWriter extends AbstractWriter{
 		//    #foreach( $day in $timetable.peculiarDates )
 		for (LocalDate day : peculiarDates) {
 		writer.write("    <DayTypeAssignment version=\"any\">\n");
-		writer.write("      <OperatingDayRef ref=\""+modelTranslator.netexMockId(timetable,"OperatingDay")+"D"+shortDateFormatter.print(day)+"\"/>\n");
+		writer.write("      <OperatingDayRef ref=\""+modelTranslator.netexMockId(timetable,"OperatingDay")+"D"+day.format(shortDateFormatter)+"\"/>\n");
 		writer.write("      <DayTypeRef version=\""+timetable.getObjectVersion()+"\" ref=\""+modelTranslator.netexId(timetable)+"\"/>\n");
 		writer.write("    </DayTypeAssignment>\n");
 		}

@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer.facilities;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.Accommodation;
 import org.rutebanken.netex.model.ServiceFacilitySet;
 

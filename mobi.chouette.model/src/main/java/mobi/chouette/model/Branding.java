@@ -4,7 +4,9 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -35,10 +37,8 @@ public class Branding extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "brandings_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "brandings_id_seq"),
-			@Parameter(name = "increment_size", value = "10")})
-	@GeneratedValue(generator = "brandings_id_seq")
+	@SequenceGenerator(name = "brandings_id_seq", sequenceName = "brandings_id_seq", allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brandings_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

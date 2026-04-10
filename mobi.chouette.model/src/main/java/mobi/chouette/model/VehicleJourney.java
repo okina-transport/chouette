@@ -8,12 +8,11 @@ import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.ServiceAlterationEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
-import javax.ws.rs.DefaultValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +38,8 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "vehicle_journeys_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "vehicle_journeys_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
-	@GeneratedValue(generator = "vehicle_journeys_id_seq")
+	@SequenceGenerator(name = "vehicle_journeys_id_seq", sequenceName = "vehicle_journeys_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_journeys_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -338,8 +335,7 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vehicle_journey_id", updatable = false)
+	@OneToMany(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<>(0);
 
 	/**
@@ -412,7 +408,6 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 	@Getter

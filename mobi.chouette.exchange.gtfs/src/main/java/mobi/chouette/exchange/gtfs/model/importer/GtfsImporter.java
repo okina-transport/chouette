@@ -3,7 +3,7 @@ package mobi.chouette.exchange.gtfs.model.importer;
 import mobi.chouette.exchange.gtfs.model.*;
 import mobi.chouette.exchange.gtfs.model.fares.GtfsFareV2File;
 import mobi.chouette.exchange.gtfs.model.importer.GtfsException.ERROR;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

@@ -25,12 +25,11 @@ import mobi.chouette.model.iev.Link;
 import mobi.chouette.model.iev.Stat;
 import mobi.chouette.model.type.TadEnum;
 import mobi.chouette.model.util.Referential;
-import mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.scheduler.Scheduler;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
@@ -467,7 +466,6 @@ public class JobServiceManager {
 		referentials.remove(referential);
 
 		// remove sequences data for this tenant
-		ChouetteIdentifierGenerator.deleteTenant(referential);
 
 	}
 
@@ -613,7 +611,7 @@ public class JobServiceManager {
 				// filter on update time if given, otherwise don't return
 				// deleted jobs
 				boolean versionZeroCondition = (version == 0) && job.getStatus().ordinal() < STATUS.DELETED.ordinal();
-				boolean versionNonZeroCondition = (version > 0) && version < job.getUpdated().toDate().getTime();
+				boolean versionNonZeroCondition = (version > 0) && version < TimeUtil.toEpochMilliseconds(job.getUpdated());
 
 				return versionZeroCondition || versionNonZeroCondition;
 			}

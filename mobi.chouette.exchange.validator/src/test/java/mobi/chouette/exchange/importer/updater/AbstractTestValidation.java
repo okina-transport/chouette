@@ -45,7 +45,7 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 			try {
 				initialContext = new InitialContext();
 			} catch (NamingException e) {
-				e.printStackTrace();
+				log.error(e.getMessage(), e);
 			}
 
 

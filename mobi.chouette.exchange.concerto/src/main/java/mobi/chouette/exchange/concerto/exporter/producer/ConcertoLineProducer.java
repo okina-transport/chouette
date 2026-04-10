@@ -13,7 +13,7 @@ import mobi.chouette.exchange.concerto.model.ConcertoLine;
 import mobi.chouette.exchange.concerto.model.ConcertoObjectId;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporterInterface;
 import mobi.chouette.model.Line;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.UUID;
 

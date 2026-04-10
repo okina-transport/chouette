@@ -12,6 +12,7 @@ import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
@@ -28,7 +29,7 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -152,8 +153,8 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 
-		LocalDate startDate = configuration.getStartDate() == null ? null : new LocalDate(configuration.getStartDate());
-		LocalDate endDate = configuration.getEndDate() == null ? null : new LocalDate(configuration.getEndDate());
+		LocalDate startDate = configuration.getStartDate() == null ? null : TimeUtil.toLocalDate(configuration.getStartDate());
+		LocalDate endDate = configuration.getEndDate() == null ? null : TimeUtil.toLocalDate(configuration.getEndDate());
 
 		for (List<Timetable> tms : timetables.values()) {
 			calendarProducer.save(tms, prefix, configuration.isKeepOriginalId(), startDate, endDate);

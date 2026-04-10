@@ -13,6 +13,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.model.Line;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 
@@ -26,6 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 
+@Slf4j
 public class LineDaoTest extends Arquillian
 {
 	@EJB 
@@ -67,14 +69,17 @@ public class LineDaoTest extends Arquillian
 		trx.begin();
 
 		em.createNativeQuery("ALTER SEQUENCE chouette_gui.lines_id_seq RESTART WITH 1").executeUpdate();
+		em.createNativeQuery("ALTER SEQUENCE chouette_gui.lines_id_seq INCREMENT BY 1").executeUpdate();
 
 		trx.commit();
 
 		for (int i = 0; i < 300; i++)
 		{
+			Long expected = (long) (i + 10);
 			Line l = createLine();
 			lineDao.create(l);
-			Assert.assertEquals(l.getId(), Long.valueOf(i+1),"line id");
+			log.info("Created line: {}", l.getId());
+			Assert.assertEquals(l.getId(), expected,"line id");
 		}
 	}
 	

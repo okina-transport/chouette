@@ -9,7 +9,9 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -19,11 +21,8 @@ public class Variations extends NeptuneObject {
 
     @Getter
     @Setter
-    @GenericGenerator(name = "variations_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
-            parameters = {
-                    @Parameter(name = "sequence_name", value = "variations_id_seq"),
-                    @Parameter(name = "increment_size", value = "10")})
-    @GeneratedValue(generator = "variations_id_seq")
+    @SequenceGenerator(name = "variations_id_seq", sequenceName = "variations_id_seq", allocationSize = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "variations_id_seq")
     @Id
     @Column(name = "id", nullable = false)
     protected Long id;

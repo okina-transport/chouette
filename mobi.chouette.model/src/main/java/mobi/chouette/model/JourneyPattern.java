@@ -5,25 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.ws.rs.DefaultValue;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -34,7 +16,7 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.SectionStatusEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.wololo.geojson.GeoJSON;
@@ -56,11 +38,8 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "journey_patterns_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
-		parameters = {
-			@Parameter(name = "sequence_name", value = "journey_patterns_id_seq"),
-			@Parameter(name = "increment_size", value = "20") })
-	@GeneratedValue(generator = "journey_patterns_id_seq")
+	@SequenceGenerator(name = "journey_patterns_id_seq", sequenceName = "journey_patterns_id_seq", allocationSize = 20)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "journey_patterns_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -132,7 +111,6 @@ public class JourneyPattern extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 	/**

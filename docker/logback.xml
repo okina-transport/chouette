@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        "serviceContext": {
+                        "service": "chouette"
+                        },
+                        "message": "%message\n%ex{full}",
+                        "severity": "%level",
+                        "reportLocation": {
+                        "filePath": "%logger",
+                        "lineNumber": "%line",
+                        "functionName": "%method"
+                        }
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+    <logger name="com" level="INFO"/>
+    <logger name="no" level="INFO"/>
+    <logger name="org" level="INFO"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="INFO"/>
+    </root>
+</configuration>

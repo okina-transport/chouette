@@ -3,6 +3,7 @@ package mobi.chouette.exchange.importer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.ObjectIdUtil;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.ProviderDAO;
@@ -10,12 +11,10 @@ import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.Provider;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -27,8 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,13 +45,13 @@ public class GenerateIneoVJMappingCsv implements Command {
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/ineo/");
     protected static final String[] CSV_HEADERS = {"dateyyyyMMdd", "timeHHmmss", "lineNumber",
             "routeDirection", "originalStopId", "originalParentStopId", "vehicleJourneyId", "position", "datasetId"};
-    private static final DateTimeZone ZONE_ID = DateTimeZone.forID("Europe/Paris");
+    private static final ZoneId ZONE_ID = ZoneId.of("Europe/Paris");
 
     static {
         CommandFactory.factories.put(GenerateIneoVJMappingCsv.class.getName(), new GenerateIneoVJMappingCsv.DefaultCommandFactory());
     }
 
-    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
+    private final DateTimeFormatter dateFormatYYYYMMDD = DateTimeFormatter.ofPattern("yyyyMMdd");
     @EJB
     VehicleJourneyDAO vjDAO;
     @EJB
@@ -86,7 +86,7 @@ public class GenerateIneoVJMappingCsv implements Command {
                     // certain passages associés aux courses de la veille peuvent avoir lieu le jour J
                     // ex: bus qui commence sa course à 23h30 et la termine le lendemain à 1h du matin
                     yesterdayEntities = yesterdayEntities.stream()
-                            .filter(e -> e.getDate().equals(today.toDate()))
+                            .filter(e -> e.getDate().equals(TimeUtil.toDate(today)))
                             .collect(Collectors.toList());
                 }
                 List<IneoVJMapping> todayEntities = vjDAO.getIneoVJMappingData(today);
@@ -104,7 +104,7 @@ public class GenerateIneoVJMappingCsv implements Command {
 
                 for (IneoVJMapping entity : all) {
                     csvPrinter.printRecord(
-                            dateFormatyyyyMMdd.format(entity.getDate()),
+                            entity.getDate().format(dateFormatYYYYMMDD),
                             entity.getTime().format(DTF_HHMMSS),
                             entity.getLineNumber(),
                             entity.getRouteDirection(),

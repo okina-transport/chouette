@@ -2,15 +2,13 @@ package mobi.chouette.exchange.netexprofile;
 
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.model.type.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static mobi.chouette.common.TimeUtil.toLocalTimeFromJoda;
 
 @Log4j
 public class ConversionUtil {
@@ -403,9 +401,9 @@ public class ConversionUtil {
 
 	}
 
-	public static OffsetTime toOffsetTimeUtc(org.joda.time.LocalTime time) {
+	public static OffsetTime toOffsetTimeUtc(java.time.LocalTime time) {
 		return time == null ? null
-				: toLocalTimeFromJoda(time).atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
+				: time.atOffset(ConversionUtil.getZoneOffset(ConversionUtil.LOCAL_ZONE_ID)).withOffsetSameInstant(ZoneOffset.UTC);
 	}
 
 	public static final ZoneId LOCAL_ZONE_ID = ZoneId.of("Europe/Paris");

@@ -4,7 +4,7 @@ import mobi.chouette.model.FirstOrLastJourneyInfo;
 import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.TheoreticalStopMonitoringInfo;
 import mobi.chouette.model.VehicleJourney;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.List;
 

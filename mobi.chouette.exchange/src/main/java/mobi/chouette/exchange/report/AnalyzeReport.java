@@ -13,7 +13,7 @@ import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.*;
 import java.io.PrintStream;

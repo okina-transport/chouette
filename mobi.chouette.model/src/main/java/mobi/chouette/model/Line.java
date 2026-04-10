@@ -13,12 +13,11 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
-import javax.ws.rs.DefaultValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +37,8 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "lines_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "lines_id_seq"),
-			@Parameter(name = "increment_size", value = "10") })
-	@GeneratedValue(generator = "lines_id_seq")
+	@SequenceGenerator(name = "lines_id_seq", sequenceName = "lines_id_seq", allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lines_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -497,7 +494,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 	@Getter

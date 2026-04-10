@@ -12,9 +12,9 @@ import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.LimitationStatusEnum;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AccessibilityLimitation;
 import org.rutebanken.netex.model.*;
@@ -146,7 +146,7 @@ public class ServiceJourneyFranceProducer {
 
                 if (departureTime != null) {
                     NetexTimeConversionUtil.populatePassingTimeUtc(timetabledPassingTime, false, vehicleJourneyAtStop);
-                    timetabledPassingTime.setDepartureTime(TimeUtil.toLocalTimeFromJoda(departureTime));
+                    timetabledPassingTime.setDepartureTime(departureTime);
                     if (vehicleJourneyAtStop.getDepartureDayOffset() > 0) {
                         timetabledPassingTime.setDepartureDayOffset(BigInteger.valueOf(vehicleJourneyAtStop.getDepartureDayOffset()));
                     }
@@ -208,9 +208,9 @@ public class ServiceJourneyFranceProducer {
         for (JourneyFrequency journeyFrequency : vehicleJourney.getJourneyFrequencies()) {
 
             HeadwayJourneyGroup headwayJourneyGroup = netexFactory.createHeadwayJourneyGroup();
-            headwayJourneyGroup.setScheduledHeadwayInterval(TimeUtil.toDurationFromJodaDuration(journeyFrequency.getScheduledHeadwayInterval()));
-            headwayJourneyGroup.setFirstDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getFirstDepartureTime()));
-            headwayJourneyGroup.setLastDepartureTime(TimeUtil.toLocalTimeFromJoda(journeyFrequency.getLastDepartureTime()));
+            headwayJourneyGroup.setScheduledHeadwayInterval(TimeUtil.toXmlDuration(journeyFrequency.getScheduledHeadwayInterval()));
+            headwayJourneyGroup.setFirstDepartureTime(journeyFrequency.getFirstDepartureTime());
+            headwayJourneyGroup.setLastDepartureTime(journeyFrequency.getLastDepartureTime());
 
             headwayJourneyGroup.setId(journeyFrequency.getObjectId());
             headwayJourneyGroup.setVersion("any");

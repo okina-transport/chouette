@@ -1,12 +1,10 @@
 package mobi.chouette.exchange.neptune.exporter.producer;
 
-import java.util.Calendar;
-
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
-
-import org.joda.time.LocalDateTime;
 import org.trident.schema.trident.PTNetworkType;
+
+import java.time.LocalDateTime;
 
 public class PTNetworkProducer extends
       AbstractJaxbNeptuneProducer<PTNetworkType, Network>

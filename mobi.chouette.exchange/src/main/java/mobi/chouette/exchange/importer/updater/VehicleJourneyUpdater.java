@@ -328,7 +328,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 			if (timetable == null) {
 				timetable = ObjectFactory.getTimetable(cache, item.getObjectId());
 			}
-			timetable.addVehicleJourney(oldValue);
+			if (!oldValue.getTimetables().contains(timetable)) {
+				oldValue.getTimetables().add(timetable);
+			}
 		}
 
 		Collection<Pair<Timetable, Timetable>> modifiedTimetable = CollectionUtil.intersection(

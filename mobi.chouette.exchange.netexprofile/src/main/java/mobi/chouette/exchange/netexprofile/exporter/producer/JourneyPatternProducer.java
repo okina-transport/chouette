@@ -15,7 +15,7 @@ import mobi.chouette.model.type.AlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import mobi.chouette.model.type.BoardingPossibilityEnum;
 import net.opengis.gml._3.LineStringType;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
@@ -129,8 +129,8 @@ public class JourneyPatternProducer extends NetexProducer implements NetexEntity
 					if (!CollectionUtils.isEmpty(bookingArrangement.getBookingMethods())) {
 						netexBookingArrangement.withBookingMethods(bookingArrangement.getBookingMethods().stream().map(ConversionUtil::toBookingMethod).collect(Collectors.toList()));
 					}
-					netexBookingArrangement.setLatestBookingTime(TimeUtil.toLocalTimeFromJoda(bookingArrangement.getLatestBookingTime()));
-					netexBookingArrangement.setMinimumBookingPeriod(TimeUtil.toDurationFromJodaDuration(bookingArrangement.getMinimumBookingPeriod()));
+					netexBookingArrangement.setLatestBookingTime(bookingArrangement.getLatestBookingTime());
+					netexBookingArrangement.setMinimumBookingPeriod(TimeUtil.toXmlDuration(bookingArrangement.getMinimumBookingPeriod()));
 
 //					netexBookingArrangement.setBookingContact(contactStructureProducer.produce(bookingArrangement.getBookingContact()));
 //					stopPointInJourneyPattern.setBookingArrangements(netexBookingArrangement);

@@ -12,7 +12,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.rutebanken.netex.client.TokenService;
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import java.util.Set;
 

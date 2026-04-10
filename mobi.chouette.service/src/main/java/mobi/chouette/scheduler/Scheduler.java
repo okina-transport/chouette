@@ -34,7 +34,7 @@ import mobi.chouette.service.JobService;
 import mobi.chouette.service.JobServiceManager;
 import mobi.chouette.service.ServiceException;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * @author michel

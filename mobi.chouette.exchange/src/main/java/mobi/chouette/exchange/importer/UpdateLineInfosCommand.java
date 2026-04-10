@@ -16,8 +16,8 @@ import mobi.chouette.exchange.parameters.CleanModeEnum;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
-import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalDateTime;
+import org.apache.commons.collections4.CollectionUtils;
+import java.time.LocalDateTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 

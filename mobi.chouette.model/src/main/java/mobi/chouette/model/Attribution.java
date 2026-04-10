@@ -3,11 +3,9 @@ package mobi.chouette.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import javax.ws.rs.DefaultValue;
 
 @Entity
 @Table(name = "attributions")

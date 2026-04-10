@@ -1,8 +1,7 @@
 package mobi.chouette.common;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 
 public class ObjectIdUtil {
 
@@ -14,7 +13,7 @@ public class ObjectIdUtil {
      * @param prefix optional prefix
      * @param keepOriginalId keep original id with or without prefix
      */
-    public static String toGtfsId(String neptuneId, @Nullable String prefix, boolean keepOriginalId) {
+    public static String toGtfsId(String neptuneId, String prefix, boolean keepOriginalId) {
         if (keepOriginalId && StringUtils.isEmpty(prefix)) {
             return neptuneId;
         }

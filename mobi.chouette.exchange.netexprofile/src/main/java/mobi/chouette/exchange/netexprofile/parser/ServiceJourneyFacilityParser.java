@@ -9,9 +9,9 @@ import mobi.chouette.model.VehicleJourneyFacility;
 import mobi.chouette.model.type.FacilityTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.rutebanken.netex.model.*;
 
 import java.util.ArrayList;

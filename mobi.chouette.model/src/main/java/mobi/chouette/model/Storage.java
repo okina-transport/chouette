@@ -3,9 +3,10 @@ package mobi.chouette.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.joda.time.Instant;
+
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "storage")

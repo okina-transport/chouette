@@ -9,11 +9,11 @@ import javax.ws.rs.ext.ParamConverter;
 
 public class DateParameterConverter implements ParamConverter<Date> {
 
-    public static final String format = "yyyy-MM-dd"; 
+    public static final String FORMAT = "yyyy-MM-dd";
 
     @Override
     public Date fromString(String string) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
         try {
             return simpleDateFormat.parse(string);
         } catch (ParseException ex) {
@@ -23,7 +23,7 @@ public class DateParameterConverter implements ParamConverter<Date> {
 
     @Override
     public String toString(Date t) {
-        return new SimpleDateFormat(format).format(t);
+        return new SimpleDateFormat(FORMAT).format(t);
     }
 
 }

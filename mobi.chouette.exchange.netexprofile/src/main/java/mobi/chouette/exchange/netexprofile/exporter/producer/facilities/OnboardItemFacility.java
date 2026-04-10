@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer.facilities;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.BoardingPermissionEnumeration;
 import org.rutebanken.netex.model.OnboardStay;
 import org.rutebanken.netex.model.OnboardStays_RelStructure;

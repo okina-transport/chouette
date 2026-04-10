@@ -10,11 +10,10 @@ import mobi.chouette.exchange.importer.utils.FileUtils;
 import mobi.chouette.model.Provider;
 import mobi.chouette.model.TheoreticalStopMonitoringInfo;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -24,8 +23,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +58,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
         CommandFactory.factories.put(GenerateTheoreticalStopMonitoringInfo.class.getName(), new GenerateTheoreticalStopMonitoringInfo.DefaultCommandFactory());
     }
 
-    private final DateFormat dateFormatyyyyMMdd = new SimpleDateFormat("yyyyMMdd");
+    private final DateTimeFormatter dateFormatYYYYMMDD = DateTimeFormatter.ofPattern("yyyyMMdd");
     @EJB
     private VehicleJourneyDAO vjDAO;
     @EJB
@@ -119,7 +118,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
             List<TheoreticalStopMonitoringInfo> yesterdayEntities = vjDAO.getAllTheoreticalStopMonitoringInfoByDate(today.minusDays(1));
             if (CollectionUtils.isNotEmpty(yesterdayEntities)) {
                 yesterdayEntities = yesterdayEntities.stream()
-                        .filter(e -> e.getDate().equals(today.toDate()))
+                        .filter(e -> e.getDate().equals(today))
                         .collect(Collectors.toList());
             }
             List<TheoreticalStopMonitoringInfo> todayEntities = vjDAO.getAllTheoreticalStopMonitoringInfoByDate(today);
@@ -139,7 +138,7 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
 
             for (TheoreticalStopMonitoringInfo entity : all) {
                 csvPrinter.printRecord(
-                        dateFormatyyyyMMdd.format(entity.getDate()),
+                        entity.getDate().format(dateFormatYYYYMMDD),
                         entity.getMonitoringRef(),
                         entity.getStopPointName(),
                         entity.getMonitoredVehicleJourneyRef(),

@@ -15,8 +15,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.rutebanken.netex.client.TokenService;
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -52,7 +51,7 @@ public class MdmClient {
         return getIdentifiers(STOPS_RESOURCE, superId, STOP_PLACE);
     }
 
-    private @NonNull Map<String, String> getIdentifiers(String targetResource, Set<String> superId, String type) {
+    private Map<String, String> getIdentifiers(String targetResource, Set<String> superId, String type) {
         Map<String, String> importedIdSuperIdMapping = new HashMap<>();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder uriBuilder = new URIBuilder(StringUtils.appendIfMissing(MDM_URL, "/") + targetResource);
