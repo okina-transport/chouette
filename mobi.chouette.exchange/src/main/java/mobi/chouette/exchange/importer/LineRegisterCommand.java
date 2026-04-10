@@ -25,11 +25,12 @@ import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.NonUniqueObjectException;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -171,6 +172,7 @@ public class LineRegisterCommand implements Command {
 				}
 
 				searchEmptyOriginalStopIds(referential, oldValue);
+
 				lineDAO.create(oldValue);
 
 				findRefToLoc(oldValue);
@@ -206,7 +208,7 @@ public class LineRegisterCommand implements Command {
 				}
 				result = SUCCESS;
 			} catch (Exception ex) {
-				log.error(ex.getMessage());
+				log.error(ex.getMessage(), ex);
 				ActionReporter reporter = ActionReporter.Factory.getInstance();
 				reporter.addObjectReport(context, newValue.getObjectId(), OBJECT_TYPE.LINE, NamingUtil.getName(newValue), OBJECT_STATE.ERROR, IO_TYPE.INPUT);
 				if (ex.getCause() != null) {
@@ -364,8 +366,8 @@ public class LineRegisterCommand implements Command {
 	}
 
 	protected void writeVjas(StringWriter buffer, VehicleJourney vehicleJourney, StopPoint stopPoint, VehicleJourneyAtStop vehicleJourneyAtStop, boolean keepBoardingAlighting) {
-		DateTimeFormatter timeFormat = DateTimeFormat.forPattern("HH:mm:ss");
-		DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+		DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 		IdGeneration.populateObjectId(vehicleJourney);
 
@@ -379,7 +381,7 @@ public class LineRegisterCommand implements Command {
 		buffer.write(vehicleJourneyAtStop.getObjectVersion().toString());
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getCreationTime() != null) {
-			buffer.write(dateTimeFormat.print(vehicleJourneyAtStop.getCreationTime()));
+			buffer.write(dateTimeFormat.format(vehicleJourneyAtStop.getCreationTime()));
 		} else {
 			buffer.write(NULL);
 		}
@@ -395,12 +397,12 @@ public class LineRegisterCommand implements Command {
 		buffer.write(stopPoint.getId().toString());
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getArrivalTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getArrivalTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getArrivalTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);
 		if (vehicleJourneyAtStop.getDepartureTime() != null)
-			buffer.write(timeFormat.print(vehicleJourneyAtStop.getDepartureTime()));
+			buffer.write(timeFormat.format(vehicleJourneyAtStop.getDepartureTime()));
 		else
 			buffer.write(NULL);
 		buffer.append(SEP);

@@ -22,7 +22,7 @@ import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.*;
 

@@ -10,9 +10,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -34,11 +36,8 @@ public class ScheduledStopPoint extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "scheduled_stop_points_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
-			parameters = {
-					@Parameter(name = "sequence_name", value = "scheduled_stop_points_id_seq"),
-					@Parameter(name = "increment_size", value = "100")})
-	@GeneratedValue(generator = "scheduled_stop_points_id_seq")
+	@SequenceGenerator(name = "scheduled_stop_points_id_seq", sequenceName = "scheduled_stop_points_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scheduled_stop_points_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -66,6 +65,7 @@ public class ScheduledStopPoint extends NeptuneIdentifiedObject {
 	@OneToMany(mappedBy = "scheduledStopPoint")
 	private List<StopPoint> stopPoints = new ArrayList<>(0);
 
+	@Getter
 	@Column(name = "stop_area_objectid_key")
 	private String containedInStopAreaObjectId;
 

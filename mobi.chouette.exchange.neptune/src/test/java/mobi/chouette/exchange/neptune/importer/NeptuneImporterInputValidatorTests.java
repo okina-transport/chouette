@@ -11,7 +11,7 @@ public class NeptuneImporterInputValidatorTests
 {
 
 	@Test(groups = { "InputValidator" }, description = "test good inputs")
-	public void verifyGoodInputs() throws Exception
+	public void verifyGoodInputs()
 	{
 		NeptuneImporterInputValidator validator = new NeptuneImporterInputValidator();
 		NeptuneImportParameters parameters = new NeptuneImportParameters();
@@ -34,7 +34,7 @@ public class NeptuneImporterInputValidatorTests
 	}
 
 	@Test(groups = { "InputValidator" }, description = "test bad inputs")
-	public void verifyBadInputs() throws Exception
+	public void verifyBadInputs()
 	{
 		NeptuneImporterInputValidator validator = new NeptuneImporterInputValidator();
 

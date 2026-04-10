@@ -7,25 +7,19 @@ import mobi.chouette.exchange.netexprofile.JobDataTest;
 import mobi.chouette.exchange.netexprofile.jaxb.NetexXMLProcessingHelperFactory;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.model.*;
-import mobi.chouette.model.DestinationDisplay;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.Network;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.Train;
-import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.PTDirectionEnum;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.exchange.netexprofile.Constant.EXPORTABLE_NETEX_DATA;
@@ -129,27 +123,27 @@ public class NetexSNCFMissingQuayTest {
         Timetable timetable = new Timetable();
         timetable.setObjectId("TEST:Timetable:t1");
         Period period = new Period();
-        period.setStartDate(new LocalDate("2020-01-01"));
-        period.setEndDate(new LocalDate("2020-12-31"));
+        period.setStartDate(LocalDate.of(2020, 1, 1));
+        period.setEndDate(LocalDate.of(2020,12,31));
         timetable.setPeriods(Collections.singletonList(period));
 
         // VehicleJourneyAtStop
         VehicleJourneyAtStop vjas1 = new VehicleJourneyAtStop();
         vjas1.setObjectId("TEST:TimetablePassingTime:tpt1");
-        vjas1.setDepartureTime(new LocalTime(7, 0, 0));
-        vjas1.setArrivalTime(new LocalTime(7, 0, 0));
+        vjas1.setDepartureTime(LocalTime.of(7, 0, 0));
+        vjas1.setArrivalTime(LocalTime.of(7, 0, 0));
         vjas1.setStopPoint(sp1);
 
         VehicleJourneyAtStop vjas2 = new VehicleJourneyAtStop();
         vjas2.setObjectId("TEST:TimetablePassingTime:tpt2");
-        vjas2.setDepartureTime(new LocalTime(7, 15, 0));
-        vjas2.setArrivalTime(new LocalTime(7, 15, 0));
+        vjas2.setDepartureTime(LocalTime.of(7, 15, 0));
+        vjas2.setArrivalTime(LocalTime.of(7, 15, 0));
         vjas2.setStopPoint(sp2);
 
         VehicleJourneyAtStop vjas3 = new VehicleJourneyAtStop();
         vjas3.setObjectId("TEST:TimetablePassingTime:tpt3");
-        vjas3.setDepartureTime(new LocalTime(7, 30, 0));
-        vjas3.setArrivalTime(new LocalTime(7, 30, 0));
+        vjas3.setDepartureTime(LocalTime.of(7, 30, 0));
+        vjas3.setArrivalTime(LocalTime.of(7, 30, 0));
         vjas3.setStopPoint(sp3);
 
         List<VehicleJourneyAtStop> vjasList = Arrays.asList(vjas1, vjas2, vjas3);

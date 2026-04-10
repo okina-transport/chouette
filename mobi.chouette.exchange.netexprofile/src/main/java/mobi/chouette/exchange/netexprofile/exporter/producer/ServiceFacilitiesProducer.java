@@ -3,7 +3,7 @@ package mobi.chouette.exchange.netexprofile.exporter.producer;
 import mobi.chouette.exchange.netexprofile.exporter.producer.facilities.FacilityProducerFactory;
 import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.VehicleJourneyFacility;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.ServiceFacilitySet;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;

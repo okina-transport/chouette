@@ -12,9 +12,10 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
+import mobi.chouette.common.TimeUtil;
 import org.apache.commons.io.FileUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeGroups;
@@ -28,7 +29,7 @@ import org.testng.annotations.Test;
 public class DublinCoreMetadataTest 
 {
 	protected DublinCoreFileWriter fileWriter;
-	private  File d = new File("target/referential/test");
+	private final File d = new File("target/referential/test");
 
 
 	@BeforeGroups  (groups = { "dc" })
@@ -49,18 +50,18 @@ public class DublinCoreMetadataTest
 	private Metadata initMetadata() throws MalformedURLException
 	{
 		Calendar date = Calendar.getInstance();
-		date.set(2015,Calendar.JANUARY,15,13,00);
+		date.set(2015,Calendar.JANUARY,15,13,0);
 		Calendar start = Calendar.getInstance();
-		start.set(2014,Calendar.DECEMBER,01,13,00);
+		start.set(2014,Calendar.DECEMBER,1,13,0);
 		Calendar end = Calendar.getInstance();
-		end.set(2015,Calendar.MARCH,31,13,00);
+		end.set(2015,Calendar.MARCH,31,13,0);
 		Metadata data = new Metadata();
 		data.setCreator("the creator");
-		data.setDate(LocalDateTime.fromCalendarFields(date));
+		data.setDate(TimeUtil.toLocalDateTime(date));
 		data.setPublisher("the publisher");
 		data.setFormat("the format");
 		data.getSpatialCoverage().update(3.45678, 45.78965);
-		data.getTemporalCoverage().update(LocalDate.fromCalendarFields(start), LocalDate.fromCalendarFields(end));
+		data.getTemporalCoverage().update(TimeUtil.toLocalDate(start), TimeUtil.toLocalDate(end));
 		data.setTitle("the title");
 		data.setRelation(new URL("http://the.relation.com"));
 		return data;
@@ -80,7 +81,7 @@ public class DublinCoreMetadataTest
 		String s = FileUtils.readFileToString(f);
 		Reporter.log(s);
 		String model = FileUtils.readFileToString(new File("src/test/data/metadata/metadata_chouette_dc_1.xml"));
-		Assert.assertTrue(s.equals(model), "metadata must be as expected in metadata_chouette_dc_1.xml");
+        Assert.assertEquals(model, s, "metadata must be as expected in metadata_chouette_dc_1.xml");
 
 	}
 
@@ -102,7 +103,7 @@ public class DublinCoreMetadataTest
 		String s = FileUtils.readFileToString(f);
 		Reporter.log(s);
 		String model = FileUtils.readFileToString(new File("src/test/data/metadata/metadata_chouette_dc_2.xml"));
-		Assert.assertTrue(s.equals(model), "metadata must be as expected in metadata_chouette_dc_2.xml");
+        Assert.assertEquals(model, s, "metadata must be as expected in metadata_chouette_dc_2.xml");
 
 	}
 

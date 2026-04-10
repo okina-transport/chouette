@@ -379,7 +379,10 @@ public class ValidationJourneyPatterns extends AbstractTestValidation {
 		Line line1 = beans.get(0);
 		
 		JourneyPattern jp = line1.getRoutes().get(0).getJourneyPatterns().get(0);
-		
+
+		if (jp.getRouteSections().isEmpty()) {
+			utx.rollback();
+		}
 		RouteSection rs = jp.getRouteSections().get(0);
 		
 		

@@ -12,7 +12,7 @@ import mobi.chouette.exchange.concerto.Constant;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporter;
 import mobi.chouette.exchange.metadata.Metadata;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import javax.naming.InitialContext;
 import java.io.IOException;

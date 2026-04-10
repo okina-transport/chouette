@@ -9,7 +9,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.Collection;
 

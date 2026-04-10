@@ -3,6 +3,7 @@ package mobi.chouette.exchange.gtfs.exporter.producer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.gtfs.exporter.producer.mock.GtfsExporterMock;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendar;
 import mobi.chouette.exchange.gtfs.model.GtfsCalendarDate;
@@ -15,7 +16,7 @@ import mobi.chouette.model.Period;
 import mobi.chouette.model.Timetable;
 import mobi.chouette.model.type.DayTypeEnum;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -42,9 +43,9 @@ public class GtfsExportCalendarProducerTests
       neptuneObject.setComment("name");
       neptuneObject.addDayType(DayTypeEnum.Monday);
       neptuneObject.addDayType(DayTypeEnum.Saturday);
-      LocalDate startDate = LocalDate.fromCalendarFields(c);
+      LocalDate startDate = TimeUtil.toLocalDate(c);
       c.add(Calendar.DATE, 15);
-      LocalDate endDate = LocalDate.fromCalendarFields(c);
+      LocalDate endDate = TimeUtil.toLocalDate(c);
       Period period = new Period(startDate, endDate);
       neptuneObject.addPeriod(period);
 
@@ -83,7 +84,7 @@ public class GtfsExportCalendarProducerTests
       neptuneObject.setObjectId("GTFS:Timetable:1234");
       neptuneObject.setComment("name");
       for (int i = 0; i < 5; i++) {
-         neptuneObject.addCalendarDay(new CalendarDay(LocalDate.fromCalendarFields(c), true));
+         neptuneObject.addCalendarDay(new CalendarDay(TimeUtil.toLocalDate(c), true));
          c.add(Calendar.DATE, 3);
       }
       Reporter.log(neptuneObject.toString());
@@ -103,7 +104,7 @@ public class GtfsExportCalendarProducerTests
       for (GtfsCalendarDate gtfsCalendarDate : mock.getExportedCalendarDates())
       {
          Reporter.log(CalendarDateExporter.CONVERTER.to(context,gtfsCalendarDate));
-         LocalDate date = LocalDate.fromCalendarFields(c);
+         LocalDate date = TimeUtil.toLocalDate(c);
          c.add(Calendar.DATE, 3);
          Assert.assertEquals(gtfsCalendarDate.getServiceId(), toGtfsId(neptuneObject.getObjectId()), "service id must be correcty set");
          Assert.assertEquals(gtfsCalendarDate.getDate(), date, "calendar date must be correctly");
@@ -130,14 +131,14 @@ public class GtfsExportCalendarProducerTests
       neptuneObject.addDayType(DayTypeEnum.Thursday);
       neptuneObject.addDayType(DayTypeEnum.Friday);
       neptuneObject.addDayType(DayTypeEnum.Sunday);
-      LocalDate startDate = LocalDate.fromCalendarFields(c);
+      LocalDate startDate = TimeUtil.toLocalDate(c);
       c.add(Calendar.DATE, 15);
-      LocalDate endDate =  LocalDate.fromCalendarFields(c);
+      LocalDate endDate =  TimeUtil.toLocalDate(c);
       Period period = new Period(startDate, endDate);
       neptuneObject.addPeriod(period);
       c.add(Calendar.DATE, 15);
       for (int i = 0; i < 5; i++) {
-         LocalDate date = LocalDate.fromCalendarFields(c);
+         LocalDate date = TimeUtil.toLocalDate(c);
          neptuneObject.addCalendarDay(new CalendarDay(date, true));
          c.add(Calendar.DATE, 3);
       }
@@ -168,7 +169,7 @@ public class GtfsExportCalendarProducerTests
       for (GtfsCalendarDate gtfsCalendarDate : mock.getExportedCalendarDates())
       {
          Reporter.log(CalendarDateExporter.CONVERTER.to(context,gtfsCalendarDate));
-         LocalDate date = LocalDate.fromCalendarFields(c);
+         LocalDate date = TimeUtil.toLocalDate(c);
          c.add(Calendar.DATE, 3);
          Assert.assertEquals(gtfsCalendarDate.getServiceId(), toGtfsId(neptuneObject.getObjectId()), "service id must be correcty set");
          Assert.assertEquals(gtfsCalendarDate.getDate(), date, "calendar date must be correctly");
@@ -196,15 +197,15 @@ public class GtfsExportCalendarProducerTests
       neptuneObject.addDayType(DayTypeEnum.Friday);
       neptuneObject.addDayType(DayTypeEnum.Saturday);
       neptuneObject.addDayType(DayTypeEnum.Sunday);
-      LocalDate startDate1 = LocalDate.fromCalendarFields(c);
+      LocalDate startDate1 = TimeUtil.toLocalDate(c);
       c.add(Calendar.DATE, 15);
-      LocalDate endDate1 = LocalDate.fromCalendarFields(c);
+      LocalDate endDate1 = TimeUtil.toLocalDate(c);
       Period period1 = new Period(startDate1, endDate1);
       neptuneObject.addPeriod(period1);
       c.add(Calendar.DATE, 60);
-      LocalDate startDate2 = LocalDate.fromCalendarFields(c);
+      LocalDate startDate2 = TimeUtil.toLocalDate(c);
       c.add(Calendar.DATE, 15);
-      LocalDate endDate2 = LocalDate.fromCalendarFields(c);
+      LocalDate endDate2 = TimeUtil.toLocalDate(c);
       Period period2 = new Period(startDate2, endDate2);
       neptuneObject.addPeriod(period2);
 
@@ -225,7 +226,7 @@ public class GtfsExportCalendarProducerTests
       for (GtfsCalendarDate gtfsCalendarDate : mock.getExportedCalendarDates())
       {
          Reporter.log(CalendarDateExporter.CONVERTER.to(context,gtfsCalendarDate));
-         LocalDate date = LocalDate.fromCalendarFields(c);
+         LocalDate date = TimeUtil.toLocalDate(c);
          cpt++;
          if (cpt == 14)
          {
@@ -250,13 +251,13 @@ public class GtfsExportCalendarProducerTests
       tt.setObjectId("GTFS:Timetable:1234");
       tt.setComment("name");
       tt.addDayType(DayTypeEnum.WeekDay);
-      LocalDate ttStartDate = new LocalDate(2024, 2, 1);
-      LocalDate ttEndDate = new LocalDate(2024, 5, 30);
+      LocalDate ttStartDate = LocalDate.of(2024, 2, 1);
+      LocalDate ttEndDate = LocalDate.of(2024, 5, 30);
       tt.setStartOfPeriod(ttStartDate);
       tt.setEndOfPeriod(ttEndDate);
       tt.getPeriods().add(new Period(ttStartDate, ttEndDate));
 
-      LocalDate exportStartDate = new LocalDate(2024, 4, 10);
+      LocalDate exportStartDate = LocalDate.of(2024, 4, 10);
 
       Assert.assertTrue(exportStartDate.isAfter(tt.getPeriods().get(0).getStartDate()),
               "export start date should be after timetable start date");
@@ -279,13 +280,13 @@ public class GtfsExportCalendarProducerTests
       tt.setObjectId("GTFS:Timetable:1234");
       tt.setComment("name");
       tt.addDayType(DayTypeEnum.WeekDay);
-      LocalDate ttStartDate = new LocalDate(2024, 2, 1);
-      LocalDate ttEndDate = new LocalDate(2024, 5, 30);
+      LocalDate ttStartDate = LocalDate.of(2024, 2, 1);
+      LocalDate ttEndDate = LocalDate.of(2024, 5, 30);
       tt.setStartOfPeriod(ttStartDate);
       tt.setEndOfPeriod(ttEndDate);
       tt.getPeriods().add(new Period(ttStartDate, ttEndDate));
 
-      LocalDate exportEndDate = new LocalDate(2024, 4, 12);
+      LocalDate exportEndDate = LocalDate.of(2024, 4, 12);
 
       Assert.assertTrue(exportEndDate.isBefore(tt.getPeriods().get(0).getEndDate()),
               "export end date should be before timetable end date");
@@ -308,14 +309,14 @@ public class GtfsExportCalendarProducerTests
       tt.setObjectId("GTFS:Timetable:1234");
       tt.setComment("name");
       tt.addDayType(DayTypeEnum.WeekDay);
-      LocalDate ttStartDate = new LocalDate(2024, 2, 1);
-      LocalDate ttEndDate = new LocalDate(2024, 5, 30);
+      LocalDate ttStartDate = LocalDate.of(2024, 2, 1);
+      LocalDate ttEndDate = LocalDate.of(2024, 5, 30);
       tt.setStartOfPeriod(ttStartDate);
       tt.setEndOfPeriod(ttEndDate);
       tt.getPeriods().add(new Period(ttStartDate, ttEndDate));
 
-      LocalDate exportStartDate = new LocalDate(2024, 4, 10);
-      LocalDate exportEndDate = new LocalDate(2024, 4, 12);
+      LocalDate exportStartDate = LocalDate.of(2024, 4, 10);
+      LocalDate exportEndDate = LocalDate.of(2024, 4, 12);
 
       Assert.assertTrue(exportStartDate.isAfter(tt.getPeriods().get(0).getStartDate()),
               "export start date should be after timetable start date");
@@ -350,10 +351,10 @@ public class GtfsExportCalendarProducerTests
       )) {
          tt.addDayType(dayType);
       }
-      LocalDate ttStartDateFirstPeriod = new LocalDate(2024, 2, 1);
-      LocalDate ttEndDateFirstPeriod = new LocalDate(2024, 5, 31);
-      LocalDate ttStartDateSecondPeriod = new LocalDate(2024, 7, 1);
-      LocalDate ttEndDateSecondPeriod = new LocalDate(2024, 9, 30);
+      LocalDate ttStartDateFirstPeriod = LocalDate.of(2024, 2, 1);
+      LocalDate ttEndDateFirstPeriod = LocalDate.of(2024, 5, 31);
+      LocalDate ttStartDateSecondPeriod = LocalDate.of(2024, 7, 1);
+      LocalDate ttEndDateSecondPeriod = LocalDate.of(2024, 9, 30);
       tt.setStartOfPeriod(ttStartDateFirstPeriod);
       tt.setEndOfPeriod(ttEndDateSecondPeriod);
       // timetable first period is 01/02/24 -> 31/05/24
@@ -362,8 +363,8 @@ public class GtfsExportCalendarProducerTests
       tt.getPeriods().add(new Period(ttStartDateSecondPeriod, ttEndDateSecondPeriod));
 
       // export period is 28/05/24 -> 06/07/24
-      LocalDate exportStartDate = new LocalDate(2024, 5, 28);
-      LocalDate exportEndDate = new LocalDate(2024, 7, 6);
+      LocalDate exportStartDate = LocalDate.of(2024, 5, 28);
+      LocalDate exportEndDate = LocalDate.of(2024, 7, 6);
 
       producer.save(Arrays.asList(tt),"GTFS",false, exportStartDate, exportEndDate);
 
@@ -373,16 +374,16 @@ public class GtfsExportCalendarProducerTests
       // => 28/05/24 -> 31/05/24 (included)
       // => 01/07/24 -> 06/07/24 (included)
       List<LocalDate> expectedDates = Arrays.asList(
-              new LocalDate(2024, 5, 28),
-              new LocalDate(2024, 5, 29),
-              new LocalDate(2024, 5, 30),
-              new LocalDate(2024, 5, 31),
-              new LocalDate(2024, 7, 1),
-              new LocalDate(2024, 7, 2),
-              new LocalDate(2024, 7, 3),
-              new LocalDate(2024, 7, 4),
-              new LocalDate(2024, 7, 5),
-              new LocalDate(2024, 7, 6)
+              LocalDate.of(2024, 5, 28),
+              LocalDate.of(2024, 5, 29),
+              LocalDate.of(2024, 5, 30),
+              LocalDate.of(2024, 5, 31),
+              LocalDate.of(2024, 7, 1),
+              LocalDate.of(2024, 7, 2),
+              LocalDate.of(2024, 7, 3),
+              LocalDate.of(2024, 7, 4),
+              LocalDate.of(2024, 7, 5),
+              LocalDate.of(2024, 7, 6)
       );
       List<LocalDate> output = mock.getExportedCalendarDates().stream().map(GtfsCalendarDate::getDate).collect(Collectors.toList());
 

@@ -9,7 +9,7 @@ import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.type.StopAreaTypeEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.*;
 
@@ -226,7 +226,7 @@ public class StopAreaMapper {
     public void mapKeyValuesExternalRef(Zone_VersionStructure srcZone, StopArea createdStopArea) {
         if(srcZone.getKeyList() != null){
             for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
-                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), EXTERNAL_REF) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                if(org.apache.commons.lang3.StringUtils.equals(keyValueStructure.getKey(), EXTERNAL_REF) && org.apache.commons.lang3.StringUtils.isNotEmpty(keyValueStructure.getValue())){
                     KeyValue keyValue = new KeyValue();
                     keyValue.setKey(EXTERNAL_REF);
                     keyValue.setValue(keyValueStructure.getValue());
@@ -235,7 +235,7 @@ public class StopAreaMapper {
                     createdStopArea.setKeyValues(keyValues);
                 }
 
-				if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), AUTO_CREATED_QUAY_SUFFIX) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+				if(org.apache.commons.lang3.StringUtils.equals(keyValueStructure.getKey(), AUTO_CREATED_QUAY_SUFFIX) && org.apache.commons.lang3.StringUtils.isNotEmpty(keyValueStructure.getValue())){
 					KeyValue keyValue = new KeyValue();
 					keyValue.setKey(AUTO_CREATED_QUAY_SUFFIX);
 					keyValue.setValue(keyValueStructure.getValue());
@@ -245,7 +245,7 @@ public class StopAreaMapper {
 					createdStopArea.setKeyValues(keyValues);
 				}
 
-                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), RAIL_UIC) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                if(org.apache.commons.lang3.StringUtils.equals(keyValueStructure.getKey(), RAIL_UIC) && org.apache.commons.lang3.StringUtils.isNotEmpty(keyValueStructure.getValue())){
                     createdStopArea.setRailUic(keyValueStructure.getValue());
                 }
             }
@@ -255,7 +255,7 @@ public class StopAreaMapper {
     private void mapFareZone(Zone_VersionStructure srcZone, StopArea createdStopArea){
         if(srcZone.getKeyList() != null){
             for (KeyValueStructure keyValueStructure : srcZone.getKeyList().getKeyValue()) {
-                if(org.apache.commons.lang.StringUtils.equals(keyValueStructure.getKey(), FARE_ZONE) && org.apache.commons.lang.StringUtils.isNotEmpty(keyValueStructure.getValue())){
+                if(org.apache.commons.lang3.StringUtils.equals(keyValueStructure.getKey(), FARE_ZONE) && org.apache.commons.lang3.StringUtils.isNotEmpty(keyValueStructure.getValue())){
                     createdStopArea.setZoneId(keyValueStructure.getValue());
                 }
             }

@@ -1,5 +1,6 @@
 package mobi.chouette.model.statistics;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,6 +23,12 @@ public class Period implements Comparable<Period> {
 		super();
 		this.from = from == null ? null : new java.sql.Date(from.getTime());
 		this.to = to == null ? null : new java.sql.Date(to.getTime());
+	}
+
+	public Period(LocalDate from, LocalDate to) {
+		super();
+		this.from = from == null ? null : java.sql.Date.valueOf(from);
+		this.to = to == null ? null : java.sql.Date.valueOf(to);
 	}
 
 	public boolean isEmpty() {

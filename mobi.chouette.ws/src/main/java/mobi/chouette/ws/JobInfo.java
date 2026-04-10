@@ -9,16 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.parameters.AbstractParameter;
 import mobi.chouette.model.iev.Job;
 import mobi.chouette.model.iev.Link;
@@ -28,55 +23,28 @@ import mobi.chouette.service.ServiceException;
 
 @Data
 @NoArgsConstructor
-@XmlRootElement(name = "job")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"id", "referential", "action", "type", "created", "started", "updated", "status", "linkInfos",
-		                     "actionParameters"})
-// @XmlSeeAlso({NeptuneImportParameters.class,
-// NeptuneExportParameters.class,
-// GtfsImportParameters.class,
-// GtfsExportParameters.class,
-// NetexImportParameters.class,
-// NetexExportParameters.class,
-// HubExportParameters.class,
-// KmlExportParameters.class,
-// GeojsonExportParameters.class,
-// SigExportParameters.class,
-// ConvertParameters.class,
-// ValidateParameters.class,
-// NeptuneValidateParameters.class,
-// GtfsValidateParameters.class,
-// NetexValidateParameters.class})
 public class JobInfo implements ServiceConstants {
 
-	@XmlElement(name = "id", required = true)
 	private Long id;
 
-	@XmlElement(name = "referential", required = true)
 	private String referential;
 
-	@XmlElement(name = "action", required = true)
 	private String action;
 
-	@XmlElement(name = "type")
 	private String type;
 
-	@XmlElement(name = "created", required = true)
 	private Date created;
 
-	@XmlElement(name = "started")
 	private Date started;
 
-	@XmlElement(name = "updated")
 	private Date updated;
 
-	@XmlElement(name = "status", required = true)
 	private STATUS status;
 
-	@XmlElement(name = "links")
+	@JsonProperty("links")
 	private List<LinkInfo> linkInfos;
 
-	@XmlElementRef(name = "action_parameters")
+	@JsonProperty("action_parameters")
 	private AbstractParameter actionParameters;
 
 	public JobInfo(JobService job, boolean addLink, UriInfo uriInfo) throws ServiceException {
@@ -88,9 +56,9 @@ public class JobInfo implements ServiceConstants {
 		referential = job.getReferential();
 		action = job.getAction();
 		type = job.getType();
-		created = job.getCreated() == null ? null : job.getCreated().toDate();
-		started = job.getStarted() == null ? null : job.getStarted().toDate();
-		updated = job.getUpdated() == null ? null : job.getUpdated().toDate();
+		created = job.getCreated() == null ? null : TimeUtil.toDate(job.getCreated());
+		started = job.getStarted() == null ? null : TimeUtil.toDate(job.getStarted());
+		updated = job.getUpdated() == null ? null : TimeUtil.toDate(job.getUpdated());
 		status = STATUS.valueOf(job.getStatus().name());
 
 		if (addActionParameters) {
@@ -187,8 +155,6 @@ public class JobInfo implements ServiceConstants {
 		return null;
 	}
 
-	@XmlType(name = "jobStatus")
-	@XmlEnum(String.class)
 	public enum STATUS implements java.io.Serializable {
 		RESCHEDULED, SCHEDULED, STARTED, TERMINATED, CANCELED, ABORTED
 	}

@@ -19,7 +19,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -66,9 +66,9 @@ public class TimetableDaoTest extends Arquillian {
 
 
 		// Creating a first TT with a very large period, available on all days with 1 exclusion day (20/08/2025)
-		LocalDate startLargePeriod = new LocalDate(2020, 1, 1);
-		LocalDate endLargePeriod = new LocalDate(2099,1,1);
-		LocalDate specificDate = new LocalDate(2025, 8, 20);
+		LocalDate startLargePeriod = LocalDate.of(2020, 1, 1);
+		LocalDate endLargePeriod = LocalDate.of(2099,1,1);
+		LocalDate specificDate = LocalDate.of(2025, 8, 20);
 
 		Timetable tt1_large_period = new Timetable();
 		tt1_large_period.setObjectId("TT1");
@@ -96,7 +96,7 @@ public class TimetableDaoTest extends Arquillian {
 		tt1_large_period.addCalendarDay(exclusionForTT1);
 
 		CalendarDay exclusion2ForTT1 = new CalendarDay();
-		exclusion2ForTT1.setDate(new LocalDate(2022,05,05));
+		exclusion2ForTT1.setDate(LocalDate.of(2022,5,5));
 		exclusion2ForTT1.setIncluded(false);
 		tt1_large_period.addCalendarDay(exclusion2ForTT1);
 		timetableDao.create(tt1_large_period);

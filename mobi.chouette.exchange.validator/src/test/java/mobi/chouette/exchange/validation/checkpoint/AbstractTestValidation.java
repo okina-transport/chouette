@@ -1,15 +1,8 @@
 package mobi.chouette.exchange.validation.checkpoint;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
@@ -23,44 +16,28 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.ObjectReport;
 import mobi.chouette.exchange.report.ReportConstant;
-import mobi.chouette.exchange.validation.parameters.AccessLinkParameters;
-import mobi.chouette.exchange.validation.parameters.AccessPointParameters;
-import mobi.chouette.exchange.validation.parameters.CompanyParameters;
-import mobi.chouette.exchange.validation.parameters.ConnectionLinkParameters;
-import mobi.chouette.exchange.validation.parameters.FieldParameters;
-import mobi.chouette.exchange.validation.parameters.GroupOfLineParameters;
-import mobi.chouette.exchange.validation.parameters.JourneyPatternParameters;
-import mobi.chouette.exchange.validation.parameters.LineParameters;
-import mobi.chouette.exchange.validation.parameters.NetworkParameters;
-import mobi.chouette.exchange.validation.parameters.RouteParameters;
-import mobi.chouette.exchange.validation.parameters.StopAreaParameters;
-import mobi.chouette.exchange.validation.parameters.TimetableParameters;
-import mobi.chouette.exchange.validation.parameters.TransportModeParameters;
-import mobi.chouette.exchange.validation.parameters.ValidationParameters;
-import mobi.chouette.exchange.validation.parameters.VehicleJourneyParameters;
+import mobi.chouette.exchange.validation.parameters.*;
 import mobi.chouette.exchange.validation.report.CheckPointErrorReport;
 import mobi.chouette.exchange.validation.report.CheckPointReport;
 import mobi.chouette.exchange.validation.report.ValidationReport;
 import mobi.chouette.exchange.validator.JobDataTest;
 import mobi.chouette.exchange.validator.ValidateParameters;
-import mobi.chouette.model.JourneyPattern;
-import mobi.chouette.model.Line;
-import mobi.chouette.model.NeptuneLocalizedObject;
-import mobi.chouette.model.Route;
-import mobi.chouette.model.RouteSection;
-import mobi.chouette.model.ScheduledStopPoint;
-import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopPoint;
+import mobi.chouette.model.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.testng.Arquillian;
-import org.joda.time.LocalTime;
-import org.joda.time.Seconds;
 import org.testng.Assert;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Log4j
 public abstract class AbstractTestValidation  extends Arquillian implements Constant, ReportConstant {
@@ -283,7 +260,7 @@ public abstract class AbstractTestValidation  extends Arquillian implements Cons
 	{
 		if (first == null || last == null)
 			return Long.MIN_VALUE; // TODO
-		long diff = Seconds.secondsBetween(first, last).getSeconds();
+		long diff = ChronoUnit.SECONDS.between(first, last);
 		if (diff < 0)
 			diff += 86400L; // step upon midnight : add one day in seconds
 		return diff;

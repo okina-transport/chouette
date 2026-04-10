@@ -17,7 +17,7 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.StopPoint;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.math.BigDecimal;

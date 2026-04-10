@@ -8,15 +8,14 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import mobi.chouette.exchange.netex.exporter.ExportableData;
 import mobi.chouette.model.Line;
 
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DeliveryWriter extends AbstractWriter{
 	
 	public static void write(Writer writer, ExportableData data ) throws IOException, DatatypeConfigurationException 
 	{
-		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		Line line = data.getLine();
 		LocalDateTime now = LocalDateTime.now();
 		writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -55,11 +54,11 @@ public class DeliveryWriter extends AbstractWriter{
 		writer.write("<PublicationDelivery version=\"1.0\" xmlns=\"http://www.netex.org.uk/netex\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  " +
 				"xsi:schemaLocation=\"http://www.netex.org.uk/netex ../../../xsd/NeTEx_publication.xsd\" xmlns:acsb=\"http://www.ifopt.org.uk/acsb\" " +
 				"xmlns:ifopt=\"http://www.ifopt.org.uk/ifopt\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:siri=\"http://www.siri.org.uk/siri\"  >\n");
-		writer.write("  <PublicationTimestamp>"+timeFormatter.print(now)+"</PublicationTimestamp>\n");
+		writer.write("  <PublicationTimestamp>"+now.format(timeFormatter)+"</PublicationTimestamp>\n");
 		writer.write("  <ParticipantRef>SYS001</ParticipantRef>\n");
 		writer.write("  <!--- ======WHAT WAS REQUESTED ========== -->\n");
 		writer.write("  <PublicationRequest version=\"1.0\">\n");
-		writer.write("    <RequestTimestamp>"+timeFormatter.print(now)+"</RequestTimestamp>\n");
+		writer.write("    <RequestTimestamp>"+now.format(timeFormatter)+"</RequestTimestamp>\n");
 		writer.write("    <ParticipantRef>0</ParticipantRef>\n");
 		writer.write("  </PublicationRequest>\n");
 		writer.write("  <Description>Line export in Netex Format by Chouette systeme</Description>\n");
@@ -67,7 +66,7 @@ public class DeliveryWriter extends AbstractWriter{
 		writer.write("  <!--- =============== RESULTS =========== -->\n");
 		writer.write("  <dataObjects>\n");
 		writer.write("    <!-- =========================================== -->    \n");   
-		writer.write("    <CompositeFrame version=\"1\" created=\""+timeFormatter.print(line.getNetwork().getVersionDate())+"\" " +
+		writer.write("    <CompositeFrame version=\"1\" created=\""+line.getNetwork().getVersionDate().format(timeFormatter)+"\" " +
 				"id=\""+line.objectIdPrefix()+":Neptune:CompositeFrame:"+line.objectIdSuffix()+"\">\n");
 		writer.write("      <Name>NEPTUNE Mapping Frame</Name>\n");
 		writer.write("      <!-- NEPTUNE [mapping:fixed] : This is a NEPTUNE to NeTEx mapping frame -->\n");

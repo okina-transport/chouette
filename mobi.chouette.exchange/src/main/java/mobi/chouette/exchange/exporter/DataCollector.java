@@ -18,7 +18,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.VehicleJourneyAtStop;
 import mobi.chouette.model.util.NeptuneUtil;
 import org.hibernate.Hibernate;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.ejb.EJB;
 import java.util.Collection;

@@ -11,15 +11,15 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
 import mobi.chouette.exchange.report.AnalyzeReport;
-import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
+import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.JourneyCategoryEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
-import org.rutebanken.netex.model.FlexibleServiceProperties;
 import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.FlexibleServiceProperties;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
@@ -172,8 +172,8 @@ public class TemplateServiceJourneyParser extends NetexParser implements Parser,
                         bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(netexFSP.getBookWhen()));
                         bookingArrangement.setBuyWhen(netexFSP.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
                         bookingArrangement.setBookingMethods(netexFSP.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-                        bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(netexFSP.getLatestBookingTime()));
-                        bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(netexFSP.getMinimumBookingPeriod()));
+                        bookingArrangement.setLatestBookingTime(netexFSP.getLatestBookingTime());
+                        bookingArrangement.setMinimumBookingPeriod(TimeUtil.fromXmlDuration(netexFSP.getMinimumBookingPeriod()));
 
                         chouetteFSP.setBookingArrangement(bookingArrangement);
                         vehicleJourney.setFlexibleServiceProperties(chouetteFSP);

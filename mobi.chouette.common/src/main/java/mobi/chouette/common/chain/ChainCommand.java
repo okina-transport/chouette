@@ -8,9 +8,11 @@ import javax.naming.InitialContext;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 
+@Slf4j
 public class ChainCommand implements Chain, Constant {
 
 	public static final String COMMAND = "ChainCommand";
@@ -52,6 +54,7 @@ public class ChainCommand implements Chain, Constant {
 			} catch (Exception e) {
 				// if (!ignored) {
 					result = ERROR;
+					log.error(e.getMessage(), e);
 					throw e;
 				// }
 			}

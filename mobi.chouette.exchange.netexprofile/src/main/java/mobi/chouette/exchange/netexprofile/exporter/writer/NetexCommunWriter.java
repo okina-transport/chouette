@@ -6,36 +6,17 @@ import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils;
 import mobi.chouette.model.ConnectionLink;
 import mobi.chouette.model.StopArea;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.Authority;
-import org.rutebanken.netex.model.FlexibleLine;
-import org.rutebanken.netex.model.GeneralOrganisation;
-import org.rutebanken.netex.model.Line;
-import org.rutebanken.netex.model.Line_VersionStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.Network;
-import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.Operator;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.SiteConnection;
-import org.rutebanken.netex.model.SiteConnectionEndStructure;
-import org.rutebanken.netex.model.SiteConnection_VersionStructure;
-
-import org.rutebanken.netex.model.StopPlaceRefStructure;
-import org.rutebanken.netex.model.TransferDurationStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.netexFactory;
-import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.ADDITIONAL_NETWORKS;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.GENERAL_FRAME;
 import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.MEMBERS;
 
@@ -174,7 +155,7 @@ public class NetexCommunWriter extends AbstractNetexWriter {
             TransferDurationStructure transfertDuration = netexFactory.createTransferDurationStructure();
 
             if (connectionLink.getDefaultDuration() != null ){
-                transfertDuration.setDefaultDuration(TimeUtil.toDurationFromJodaDuration(connectionLink.getDefaultDuration()));
+                transfertDuration.setDefaultDuration(TimeUtil.toXmlDuration(connectionLink.getDefaultDuration()));
                 siteConnection.setWalkTransferDuration(transfertDuration);
             }
 

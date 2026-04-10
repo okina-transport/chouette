@@ -8,7 +8,7 @@ import mobi.chouette.exchange.importer.updater.Updater;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.type.Utils;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 

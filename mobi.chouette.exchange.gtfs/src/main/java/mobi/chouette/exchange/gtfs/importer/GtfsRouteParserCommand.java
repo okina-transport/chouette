@@ -23,7 +23,7 @@ import mobi.chouette.model.type.Utils;
 import mobi.chouette.model.util.NamingUtil;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;

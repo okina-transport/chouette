@@ -14,7 +14,7 @@ import mobi.chouette.exchange.concerto.model.StopAreaTypeEnum;
 import mobi.chouette.exchange.concerto.model.exporter.ConcertoExporterInterface;
 import mobi.chouette.model.MappingHastusZdep;
 import mobi.chouette.model.StopArea;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.util.UUID;
 

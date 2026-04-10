@@ -7,23 +7,9 @@ import lombok.ToString;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +31,8 @@ public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "vehicle_journey_at_stops_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
-		parameters = {
-			@Parameter(name = "sequence_name", value = "vehicle_journey_at_stops_id_seq"),
-			@Parameter(name = "increment_size", value = "100") })
-	@GeneratedValue(generator = "vehicle_journey_at_stops_id_seq")
+	@SequenceGenerator(name = "vehicle_journey_at_stops_id_seq", sequenceName = "vehicle_journey_at_stops_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_journey_at_stops_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -211,7 +194,7 @@ public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
 	 */
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JoinColumn(name = "stop_point_id")
 	private StopPoint stopPoint;
 	

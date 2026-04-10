@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+
 import java.io.Serializable;
 
 @Entity
@@ -27,11 +28,8 @@ import java.io.Serializable;
 public class Transfers extends NeptuneIdentifiedObject implements ObjectIdTypes {
 
 	@Id
-	@GenericGenerator(name = "transfers_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator",
-			parameters = {
-					@org.hibernate.annotations.Parameter(name = "sequence_name", value = "transfers_id_seq"),
-					@org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-	@GeneratedValue(generator = "transfers_id_seq")
+	@SequenceGenerator(name = "transfers_id_seq", sequenceName = "transfers_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transfers_id_seq")
 	@Column(name = "id", nullable = false)
 	private Long id;
 

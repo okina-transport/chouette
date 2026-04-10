@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.model.*;
 import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.client.TokenService;
+import mobi.chouette.exchange.importer.utils.TokenService;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.EJB;

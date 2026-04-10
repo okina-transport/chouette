@@ -1,6 +1,7 @@
 package mobi.chouette.exchange.utils;
 
-import org.rutebanken.netex.client.TokenService;
+
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import static mobi.chouette.common.PropertyNames.*;
 

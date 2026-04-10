@@ -3,7 +3,9 @@ package mobi.chouette.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.EqualsAndHashCode;
@@ -48,10 +50,8 @@ public class ContactStructure extends NeptuneObject {
 
 	@Getter
 	@Setter
-	@GenericGenerator(name = "contact_structures_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {
-			@Parameter(name = "sequence_name", value = "contact_structures_id_seq"),
-			@Parameter(name = "increment_size", value = "100")})
-	@GeneratedValue(generator = "contact_structures_id_seq")
+	@SequenceGenerator(name = "contact_structures_id_seq", sequenceName = "contact_structures_id_seq", allocationSize = 100)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contact_structures_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;

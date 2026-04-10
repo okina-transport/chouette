@@ -27,14 +27,15 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.joda.time.LocalTime;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -299,8 +300,8 @@ public class GtfsRouteMergerTests extends Arquillian implements Constant, Report
             VehicleJourneyAtStop vjas = new VehicleJourneyAtStop();
             vjas.setObjectId(NETEX_VALID_PREFIX + ":VJAS:" + tripPattern + "_" + stopName + "_" + currentPosition);
             vjas.setStopPoint(stopPoint);
-            vjas.setDepartureTime(new LocalTime(startingHour, currentPosition, 0));
-            vjas.setArrivalTime(new LocalTime(startingHour, currentPosition, 0));
+            vjas.setDepartureTime(LocalTime.of(startingHour, currentPosition, 0));
+            vjas.setArrivalTime(LocalTime.of(startingHour, currentPosition, 0));
 
             vehicleJourney.getVehicleJourneyAtStops().add(vjas);
 

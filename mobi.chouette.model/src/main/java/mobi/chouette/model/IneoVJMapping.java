@@ -3,14 +3,13 @@ package mobi.chouette.model;
 import lombok.Data;
 import mobi.chouette.model.type.PTDirectionEnum;
 
-import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 public class IneoVJMapping {
 
-    private final Date date;
+    private final LocalDate date;
 
     private final LocalTime time;
 

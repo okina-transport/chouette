@@ -60,7 +60,18 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 		} else {
 			if(!isReadOnlyMode){
 				context.put(CURRENT_SCHEDULED_STOP_POINT, oldValue.getObjectId());
-				twoDatabaseStopPointThreeTest(validationReporter, context, oldValue.getContainedInStopAreaRef().getObject(), newValue.getContainedInStopAreaRef().getObject(), data);
+				StopArea oldStopArea = oldValue.getContainedInStopAreaRef().getObject();
+				if (oldStopArea == null && oldValue.getContainedInStopAreaObjectId() != null) {
+					String oldObjectId = oldValue.getContainedInStopAreaObjectId();
+					oldStopArea = cache.getStopAreas().get(oldObjectId);
+					if (oldStopArea == null) {
+						oldStopArea = stopAreaDAO.findByObjectId(oldObjectId);
+						if (oldStopArea != null) {
+							cache.getStopAreas().put(oldObjectId, oldStopArea);
+						}
+					}
+				}
+				twoDatabaseStopPointThreeTest(validationReporter, context, oldStopArea, newValue.getContainedInStopAreaRef().getObject(), data);
 			}
 
 			if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
@@ -130,17 +141,18 @@ public class ScheduledStopPointUpdater implements Updater<ScheduledStopPoint> {
 	private void twoDatabaseStopPointThreeTest(ValidationReporter validationReporter, Context context, StopArea oldSA, StopArea newSA, ValidationData data) {
 		if(!NeptuneUtil.sameValue(oldSA, newSA)) {
 			log.error("Inconsistency found on scheduledStopPoint:" + context.get(CURRENT_SCHEDULED_STOP_POINT));
-			log.error("expected id:" + oldSA.getOriginalStopId());
-			log.error("found id:" + newSA.getOriginalStopId());
-
 			if(validationReporter == null) {
 				log.error("ValidationReporter (validationReporter) is null");
 			}
 			if(oldSA == null) {
 				log.warn("StopArea (oldSA) is null");
+			} else {
+				log.error("expected id:" + oldSA.getOriginalStopId());
 			}
 			if(newSA == null) {
 				log.warn("StopArea (newSA) is null");
+			} else {
+				log.error("found id:" + newSA.getOriginalStopId());
 			}
 			if(data == null) {
 				log.error("ValidationData (data) is null");

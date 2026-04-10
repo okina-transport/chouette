@@ -15,7 +15,7 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -160,7 +160,7 @@ public class GtfsExportTripProducerTests {
 		GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
 		Reporter.log(TripExporter.CONVERTER.to(context, gtfsObject));
 
-		Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:FlexibleLine:0123", "RouteID must be correctly set");
+		Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:Line:0123", "RouteID must be correctly set");
 
 	}
 
@@ -185,7 +185,7 @@ public class GtfsExportTripProducerTests {
 		GtfsTrip gtfsObject = mock.getExportedTrips().get(0);
 		Reporter.log(TripExporter.CONVERTER.to(context, gtfsObject));
 
-		Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:FlexibleLine:0123SUFFIX", "RouteID must be correctly set");
+		Assert.assertEquals(gtfsObject.getRouteId(), "PREFIX:Line:0123SUFFIX", "RouteID must be correctly set");
 
 	}
 
@@ -584,7 +584,7 @@ public class GtfsExportTripProducerTests {
 			vjas.setStopPoint(sp);
 			vjas.setArrivalDayOffset(current_arrival_offset);
 			vjas.setDepartureDayOffset(current_departure_offset);
-			vjas.setArrivalTime(new LocalTime(h, m, 0));
+			vjas.setArrivalTime(LocalTime.of(h, m, 0));
 
 			h = h + 1;
 			if (h > 23) {
@@ -592,7 +592,7 @@ public class GtfsExportTripProducerTests {
 
 			}
 
-			vjas.setDepartureTime(new LocalTime(h, m, 0));
+			vjas.setDepartureTime(LocalTime.of(h, m, 0));
 
 			if (previous_vjas == null) {
 				if (vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {
@@ -674,7 +674,7 @@ public class GtfsExportTripProducerTests {
 			vjas.setStopPoint(sp);
 			vjas.setArrivalDayOffset(current_arrival_offset);
 			vjas.setDepartureDayOffset(current_departure_offset);
-			vjas.setArrivalTime(new LocalTime(h, m, 0));
+			vjas.setArrivalTime(LocalTime.of(h, m, 0));
 
 			h = h + 1;
 			if (h > 23) {
@@ -682,7 +682,7 @@ public class GtfsExportTripProducerTests {
 
 			}
 
-			vjas.setDepartureTime(new LocalTime(h, m, 0));
+			vjas.setDepartureTime(LocalTime.of(h, m, 0));
 
 			if (previous_vjas == null) {
 				if (vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {
@@ -765,7 +765,7 @@ public class GtfsExportTripProducerTests {
 			vjas.setStopPoint(sp);
 			vjas.setArrivalDayOffset(current_arrival_offset);
 			vjas.setDepartureDayOffset(current_departure_offset);
-			vjas.setArrivalTime(new LocalTime(h, m, 0));
+			vjas.setArrivalTime(LocalTime.of(h, m, 0));
 
 			h = h + 1;
 			if (h > 23) {
@@ -773,7 +773,7 @@ public class GtfsExportTripProducerTests {
 
 			}
 
-			vjas.setDepartureTime(new LocalTime(h, m, 0));
+			vjas.setDepartureTime(LocalTime.of(h, m, 0));
 
 			if (previous_vjas == null) {
 				if (vjas.getDepartureTime().isBefore(vjas.getArrivalTime())) {

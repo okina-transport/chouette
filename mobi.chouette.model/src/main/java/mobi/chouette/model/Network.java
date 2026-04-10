@@ -21,9 +21,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.*;
-import javax.ws.rs.DefaultValue;
-// import javax.persistence.GenerationType;
-// import javax.persistence.SequenceGenerator;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,14 +28,11 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
 
-// import javax.persistence.GenerationType;
-// import javax.persistence.SequenceGenerator;
 
 /**
  * Chouette Public Transport Network : a set of lines
@@ -57,13 +51,8 @@ public class Network extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-//	@SequenceGenerator(name="networks_id_seq", sequenceName="networks_id_seq", allocationSize=1)
-//    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="networks_id_seq")
-	@GenericGenerator(name = "networks_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", 
-		parameters = {
-			@Parameter(name = "sequence_name", value = "networks_id_seq"),
-			@Parameter(name = "increment_size", value = "10") })
-	@GeneratedValue(generator = "networks_id_seq")
+	@SequenceGenerator(name = "networks_id_seq", sequenceName = "networks_id_seq", allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "networks_id_seq")
 	@Id
 	@Column(name = "id", nullable = false)
 	protected Long id;
@@ -250,7 +239,6 @@ public class Network extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@DefaultValue("false")
 	private Boolean supprime = false;
 
 }

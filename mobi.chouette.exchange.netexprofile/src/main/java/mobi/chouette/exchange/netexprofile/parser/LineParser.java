@@ -18,7 +18,7 @@ import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.*;
 
@@ -167,8 +167,8 @@ public class LineParser implements Parser, Constant {
                 bookingArrangement.setBookWhen(NetexParserUtils.toPurchaseWhen(flexibleLine.getBookWhen()));
                 bookingArrangement.setBuyWhen(flexibleLine.getBuyWhen().stream().map(NetexParserUtils::toPurchaseMoment).collect(Collectors.toList()));
                 bookingArrangement.setBookingMethods(flexibleLine.getBookingMethods().stream().map(NetexParserUtils::toBookingMethod).collect(Collectors.toList()));
-                bookingArrangement.setLatestBookingTime(TimeUtil.toJodaLocalTime(flexibleLine.getLatestBookingTime()));
-                bookingArrangement.setMinimumBookingPeriod(TimeUtil.toJodaDuration(flexibleLine.getMinimumBookingPeriod()));
+                bookingArrangement.setLatestBookingTime(flexibleLine.getLatestBookingTime());
+                bookingArrangement.setMinimumBookingPeriod(TimeUtil.fromXmlDuration(flexibleLine.getMinimumBookingPeriod()));
 
                 bookingArrangement.setBookingContact(contactStructureParser.parse(flexibleLine.getBookingContact()));
 

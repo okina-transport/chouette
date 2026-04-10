@@ -18,7 +18,7 @@ import mobi.chouette.model.type.BoardingPossibilityEnum;
 import mobi.chouette.model.type.SectionStatusEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;

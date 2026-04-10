@@ -11,7 +11,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -38,6 +37,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 @Log4j
@@ -351,7 +351,7 @@ public class ValidationAccessLinks extends AbstractTestValidation {
 		}
 		double distance = AbstractTestValidation.distance(link.getAccessPoint(), link.getStopArea());
 		link.setLinkDistance(BigDecimal.valueOf(150000));
-		link.setDefaultDuration(link.getDefaultDuration().minus(19000));
+		link.setDefaultDuration(link.getDefaultDuration().minusMillis(19000));
 		link.setOccasionalTravellerDuration(link.getDefaultDuration());
 		link.setFrequentTravellerDuration(link.getDefaultDuration());
 		link.setMobilityRestrictedTravellerDuration(link.getDefaultDuration());

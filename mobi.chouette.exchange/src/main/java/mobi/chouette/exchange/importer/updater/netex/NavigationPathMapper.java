@@ -10,9 +10,8 @@ import org.rutebanken.netex.model.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import java.math.BigInteger;
-
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -31,8 +30,12 @@ public class NavigationPathMapper {
 
     private DatatypeFactory factory;
 
-    public NavigationPathMapper() throws DatatypeConfigurationException {
-        factory = DatatypeFactory.newInstance();
+    public NavigationPathMapper() {
+        try {
+            factory = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+            log.error("DatatypeConfigurationException when instanciating NavigationPathMapper", e);
+        }
     }
 
     public NavigationPath mapConnectionLinkToNavigationPath(SiteFrame frame, ConnectionLink link) {
@@ -57,7 +60,7 @@ public class NavigationPathMapper {
                 .withAllowedUse(PathDirectionEnumeration.TWO_WAY);
 
 
-        long seconds = link.getDefaultDuration().getMillis() / 1000;
+        long seconds = link.getDefaultDuration().getSeconds();
 
         try {
             int nbMin = (int) (seconds / 60);
@@ -133,7 +136,7 @@ public class NavigationPathMapper {
 
         connectionLink.setStartOfLink(from);
         connectionLink.setEndOfLink(to);
-        connectionLink.setDefaultDuration(org.joda.time.Duration.standardSeconds(1000));
+        connectionLink.setDefaultDuration(java.time.Duration.ofSeconds(1000));
 
         return connectionLink;
     }

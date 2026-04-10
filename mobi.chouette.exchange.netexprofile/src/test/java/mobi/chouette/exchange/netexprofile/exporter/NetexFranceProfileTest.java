@@ -18,7 +18,7 @@ import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.PTDirectionEnum;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.rutebanken.netex.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,17 +41,12 @@ import static mobi.chouette.exchange.netexprofile.Constant.MARSHALLER;
 
 public class NetexFranceProfileTest {
 
-    private static String codifLigne = "TestNetexFranceProfile";
-    private static String testPath = "src/test/data/netexFranceProfile";
-    private static String generatedFilePath = testPath+"/output/TEST_offre_"+codifLigne+"_Bus_1_l1_.xml";
+    private static final String CODIF_LIGNE = "TestNetexFranceProfile";
+    private static final String TEST_PATH = "src/test/data/netexFranceProfile";
+    private static final String GENERATED_FILE_PATH = TEST_PATH +"/output/TEST_offre_"+ CODIF_LIGNE +"_Bus_1_l1_.xml";
 
-
-    private File generatedFile = new File(generatedFilePath);
-
-    private NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
-
-
-
+    private final File generatedFile = new File(GENERATED_FILE_PATH);
+    private final NetexXMLProcessingHelperFactory importer = new NetexXMLProcessingHelperFactory();
 
     @Test
     public void exportOffreIDFM() throws Exception {
@@ -65,11 +60,6 @@ public class NetexFranceProfileTest {
         lineProducer.execute(context);
 
         checkGeneratedFile(context);
-
-
-
-      //  deleteFileCreated();
-
     }
 
     private void checkGeneratedFile(Context context){
@@ -122,32 +112,32 @@ public class NetexFranceProfileTest {
             General_VersionFrameStructure.Members members = firstFrame.getMembers();
 
             List<org.rutebanken.netex.model.Route> routes = getRoutes(members);
-            if (routes.size() > 0){
+            if (!routes.isEmpty()){
                 checkRoutes(routes);
             }
 
             List<org.rutebanken.netex.model.Direction> directionList = getDirection(members);
-            if (directionList.size() > 0){
+            if (!directionList.isEmpty()){
                 checkDirection(directionList);
             }
 
             List<ServiceJourneyPattern> serviceJourneyPatterns = getServiceJourneyPatterns(members);
-            if (serviceJourneyPatterns.size() > 0){
+            if (!serviceJourneyPatterns.isEmpty()){
                 checkServiceJourneyPatterns(serviceJourneyPatterns);
             }
 
             List<org.rutebanken.netex.model.ScheduledStopPoint> scheduledStopPoints = getScheduledStopPointPatterns(members);
-            if (scheduledStopPoints.size() > 0){
+            if (!scheduledStopPoints.isEmpty()){
                 checkScheduledStopPoints(scheduledStopPoints);
             }
 
             List<org.rutebanken.netex.model.PassengerStopAssignment> passengerStopAssignmentList = getPassengerStopAssignment(members);
-            if (passengerStopAssignmentList.size() > 0){
+            if (!passengerStopAssignmentList.isEmpty()){
                 checkPassengerStopAssignment(passengerStopAssignmentList);
             }
 
             List<org.rutebanken.netex.model.DestinationDisplay> destinationDisplayList = getDestinationDisplay(members);
-            if (destinationDisplayList.size() > 0){
+            if (!destinationDisplayList.isEmpty()){
                 checkDestinationDisplay(destinationDisplayList);
             }
 
@@ -295,7 +285,7 @@ public class NetexFranceProfileTest {
     private void checkPassengerStopAssignment(List<org.rutebanken.netex.model.PassengerStopAssignment> passengerStopAssignmentList){
 
         PassengerStopAssignment firstAssignment = passengerStopAssignmentList.get(0);
-        Assert.assertEquals(firstAssignment.getOrder(), new BigInteger("0"), "wrong order");
+        Assert.assertEquals(firstAssignment.getOrder(), new BigInteger("3"), "wrong order");
         Assert.assertEquals(firstAssignment.getVersion(), "any", "wrong version");
         Assert.assertEquals(firstAssignment.getId(), "TEST:PassengerStopAssignment:ssp3:LOC", "wrong id");
         ScheduledStopPointRefStructure firstScheduledPointRef = firstAssignment.getScheduledStopPointRef().getValue();
@@ -306,7 +296,7 @@ public class NetexFranceProfileTest {
 
 
         PassengerStopAssignment secondAssignment = passengerStopAssignmentList.get(1);
-        Assert.assertEquals(secondAssignment.getOrder(), new BigInteger("0"), "wrong order");
+        Assert.assertEquals(secondAssignment.getOrder(), new BigInteger("2"), "wrong order");
         Assert.assertEquals(secondAssignment.getVersion(), "any", "wrong version");
         Assert.assertEquals(secondAssignment.getId(), "TEST:PassengerStopAssignment:ssp2:LOC", "wrong id");
         ScheduledStopPointRefStructure secondScheduledPointRef = secondAssignment.getScheduledStopPointRef().getValue();
@@ -317,7 +307,7 @@ public class NetexFranceProfileTest {
 
 
         PassengerStopAssignment thirdAssignment = passengerStopAssignmentList.get(2);
-        Assert.assertEquals(thirdAssignment.getOrder(), new BigInteger("0"), "wrong order");
+        Assert.assertEquals(thirdAssignment.getOrder(), new BigInteger("1"), "wrong order");
         Assert.assertEquals(thirdAssignment.getVersion(), "any", "wrong version");
         Assert.assertEquals(thirdAssignment.getId(), "TEST:PassengerStopAssignment:ssp1:LOC", "wrong id");
         ScheduledStopPointRefStructure thirdScheduledPointRef = thirdAssignment.getScheduledStopPointRef().getValue();
@@ -459,7 +449,7 @@ public class NetexFranceProfileTest {
                                                     return null;
                                                 }
                                             })
-                                        .filter(frame -> frame != null)
+                                        .filter(Objects::nonNull)
                                         .collect(Collectors.toList());
     }
 
@@ -474,7 +464,7 @@ public class NetexFranceProfileTest {
                                                             return null;
                                                         }
                                                 })
-                                            .filter(frame -> frame != null)
+                                            .filter(Objects::nonNull)
                                             .collect(Collectors.toList());
 
     }
@@ -482,7 +472,7 @@ public class NetexFranceProfileTest {
 
 
     private void deleteFileCreated() {
-        File file = new File(generatedFilePath);
+        File file = new File(GENERATED_FILE_PATH);
         if(file.delete()){
             System.out.println("Fichier de test supprimé");
         }else{
@@ -492,14 +482,14 @@ public class NetexFranceProfileTest {
 
     private Context createContext() throws JAXBException {
 
-        File file = new File(generatedFilePath);
+        File file = new File(GENERATED_FILE_PATH);
         file.getParentFile().mkdirs();
 
 
         Line line = new Line();
         line.setObjectId("TEST:Line:l1");
         line.setRegistrationNumber("l1");
-        line.setCodifligne(codifLigne);
+        line.setCodifligne(CODIF_LIGNE);
         line.setName("TestLineName");
         line.setPublishedName("testPublishedName");
 
@@ -601,8 +591,8 @@ public class NetexFranceProfileTest {
         Timetable timetable = new Timetable();
         timetable.setObjectId("TEST:Timetable:t1");
         Period period = new Period();
-        LocalDate startLocalDate = new LocalDate("2020-01-01");
-        LocalDate endLocalDate = new LocalDate("2020-12-31");
+        LocalDate startLocalDate = LocalDate.of(2020, 1, 1);
+        LocalDate endLocalDate =  LocalDate.of(2020, 12, 31);
         period.setStartDate(startLocalDate);
         period.setEndDate(endLocalDate);
         ArrayList<Period> periods = new ArrayList<>();
@@ -618,21 +608,21 @@ public class NetexFranceProfileTest {
 
         VehicleJourneyAtStop vehicleJourneyAtStop1 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop1.setObjectId("TEST:TimetablePassingTime:tpt1");
-        org.joda.time.LocalTime time1 = new org.joda.time.LocalTime(7, 0, 0);
+        LocalTime time1 = LocalTime.of(7, 0, 0);
         vehicleJourneyAtStop1.setDepartureTime(time1);
         vehicleJourneyAtStop1.setArrivalTime(time1);
         vehicleJourneyAtStop1.setStopPoint(stopPoint1);
 
         VehicleJourneyAtStop vehicleJourneyAtStop2 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop2.setObjectId("TEST:TimetablePassingTime:tpt2");
-        org.joda.time.LocalTime time2 = new org.joda.time.LocalTime(7, 15, 0);
+        LocalTime time2 = LocalTime.of(7, 15, 0);
         vehicleJourneyAtStop2.setDepartureTime(time2);
         vehicleJourneyAtStop2.setArrivalTime(time2);
         vehicleJourneyAtStop2.setStopPoint(stopPoint2);
 
         VehicleJourneyAtStop vehicleJourneyAtStop3 = new VehicleJourneyAtStop();
         vehicleJourneyAtStop3.setObjectId("TEST:TimetablePassingTime:tpt3");
-        org.joda.time.LocalTime time3 = new org.joda.time.LocalTime(7, 30, 0);
+        LocalTime time3 = LocalTime.of(7, 30, 0);
         vehicleJourneyAtStop3.setDepartureTime(time3);
         vehicleJourneyAtStop3.setArrivalTime(time3);
         vehicleJourneyAtStop3.setStopPoint(stopPoint3);
@@ -695,7 +685,7 @@ public class NetexFranceProfileTest {
 
         Context context = new Context();
         JobDataTest jobData = new JobDataTest();
-        jobData.setPathName(testPath);
+        jobData.setPathName(TEST_PATH);
 
         NetexprofileExportParameters parameters = new NetexprofileExportParameters();
         parameters.setExportStops(false);

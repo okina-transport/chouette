@@ -26,8 +26,8 @@ import java.util.List;
 @ToString(callSuper = true)
 public class FareRule extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@Id
-	@GenericGenerator(name = "fare_rule_id_seq", strategy = "mobi.chouette.persistence.hibernate.ChouetteIdentifierGenerator", parameters = {@org.hibernate.annotations.Parameter(name = "sequence_name", value = "fare_rule_id_seq"), @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
-	@GeneratedValue(generator = "fare_rule_id_seq")
+	@SequenceGenerator(name = "fare_rule_id_seq", sequenceName = "fare_rule_id_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fare_rule_id_seq")
 	@Column(name = "id", nullable = false)
 	protected Long id;
 

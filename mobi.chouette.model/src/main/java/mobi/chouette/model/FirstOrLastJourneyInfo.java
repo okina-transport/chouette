@@ -1,16 +1,15 @@
 package mobi.chouette.model;
 
 import lombok.Data;
-
 import lombok.Setter;
 import mobi.chouette.model.type.ServicePosition;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 public class FirstOrLastJourneyInfo {
-    private final Date date;
+    private final LocalDate date;
 
     private final LocalTime time;
 

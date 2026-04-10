@@ -1,24 +1,22 @@
 package mobi.chouette.exchange;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.JSONUtil;
 import mobi.chouette.common.JobData;
 import mobi.chouette.common.file.FileStoreFactory;
-import mobi.chouette.common.file.FileStoreFactory;
 import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.validation.parameters.ValidationParameters;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 @Log4j
 public abstract class AbstractInputValidator implements InputValidator, Constant {

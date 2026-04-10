@@ -9,7 +9,7 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.VEHICL
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.ServiceJourney;
 import org.rutebanken.netex.model.ServiceJourneyInterchange;
 

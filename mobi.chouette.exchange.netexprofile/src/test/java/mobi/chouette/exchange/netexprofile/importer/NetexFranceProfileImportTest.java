@@ -13,8 +13,6 @@ import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.Referential;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -28,6 +26,8 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 import static mobi.chouette.common.Constant.*;
@@ -86,23 +86,23 @@ public class NetexFranceProfileImportTest {
         Timetable someCalendar = timetables.get("TESTORGANISATION:Timetable:PERH18-3615-Semaine-00-1101100");
         Assert.assertNotNull(someCalendar);
 
-        Assert.assertEquals(someCalendar.getIntDayTypes(),new Integer(108));
+        Assert.assertEquals(someCalendar.getIntDayTypes().intValue(),108);
 
-        Assert.assertEquals(someCalendar.getStartOfPeriod(), new LocalDate(2019,12,30));
-        Assert.assertEquals(someCalendar.getEndOfPeriod(),new LocalDate(2022,12,31));
+        Assert.assertEquals(someCalendar.getStartOfPeriod(), LocalDate.of(2019,12,30));
+        Assert.assertEquals(someCalendar.getEndOfPeriod(),LocalDate.of(2022,12,31));
 
         Assert.assertEquals(someCalendar.getCalendarDays().size(),20);
         CalendarDay someCalendarDay = someCalendar.getCalendarDays().get(0);
         Assert.assertNotNull(someCalendarDay);
 
-        Assert.assertEquals(someCalendarDay.getDate(),new LocalDate(2020,02,21));
-        Assert.assertEquals(someCalendarDay.getIncluded(),new Boolean(false));
+        Assert.assertEquals(someCalendarDay.getDate(),LocalDate.of(2020,2,21));
+        Assert.assertEquals(someCalendarDay.getIncluded(),Boolean.valueOf(false));
 
         List<Period> periods = someCalendar.getPeriods();
         Assert.assertEquals(periods.size(),1, "some periods were not parsed correctly");
         Period somePeriod = periods.get(0);
-        Assert.assertEquals(somePeriod.getStartDate(), new LocalDate(2020,01,06));
-        Assert.assertEquals(somePeriod.getEndDate(), new LocalDate(2022,07,03));
+        Assert.assertEquals(somePeriod.getStartDate(), LocalDate.of(2020,1,6));
+        Assert.assertEquals(somePeriod.getEndDate(), LocalDate.of(2022,7,3));
 
     }
 
@@ -246,10 +246,10 @@ public class NetexFranceProfileImportTest {
 
         Assert.assertEquals(someVehicleJourney.getTimetables().get(0).getObjectId(),"TESTORGANISATION:Timetable:STILE_19_1-Jan2020-Semaine-02");
         Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().size(),16);
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getArrivalTime(),new LocalTime(5,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getDepartureTime(),new LocalTime(5,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getArrivalTime(),new LocalTime(6,15,0));
-        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getDepartureTime(),new LocalTime(6,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getArrivalTime(),LocalTime.of(5,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(0).getDepartureTime(),LocalTime.of(5,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getArrivalTime(),LocalTime.of(6,15,0));
+        Assert.assertEquals(someVehicleJourney.getVehicleJourneyAtStops().get(15).getDepartureTime(),LocalTime.of(6,15,0));
 
         Assert.assertEquals(someVehicleJourney.getTrains().size(), 3);
 

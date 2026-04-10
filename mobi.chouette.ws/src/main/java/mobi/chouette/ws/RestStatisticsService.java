@@ -1,9 +1,10 @@
 package mobi.chouette.ws;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.extern.log4j.Log4j;
+import mobi.chouette.common.Color;
+import mobi.chouette.common.Constant;
+import mobi.chouette.model.statistics.LineStatistics;
+import mobi.chouette.service.TransitDataStatisticsService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -17,12 +18,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
-import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.Color;
-import mobi.chouette.common.Constant;
-import mobi.chouette.model.statistics.LineStatistics;
-import mobi.chouette.service.TransitDataStatisticsService;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j
 @RequestScoped

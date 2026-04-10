@@ -1,7 +1,6 @@
 package mobi.chouette.dao;
 
 import mobi.chouette.model.Referential;
-import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,16 +12,12 @@ import java.util.List;
 @Stateless
 public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements ReferentialDAO {
 
+    private static final String SCHEMA_NAME_REGEXP = "^[a-zA-Z0-9_]+$";
+
     @PersistenceContext(unitName = "public")
     EntityManager em;
 
     public ReferentialDAOImpl() { super(Referential.class); }
-
-
-//    @PersistenceContext(unitName = "public")
-//    public void setEntityManager(EntityManager em) {
-//        this.em = em;
-//    }
 
     @Override
     public List<String> getReferentials() {
@@ -44,14 +39,20 @@ public class ReferentialDAOImpl extends GenericDAOImpl<Referential> implements R
     @Override
     public void dropSchemaIfExists(String schema) {
         // can't use a parametrized query parameter for 'schema'
-        em.createNativeQuery("DROP SCHEMA IF EXISTS " + StringEscapeUtils.escapeSql(schema)  + " CASCADE").executeUpdate();
+        if (!schema.matches(SCHEMA_NAME_REGEXP)) {
+            throw new IllegalArgumentException("Invalid schema name");
+        }
+        em.createNativeQuery("DROP SCHEMA IF EXISTS " + schema  + " CASCADE").executeUpdate();
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
     public void renameSchema(String from,  String to) {
         // can't use a parametrized query parameter for 'from' and 'to'
-        em.createNativeQuery("ALTER SCHEMA " + StringEscapeUtils.escapeSql(from) + " RENAME TO " + StringEscapeUtils.escapeSql(to)).executeUpdate();
+        if (!from.matches(SCHEMA_NAME_REGEXP) || !to.matches(SCHEMA_NAME_REGEXP)) {
+            throw new IllegalArgumentException("Invalid schema name");
+        }
+        em.createNativeQuery("ALTER SCHEMA " + from + " RENAME TO " + to).executeUpdate();
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)

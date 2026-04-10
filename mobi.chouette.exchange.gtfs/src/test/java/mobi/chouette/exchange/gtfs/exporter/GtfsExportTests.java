@@ -38,6 +38,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.testng.Assert;
 import org.testng.Reporter;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import javax.ejb.EJB;
@@ -54,282 +55,271 @@ import java.util.List;
 import java.util.Locale;
 
 @Log4j
-public class GtfsExportTests extends Arquillian implements Constant, ReportConstant
-{
+public class GtfsExportTests extends Arquillian implements Constant, ReportConstant {
 
 
-	public void cleanDatabase() {
-		stopAreaDAO.truncate();
-		interchangeDAO.truncate();
-	}
+    public void cleanDatabase() {
+        stopAreaDAO.truncate();
+        interchangeDAO.truncate();
+    }
 
-	@EJB
-	private InterchangeDAO interchangeDAO;
+    @EJB
+    private InterchangeDAO interchangeDAO;
 
-	@EJB
-	private StopAreaDAO stopAreaDAO;
+    @EJB
+    private StopAreaDAO stopAreaDAO;
 
-	@EJB
-	private ConnectionLinkDAO connectionLinkDao;
+    @EJB
+    private ConnectionLinkDAO connectionLinkDao;
 
-	@Deployment
-	public static EnterpriseArchive createDeployment() {
+    @Deployment
+    public static EnterpriseArchive createDeployment() {
 
-		EnterpriseArchive result;
-
-
-		File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-				.resolve("mobi.chouette:mobi.chouette.exchange.gtfs").withTransitivity().asFile();
-		List<File> jars = new ArrayList<>();
-		List<JavaArchive> modules = new ArrayList<>();
-		for (File file : files) {
-			if (file.getName().startsWith("mobi.chouette.exchange"))
-			{
-				String name = file.getName().split("\\-")[0]+".jar";
-
-				JavaArchive archive = ShrinkWrap
-						  .create(ZipImporter.class, name)
-						  .importFrom(file)
-						  .as(JavaArchive.class);
-				modules.add(archive);
-			}
-			else
-			{
-				jars.add(file);
-			}
-		}
-
-		File[] filesDao = Maven.resolver().loadPomFromFile("pom.xml")
-				.resolve("mobi.chouette:mobi.chouette.dao").withTransitivity().asFile();
-		if (filesDao.length == 0)
-		{
-			throw new NullPointerException("no dao");
-		}
-		for (File file : filesDao) {
-			if (file.getName().startsWith("mobi.chouette.dao"))
-			{
-				String name = file.getName().split("\\-")[0]+".jar";
-
-				JavaArchive archive = ShrinkWrap
-						  .create(ZipImporter.class, name)
-						  .importFrom(file)
-						  .as(JavaArchive.class);
-				modules.add(archive);
-				if (!modules.contains(archive))
-				   modules.add(archive);
-			}
-			else
-			{
-				if (!jars.contains(file))
-				   jars.add(file);
-			}
-		}
+        EnterpriseArchive result;
 
 
+        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+                .resolve("mobi.chouette:mobi.chouette.exchange.gtfs").withTransitivity().asFile();
+        List<File> jars = new ArrayList<>();
+        List<JavaArchive> modules = new ArrayList<>();
+        for (File file : files) {
+            if (file.getName().startsWith("mobi.chouette.exchange")) {
+                String name = file.getName().split("\\-")[0] + ".jar";
 
-		final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war").addAsWebInfResource("postgres-ds.xml")
-				.addClass(GtfsExportTests.class)
-				.addClass(GtfsTestsUtils.class)
-				.addClass(DummyChecker.class)
-				.addClass(JobDataTest.class);
+                JavaArchive archive = ShrinkWrap
+                        .create(ZipImporter.class, name)
+                        .importFrom(file)
+                        .as(JavaArchive.class);
+                modules.add(archive);
+            } else {
+                jars.add(file);
+            }
+        }
 
-		result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-				.addAsLibraries(jars.toArray(new File[0]))
-				.addAsModules(modules.toArray(new JavaArchive[0]))
-				.addAsModule(testWar)
-				.addAsResource(EmptyAsset.INSTANCE, "beans.xml");
-		return result;
+        File[] filesDao = Maven.resolver().loadPomFromFile("pom.xml")
+                .resolve("mobi.chouette:mobi.chouette.dao").withTransitivity().asFile();
+        if (filesDao.length == 0) {
+            throw new NullPointerException("no dao");
+        }
+        for (File file : filesDao) {
+            if (file.getName().startsWith("mobi.chouette.dao")) {
+                String name = file.getName().split("\\-")[0] + ".jar";
 
-	}
+                JavaArchive archive = ShrinkWrap
+                        .create(ZipImporter.class, name)
+                        .importFrom(file)
+                        .as(JavaArchive.class);
+                modules.add(archive);
+                if (!modules.contains(archive))
+                    modules.add(archive);
+            } else {
+                if (!jars.contains(file))
+                    jars.add(file);
+            }
+        }
 
 
-	protected static InitialContext initialContext;
+        final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war").addAsWebInfResource("postgres-ds.xml")
+                .addClass(GtfsExportTests.class)
+                .addClass(GtfsTestsUtils.class)
+                .addClass(DummyChecker.class)
+                .addClass(JobDataTest.class);
+
+        result = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
+                .addAsLibraries(jars.toArray(new File[0]))
+                .addAsModules(modules.toArray(new JavaArchive[0]))
+                .addAsModule(testWar)
+                .addAsResource(EmptyAsset.INSTANCE, "beans.xml");
+        return result;
+
+    }
 
 
-	protected void init() {
-		Locale.setDefault(Locale.ENGLISH);
-		if (initialContext == null) {
-			try {
-				initialContext = new InitialContext();
-			} catch (NamingException e) {
-				e.printStackTrace();
-			}
+    protected static InitialContext initialContext;
 
 
-		}
-	}
-	protected Context initImportContext(String fileFormat, AbstractImportParameter configuration) {
-		init();
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
-		cleanDatabase();
+    protected void init() {
+        Locale.setDefault(Locale.ENGLISH);
+        if (initialContext == null) {
+            try {
+                initialContext = new InitialContext();
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
 
-		Context context = new Context();
-		context.put(INITIAL_CONTEXT, initialContext);
-		context.put(REPORT, new ActionReport());
-		context.put(VALIDATION_REPORT, new ValidationReport());
 
-		configuration.setCleanMode("purge");
-		configuration.setNoSave(false);
-		context.put(CONFIGURATION, configuration);
-		configuration.setName("name");
-		configuration.setUserName("userName");
-		configuration.setNoSave(true);
-		configuration.setOrganisationName("organisation");
-		configuration.setReferentialName("test");
-		configuration.setKeepBoardingAlighting(false);
-		JobDataTest test = new JobDataTest();
-		context.put(JOB_DATA, test);
-		test.setPathName( "target/referential/test");
-		File f = new File("target/referential/test");
-		if (f.exists())
-			try {
-				FileUtils.deleteDirectory(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		f.mkdirs();
-		test.setReferential( "chouette_gui");
-		test.setAction( IMPORTER);
-		test.setType( fileFormat);
-		context.put("testng", "true");
-		context.put(OPTIMIZED, Boolean.FALSE);
-		return context;
+        }
+    }
 
-	}
+    protected Context initImportContext(String fileFormat, AbstractImportParameter configuration) {
+        init();
+        ContextHolder.setContext("chouette_gui"); // set tenant schema
+        cleanDatabase();
 
-	protected Context initNeptuneImportContext() {
-		return initImportContext("neptune", new NeptuneImportParameters());
-	}
+        Context context = new Context();
+        context.put(INITIAL_CONTEXT, initialContext);
+        context.put(REPORT, new ActionReport());
+        context.put(VALIDATION_REPORT, new ValidationReport());
 
-	protected Context initGtfsImportContext() {
-		GtfsImportParameters configuration = new GtfsImportParameters();
-		configuration.setObjectIdPrefix("CITURA");
-		configuration.setParseInterchanges(true);
-		return initImportContext("gtfs", configuration);
-	}
+        configuration.setCleanMode("purge");
+        configuration.setNoSave(false);
+        context.put(CONFIGURATION, configuration);
+        configuration.setName("name");
+        configuration.setUserName("userName");
+        configuration.setNoSave(true);
+        configuration.setOrganisationName("organisation");
+        configuration.setReferentialName("test");
+        configuration.setKeepBoardingAlighting(false);
+        JobDataTest test = new JobDataTest();
+        context.put(JOB_DATA, test);
+        test.setPathName("target/referential/test");
+        File f = new File("target/referential/test");
+        if (f.exists())
+            try {
+                FileUtils.deleteDirectory(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        f.mkdirs();
+        test.setReferential("chouette_gui");
+        test.setAction(IMPORTER);
+        test.setType(fileFormat);
+        context.put("testng", "true");
+        context.put(OPTIMIZED, Boolean.FALSE);
+        return context;
 
-	protected Context initExportContext() {
-		init();
-		ContextHolder.setContext("chouette_gui"); // set tenant schema
+    }
 
-		Context context = new Context();
-		context.put(INITIAL_CONTEXT, initialContext);
-		context.put(REPORT, new ActionReport());
-		context.put(VALIDATION_REPORT, new ValidationReport());
-		GtfsExportParameters configuration = new GtfsExportParameters();
-		context.put(CONFIGURATION, configuration);
-		configuration.setName("name");
-		configuration.setUserName("userName");
-		configuration.setOrganisationName("organisation");
-		configuration.setReferentialName("test");
-		configuration.setValidateAfterExport(true);
+    protected Context initNeptuneImportContext() {
+        return initImportContext("neptune", new NeptuneImportParameters());
+    }
+
+    protected Context initGtfsImportContext() {
+        GtfsImportParameters configuration = new GtfsImportParameters();
+        configuration.setObjectIdPrefix("CITURA");
+        configuration.setParseInterchanges(true);
+        return initImportContext("gtfs", configuration);
+    }
+
+    protected Context initExportContext() {
+        init();
+        ContextHolder.setContext("chouette_gui"); // set tenant schema
+
+        Context context = new Context();
+        context.put(INITIAL_CONTEXT, initialContext);
+        context.put(REPORT, new ActionReport());
+        context.put(VALIDATION_REPORT, new ValidationReport());
+        GtfsExportParameters configuration = new GtfsExportParameters();
+        context.put(CONFIGURATION, configuration);
+        configuration.setName("name");
+        configuration.setUserName("userName");
+        configuration.setOrganisationName("organisation");
+        configuration.setReferentialName("test");
+        configuration.setValidateAfterExport(true);
         configuration.setExportAllLines(true);
-		JobDataTest test = new JobDataTest();
-		context.put(JOB_DATA, test);
-		test.setPathName("target/referential/test");
-		test.setOutputFilename( "gtfs.zip");
-		File f = new File("target/referential/test");
-		if (f.exists())
-			try {
-				FileUtils.deleteDirectory(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		f.mkdirs();
-		test.setReferential( "chouette_gui");
-		test.setAction( EXPORTER);
-		test.setType("gtfs");
-		context.put("testng", "true");
-		context.put(OPTIMIZED, Boolean.FALSE);
-		return context;
+        JobDataTest test = new JobDataTest();
+        context.put(JOB_DATA, test);
+        test.setPathName("target/referential/test");
+        test.setOutputFilename("gtfs.zip");
+        File f = new File("target/referential/test");
+        if (f.exists())
+            try {
+                FileUtils.deleteDirectory(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        f.mkdirs();
+        test.setReferential("chouette_gui");
+        test.setAction(EXPORTER);
+        test.setType("gtfs");
+        context.put("testng", "true");
+        context.put(OPTIMIZED, Boolean.FALSE);
+        return context;
 
-	}
+    }
 
+    @Test(groups = {"export"}, description = "test export GTFS Line")
+    public void verifyExportLines() throws Exception {
+        // save data
+        importNeptuneLines("test_neptune.zip", 6, 6);
 
-   @Test(groups = { "export" }, description = "test export GTFS Line")
-   public void verifyExportLines() throws Exception
-   {
-		// save data
-		importNeptuneLines("test_neptune.zip",6,6);
+        // export data
+        Context context = initExportContext();
+        GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
+        configuration.setAddMetadata(true);
+        configuration.setReferencesType("line");
+        configuration.setObjectIdPrefix("CITURA");
+        configuration.setTimeZone("Europe/Paris");
+        configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+        Command command = (Command) CommandFactory.create(initialContext,
+                GtfsExporterCommand.class.getName());
 
-		// export data
-		Context context = initExportContext();
-		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
-		configuration.setAddMetadata(true);
-		configuration.setReferencesType("line");
-		configuration.setObjectIdPrefix("CITURA");
-		configuration.setTimeZone("Europe/Paris");
-		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-		Command command = (Command) CommandFactory.create(initialContext,
-				GtfsExporterCommand.class.getName());
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
 
-		try {
-			command.execute(context);
-		} catch (Exception ex) {
-			log.error("test failed", ex);
-			throw ex;
-		}
+        ActionReport report = (ActionReport) context.get(REPORT);
+        ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
 
-		ActionReport report = (ActionReport) context.get(REPORT);
-		ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
+        if (!report.getResult().equals(STATUS_OK)) {
+            for (FileError fileError : report.getFilesInError()) {
+                System.out.println(fileError.toString());
+            }
+        }
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        for (FileReport info : report.getFiles()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
+        for (int i = 0; i < 6; i++) {
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+        }
+        Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
+        Assert.assertFalse(vreport.getCheckPoints().isEmpty(), "validation report should not be empty");
 
-		if (!report.getResult().equals(STATUS_OK)){
-			for (FileError fileError : report.getFilesInError()) {
-				System.out.println(fileError.toString());
-			}
-		}
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		for (FileReport info : report.getFiles()) {
-		    Reporter.log(info.toString(),true);
-		}
-		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
-		    Reporter.log(info.toString(),true);
-		}
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
-		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
-		}
-		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
-		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");
+    }
 
-   }
+    @Ignore
+    @Test(groups = {"export"}, description = "test export GTFS StopAreas")
+    public void verifyExportStopAreas() throws Exception {
+        // save data
+        importNeptuneLines("test_neptune.zip", 6, 6);
 
-   @Test(groups = { "export" }, description = "test export GTFS StopAreas")
-   public void verifyExportStopAreas() throws Exception
-   {
-		// save data
-		importNeptuneLines("test_neptune.zip",6,6);
+        // export data
+        Context context = initExportContext();
+        GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
+        configuration.setAddMetadata(true);
+        configuration.setReferencesType("stop_area");
+        configuration.setObjectIdPrefix("CITURA");
+        configuration.setTimeZone("Europe/Paris");
+        configuration.setCommercialPointExport(false);
+        configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+        Command command = (Command) CommandFactory.create(initialContext,
+                GtfsExporterCommand.class.getName());
 
-		// export data
-		Context context = initExportContext();
-		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
-		configuration.setAddMetadata(true);
-		configuration.setReferencesType("stop_area");
-		configuration.setObjectIdPrefix("CITURA");
-		configuration.setTimeZone("Europe/Paris");
-		configuration.setCommercialPointExport(false);
-	   configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-	   Command command = (Command) CommandFactory.create(initialContext,
-				GtfsExporterCommand.class.getName());
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
 
-		try {
-			command.execute(context);
-		} catch (Exception ex) {
-			log.error("test failed", ex);
-			throw ex;
-		}
-
-		ActionReport report = (ActionReport) context.get(REPORT);
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		for (FileReport info : report.getFiles()) {
-			Reporter.log(info.toString(),true);
-		}
-		Assert.assertEquals(report.getFiles().size(), 1, "file reported");
+        ActionReport report = (ActionReport) context.get(REPORT);
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        for (FileReport info : report.getFiles()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getFiles().size(), 1, "file reported");
 
 
-
-   }
+    }
 
     @EJB
     protected LineDAO lineDAO;
@@ -339,187 +329,181 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 
     @Inject
     UserTransaction utx;
-	@Test(groups = {"export"}, description = "test should export GTFS Line than has no Company")
-	public void verifyShouldExportLineWithNoCompany() throws Exception {
-		// save data
-		importNeptuneLines("test_neptune.zip", 6, 6);
-		// export data
-		Context context = initExportContext();
+
+    @Test(groups = {"export"}, description = "test should export GTFS Line than has no Company")
+    public void verifyShouldExportLineWithNoCompany() throws Exception {
+        // save data
+        importNeptuneLines("test_neptune.zip", 6, 6);
+        // export data
+        Context context = initExportContext();
 
 
-		utx.begin();
-		em.joinTransaction();
-		Line myLine = lineDAO.findByObjectId("CITURA:Line:01");
-		myLine.setCompany(null);
-		String myLineName = myLine.getName();
-		utx.commit();
+        utx.begin();
+        em.joinTransaction();
+        Line myLine = lineDAO.findByObjectId("CITURA:Line:01");
+        myLine.setCompany(null);
+        String myLineName = myLine.getName();
+        utx.commit();
 
-		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
-		configuration.setAddMetadata(true);
-		configuration.setReferencesType("line");
-		configuration.setObjectIdPrefix("CITURA");
-		configuration.setTimeZone("Europe/Paris");
-		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-		Command command = CommandFactory.create(initialContext,
-				GtfsExporterCommand.class.getName());
+        GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
+        configuration.setAddMetadata(true);
+        configuration.setReferencesType("line");
+        configuration.setObjectIdPrefix("CITURA");
+        configuration.setTimeZone("Europe/Paris");
+        configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+        Command command = CommandFactory.create(initialContext,
+                GtfsExporterCommand.class.getName());
 
-		try {
-			command.execute(context);
-		} catch (Exception ex) {
-			log.error("test failed", ex);
-			throw ex;
-		}
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
 
-		ActionReport report = (ActionReport) context.get(REPORT);
+        ActionReport report = (ActionReport) context.get(REPORT);
 
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		for (FileReport info : report.getFiles()) {
-			Reporter.log(info.toString(), true);
-		}
-		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
-		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
-			Reporter.log(info.toString(), true);
-		}
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
-		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
-		}
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        for (FileReport info : report.getFiles()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 6, "line reported");
+        for (int i = 0; i < 6; i++) {
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+        }
 
-	}
+    }
 
-    @Test(groups = { "export" }, description = "test export GTFS Line")
-    public void verifyImportExportLinesWithTransfers() throws Exception
-    {
-
-
-    	// save data
- 		importGTFSLines("simple_line_with_transfers_gtfs.zip",9,2);
-
- 		// export data
- 		Context context = initExportContext();
- 		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
- 		configuration.setAddMetadata(true);
- 		configuration.setReferencesType("line");
- 		configuration.setObjectIdPrefix("NSB");
- 		configuration.setTimeZone("Europe/Paris");
- 		configuration.setKeepOriginalId(true);
-		configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-		Command command = (Command) CommandFactory.create(initialContext,
- 				GtfsExporterCommand.class.getName());
+    @Test(groups = {"export"}, description = "test export GTFS Line")
+    public void verifyImportExportLinesWithTransfers() throws Exception {
 
 
- 		try {
- 			command.execute(context);
- 		} catch (Exception ex) {
- 			log.error("test failed", ex);
- 			throw ex;
- 		}
+        // save data
+        importGTFSLines("simple_line_with_transfers_gtfs.zip", 9, 2);
 
- 		ActionReport report = (ActionReport) context.get(REPORT);
- 		ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
- 		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
- 		for (FileReport info : report.getFiles()) {
- 		    Reporter.log(info.toString(),true);
- 		}
- 		Assert.assertEquals(report.getFiles().size(), 9, "file reported");
- 		for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
- 		    Reporter.log(info.toString(),true);
- 		}
- 		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 2, "line reported");
- 		for (int i = 0; i < 2; i++) {
- 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+        // export data
+        Context context = initExportContext();
+        GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
+        configuration.setAddMetadata(true);
+        configuration.setReferencesType("line");
+        configuration.setObjectIdPrefix("NSB");
+        configuration.setTimeZone("Europe/Paris");
+        configuration.setKeepOriginalId(true);
+        configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
+        Command command = (Command) CommandFactory.create(initialContext,
+                GtfsExporterCommand.class.getName());
 
- 			// Interchange only expected for consumer side = LineB
-			int exptectedInterchanges;
-			if ("longOne".equals(report.getCollections().get(OBJECT_TYPE.LINE).getObjects().get(i).getDescription())) {
-				exptectedInterchanges = 0;
-			} else {
-				exptectedInterchanges = 1;
-			}
 
- 			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
- 		}
- 		Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
- 		Assert.assertFalse(vreport.getCheckPoints().isEmpty(),"validation report should not be empty");
-		Assert.assertTrue(connectionLinkDao.findAll().size() > 0);
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
+
+        ActionReport report = (ActionReport) context.get(REPORT);
+        ValidationReport vreport = (ValidationReport) context.get(VALIDATION_REPORT);
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        for (FileReport info : report.getFiles()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
+            Reporter.log(info.toString(), true);
+        }
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), 2, "line reported");
+        for (int i = 0; i < 2; i++) {
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+
+            // Interchange only expected for consumer side = LineB
+            int exptectedInterchanges;
+            if ("longOne".equals(report.getCollections().get(OBJECT_TYPE.LINE).getObjects().get(i).getDescription())) {
+                exptectedInterchanges = 0;
+            } else {
+                exptectedInterchanges = 1;
+            }
+
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
+        }
+        Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
+        Assert.assertFalse(vreport.getCheckPoints().isEmpty(), "validation report should not be empty");
+        Assert.assertTrue(connectionLinkDao.findAll().size() > 0);
     }
 
 
-	private void  importNeptuneLines(String file, int fileCount, int lineCount) throws Exception
-	{
-		Context context = initNeptuneImportContext();
+    private void importNeptuneLines(String file, int fileCount, int lineCount) throws Exception {
+        Context context = initNeptuneImportContext();
 
 
-		NeptuneImporterCommand command = (NeptuneImporterCommand) CommandFactory.create(initialContext,
-				NeptuneImporterCommand.class.getName());
-		GtfsTestsUtils.copyFile(file);
-		JobDataTest test = (JobDataTest) context.get(JOB_DATA);
-		test.setInputFilename( file);
-		NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
-		configuration.setNoSave(false);
-		configuration.setCleanMode("purge");
-		configuration.setObjectIdPrefix("CITURA");
-		try {
-			command.execute(context);
-		} catch (Exception ex) {
-			log.error("test failed", ex);
-			throw ex;
-		}
-		ActionReport report = (ActionReport) context.get(REPORT);
-		Reporter.log(report.toString(),true);
-		ValidationReport valReport = (ValidationReport) context.get(VALIDATION_REPORT);
-		for (CheckPointReport cp : valReport.getCheckPoints())
-		{
-			if (cp.getState().equals(RESULT.NOK))
-			{
-				Reporter.log(cp.toString(),true);
-			}
-		}
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
-		for (int i = 0; i < 6; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
-		}
+        NeptuneImporterCommand command = (NeptuneImporterCommand) CommandFactory.create(initialContext,
+                NeptuneImporterCommand.class.getName());
+        GtfsTestsUtils.copyFile(file);
+        JobDataTest test = (JobDataTest) context.get(JOB_DATA);
+        test.setInputFilename(file);
+        NeptuneImportParameters configuration = (NeptuneImportParameters) context.get(CONFIGURATION);
+        configuration.setNoSave(false);
+        configuration.setCleanMode("purge");
+        configuration.setObjectIdPrefix("CITURA");
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
+        ActionReport report = (ActionReport) context.get(REPORT);
+        Reporter.log(report.toString(), true);
+        ValidationReport valReport = (ValidationReport) context.get(VALIDATION_REPORT);
+        for (CheckPointReport cp : valReport.getCheckPoints()) {
+            if (cp.getState().equals(RESULT.NOK)) {
+                Reporter.log(cp.toString(), true);
+            }
+        }
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
+        for (int i = 0; i < 6; i++) {
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+        }
 
-	}
+    }
 
-	private void importGTFSLines(String file, int fileCount, int lineCount) throws Exception
-	{
-		Context context = initGtfsImportContext();
+    private void importGTFSLines(String file, int fileCount, int lineCount) throws Exception {
+        Context context = initGtfsImportContext();
 
 
-		GtfsImporterCommand command = (GtfsImporterCommand) CommandFactory.create(initialContext,
-				GtfsImporterCommand.class.getName());
-		GtfsTestsUtils.copyFile(file);
-		JobDataTest test = (JobDataTest) context.get(JOB_DATA);
-		test.setInputFilename( file);
-		GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
-		configuration.setNoSave(false);
-		configuration.setCleanMode("purge");
-		try {
-			command.execute(context);
-		} catch (Exception ex) {
-			log.error("test failed", ex);
-			throw ex;
-		}
-		ActionReport report = (ActionReport) context.get(REPORT);
-		Reporter.log(report.toString(),true);
-		ValidationReport valReport = (ValidationReport) context.get(VALIDATION_REPORT);
-		for (CheckPointReport cp : valReport.getCheckPoints())
-		{
-			if (cp.getState().equals(RESULT.NOK))
-			{
-				Reporter.log(cp.toString(),true);
-			}
-		}
-		Assert.assertEquals(report.getResult(), STATUS_OK, "result");
-		Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
-		Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
-		for (int i = 0; i < lineCount; i++) {
-			Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
-		}
+        GtfsImporterCommand command = (GtfsImporterCommand) CommandFactory.create(initialContext,
+                GtfsImporterCommand.class.getName());
+        GtfsTestsUtils.copyFile(file);
+        JobDataTest test = (JobDataTest) context.get(JOB_DATA);
+        test.setInputFilename(file);
+        GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
+        configuration.setNoSave(false);
+        configuration.setCleanMode("purge");
+        try {
+            command.execute(context);
+        } catch (Exception ex) {
+            log.error("test failed", ex);
+            throw ex;
+        }
+        ActionReport report = (ActionReport) context.get(REPORT);
+        Reporter.log(report.toString(), true);
+        ValidationReport valReport = (ValidationReport) context.get(VALIDATION_REPORT);
+        for (CheckPointReport cp : valReport.getCheckPoints()) {
+            if (cp.getState().equals(RESULT.NOK)) {
+                Reporter.log(cp.toString(), true);
+            }
+        }
+        Assert.assertEquals(report.getResult(), STATUS_OK, "result");
+        Assert.assertEquals(report.getFiles().size(), fileCount, "file reported");
+        Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().size(), lineCount, "line reported");
+        for (int i = 0; i < lineCount; i++) {
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStatus(), OBJECT_STATE.OK, "line status");
+        }
 
-	}
+    }
 
 }

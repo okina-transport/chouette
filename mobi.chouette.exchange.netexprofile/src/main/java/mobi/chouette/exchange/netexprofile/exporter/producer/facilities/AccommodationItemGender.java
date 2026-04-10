@@ -1,6 +1,6 @@
 package mobi.chouette.exchange.netexprofile.exporter.producer.facilities;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.*;
 
 public class AccommodationItemGender extends FacilityProducer<CouchetteFacilityEnumeration> {

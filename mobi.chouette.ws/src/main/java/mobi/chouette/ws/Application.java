@@ -5,6 +5,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
+import mobi.chouette.ws.converter.JacksonObjectMapperProvider;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Context;
@@ -23,12 +25,13 @@ public class Application extends javax.ws.rs.core.Application implements
 
 	@Override
 	public Set<Class<?>> getClasses() {
-		Set<Class<?>> result = new HashSet<Class<?>>();
+		Set<Class<?>> result = new HashSet<>();
 		result.add(RestService.class);
 		result.add(RestAdmin.class);
 		result.add(RestStatisticsService.class);
 		result.add(RestNetexStopPlaceService.class);
 		result.add(HealthResource.class);
+		result.add(JacksonObjectMapperProvider.class);
 		return result;
 	}
 

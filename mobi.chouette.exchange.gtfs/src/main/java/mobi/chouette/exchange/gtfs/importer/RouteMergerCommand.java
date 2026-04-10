@@ -12,7 +12,7 @@ import mobi.chouette.dao.RoutePointDAO;
 import mobi.chouette.dao.RouteSectionDAO;
 import mobi.chouette.model.*;
 import mobi.chouette.model.type.PTDirectionEnum;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
