@@ -117,6 +117,12 @@ public class GtfsAgencyProducer extends AbstractProducer {
 			log.error("malformed fare URL " + fareUrl);
 		}
 
+		if (neptuneObject.getEmail() != null) {
+			agency.setAgencyEmail(neptuneObject.getEmail());
+		} else {
+			agency.setAgencyEmail(null);
+		}
+
 		try {
 			getExporter().getAgencyExporter().export(agency);
 		} catch (Exception e) {

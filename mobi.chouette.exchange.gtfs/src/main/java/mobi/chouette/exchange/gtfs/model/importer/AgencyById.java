@@ -17,7 +17,7 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 	private ReferentialDAO referentialDAO;
 
 	public static enum FIELDS {
-		agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang, agency_fare_url;
+		agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang, agency_fare_url, agency_email;
 	};
 
 	public static final String FILENAME = "agency.txt";
@@ -220,6 +220,12 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 			}
 		}
 
+		value = array[i++];
+		if (withValidation)
+			testExtraSpace(FIELDS.agency_email.name(), value, bean);
+		if (value != null && !value.trim().isEmpty())
+			bean.setAgencyEmail(STRING_CONVERTER.from(context, FIELDS.agency_email, value, false));
+
 		return bean;
 	}
 
@@ -240,6 +246,7 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 		bean.setAgencyPhone(null);
 		bean.setAgencyTimezone(null);
 		bean.setAgencyUrl(null);
+		bean.setAgencyEmail(null);
 	}
 
 	private boolean isUnknownAsIsoLanguage(String lang) {

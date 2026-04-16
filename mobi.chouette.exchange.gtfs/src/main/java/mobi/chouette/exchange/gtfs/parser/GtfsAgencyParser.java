@@ -152,6 +152,7 @@ public class GtfsAgencyParser implements Parser, Validator, Constant {
 		}
 		company.setUrl(AbstractConverter.toString(gtfsAgency.getAgencyUrl()));
 		company.setPhone(StringUtils.trimToNull(gtfsAgency.getAgencyPhone()));
+		company.setEmail(StringUtils.trimToNull(gtfsAgency.getAgencyEmail()));
 		String[] token = company.getObjectId().split(":");
 		company.setRegistrationNumber(token[2]);
 		company.setTimeZone(AbstractConverter.toString(gtfsAgency.getAgencyTimezone()));
