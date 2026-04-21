@@ -1122,12 +1122,15 @@ public class GtfsTripParser implements Parser, Validator, Constant {
 					destinationDisplay.setName("Generated: " + content);
 					destinationDisplay.setFrontText(content);
 					departureStopPoint.setDestinationDisplay(destinationDisplay);
+					jp.setDestinationDisplay(destinationDisplay);
 				} else {
 					log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea name is null");
 				}
 			} else {
 				log.warn("Cannot create synthetic DestinationDisplay for StopPoint " + departureStopPoint + " as StopArea is null");
 			}
+		}else{
+			jp.setDestinationDisplay(departureStopPoint.getDestinationDisplay());
 		}
 
 	}
