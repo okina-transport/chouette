@@ -126,6 +126,9 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
     }
 
     FlexibleLine createFlexibleLine(Line neptuneLine) {
+        if (!neptuneLine.getObjectId().contains(":FlexibleLine:")) {
+            neptuneLine.setObjectId(neptuneLine.getObjectId().replace(":Line:", ":FlexibleLine:"));
+        }
         FlexibleLine flexibleLine = netexFactory.createFlexibleLine();
 
         if (TadEnum.PARTIAL_TAD.equals(neptuneLine.getTad())){
