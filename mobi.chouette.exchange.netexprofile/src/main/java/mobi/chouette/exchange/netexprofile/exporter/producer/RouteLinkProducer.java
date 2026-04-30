@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.util.JtsGmlConverter;
 import net.opengis.gml._3.LineStringType;
-import org.rutebanken.netex.model.RoutePointRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 
 
