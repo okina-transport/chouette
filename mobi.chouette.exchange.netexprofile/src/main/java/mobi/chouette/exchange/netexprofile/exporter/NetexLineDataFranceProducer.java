@@ -17,7 +17,7 @@ import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.*;
-import mobi.chouette.model.type.ChouetteAreaEnum;import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.*;
@@ -296,6 +296,10 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
                         collectScheduledStopPoint(stopPoint.getScheduledStopPoint(), exportableNetexData);
                     }
                 }
+                for (RouteSection routeSection : journeyPattern.getRouteSections()) {
+                    collectPotentiallMissingScheduledStopPoint(routeSection.getFromScheduledStopPoint(), exportableNetexData);
+                    collectPotentiallMissingScheduledStopPoint(routeSection.getToScheduledStopPoint(), exportableNetexData);
+                }
             }
             for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
                 collectScheduledStopPoint(routePoint.getScheduledStopPoint(), exportableNetexData);
@@ -320,6 +324,24 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             } else {
                 throw new RuntimeException(
                         "ScheduledStopPoint with id : " + chouetteScheduledStopPoint.getObjectId() + " is not contained in a StopArea. Cannot produce ScheduledStopPoint.");
+            }
+        }
+    }
+
+    public void collectPotentiallMissingScheduledStopPoint(mobi.chouette.model.ScheduledStopPoint chouetteScheduledStopPoint, ExportableNetexData exportableNetexData) {
+        if (chouetteScheduledStopPoint != null) {
+            if (isSet(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject())) {
+                ScheduledStopPoint scheduledStopPoint = netexFactory.createScheduledStopPoint();
+                NetexProducerUtils.populateIdAndVersion(chouetteScheduledStopPoint, scheduledStopPoint);
+                if (!exportableNetexData.getScheduledStopPoints().containsKey(scheduledStopPoint.getId())) {
+                    LocationStructure locationStructure = new LocationStructure();
+                    locationStructure.setLatitude(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject().getLatitude());
+                    locationStructure.setLongitude(chouetteScheduledStopPoint.getContainedInStopAreaRef().getObject().getLongitude());
+                    scheduledStopPoint.setLocation(locationStructure);
+                    exportableNetexData.getScheduledStopPoints().put(scheduledStopPoint.getId(), scheduledStopPoint);
+                }
+            } else {
+               log.warn("ScheduledStopPoint with id : {} is not contained in a StopArea. Cannot produce ScheduledStopPoint.", chouetteScheduledStopPoint.getObjectId());
             }
         }
     }
