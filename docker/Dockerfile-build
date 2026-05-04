@@ -1,4 +1,4 @@
-FROM registry.okina.fr/mobiiti/chouette-base:1.5
+FROM registry.okina.fr/mobiiti/chouette-base:1.6
 
 RUN  yum list installed iproute \
         || sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
