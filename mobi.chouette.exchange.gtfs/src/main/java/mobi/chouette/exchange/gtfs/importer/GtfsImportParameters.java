@@ -39,7 +39,9 @@ import java.util.Arrays;
         "allowNonStandardGtfs",
         "fillMissingStopName",
         "fillMissingCoordinates",
-        "overwriteLineInformation"
+        "overwriteLineInformation",
+        "externalRefField",
+        "driverControllerCodeField"
 })
 @Getter
 @Setter
@@ -103,9 +105,15 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "fill_missing_coordinates", defaultValue = "")
     private String fillMissingCoordinates = "";
-	
-	@XmlElement(name = "overwrite_line_information", defaultValue = "false")
-	private boolean overwriteLineInformation = false;
+
+    @XmlElement(name = "overwrite_line_information", defaultValue = "false")
+    private boolean overwriteLineInformation = false;
+
+    @XmlElement(name = "external_ref_field", defaultValue = "")
+    private String externalRefField = "";
+
+    @XmlElement(name = "driver_controller_code_field", defaultValue = "")
+    private String driverControllerCodeField = "";
 
     public boolean isValid(Logger log, String[] allowedTypes) {
         if (!super.isValid(log)) return false;
