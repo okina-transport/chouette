@@ -16,6 +16,7 @@ import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
+import mobi.chouette.model.type.TadEnum;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
@@ -312,7 +313,7 @@ public class NetexProducerUtils {
     }
 
     public static JAXBElement<? extends LineRefStructure> createLineIDFMRef(Line neptuneLine, ObjectFactory netexFactory) {
-        boolean isFlexibleService = Boolean.TRUE.equals(neptuneLine.getFlexibleService());
+        boolean isFlexibleService = TadEnum.PARTIAL_TAD.equals(neptuneLine.getTad()) || TadEnum.FULL_TAD.equals(neptuneLine.getTad());
         LineRefStructure lrs;
         if (isFlexibleService) {
             lrs = netexFactory.createFlexibleLineRefStructure();
