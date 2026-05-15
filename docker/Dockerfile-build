@@ -10,7 +10,7 @@ RUN  yum list installed iproute \
         && yum install -y http://static.okina.fr/epel-release-latest-7.noarch.rpm \
         && yum-config-manager --disable pgdg12 pgdg13 \
         && yum install -y libzstd \
-        && yum -y install postgresql15
+        && yum -y install postgresql15-15.17*
 
 COPY chouette_iev/target/chouette.ear /tmp/chouette.ear
 
