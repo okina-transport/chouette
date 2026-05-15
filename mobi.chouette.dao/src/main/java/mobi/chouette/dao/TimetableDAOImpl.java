@@ -50,7 +50,7 @@ public class TimetableDAOImpl extends GenericDAOImpl<Timetable>implements Timeta
 								"   tt.int_day_types & :dayBitMask = :dayBitMask " +
 								"   and ttp.period_start <= cast(:date as date) " +
 								"   and ttp.period_end >= cast(:date as date) " +
-								"   and (ttd.\"date\" is null or ttd.\"date\" <> cast(:date as date) or ttd.in_out <> false) " +
+								"   and not exists (select 1 from time_table_dates ttd2 where ttd2.time_table_id = tt.id and ttd2.\"date\" = cast(:date as date) and ttd2.in_out = false )" +
 								") or (" +
 								"   ttd.\"date\" = cast(:date as date) and ttd.in_out = true" +
 								")")
