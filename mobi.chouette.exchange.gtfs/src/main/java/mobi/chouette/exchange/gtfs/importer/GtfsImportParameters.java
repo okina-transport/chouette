@@ -40,6 +40,7 @@ import java.util.Arrays;
         "fillMissingStopName",
         "fillMissingCoordinates",
         "overwriteLineInformation",
+        "allowGtfsFlex",
         "externalRefField",
         "driverControllerCodeField"
 })
@@ -108,6 +109,9 @@ public class GtfsImportParameters extends AbstractImportParameter {
 
     @XmlElement(name = "overwrite_line_information", defaultValue = "false")
     private boolean overwriteLineInformation = false;
+
+    @XmlElement(name = "allow_gtfs_flex", defaultValue = "false")
+    private boolean allowGtfsFlex = false;
 
     @XmlElement(name = "external_ref_field", defaultValue = "")
     private String externalRefField = "";
