@@ -35,8 +35,7 @@ public class StopPlaceParser implements Parser, Constant {
 
     private Map<String, Properties> tariffZoneProperties;
 
-    private KeyValueParser keyValueParser = new KeyValueParser();
-	public static org.rutebanken.netex.model.ObjectFactory netexFactory = null;
+    private final KeyValueParser keyValueParser = new KeyValueParser();
 
     public static final String FARE_ZONE = "fare-zone";
 
@@ -173,7 +172,7 @@ public class StopPlaceParser implements Parser, Constant {
             parseTariffZoneRefs(tariffZonesStruct, stopArea);
         }
 
-		if(stopPlace.getQuays() != null) {
+		if (stopPlace.getQuays() != null) {
 			Quays_RelStructure quaysStruct = stopPlace.getQuays();
 			if (quaysStruct != null) {
 				List<Object> quayObjects = quaysStruct.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList());

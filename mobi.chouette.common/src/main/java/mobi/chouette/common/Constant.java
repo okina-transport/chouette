@@ -140,8 +140,8 @@ public interface Constant {
     String TARGET_COMPANY_OBJECT_ID = "target_company_object_id";
     String TARGET_NETWORK_OBJECT_ID = "target_network_object_id";
 
-    String FARE_ATTRIBUTE = "fare_attribute";
-    String FARE_ATTRIBUTE_ID = "fare_attribute_id";
+    String QUAY = ":Quay:";
+    String STOP_PLACE = ":StopPlace:";
 
     String GTFS_TARGET_ROUTE_ID = "import_target_route_id";
     String GTFS_UNMATCHED_TARGET_ROUTE_ID = "unmatchedTargetRouteId";
