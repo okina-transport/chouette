@@ -378,24 +378,25 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
                 for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
                     if (stopPoint != null) {
-                        collectPassengerStopAssignment(exportableNetexData, parameters, stopPoint.getScheduledStopPoint());
+                        collectPassengerStopAssignment(exportableNetexData, parameters, stopPoint.getScheduledStopPoint(), BigInteger.valueOf(stopPoint.getPosition() + 1));
                     }
                 }
             }
             for (mobi.chouette.model.RoutePoint routePoint : route.getRoutePoints()) {
                 if (routePoint.getScheduledStopPoint() != null) {
-                    collectPassengerStopAssignment(exportableNetexData, parameters, routePoint.getScheduledStopPoint());
+                    collectPassengerStopAssignment(exportableNetexData, parameters, routePoint.getScheduledStopPoint(), BigInteger.valueOf(1));
                 }
             }
         }
     }
 
-    private void collectPassengerStopAssignment(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint) {
+    private void collectPassengerStopAssignment(ExportableNetexData exportableNetexData, NetexprofileExportParameters parameters, mobi.chouette.model.ScheduledStopPoint scheduledStopPoint, BigInteger order) {
         if (isSet(scheduledStopPoint)) {
             String passengerStopAssignmentIdSuffix = scheduledStopPoint.objectIdSuffix();
             String passengerStopAssignmentId = netexId(scheduledStopPoint.objectIdPrefix(), PASSENGER_STOP_ASSIGNMENT, passengerStopAssignmentIdSuffix);
             PassengerStopAssignment stopAssignment = createPassengerStopAssignment(scheduledStopPoint, passengerStopAssignmentId, parameters);
             NetexProducerUtils.addAlternateIdentifier(stopAssignment,passengerStopAssignmentId);
+            stopAssignment.setOrder(order);
             exportableNetexData.getStopAssignments().put(stopAssignment.getId(), stopAssignment);
         } else {
             throw new RuntimeException(
