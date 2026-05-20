@@ -7,6 +7,7 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.exchange.importer.updater.netex.NavigationPathMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopAreaMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopPlaceMapper;
+import mobi.chouette.exchange.importer.utils.MdmClient;
 import mobi.chouette.exchange.validation.ErrorCodeConverter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
@@ -20,7 +21,7 @@ import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.rutebanken.netex.client.PublicationDeliveryClient;
@@ -76,6 +77,8 @@ public class NeTExStopPlaceRegisterUpdater {
     private NavigationPathMapper navigationPathMapper = null;
     @EJB
     private ContenerChecker contenerChecker;
+    @EJB
+    private MdmClient mdmClient;
 
     public NeTExStopPlaceRegisterUpdater(PublicationDeliveryClient client) throws DatatypeConfigurationException {
         this.client = client;
@@ -366,8 +369,12 @@ public class NeTExStopPlaceRegisterUpdater {
                     + " stop places into stop areas. correlationId: "
                     + correlationId);
 
+            Set<String> stopPlaceSuperId = new HashSet<>(receivedStopPlaces.size());
+            Set<String> quaySuperId = new HashSet<>();
+
             // Create map of existing object id -> new object id
             for (StopPlace newStopPlace : receivedStopPlaces) {
+                stopPlaceSuperId.add(StringUtils.substringAfterLast(newStopPlace.getId(), ":"));
                 KeyListStructure keyList = newStopPlace.getKeyList();
                 addIdsToLookupMap(stopPlaceRegisterMap, keyList, newStopPlace.getId());
 
@@ -375,11 +382,16 @@ public class NeTExStopPlaceRegisterUpdater {
                 if (quays != null && quays.getQuayRefOrQuay() != null) {
                     for (Object b : quays.getQuayRefOrQuay().stream().map(JAXBElement::getValue).collect(Collectors.toList())) {
                         Quay q = (Quay) b;
+                        quaySuperId.add(StringUtils.substringAfterLast(q.getId(), ":"));
                         KeyListStructure qKeyList = q.getKeyList();
                         addIdsToLookupMap(stopPlaceRegisterMap, qKeyList, q.getId());
                     }
                 }
             }
+            Map<String, String> stopImportedIdToSuperIdMapping = mdmClient.getStopImportedId(stopPlaceSuperId);
+            Map<String, String> quayImportedIdToSuperIdMapping = mdmClient.getQuayImportedId(quaySuperId);
+            stopPlaceRegisterMap.putAll(stopImportedIdToSuperIdMapping);
+            stopPlaceRegisterMap.putAll(quayImportedIdToSuperIdMapping);
 
             log.info("Map with objectId->newObjectId now contains "
                     + stopPlaceRegisterMap.size()
@@ -704,12 +716,6 @@ public class NeTExStopPlaceRegisterUpdater {
                         map.put(id, newStopPlaceId);
                     }
                 }
-//				if (s != null && AUTO_CREATED_QUAY_SUFFIX.equals(s.getKey())) {
-//					String[] existingIds = StringUtils.split(s.getValue(), IMPORTED_ID_VALUE_SEPARATOR);
-//					for (String id : existingIds) {
-//						map.put(id, newStopPlaceId);
-//					}
-//				}
             }
         }
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.ContenerChecker;
 import mobi.chouette.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.client.TokenService;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -27,6 +28,8 @@ public class MdmUpdater {
 
     public static final String BEAN_NAME = "MdmUpdater";
 
+    private static final String CHOUETTE_UPDATE_RESOURCE = "chouette/updateImportedIds";
+
     @EJB
     private ContenerChecker contenerChecker;
 
@@ -47,7 +50,7 @@ public class MdmUpdater {
         HttpURLConnection connection = null;
 
         try {
-            URL url = new URL(mdmUrl);
+            URL url = new URL(StringUtils.appendIfMissing(mdmUrl, "/") + CHOUETTE_UPDATE_RESOURCE);
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-type", "application/json");
