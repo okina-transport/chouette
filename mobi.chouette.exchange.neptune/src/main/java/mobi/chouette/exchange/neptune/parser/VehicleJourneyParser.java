@@ -228,6 +228,10 @@ public class VehicleJourneyParser implements Parser, Constant, JsonExtension {
 		{
 			vehicleJourneyAtStop.setArrivalTime(vehicleJourneyAtStop.getDepartureTime());
 		}
+
+		if (vehicleJourneyAtStop.getVehicleJourney() == null){
+			vehicleJourneyAtStop.setVehicleJourney(vehicleJourney);
+		}
 	}
 
 
