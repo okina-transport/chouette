@@ -3,7 +3,6 @@ package mobi.chouette.model;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 
 @Getter
 @Setter
