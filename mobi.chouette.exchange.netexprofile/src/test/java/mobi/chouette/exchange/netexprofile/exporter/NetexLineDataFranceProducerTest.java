@@ -123,6 +123,11 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getDestinationDisplays().get("TEST:DestinationDisplay:dd1:LOC").getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getDestinationDisplays().get("TEST:DestinationDisplay:dd1:LOC").getFrontText().getValue(), "Test Destination Display");
 
+
+        for (DayTypeAssignment sharedDayTypeAssignment : exportableNetexDataResult.getSharedDayTypeAssignments()) {
+            Assert.assertTrue(sharedDayTypeAssignment.getOrder().compareTo(BigInteger.valueOf(0L)) > 0);
+        }
+
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getId(), "TEST:ServiceJourney:vj1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneys().get(0).getName().getValue(), "Test vehicle journey name");
@@ -197,6 +202,8 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(trainNumberLyonZurich.getForAdvertisement(), "123698745", "wrong for advertisement");
         Assert.assertEquals(trainNumberLyonZurich.getDescription().getValue(), "Lyon - Zurich", "wrong description");
         Assert.assertEquals(trainNumberLyonZurich.getVersion(), "any", "wrong version");
+
+
 
         deleteFileCreated();
 

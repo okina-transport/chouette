@@ -76,14 +76,14 @@ public class CalendarFranceProducer extends NetexProducer {
                         dayTypeAssignment = netexFactory.createDayTypeAssignment()
                                 .withId(dayTypeAssignmentId)
                                 .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
-                                .withOrder(BigInteger.valueOf(0))
+                                .withOrder(BigInteger.valueOf(i+1))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                                 .withOperatingPeriodRef(netexFactory.createOperatingPeriodRef(operatingPeriodRef));
                     } else {
                         dayTypeAssignment = netexFactory.createDayTypeAssignment()
                                 .withId(dayTypeAssignmentId)
                                 .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
-                                .withOrder(BigInteger.valueOf(0))
+                                .withOrder(BigInteger.valueOf(i+1))
                                 .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                                 .withDate(TimeUtil.toLocalDateFromJoda(p.getStartDate()).atStartOfDay());
                     }
@@ -100,14 +100,16 @@ public class CalendarFranceProducer extends NetexProducer {
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
                 }
 
+                int calendarIndex = 0;
                 for (CalendarDay day : timetable.getCalendarDays()) {
+
                     String dayTypeAssignmentId = netexDaytypeId.replace("DayType", "DayTypeAssignment");
                     dayTypeAssignmentId = dayTypeAssignmentId.substring(0, dayTypeAssignmentId.indexOf(":LOC")) + uniqueID + ":LOC";
                     uniqueID++;
                     DayTypeAssignment dayTypeAssignment = netexFactory.createDayTypeAssignment()
                             .withId(dayTypeAssignmentId)
                             .withVersion(NETEX_DEFAULT_OBJECT_VERSION)
-                            .withOrder(BigInteger.valueOf(0))
+                            .withOrder(BigInteger.valueOf(calendarIndex + 1))
                             .withDayTypeRef(netexFactory.createDayTypeRef(dayTypeRef))
                             .withDate(TimeUtil.toLocalDateFromJoda(day.getDate()).atStartOfDay());
 
@@ -124,6 +126,7 @@ public class CalendarFranceProducer extends NetexProducer {
 					keyValues.add(keyValue);
 					dayTypeAssignment.setKeyList(keyListStructureProducer.produce(keyValues, configuration.isExportExternalIds()));
                     exportableNetexData.getSharedDayTypeAssignments().add(dayTypeAssignment);
+                    calendarIndex ++;
                 }
 
             }
