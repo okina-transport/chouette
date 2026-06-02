@@ -23,10 +23,6 @@ public class RouteFranceProducer extends NetexProducer implements NetexEntityPro
 
         netexRoute.setName(ConversionUtil.getMultiLingualString(neptuneRoute.getName()));
 
-        if(Boolean.TRUE.equals(neptuneRoute.getLine().getFlexibleService()) && !neptuneRoute.getLine().getObjectId().contains(":FlexibleLine:")){
-            neptuneRoute.getLine().setObjectId(neptuneRoute.getLine().getObjectId().replace(":Line:", ":FlexibleLine:"));
-        }
-
         netexRoute.setLineRef(NetexProducerUtils.createLineIDFMRef(neptuneRoute.getLine(), netexFactory));
 
         netexRoute.setDirectionType(mapDirectionType(neptuneRoute.getDirection()));

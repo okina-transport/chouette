@@ -286,10 +286,6 @@ public class GtfsTripProducer extends AbstractProducer {
 		Route route = vj.getRoute();
 		Line line = route.getLine();
 		trip.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(line.getObjectId(), schemaPrefix, keepOriginalId),idParams));
-		if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(line.getTad())){
-			trip.setRouteId(trip.getRouteId().replace(":Line:", ":FlexibleLine:"));
-		}
-
 		if ("R".equals(route.getWayBack()) || PTDirectionEnum.R.equals(route.getDirection())) {
 			trip.setDirectionId(GtfsTrip.DirectionType.Inbound);
 		} else {

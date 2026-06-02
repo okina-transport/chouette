@@ -42,12 +42,8 @@ public class GtfsRouteProducer extends AbstractProducer
    public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String agencyId)
    {
       route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
-       if (IdFormat.TRIDENT.equals(idParams.getIdFormat()) && !TadEnum.NO_TAD.equals(neptuneObject.getTad())){
-           route.setRouteId(route.getRouteId().replace(":Line:", ":FlexibleLine:"));
-       }
 
-      Company c = neptuneObject.getCompany();
-
+	  Company c = neptuneObject.getCompany();
 
        if (c == null || !OrganisationTypeEnum.Authority.equals(c.getOrganisationType())) {
            // Use network->authority as agency if it is an authority
