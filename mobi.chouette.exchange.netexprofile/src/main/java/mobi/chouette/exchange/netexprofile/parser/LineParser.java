@@ -24,8 +24,7 @@ import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -51,6 +50,7 @@ public class LineParser implements Parser, Constant {
         NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
         LinesInFrame_RelStructure linesInFrameStruct = (LinesInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
+		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
 
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
@@ -175,6 +175,17 @@ public class LineParser implements Parser, Constant {
                 flexibleLineProperties.setBookingArrangement(bookingArrangement);
                 chouetteLine.setFlexibleLineProperties(flexibleLineProperties);
             }
+
+			if (netexLine.getBrandingRef() != null && netexLine.getBrandingRef().getRef() != null){
+				String brandingRef = netexLine.getBrandingRef().getRef();
+				if (brandingRefMap.containsKey(brandingRef)){
+					brandingRefMap.get(brandingRef).add(lineId);
+				}else{
+					Set<String> lineIdsByBrand = new HashSet<>();
+					lineIdsByBrand.add(lineId);
+					brandingRefMap.put(brandingRef, lineIdsByBrand);
+				}
+			}
 
         }
     }

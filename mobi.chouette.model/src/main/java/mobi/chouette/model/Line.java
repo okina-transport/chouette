@@ -506,6 +506,12 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	@JoinColumn(name = "accessibility_assessment_id", referencedColumnName = "id")
 	private AccessibilityAssessment accessibilityAssessment;
 
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "branding_id")
+	private Branding branding;
+
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
