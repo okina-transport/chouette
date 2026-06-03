@@ -5525,6 +5525,7 @@ ALTER TABLE chouette_gui.companies_key_values OWNER TO chouette;
 ALTER TABLE ONLY chouette_gui.companies_key_values
   ADD CONSTRAINT companies_key_values_lines_fkey FOREIGN KEY (company_id) REFERENCES chouette_gui.companies(id) ON DELETE CASCADE;
 
+ALTER TABLE chouette_gui.lines ADD COLUMN IF NOT EXISTS branding_id bigint;
 
 DO
 $$

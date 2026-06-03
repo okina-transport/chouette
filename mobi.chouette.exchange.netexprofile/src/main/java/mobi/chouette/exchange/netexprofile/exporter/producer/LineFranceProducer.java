@@ -12,15 +12,7 @@ import mobi.chouette.model.type.TadEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.FlexibleLine;
-import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.OperatorRefStructure;
-import org.rutebanken.netex.model.PresentationStructure;
-import org.rutebanken.netex.model.PrivateCodeStructure;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.util.stream.Collectors;
@@ -119,6 +111,12 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
                 netexLine.setKeyList(new KeyListStructure().withKeyValue(netexKeyValue));
             }
         }
+
+		if (neptuneLine.getBranding() != null){
+			BrandingRefStructure brandingRef = new BrandingRefStructure();
+			brandingRef.setRef(neptuneLine.getBranding().getName());
+			netexLine.setBrandingRef(brandingRef);
+		}
 
         NoticeProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, exportableNetexData.getNoticeAssignmentsTimetableFrame(), neptuneLine.getFootnotes(), neptuneLine);
 
