@@ -42,6 +42,9 @@ public class GtfsRouteProducer extends AbstractProducer
    public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String agencyId)
    {
       route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
+	  if (IdFormat.TRIDENT.equals(idParams.getIdFormat())){
+		  route.setRouteId(route.getRouteId().replace(":FlexibleLine:", ":Line:"));
+	  }
 
 	  Company c = neptuneObject.getCompany();
 

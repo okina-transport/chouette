@@ -16,17 +16,12 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.gtfs.exporter.producer.GtfsAttributionProducer;
-import mobi.chouette.exchange.gtfs.exporter.producer.GtfsFeedInfoProducer;
-import mobi.chouette.exchange.gtfs.model.GtfsAttribution;
-import mobi.chouette.exchange.gtfs.model.GtfsFeedInfo;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporter;
+import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.Attribution;
-import mobi.chouette.model.FeedInfo;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -49,9 +44,11 @@ public class GtfsAttributionsProducerCommand implements Command, Constant {
             String schemaPrefix = configuration.getObjectIdPrefix();
             boolean keepOriginal = configuration.isKeepOriginalId();
 
+			IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(), configuration.getCommercialPointIdPrefix());
+
             Integer gtfsAttributionsId = 1;
             for (Attribution neptuneAttribution : collection.getAttributions()) {
-                attributionProducer.save(neptuneAttribution, gtfsAttributionsId++, schemaPrefix, keepOriginal);
+                attributionProducer.save(neptuneAttribution, gtfsAttributionsId++, schemaPrefix, keepOriginal, idParams);
             }
 
             return SUCCESS;

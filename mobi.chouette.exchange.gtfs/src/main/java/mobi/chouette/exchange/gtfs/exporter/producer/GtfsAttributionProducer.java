@@ -12,6 +12,8 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.model.GtfsAttribution;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
+import mobi.chouette.exchange.gtfs.parameters.IdFormat;
+import mobi.chouette.exchange.gtfs.parameters.IdParameters;
 import mobi.chouette.model.Attribution;
 
 /**
@@ -25,13 +27,16 @@ public class GtfsAttributionProducer extends AbstractProducer
       super(exporter);
    }
 
-   public boolean save(Attribution neptuneObject, Integer nextId, String schemaPrefix, boolean keepOriginal) {
+   public boolean save(Attribution neptuneObject, Integer nextId, String schemaPrefix, boolean keepOriginal, IdParameters idParams) {
         GtfsAttribution attribution = new GtfsAttribution();
 
         attribution.setAttributionId(nextId.toString());
 
         if (neptuneObject.getLine() != null) {
             attribution.setRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getLine().getObjectId(), schemaPrefix, keepOriginal));
+			if (IdFormat.TRIDENT.equals(idParams.getIdFormat())){
+				attribution.setRouteId(attribution.getRouteId().replace(":FlexibleLine:", ":Line:"));
+			}
         }
 
         if (neptuneObject.getVehicleJourney() != null) {

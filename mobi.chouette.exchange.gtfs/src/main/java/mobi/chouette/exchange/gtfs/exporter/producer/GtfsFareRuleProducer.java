@@ -33,6 +33,9 @@ public class GtfsFareRuleProducer extends AbstractProducer {
 			rule.setFareId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), IdFormat.TRIDENT.equals(configuration.getIdFormat())));
 			if (neptuneObject.getLines() != null) {
 				rule.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(line.getObjectId(), prefix, configuration.isKeepOriginalId()), idParams));
+				if (IdFormat.TRIDENT.equals(idParams.getIdFormat())){
+					rule.setRouteId(rule.getRouteId().replace(":FlexibleLine:", ":Line:"));
+				}
 			}
 			if (neptuneObject.getOriginId() != null) {
 				rule.setOriginId(neptuneObject.getOriginId());
