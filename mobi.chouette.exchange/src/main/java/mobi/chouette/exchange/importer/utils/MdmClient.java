@@ -3,6 +3,7 @@ package mobi.chouette.exchange.importer.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
+import mobi.chouette.model.util.OkinaIdentifier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -20,6 +21,7 @@ import org.rutebanken.netex.client.TokenService;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,7 @@ import static mobi.chouette.common.Constant.*;
 @Singleton(name = "MdmClient")
 public class MdmClient {
 
-    private static final String MDM_URL = System.getProperty("iev.mdm.url");
+    private static final String MDM_URL = System.getenv("CHOUETTE_MDM_URL");
 
     private static final String QUAYS_RESOURCE = "quays/super-identifiers";
 
@@ -72,7 +74,7 @@ public class MdmClient {
 
                     if (entity != null) {
                         String json = EntityUtils.toString(entity);
-                        List<mobi.chouette.model.util.OkinaIdentifier> identifiers = mapper.readValue(
+                        List<OkinaIdentifier> identifiers = mapper.readValue(
                                 json,
                                 new TypeReference<List<mobi.chouette.model.util.OkinaIdentifier>>() {
                                 }
@@ -83,11 +85,13 @@ public class MdmClient {
                                     StringUtils.upperCase(SUPERSPACE_PREFIX) + type + identifier.getSuperId()
                             );
                         }
+                    } else {
+                        log.error("Error parsing response body from MDM");
                     }
                 }
             }
         } catch (Exception e) {
-            log.error(e);
+            log.error("Error retrieving imported id from MDM", e);
         }
         return importedIdSuperIdMapping;
     }
