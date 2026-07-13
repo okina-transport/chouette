@@ -11,7 +11,9 @@ import mobi.chouette.exchange.CommandCancelledException;
 import mobi.chouette.exchange.ProgressionCommand;
 import mobi.chouette.exchange.exporter.AbstractExporterCommand;
 import mobi.chouette.exchange.importer.ExportLineAndRouteIdsCommand;
+import mobi.chouette.exchange.importer.GenerateFirstOrLastJourneyInfo;
 import mobi.chouette.exchange.importer.GenerateIneoVJMappingCsv;
+import mobi.chouette.exchange.importer.GenerateTheoreticalStopMonitoringInfo;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ReportConstant;
@@ -94,6 +96,12 @@ public class TransferExporterCommand extends AbstractExporterCommand implements 
 			Command generateIneoVJMappingCsv = CommandFactory.create(initialContext, GenerateIneoVJMappingCsv.class.getName());
 			generateIneoVJMappingCsv.execute(context);
 
+            Command generateTheoreticalStopMonitoringInfo = CommandFactory.create(initialContext, GenerateTheoreticalStopMonitoringInfo.class.getName());
+            generateTheoreticalStopMonitoringInfo.execute(context);
+
+			Command generateFirstOrLastJourneyInfo = CommandFactory.create(initialContext, GenerateFirstOrLastJourneyInfo.class.getName());
+			generateFirstOrLastJourneyInfo.execute(context);
+			
 			result = SUCCESS;
 
 			progression.terminate(context, 1);
