@@ -7,9 +7,11 @@
  */
 package mobi.chouette.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import mobi.chouette.model.util.LimitationStatusEnum;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString(callSuper = true, exclude = { "line" })
 public class AccessibilityAssessment extends NeptuneIdentifiedObject {
 
 	@Id
@@ -38,6 +41,7 @@ public class AccessibilityAssessment extends NeptuneIdentifiedObject {
 	protected AccessibilityLimitation accessibilityLimitation;
 
 	@OneToOne(mappedBy = "accessibilityAssessment")
+	@JsonIgnore
 	private Line line;
 
 	@OneToMany(mappedBy = "accessibilityAssessment")
