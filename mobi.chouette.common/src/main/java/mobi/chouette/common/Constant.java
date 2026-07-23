@@ -76,6 +76,7 @@ public interface Constant {
     String NULL = "\\N";
 
     String BUFFER_VJAS = "buffer_vjas";
+    String VJAS_TRANSLATIONS = "vjas_translations";
 
     String CREATION_DATE = "CreationDate";
 

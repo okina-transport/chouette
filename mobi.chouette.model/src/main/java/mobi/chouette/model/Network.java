@@ -8,30 +8,17 @@
 package mobi.chouette.model;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.PTNetworkSourceTypeEnum;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -228,6 +215,18 @@ public class Network extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(mappedBy = "network")
 	private List<Line> lines = new ArrayList<Line>(0);
+
+	/**
+	 * translations
+	 *
+	 * @param translations
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "network", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<NetworkTranslation> translations = new ArrayList<>(0);
 
 	/**
 	 * Position des réseaux

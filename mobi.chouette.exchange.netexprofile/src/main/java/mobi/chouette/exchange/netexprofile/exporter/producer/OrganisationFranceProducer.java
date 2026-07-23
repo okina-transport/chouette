@@ -5,25 +5,20 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.type.OrganisationTypeEnum;
-import org.rutebanken.netex.model.BrandingRefStructure;
-import org.rutebanken.netex.model.ContactStructure;
-import org.rutebanken.netex.model.Operator;
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.rutebanken.netex.model.PrivateCodeStructure;
+import org.rutebanken.netex.model.*;
 
 import static mobi.chouette.common.Constant.CONFIGURATION;
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 
 public class OrganisationFranceProducer extends NetexProducer implements NetexEntityProducer<Organisation_VersionStructure, Company> {
 
-	private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
+    private static final KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
 
     @Override
     public Organisation_VersionStructure produce(Context context, Company company) {
 
         Organisation_VersionStructure organisation = null;
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+        NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
         if (OrganisationTypeEnum.Operator.equals(company.getOrganisationType())) {
             Operator operator = netexFactory.createOperator();
@@ -55,12 +50,24 @@ public class OrganisationFranceProducer extends NetexProducer implements NetexEn
         organisation.setName(ConversionUtil.getMultiLingualString(company.getName()));
         organisation.setLegalName(ConversionUtil.getMultiLingualString(company.getLegalName()));
         organisation.setShortName(ConversionUtil.getMultiLingualString(company.getShortName()));
-		organisation.setKeyList(keyListStructureProducer.produce(company.getKeyValues(), configuration.isExportExternalIds()));
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, java.util.List<mobi.chouette.model.Translation>> companyFieldValueTranslations =
+                (java.util.Map<String, java.util.List<mobi.chouette.model.Translation>>) context.get(mobi.chouette.exchange.netexprofile.Constant.COMPANY_FIELD_VALUE_TRANSLATIONS);
+        NetexProducerUtils.addAlternativeTexts(organisation,
+                NetexProducerUtils.getTranslations(company.getTranslations(), companyFieldValueTranslations, "name", company.getName()), "name", "Name");
+        NetexProducerUtils.addAlternativeTexts(organisation,
+                NetexProducerUtils.getTranslations(company.getTranslations(), companyFieldValueTranslations, "phone", company.getPhone()), "phone", "Phone");
+        NetexProducerUtils.addAlternativeTexts(organisation,
+                NetexProducerUtils.getTranslations(company.getTranslations(), companyFieldValueTranslations, "url", company.getUrl()), "url", "Url");
+        NetexProducerUtils.addAlternativeTexts(organisation,
+                NetexProducerUtils.getTranslations(company.getTranslations(), companyFieldValueTranslations, "email", company.getEmail()), "email", "Email");
+        organisation.setKeyList(keyListStructureProducer.produce(company.getKeyValues(), configuration.isExportExternalIds()));
 
-        if (isSet(company.getPhone(), company.getUrl())) {
+        if (isSet(company.getPhone(), company.getUrl(), company.getEmail())) {
             ContactStructure contactStructure = netexFactory.createContactStructure();
             contactStructure.setPhone(company.getPhone());
             contactStructure.setUrl(company.getUrl());
+            contactStructure.setEmail(company.getEmail());
             organisation.setContactDetails(contactStructure);
         }
 

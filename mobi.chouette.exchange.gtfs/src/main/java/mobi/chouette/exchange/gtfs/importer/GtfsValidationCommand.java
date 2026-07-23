@@ -34,9 +34,9 @@ public class GtfsValidationCommand implements Command, Constant {
 
 	public static final String COMMAND = "GtfsValidationCommand";
 
-	private static final List<String> processableAllFiles = Arrays.asList(GTFS_AGENCY_FILE, GTFS_STOPS_FILE, GTFS_ROUTES_FILE, GTFS_SHAPES_FILE, GTFS_TRIPS_FILE, GTFS_STOP_TIMES_FILE, GTFS_CALENDAR_FILE, GTFS_CALENDAR_DATES_FILE, GTFS_FREQUENCIES_FILE, GTFS_TRANSFERS_FILE);
+	private static final List<String> processableAllFiles = Arrays.asList(GTFS_AGENCY_FILE, GTFS_STOPS_FILE, GTFS_ROUTES_FILE, GTFS_SHAPES_FILE, GTFS_TRIPS_FILE, GTFS_STOP_TIMES_FILE, GTFS_CALENDAR_FILE, GTFS_CALENDAR_DATES_FILE, GTFS_FREQUENCIES_FILE, GTFS_TRANSFERS_FILE, GTFS_TRANSLATIONS_FILE);
 
-	private static final List<String> processableStopAreaFiles = Arrays.asList(GTFS_STOPS_FILE, GTFS_TRANSFERS_FILE);
+	private static final List<String> processableStopAreaFiles = Arrays.asList(GTFS_STOPS_FILE, GTFS_TRANSFERS_FILE, GTFS_TRANSLATIONS_FILE);
 
 	private static final List<String> GTFS_FARES_V2_FILE = Arrays.stream(GtfsFareV2File.values()).map(GtfsFareV2File::getFilename).collect(Collectors.toList());
 
@@ -159,6 +159,11 @@ public class GtfsValidationCommand implements Command, Constant {
 				GtfsTransferParser transferParser = (GtfsTransferParser) ParserFactory.create(GtfsTransferParser.class.getName());
 				transferParser.validate(context);
 			}
+
+			// translations.txt
+			GtfsTranslationParser translationParser = (GtfsTranslationParser) ParserFactory.create(GtfsTranslationParser.class.getName());
+			translationParser.validate(context);
+
 			result = SUCCESS;
 		} catch (GtfsException e) {
 			// log.error(e,e);

@@ -35,6 +35,11 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
 
         netexNetwork.setName(ConversionUtil.getMultiLingualString(neptuneNetwork.getName()));
         netexNetwork.setDescription(ConversionUtil.getMultiLingualString(neptuneNetwork.getDescription()));
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, java.util.List<mobi.chouette.model.Translation>> networkFieldValueTranslations =
+                (java.util.Map<String, java.util.List<mobi.chouette.model.Translation>>) context.get(mobi.chouette.exchange.netexprofile.Constant.NETWORK_FIELD_VALUE_TRANSLATIONS);
+        NetexProducerUtils.addAlternativeTexts(netexNetwork,
+                NetexProducerUtils.getTranslations(neptuneNetwork.getTranslations(), networkFieldValueTranslations, "name", neptuneNetwork.getName()), "name", "Name");
 
         if (neptuneNetwork.getCompany() != null) {
             AuthorityRef authorityRef = netexFactory.createAuthorityRef();
@@ -50,7 +55,7 @@ public class NetworkFranceProducer extends NetexProducer implements NetexEntityP
 
         LineRefs_RelStructure lineRefs_relStructure = netexFactory.createLineRefs_RelStructure();
         List<JAXBElement<? extends LineRefStructure>> jaxbElementsLineRefStructure = new ArrayList<>();
-        for(Line line : neptuneNetwork.getLines()){
+        for (Line line : neptuneNetwork.getLines()) {
             JAXBElement<? extends LineRefStructure> jaxbElementLineRefStructure = NetexProducerUtils.createLineIDFMRef(line, netexFactory);
             jaxbElementsLineRefStructure.add(jaxbElementLineRefStructure);
         }

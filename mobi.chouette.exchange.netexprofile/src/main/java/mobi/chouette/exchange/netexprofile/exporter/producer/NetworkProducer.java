@@ -15,7 +15,7 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
     @Override
     public org.rutebanken.netex.model.Network produce(Context context, mobi.chouette.model.Network neptuneNetwork) {
         org.rutebanken.netex.model.Network netexNetwork = netexFactory.createNetwork();
-        
+
         NetexProducerUtils.populateId(neptuneNetwork, netexNetwork);
 
         if (isSet(neptuneNetwork.getVersionDate())) {
@@ -32,10 +32,15 @@ public class NetworkProducer extends NetexProducer implements NetexEntityProduce
 
         netexNetwork.setName(ConversionUtil.getMultiLingualString(neptuneNetwork.getName()));
         netexNetwork.setDescription(ConversionUtil.getMultiLingualString(neptuneNetwork.getDescription()));
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, java.util.List<mobi.chouette.model.Translation>> networkFieldValueTranslations =
+                (java.util.Map<String, java.util.List<mobi.chouette.model.Translation>>) context.get(mobi.chouette.exchange.netexprofile.Constant.NETWORK_FIELD_VALUE_TRANSLATIONS);
+        NetexProducerUtils.addAlternativeTexts(netexNetwork,
+                NetexProducerUtils.getTranslations(neptuneNetwork.getTranslations(), networkFieldValueTranslations, "name", neptuneNetwork.getName()), "name", "Name");
 
-        if(neptuneNetwork.getCompany() != null) {
+        if (neptuneNetwork.getCompany() != null) {
             AuthorityRef authorityRef = netexFactory.createAuthorityRef();
-        	NetexProducerUtils.populateReference(neptuneNetwork.getCompany(), authorityRef, true);
+            NetexProducerUtils.populateReference(neptuneNetwork.getCompany(), authorityRef, true);
             netexNetwork.setTransportOrganisationRef(netexFactory.createAuthorityRef(authorityRef));
         }
 

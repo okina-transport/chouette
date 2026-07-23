@@ -447,6 +447,18 @@ public class StopArea extends NeptuneLocalizedObject {
 	private List<StopArea> containedStopAreas = new ArrayList<>(0);
 
 	/**
+	 * translations
+	 *
+	 * @param translations
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "stopArea", cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<StopAreaTranslation> translations = new ArrayList<>(0);
+
+	/**
 	 * stop points children<br/>
 	 * only for areaType = BoardingPosition and Quay
 	 * 

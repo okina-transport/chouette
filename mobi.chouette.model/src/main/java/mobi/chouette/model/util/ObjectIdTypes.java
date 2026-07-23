@@ -138,4 +138,9 @@ public interface ObjectIdTypes {
      */
     String FARE_KEY = "Fare";
 
+    /**
+     * default objectId type for translations
+     */
+    String TRANSLATION_KEY = "Translation";
+
 }

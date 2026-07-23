@@ -5,11 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.BoardingAlightingPossibilityEnum;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import java.time.LocalTime;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -211,6 +209,16 @@ public class VehicleJourneyAtStop extends NeptuneIdentifiedObject {
 	@JoinTable(name = "footnotes_vehicle_journey_at_stops", joinColumns = { @JoinColumn(name = "vehicle_journey_at_stop_id") }, inverseJoinColumns = { @JoinColumn(name = "footnote_id") })
 	private List<Footnote> footnotes = new ArrayList<>(0);
 
-
+	/**
+	 * translations
+	 *
+	 * @param translations
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "vehicleJourneyAtStop", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<VehicleJourneyAtStopTranslation> translations = new ArrayList<>(0);
 
 }
