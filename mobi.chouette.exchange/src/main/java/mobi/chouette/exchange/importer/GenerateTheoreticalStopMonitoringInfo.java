@@ -22,6 +22,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
@@ -85,6 +86,12 @@ public class GenerateTheoreticalStopMonitoringInfo implements Command {
                 .filter(isProviderForCsvGeneration())
                 .filter(provider -> datasetIds.contains(provider.getCode()))
                 .collect(Collectors.toList());
+
+        providerDAO.getAllProviders().stream()
+                .filter(p -> p.getCode() != null && p.getCode().toLowerCase().contains("quevilly"))
+                .forEach(p -> log.info("code=[{}] len={} bytes={}",
+                        p.getCode(), p.getCode().length(),
+                        Arrays.toString(p.getCode().getBytes(StandardCharsets.UTF_8))));
 
 
         for (Provider referential : referentials) {
