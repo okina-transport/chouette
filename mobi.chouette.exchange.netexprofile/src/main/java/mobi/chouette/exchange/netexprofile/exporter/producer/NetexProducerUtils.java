@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
+import mobi.chouette.model.*;
 import mobi.chouette.model.AccessibilityAssessment;
 import mobi.chouette.model.AccessibilityLimitation;
 import mobi.chouette.model.JourneyPattern;
@@ -11,18 +12,15 @@ import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.StopArea;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.DayTypeEnum;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import mobi.chouette.model.type.OrganisationTypeEnum;
+import org.apache.commons.collections4.CollectionUtils;
 import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducer.NETEX_DEFAULT_OBJECT_VERSION;
@@ -30,6 +28,39 @@ import static mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes.*;
 
 @Log4j
 public class NetexProducerUtils {
+
+    private static final AtomicInteger idCounter = new AtomicInteger(0);
+
+    /**
+     * Translations for a single field of an entity: the entity's own persisted translations (record_id-keyed
+     * GTFS translations.txt rows, attached via JPA) plus any legacy field_value-keyed row (no owner FK) whose
+     * fieldName matches objectFieldName and rawValue matches the entity's current untranslated text - kept out
+     * of ownedTranslations because such rows never resolve to an owner at import time and so can't live on the
+     * entity itself.
+     */
+    public static List<Translation> getTranslations(List<? extends Translation> ownedTranslations,
+                                                      Map<String, List<Translation>> fieldValueTranslations,
+                                                      String objectFieldName, String rawValue) {
+        List<Translation> result = new ArrayList<>(ownedTranslations);
+        if (fieldValueTranslations == null || rawValue == null) {
+            return result;
+        }
+        List<Translation> fieldValueCandidates = fieldValueTranslations.get(rawValue);
+        if (fieldValueCandidates == null) {
+            return result;
+        }
+        for (Translation candidate : fieldValueCandidates) {
+            if (!objectFieldName.equals(candidate.getFieldName())) {
+                continue;
+            }
+            boolean alreadyPresent = result.stream().anyMatch(t ->
+                    objectFieldName.equals(t.getFieldName()) && candidate.getLanguage().equals(t.getLanguage()));
+            if (!alreadyPresent) {
+                result.add(candidate);
+            }
+        }
+        return result;
+    }
 
     public static boolean isSet(Object... objects) {
         for (Object val : objects) {
@@ -141,8 +172,6 @@ public class NetexProducerUtils {
         return dayOfWeekEnumerations;
     }
 
-    private static final AtomicInteger idCounter = new AtomicInteger(0);
-
     public static String netexId(String objectIdPrefix, String elementName, String objectIdSuffix) {
         return objectIdPrefix + OBJECT_ID_SPLIT_CHAR + elementName + OBJECT_ID_SPLIT_CHAR + objectIdSuffix;
     }
@@ -205,8 +234,7 @@ public class NetexProducerUtils {
     public static String translateType(NeptuneObject v) {
         if (v instanceof Timetable) {
             return "DayType";
-        } else if (v instanceof Company) {
-            Company c = (Company) v;
+        } else if (v instanceof Company c) {
             if (OrganisationTypeEnum.Authority.equals(c.getOrganisationType())) {
                 return "Authority";
             } else if (OrganisationTypeEnum.Operator.equals(c.getOrganisationType())) {
@@ -218,8 +246,7 @@ public class NetexProducerUtils {
             return "ServiceJourney";
         } else if (v instanceof JourneyPattern) {
             return "JourneyPattern";
-        } else if (v instanceof StopArea) {
-            StopArea sa = (StopArea) v;
+        } else if (v instanceof StopArea sa) {
             if (ChouetteAreaEnum.BoardingPosition.equals(sa.getAreaType())) {
                 return "Quay";
             } else if (ChouetteAreaEnum.CommercialStopPoint.equals(sa.getAreaType())) {
@@ -319,7 +346,7 @@ public class NetexProducerUtils {
         } else {
             lrs = netexFactory.createLineRefStructure();
         }
-        if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))){
+        if (!(neptuneLine.getObjectId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))) {
             lrs.setRef(neptuneLine.getObjectId() + OBJECT_ID_SPLIT_CHAR + LOC);
         } else {
             lrs.setRef(neptuneLine.getObjectId());
@@ -332,7 +359,7 @@ public class NetexProducerUtils {
 
     public static void addAlternateIdentifier(DataManagedObjectStructure objectToFill, String alternateIdentifier) {
 
-        if (objectToFill.getKeyList() == null){
+        if (objectToFill.getKeyList() == null) {
             objectToFill.setKeyList(new KeyListStructure());
         }
         KeyValueStructure alternateIdKey = new KeyValueStructure();
@@ -344,14 +371,14 @@ public class NetexProducerUtils {
 
     public static void revertPrefixInAlternateIdentifier(DataManagedObjectStructure objectToModify, String originalPrefix, String customPrefix) {
 
-        if (objectToModify.getKeyList() == null){
+        if (objectToModify.getKeyList() == null) {
             return;
         }
 
         for (KeyValueStructure keyValueStructure : objectToModify.getKeyList().getKeyValue()) {
-            if ("internal-identifier".equals(keyValueStructure.getKey())){
+            if ("internal-identifier".equals(keyValueStructure.getKey())) {
                 String rawId = keyValueStructure.getValue();
-                if (rawId.startsWith(customPrefix + ":")){
+                if (rawId.startsWith(customPrefix + ":")) {
                     keyValueStructure.setValue(rawId.replace(customPrefix + ":", originalPrefix + ":"));
                 }
             }
@@ -360,20 +387,20 @@ public class NetexProducerUtils {
 
     public static void removeAlternateIdentifier(DataManagedObjectStructure objectToModify) {
 
-        if (objectToModify.getKeyList() == null){
+        if (objectToModify.getKeyList() == null) {
             return;
         }
 
         KeyListStructure keyListStruct = new KeyListStructure();
 
         for (KeyValueStructure keyValueStructure : objectToModify.getKeyList().getKeyValue()) {
-            if (!"internal-identifier".equals(keyValueStructure.getKey())){
+            if (!"internal-identifier".equals(keyValueStructure.getKey())) {
                 keyListStruct.getKeyValue().add(keyValueStructure);
             }
         }
-        if (keyListStruct.getKeyValue().isEmpty()){
+        if (keyListStruct.getKeyValue().isEmpty()) {
             objectToModify.setKeyList(null);
-        }else{
+        } else {
             objectToModify.setKeyList(keyListStruct);
         }
 
@@ -391,7 +418,7 @@ public class NetexProducerUtils {
             destination.setId(source.getObjectId());
         }
 
-        if (!(destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC) )) {
+        if (!(destination.getId().endsWith(OBJECT_ID_SPLIT_CHAR + LOC))) {
             destination.setId(destination.getId() + OBJECT_ID_SPLIT_CHAR + LOC);
         }
         destination.setVersion(NETEX_DEFAULT_OBJECT_VERSION);
@@ -409,16 +436,13 @@ public class NetexProducerUtils {
         AccessibilityAssessment sourceAssessment = source.getAccessibilityAssessment();
         org.rutebanken.netex.model.AccessibilityAssessment accessibilityAssessment = new org.rutebanken.netex.model.AccessibilityAssessment();
         if (sourceAssessment.getMobilityImpairedAccess() != null) {
-            if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.TRUE)){
+            if (sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.TRUE)) {
                 accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.TRUE);
-            }
-            else if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.FALSE)){
+            } else if (sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.FALSE)) {
                 accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.FALSE);
-            }
-            else if(sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.PARTIAL)){
+            } else if (sourceAssessment.getMobilityImpairedAccess().equals(LimitationStatusEnum.PARTIAL)) {
                 accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.PARTIAL);
-            }
-            else{
+            } else {
                 accessibilityAssessment.setMobilityImpairedAccess(LimitationStatusEnumeration.UNKNOWN);
             }
         }
@@ -486,8 +510,7 @@ public class NetexProducerUtils {
     public static String translateTypeFrance(NeptuneObject v) {
         if (v instanceof Timetable) {
             return "DayType";
-        } else if (v instanceof Company) {
-            Company c = (Company) v;
+        } else if (v instanceof Company c) {
             if (OrganisationTypeEnum.Authority.equals(c.getOrganisationType())) {
                 return "Authority";
             } else if (OrganisationTypeEnum.Operator.equals(c.getOrganisationType())) {
@@ -499,8 +522,7 @@ public class NetexProducerUtils {
             return "ServiceJourney";
         } else if (v instanceof JourneyPattern) {
             return "ServiceJourneyPattern";
-        } else if (v instanceof StopArea) {
-            StopArea sa = (StopArea) v;
+        } else if (v instanceof StopArea sa) {
             if (ChouetteAreaEnum.BoardingPosition.equals(sa.getAreaType())) {
                 return "Quay";
             } else if (ChouetteAreaEnum.CommercialStopPoint.equals(sa.getAreaType())) {
@@ -523,4 +545,33 @@ public class NetexProducerUtils {
 
     }
 
+    /**
+     * Add one NeTEx AlternativeText per translation row matching objectFieldName (the Chouette
+     * model field name, e.g. "name", "stopName"), tagged with the translation's language and
+     * netexAttributeName (e.g. "Name", "ShortName", "FrontText").
+     *
+     * @param candidatesForEntity translations already filtered to the target entity's objectId (may be null/empty)
+     */
+    public static void addAlternativeTexts(EntityInVersionStructure target, List<Translation> candidatesForEntity, String objectFieldName, String netexAttributeName) {
+        if (CollectionUtils.isEmpty(candidatesForEntity)) {
+            return;
+        }
+        for (Translation translation : candidatesForEntity) {
+            if (!objectFieldName.equals(translation.getFieldName())) {
+                continue;
+            }
+            AlternativeText alternativeText = new AlternativeText()
+                    .withAttributeName(netexAttributeName)
+                    .withUseForLanguage(translation.getLanguage())
+                    .withText(new MultilingualString()
+                            .withValue(translation.getTranslation())
+                            .withLang(translation.getLanguage()));
+            AlternativeTexts_RelStructure rel = target.getAlternativeTexts();
+            if (rel == null) {
+                rel = new AlternativeTexts_RelStructure();
+                target.setAlternativeTexts(rel);
+            }
+            rel.getAlternativeText().add(alternativeText);
+        }
+    }
 }

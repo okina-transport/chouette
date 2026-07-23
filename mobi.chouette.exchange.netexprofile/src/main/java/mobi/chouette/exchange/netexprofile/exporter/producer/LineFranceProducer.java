@@ -5,7 +5,8 @@ import mobi.chouette.common.TimeUtil;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
-import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;import mobi.chouette.model.BookingArrangement;
+import mobi.chouette.exchange.netexprofile.exporter.NetexprofileExportParameters;
+import mobi.chouette.model.BookingArrangement;
 import mobi.chouette.model.FlexibleLineProperties;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.type.TadEnum;
@@ -18,27 +19,26 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.util.stream.Collectors;
 
 import static mobi.chouette.common.Constant.COLON_REPLACEMENT_CODE;
-import static mobi.chouette.common.Constant.CONFIGURATION;import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
+import static mobi.chouette.common.Constant.CONFIGURATION;
+import static mobi.chouette.exchange.netexprofile.exporter.producer.NetexProducerUtils.isSet;
 
 
 public class LineFranceProducer extends NetexProducer implements NetexEntityProducer<org.rutebanken.netex.model.Line_VersionStructure, mobi.chouette.model.Line> {
 
-    private static KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
-
-    private static ContactStructureProducer contactStructureProducer = new ContactStructureProducer();
-
     private static final Logger logger = Logger.getLogger(LineFranceProducer.class);
+    private static final KeyListStructureProducer keyListStructureProducer = new KeyListStructureProducer();
+    private static final ContactStructureProducer contactStructureProducer = new ContactStructureProducer();
 
     @Override
     public org.rutebanken.netex.model.Line_VersionStructure produce(Context context, mobi.chouette.model.Line neptuneLine) {
 
         ExportableNetexData exportableNetexData = (ExportableNetexData) context.get(Constant.EXPORTABLE_NETEX_DATA);
-		NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
+        NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
 
         org.rutebanken.netex.model.Line_VersionStructure netexLine;
         if (TadEnum.NO_TAD.equals(neptuneLine.getTad()) || neptuneLine.getTad() == null) {
             netexLine = netexFactory.createLine();
-        }else{
+        } else {
             netexLine = createFlexibleLine(neptuneLine);
         }
 
@@ -46,7 +46,7 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
         NetexProducerUtils.populateIdAndVersion(neptuneLine, netexLine);
         NetexProducerUtils.populateLineAccessibilityAssessment(neptuneLine, netexLine);
 
-        if (StringUtils.isEmpty(neptuneLine.getName())){
+        if (StringUtils.isEmpty(neptuneLine.getName())) {
             logger.error("Name not defined for line:" + neptuneLine.getId());
         }
 
@@ -64,6 +64,21 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
 
         netexLine.setShortName(ConversionUtil.getMultiLingualString(neptuneLine.getPublishedName()));
         netexLine.setDescription(ConversionUtil.getMultiLingualString(neptuneLine.getComment()));
+        if (isSet(neptuneLine.getUrl())) {
+            netexLine.setUrl(neptuneLine.getUrl());
+        }
+
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, java.util.List<mobi.chouette.model.Translation>> lineFieldValueTranslations =
+                (java.util.Map<String, java.util.List<mobi.chouette.model.Translation>>) context.get(Constant.LINE_FIELD_VALUE_TRANSLATIONS);
+        NetexProducerUtils.addAlternativeTexts(netexLine,
+                NetexProducerUtils.getTranslations(neptuneLine.getTranslations(), lineFieldValueTranslations, "name", neptuneLine.getName()), "name", "Name");
+        NetexProducerUtils.addAlternativeTexts(netexLine,
+                NetexProducerUtils.getTranslations(neptuneLine.getTranslations(), lineFieldValueTranslations, "number", neptuneLine.getNumber()), "number", "ShortName");
+        NetexProducerUtils.addAlternativeTexts(netexLine,
+                NetexProducerUtils.getTranslations(neptuneLine.getTranslations(), lineFieldValueTranslations, "comment", neptuneLine.getComment()), "comment", "Description");
+        NetexProducerUtils.addAlternativeTexts(netexLine,
+                NetexProducerUtils.getTranslations(neptuneLine.getTranslations(), lineFieldValueTranslations, "url", neptuneLine.getUrl()), "url", "Url");
 
         if (isSet(neptuneLine.getTransportModeName())) {
             AllVehicleModesOfTransportEnumeration vehicleModeOfTransport = ConversionUtil.toVehicleModeOfTransportEnum(neptuneLine.getTransportModeName());
@@ -112,11 +127,11 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
             }
         }
 
-		if (neptuneLine.getBranding() != null){
-			BrandingRefStructure brandingRef = new BrandingRefStructure();
-			brandingRef.setRef(neptuneLine.getBranding().getName());
-			netexLine.setBrandingRef(brandingRef);
-		}
+        if (neptuneLine.getBranding() != null) {
+            BrandingRefStructure brandingRef = new BrandingRefStructure();
+            brandingRef.setRef(neptuneLine.getBranding().getName());
+            netexLine.setBrandingRef(brandingRef);
+        }
 
         NoticeProducer.addNoticeAndNoticeAssignments(context, exportableNetexData, exportableNetexData.getNoticeAssignmentsTimetableFrame(), neptuneLine.getFootnotes(), neptuneLine);
 
@@ -126,9 +141,9 @@ public class LineFranceProducer extends NetexProducer implements NetexEntityProd
     FlexibleLine createFlexibleLine(Line neptuneLine) {
         FlexibleLine flexibleLine = netexFactory.createFlexibleLine();
 
-        if (TadEnum.PARTIAL_TAD.equals(neptuneLine.getTad())){
+        if (TadEnum.PARTIAL_TAD.equals(neptuneLine.getTad())) {
             flexibleLine.setFlexibleLineType(FlexibleLineTypeEnumeration.MIXED_FLEXIBLE);
-        }else{
+        } else {
             flexibleLine.setFlexibleLineType(FlexibleLineTypeEnumeration.FIXED);
         }
 

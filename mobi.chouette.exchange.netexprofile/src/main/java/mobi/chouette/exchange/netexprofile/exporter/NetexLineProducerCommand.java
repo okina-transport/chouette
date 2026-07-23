@@ -8,27 +8,53 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.CompanyTranslationDAO;
 import mobi.chouette.dao.ConnectionLinkDAO;
+import mobi.chouette.dao.LineTranslationDAO;
+import mobi.chouette.dao.NetworkTranslationDAO;
+import mobi.chouette.dao.StopAreaTranslationDAO;
+import mobi.chouette.dao.VehicleJourneyTranslationDAO;
 import mobi.chouette.exchange.exporter.SharedDataKeys;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
+import mobi.chouette.model.CompanyTranslation;
 import mobi.chouette.model.Line;
+import mobi.chouette.model.LineTranslation;
+import mobi.chouette.model.NeptuneIdentifiedObject;
+import mobi.chouette.model.NetworkTranslation;
+import mobi.chouette.model.StopAreaTranslation;
+import mobi.chouette.model.Translation;
+import mobi.chouette.model.VehicleJourneyTranslation;
 import mobi.chouette.model.util.NamingUtil;
 import org.apache.commons.lang3.StringUtils;
-import java.time.LocalDate;
 import org.xml.sax.SAXParseException;
 
 import javax.naming.InitialContext;
 import javax.xml.bind.MarshalException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Log4j
 public class NetexLineProducerCommand implements Command, Constant {
 
     public static final String COMMAND = "NetexLineProducerCommand";
 
+    static {
+        CommandFactory.factories.put(NetexLineProducerCommand.class.getName(), new NetexLineProducerCommand.DefaultCommandFactory());
+    }
+
     private ConnectionLinkDAO connectionLinkDao;
+    private NetworkTranslationDAO networkTranslationDao;
+    private CompanyTranslationDAO companyTranslationDao;
+    private LineTranslationDAO lineTranslationDao;
+    private StopAreaTranslationDAO stopAreaTranslationDao;
+    private VehicleJourneyTranslationDAO vehicleJourneyTranslationDao;
 
     @Override
     public boolean execute(Context context) throws Exception {
@@ -41,12 +67,12 @@ public class NetexLineProducerCommand implements Command, Constant {
             Line line = (Line) context.get(LINE);
             log.info("processing line " + NamingUtil.getName(line));
 
-            if(line != null && line.getCategoriesForLine() != null && !line.getCategoriesForLine().getName().equalsIgnoreCase("idfm")){
+            if (line != null && line.getCategoriesForLine() != null && !line.getCategoriesForLine().getName().equalsIgnoreCase("idfm")) {
                 log.error("Ligne : " + line.getObjectId() + " en catégorie IDFM mais CODIFLIGNE manquant.");
                 return SUCCESS;
             }
 
-            if(line != null && StringUtils.isEmpty(line.getCodifligne()) && line.getCategoriesForLine() != null && line.getCategoriesForLine().getName().equalsIgnoreCase("idfm")) {
+            if (line != null && StringUtils.isEmpty(line.getCodifligne()) && line.getCategoriesForLine() != null && line.getCategoriesForLine().getName().equalsIgnoreCase("idfm")) {
                 reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE,
                         "Codifligne manquant", ActionReporter.OBJECT_STATE.ERROR, IO_TYPE.OUTPUT);
                 reporter.setActionError(context, ActionReporter.ERROR_CODE.NO_DATA_FOUND, "Codifligne manquant");
@@ -54,8 +80,34 @@ public class NetexLineProducerCommand implements Command, Constant {
             }
 
             NetexprofileExportParameters configuration = (NetexprofileExportParameters) context.get(CONFIGURATION);
-            
-            
+
+            if (!context.containsKey(NETWORK_FIELD_VALUE_TRANSLATIONS)) {
+                // translations.txt rows with no record_id are keyed by field_value instead of an owner FK:
+                // record_id-keyed rows are already reachable from the owning entity itself (entity.getTranslations()),
+                // so only the ownerless field_value-keyed rows need indexing here, resolved lazily below, per
+                // exported line, by matching fieldValue against the untranslated raw text of each entity actually
+                // being exported. Kept as one map per owner type (rather than merged together) so that e.g. a Line
+                // "comment" field_value candidate can never be mismatched onto a Network/StopArea/VehicleJourney
+                // "comment" - the owner type is the table it was queried from, not a loose string discriminator.
+                Map<String, List<Translation>> networkFieldValueTranslations = new HashMap<>();
+                Map<String, List<Translation>> companyFieldValueTranslations = new HashMap<>();
+                Map<String, List<Translation>> lineFieldValueTranslations = new HashMap<>();
+                Map<String, List<Translation>> stopAreaFieldValueTranslations = new HashMap<>();
+                Map<String, List<Translation>> vehicleJourneyFieldValueTranslations = new HashMap<>();
+
+                indexFieldValueTranslations(networkTranslationDao.findAll(), NetworkTranslation::getNetwork, networkFieldValueTranslations);
+                indexFieldValueTranslations(companyTranslationDao.findAll(), CompanyTranslation::getCompany, companyFieldValueTranslations);
+                indexFieldValueTranslations(lineTranslationDao.findAll(), LineTranslation::getLine, lineFieldValueTranslations);
+                indexFieldValueTranslations(stopAreaTranslationDao.findAll(), StopAreaTranslation::getStopArea, stopAreaFieldValueTranslations);
+                indexFieldValueTranslations(vehicleJourneyTranslationDao.findAll(), VehicleJourneyTranslation::getVehicleJourney, vehicleJourneyFieldValueTranslations);
+
+                context.put(NETWORK_FIELD_VALUE_TRANSLATIONS, networkFieldValueTranslations);
+                context.put(COMPANY_FIELD_VALUE_TRANSLATIONS, companyFieldValueTranslations);
+                context.put(LINE_FIELD_VALUE_TRANSLATIONS, lineFieldValueTranslations);
+                context.put(STOP_AREA_FIELD_VALUE_TRANSLATIONS, stopAreaFieldValueTranslations);
+                context.put(VEHICLE_JOURNEY_FIELD_VALUE_TRANSLATIONS, vehicleJourneyFieldValueTranslations);
+            }
+
             ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
             if (collection == null) {
                 collection = new ExportableData();
@@ -148,8 +200,43 @@ public class NetexLineProducerCommand implements Command, Constant {
         return result;
     }
 
+    /**
+     * Indexes one owner type's translation rows that carry no owner FK (legacy field_value-keyed
+     * translations.txt rows): rows with a resolved owner are already reachable via entity.getTranslations()
+     * and are skipped here.
+     */
+    private <T extends Translation> void indexFieldValueTranslations(List<T> allTranslations,
+                                                                      Function<T, ? extends NeptuneIdentifiedObject> ownerGetter,
+                                                                      Map<String, List<Translation>> fieldValueKeyedTranslations) {
+        for (T translation : allTranslations) {
+            if (ownerGetter.apply(translation) == null && translation.getFieldValue() != null) {
+                fieldValueKeyedTranslations.computeIfAbsent(translation.getFieldValue(), k -> new ArrayList<>()).add(translation);
+            }
+        }
+    }
+
     public void setConnectionLinkDao(ConnectionLinkDAO connectionLinkDao) {
         this.connectionLinkDao = connectionLinkDao;
+    }
+
+    public void setNetworkTranslationDao(NetworkTranslationDAO networkTranslationDao) {
+        this.networkTranslationDao = networkTranslationDao;
+    }
+
+    public void setCompanyTranslationDao(CompanyTranslationDAO companyTranslationDao) {
+        this.companyTranslationDao = companyTranslationDao;
+    }
+
+    public void setLineTranslationDao(LineTranslationDAO lineTranslationDao) {
+        this.lineTranslationDao = lineTranslationDao;
+    }
+
+    public void setStopAreaTranslationDao(StopAreaTranslationDAO stopAreaTranslationDao) {
+        this.stopAreaTranslationDao = stopAreaTranslationDao;
+    }
+
+    public void setVehicleJourneyTranslationDao(VehicleJourneyTranslationDAO vehicleJourneyTranslationDao) {
+        this.vehicleJourneyTranslationDao = vehicleJourneyTranslationDao;
     }
 
     public static class DefaultCommandFactory extends CommandFactory {
@@ -158,10 +245,6 @@ public class NetexLineProducerCommand implements Command, Constant {
         protected Command create(InitialContext context) throws IOException {
             return new NetexLineProducerCommand();
         }
-    }
-
-    static {
-        CommandFactory.factories.put(NetexLineProducerCommand.class.getName(), new NetexLineProducerCommand.DefaultCommandFactory());
     }
 
 }

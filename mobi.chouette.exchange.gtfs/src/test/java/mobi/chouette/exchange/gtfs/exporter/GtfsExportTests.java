@@ -273,7 +273,10 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         for (FileReport info : report.getFiles()) {
             Reporter.log(info.toString(), true);
         }
-        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        // translations.txt has been a recognized (optional) GTFS file since translations.txt import
+        // support was added (commit d1158400b) - it's counted here regardless of whether this fixture
+        // actually has translatable content
+        Assert.assertEquals(report.getFiles().size(), 10, "file reported");
         for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
             Reporter.log(info.toString(), true);
         }
@@ -367,7 +370,10 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         for (FileReport info : report.getFiles()) {
             Reporter.log(info.toString(), true);
         }
-        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        // translations.txt has been a recognized (optional) GTFS file since translations.txt import
+        // support was added (commit d1158400b) - it's counted here regardless of whether this fixture
+        // actually has translatable content
+        Assert.assertEquals(report.getFiles().size(), 10, "file reported");
         for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
             Reporter.log(info.toString(), true);
         }
@@ -383,7 +389,10 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
 
 
         // save data
-        importGTFSLines("simple_line_with_transfers_gtfs.zip", 9, 2);
+        // translations.txt has been a recognized (optional) GTFS file since translations.txt import
+        // support was added (commit d1158400b) - it's counted here regardless of whether this fixture
+        // actually has translatable content
+        importGTFSLines("simple_line_with_transfers_gtfs.zip", 10, 2);
 
         // export data
         Context context = initExportContext();
@@ -411,7 +420,10 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         for (FileReport info : report.getFiles()) {
             Reporter.log(info.toString(), true);
         }
-        Assert.assertEquals(report.getFiles().size(), 9, "file reported");
+        // translations.txt has been a recognized (optional) GTFS file since translations.txt import
+        // support was added (commit d1158400b) - it's counted here regardless of whether this fixture
+        // actually has translatable content
+        Assert.assertEquals(report.getFiles().size(), 10, "file reported");
         for (ObjectReport info : report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects()) {
             Reporter.log(info.toString(), true);
         }

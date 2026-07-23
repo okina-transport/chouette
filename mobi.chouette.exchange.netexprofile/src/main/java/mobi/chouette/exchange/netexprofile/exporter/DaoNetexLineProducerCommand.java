@@ -7,8 +7,13 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
+import mobi.chouette.dao.CompanyTranslationDAO;
 import mobi.chouette.dao.ConnectionLinkDAO;
 import mobi.chouette.dao.LineDAO;
+import mobi.chouette.dao.LineTranslationDAO;
+import mobi.chouette.dao.NetworkTranslationDAO;
+import mobi.chouette.dao.StopAreaTranslationDAO;
+import mobi.chouette.dao.VehicleJourneyTranslationDAO;
 import mobi.chouette.exchange.netexprofile.Constant;
 import mobi.chouette.model.Line;
 import org.jboss.ejb3.annotation.TransactionTimeout;
@@ -34,6 +39,21 @@ public class DaoNetexLineProducerCommand implements Command, Constant {
     @EJB
     private ConnectionLinkDAO connectionLinkDAO;
 
+    @EJB
+    private NetworkTranslationDAO networkTranslationDAO;
+
+    @EJB
+    private CompanyTranslationDAO companyTranslationDAO;
+
+    @EJB
+    private LineTranslationDAO lineTranslationDAO;
+
+    @EJB
+    private StopAreaTranslationDAO stopAreaTranslationDAO;
+
+    @EJB
+    private VehicleJourneyTranslationDAO vehicleJourneyTranslationDAO;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @TransactionTimeout(value = 30, unit = TimeUnit.MINUTES)
@@ -49,6 +69,11 @@ public class DaoNetexLineProducerCommand implements Command, Constant {
             InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
             Command export = CommandFactory.create(initialContext, NetexLineProducerCommand.class.getName());
             ((NetexLineProducerCommand)export).setConnectionLinkDao(connectionLinkDAO);
+            ((NetexLineProducerCommand)export).setNetworkTranslationDao(networkTranslationDAO);
+            ((NetexLineProducerCommand)export).setCompanyTranslationDao(companyTranslationDAO);
+            ((NetexLineProducerCommand)export).setLineTranslationDao(lineTranslationDAO);
+            ((NetexLineProducerCommand)export).setStopAreaTranslationDao(stopAreaTranslationDAO);
+            ((NetexLineProducerCommand)export).setVehicleJourneyTranslationDao(vehicleJourneyTranslationDAO);
 
             context.put(LINE, line);
             result = export.execute(context);

@@ -22,162 +22,180 @@ import java.util.HashMap;
 @Stateless(name = CleanRepositoryCommand.COMMAND)
 public class CleanRepositoryCommand implements Command {
 
-	public static final String COMMAND = "CleanRepositoryCommand";
+    public static final String COMMAND = "CleanRepositoryCommand";
 
-	static {
-		CommandFactory.factories.put(CleanRepositoryCommand.class.getName(), new DefaultCommandFactory());
-	}
+    static {
+        CommandFactory.factories.put(CleanRepositoryCommand.class.getName(), new DefaultCommandFactory());
+    }
 
-	@EJB
-	AccessLinkDAO accessLinkDao;
-	@EJB
-	AccessPointDAO accessPointDAO;
-	@EJB
-	ConnectionLinkDAO connectionLinkDAO;
-	@EJB
-	CategoriesForLinesDAO categoriesForLinesDAO;
-	@EJB
-	FeedInfoDAO feedInfoDAO;
-	@EJB
-	TrainDAO trainDAO;
-	@EJB
-	FareAttributeDAO fareAttributeDAO;
-	@EJB
-	FareRuleDAO fareRuleDAO;
-	@EJB
-	TransfersDAO transfersDAO;
-	@EJB
-	private CompanyDAO companyDAO;
-	@EJB
-	private GroupOfLineDAO groupOfLineDAO;
-	@EJB
-	private JourneyFrequencyDAO journeyFrequencyDAO;
-	@EJB
-	private JourneyPatternDAO journeyPatternDAO;
-	@EJB
-	private LineDAO lineDAO;
-	@EJB
-	private NetworkDAO networkDAO;
-	@EJB
-	private RouteDAO routeDAO;
-	@EJB
-	private RouteSectionDAO routeSectionDAO;
-	@EJB
-	private StopPointDAO stopPointDAO;
-	@EJB
-	private ScheduledStopPointDAO scheduledStopPointDAO;
-	@EJB
-	private TimetableDAO timetableDAO;
-	@EJB
-	private TimebandDAO timebandDAO;
-	@EJB
-	private VehicleJourneyDAO vehicleJourneyDAO;
-	@EJB
-	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
-	@EJB
-	private DestinationDisplayDAO destinationDisplayDAO;
-	@EJB
-	private FootnoteDAO footnoteDAO;
-	@EJB
-	private BrandingDAO brandingDAO;
-	@EJB
-	private InterchangeDAO interchangeDAO;
-	@EJB
-	private RoutePointDAO routePointDAO;
-	@EJB
-	private ContactStructureDAO contactStructureDAO;
-	@EJB
-	private BookingArrangementDAO bookingArrangementDAO;
-	@EJB
-	private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
-	@EJB
-	private StopAreaDAO stopAreaDAO;
+    @EJB
+    private AccessLinkDAO accessLinkDao;
+    @EJB
+    private AccessPointDAO accessPointDAO;
+    @EJB
+    private ConnectionLinkDAO connectionLinkDAO;
+    @EJB
+    private CategoriesForLinesDAO categoriesForLinesDAO;
+    @EJB
+    private FeedInfoDAO feedInfoDAO;
+    @EJB
+    private TrainDAO trainDAO;
+    @EJB
+    private FareAttributeDAO fareAttributeDAO;
+    @EJB
+    private FareRuleDAO fareRuleDAO;
+    @EJB
+    private TransfersDAO transfersDAO;
+    @EJB
+    private NetworkTranslationDAO networkTranslationDAO;
+    @EJB
+    private CompanyTranslationDAO companyTranslationDAO;
+    @EJB
+    private LineTranslationDAO lineTranslationDAO;
+    @EJB
+    private StopAreaTranslationDAO stopAreaTranslationDAO;
+    @EJB
+    private VehicleJourneyTranslationDAO vehicleJourneyTranslationDAO;
+    @EJB
+    private VehicleJourneyAtStopTranslationDAO vehicleJourneyAtStopTranslationDAO;
+    @EJB
+    private CompanyDAO companyDAO;
+    @EJB
+    private GroupOfLineDAO groupOfLineDAO;
+    @EJB
+    private JourneyFrequencyDAO journeyFrequencyDAO;
+    @EJB
+    private JourneyPatternDAO journeyPatternDAO;
+    @EJB
+    private LineDAO lineDAO;
+    @EJB
+    private NetworkDAO networkDAO;
+    @EJB
+    private RouteDAO routeDAO;
+    @EJB
+    private RouteSectionDAO routeSectionDAO;
+    @EJB
+    private StopPointDAO stopPointDAO;
+    @EJB
+    private ScheduledStopPointDAO scheduledStopPointDAO;
+    @EJB
+    private TimetableDAO timetableDAO;
+    @EJB
+    private TimebandDAO timebandDAO;
+    @EJB
+    private VehicleJourneyDAO vehicleJourneyDAO;
+    @EJB
+    private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
+    @EJB
+    private DestinationDisplayDAO destinationDisplayDAO;
+    @EJB
+    private FootnoteDAO footnoteDAO;
+    @EJB
+    private BrandingDAO brandingDAO;
+    @EJB
+    private InterchangeDAO interchangeDAO;
+    @EJB
+    private RoutePointDAO routePointDAO;
+    @EJB
+    private ContactStructureDAO contactStructureDAO;
+    @EJB
+    private BookingArrangementDAO bookingArrangementDAO;
+    @EJB
+    private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
+    @EJB
+    private StopAreaDAO stopAreaDAO;
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	public boolean execute(Context context) throws Exception {
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public boolean execute(Context context) throws Exception {
 
-		boolean result = ERROR;
-		Monitor monitor = MonitorFactory.start(COMMAND);
+        boolean result = ERROR;
+        Monitor monitor = MonitorFactory.start(COMMAND);
 
-		if (context != null) {
-			context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
-		}
-		try {
-			journeyFrequencyDAO.truncate();
-			journeyPatternDAO.truncate();
-			routeDAO.truncate();
-			routeSectionDAO.truncate();
-			brandingDAO.truncate();
-			stopPointDAO.truncate();
-			scheduledStopPointDAO.truncate();
-			timetableDAO.truncate();
-			timebandDAO.truncate();
-			trainDAO.truncate();
-			vehicleJourneyDAO.truncate();
-			vehicleJourneyAtStopDAO.truncate();
-			destinationDisplayDAO.truncate();
-			interchangeDAO.truncate();
-			routePointDAO.truncate();
-			flexibleServicePropertiesDAO.truncate();
-			//useless in MOSAIC
-			accessLinkDao.truncate();
-			accessPointDAO.truncate();
-			connectionLinkDAO.truncate();
-			// fares
-			fareAttributeDAO.truncate();
-			fareRuleDAO.truncate();
-			transfersDAO.truncate();
+        if (context != null) {
+            context.put(LINE_COLOR, new HashMap<>(lineDAO.findColorLines()));
+        }
+        try {
+            journeyFrequencyDAO.truncate();
+            journeyPatternDAO.truncate();
+            routeDAO.truncate();
+            routeSectionDAO.truncate();
+            brandingDAO.truncate();
+            stopPointDAO.truncate();
+            scheduledStopPointDAO.truncate();
+            timetableDAO.truncate();
+            timebandDAO.truncate();
+            trainDAO.truncate();
+            vehicleJourneyTranslationDAO.truncate();
+            vehicleJourneyDAO.truncate();
+            vehicleJourneyAtStopTranslationDAO.truncate();
+            vehicleJourneyAtStopDAO.truncate();
+            destinationDisplayDAO.truncate();
+            interchangeDAO.truncate();
+            routePointDAO.truncate();
+            flexibleServicePropertiesDAO.truncate();
+            //useless in MOSAIC
+            accessLinkDao.truncate();
+            accessPointDAO.truncate();
+            connectionLinkDAO.truncate();
+            // fares
+            fareAttributeDAO.truncate();
+            fareRuleDAO.truncate();
+            transfersDAO.truncate();
 
-			// si pas import et ( transfert ou clean admin )
-			if (context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {
-				// si clean pour transfert
-				if (context != null && context.containsKey(CLEAR_TABLE_CATEGORIES_FOR_LINES) && context.get(CLEAR_TABLE_CATEGORIES_FOR_LINES) == Boolean.TRUE) {
-					categoriesForLinesDAO.truncate();
-					feedInfoDAO.truncate();
-				}
-				// lignes
-				contactStructureDAO.truncate();
-				groupOfLineDAO.truncate();
-				footnoteDAO.truncate();
-				lineDAO.truncate();
-				bookingArrangementDAO.truncate();
-				networkDAO.truncate();
-				companyDAO.truncate();
+            // si pas import et ( transfert ou clean admin )
+            if (context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {
+                // si clean pour transfert
+                if (context != null && context.containsKey(CLEAR_TABLE_CATEGORIES_FOR_LINES) && context.get(CLEAR_TABLE_CATEGORIES_FOR_LINES) == Boolean.TRUE) {
+                    categoriesForLinesDAO.truncate();
+                    feedInfoDAO.truncate();
+                }
+                // lignes
+                contactStructureDAO.truncate();
+                groupOfLineDAO.truncate();
+                footnoteDAO.truncate();
+                lineTranslationDAO.truncate();
+                lineDAO.truncate();
+                bookingArrangementDAO.truncate();
+                networkTranslationDAO.truncate();
+                networkDAO.truncate();
+                companyTranslationDAO.truncate();
+                companyDAO.truncate();
 
-				// arrêts
-				stopAreaDAO.truncate();
-			} else {
-				// si import on conserve lignes et arrêts
-				context.put(CLEAR_FOR_IMPORT, false);
-			}
-			result = SUCCESS;
-		} catch (Exception e) {
-			log.error(e);
-			throw e;
-		}
-		log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-		return result;
-	}
+                // arrêts
+                stopAreaTranslationDAO.truncate();
+                stopAreaDAO.truncate();
+            } else {
+                // si import on conserve lignes et arrêts
+                context.put(CLEAR_FOR_IMPORT, false);
+            }
+            result = SUCCESS;
+        } catch (Exception e) {
+            log.error(e);
+            throw e;
+        }
+        log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+        return result;
+    }
 
-	public static class DefaultCommandFactory extends CommandFactory {
+    public static class DefaultCommandFactory extends CommandFactory {
 
-		@Override
-		protected Command create(InitialContext context) throws IOException {
-			Command result = null;
-			try {
-				String name = "java:app/mobi.chouette.exchange/" + COMMAND;
-				result = (Command) context.lookup(name);
-			} catch (NamingException e) {
-				// try another way on test context
-				String name = "java:module/" + COMMAND;
-				try {
-					result = (Command) context.lookup(name);
-				} catch (NamingException e1) {
-					log.error(e);
-				}
-			}
-			return result;
-		}
-	}
+        @Override
+        protected Command create(InitialContext context) throws IOException {
+            Command result = null;
+            try {
+                String name = "java:app/mobi.chouette.exchange/" + COMMAND;
+                result = (Command) context.lookup(name);
+            } catch (NamingException e) {
+                // try another way on test context
+                String name = "java:module/" + COMMAND;
+                try {
+                    result = (Command) context.lookup(name);
+                } catch (NamingException e1) {
+                    log.error(e);
+                }
+            }
+            return result;
+        }
+    }
 }

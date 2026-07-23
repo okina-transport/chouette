@@ -8,25 +8,25 @@ import mobi.chouette.exchange.importer.updater.netex.NavigationPathMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopAreaMapper;
 import mobi.chouette.exchange.importer.updater.netex.StopPlaceMapper;
 import mobi.chouette.exchange.importer.utils.MdmClient;
+import mobi.chouette.exchange.importer.utils.TokenService;
 import mobi.chouette.exchange.utils.PublicationDeliveryClient;
 import mobi.chouette.exchange.validation.ErrorCodeConverter;
 import mobi.chouette.exchange.validation.report.DataLocation;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
+import mobi.chouette.model.*;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.ScheduledStopPoint;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.*;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import mobi.chouette.exchange.importer.utils.TokenService;
 import org.rutebanken.netex.model.*;
 import org.xml.sax.SAXException;
 
@@ -53,13 +53,12 @@ import static mobi.chouette.common.Constant.*;
 import static mobi.chouette.common.PropertyNames.*;
 
 
-
 @Log4j
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton(name = NeTExStopPlaceRegisterUpdater.BEAN_NAME)
 public class NeTExStopPlaceRegisterUpdater {
     public static final String MERGED_ID = "merged-id";
-	public static final String AUTO_CREATED_QUAY_SUFFIX = "automaticaly-created-missing-quay";
+    public static final String AUTO_CREATED_QUAY_SUFFIX = "automaticaly-created-missing-quay";
     public static final String EXTERNAL_REF = "external-ref";
     public static final String FARE_ZONE = "fare-zone";
     public static final String RAIL_UIC = "RAIL-UIC";
@@ -74,8 +73,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
     private final StopAreaMapper stopAreaMapper = new StopAreaMapper();
     private final Set<TransportModeNameEnum> busEnums = new HashSet<>(Arrays.asList(TransportModeNameEnum.Coach, TransportModeNameEnum.Bus));
-    private PublicationDeliveryClient client;
     private final NavigationPathMapper navigationPathMapper = new NavigationPathMapper();
+    private PublicationDeliveryClient client;
     @EJB
     private ContenerChecker contenerChecker;
     @EJB
@@ -91,24 +90,23 @@ public class NeTExStopPlaceRegisterUpdater {
     }
 
     private void initializeClient(String ref, Boolean keepStopGeolocalisation, Boolean keepStopNames,
-                                  Boolean updateStopAccessibility, Boolean recomputeStopPlacesLocation){
+                                  Boolean updateStopAccessibility, Boolean recomputeStopPlacesLocation) {
         String url = getAndValidateProperty(PropertyNames.STOP_PLACE_REGISTER_MOBIITI_URL);
 
         if (url == null) {
             return;
         }
 
-        if(!StringUtils.isEmpty(ref)) {
-            if(url.contains("?"))
+        if (!StringUtils.isEmpty(ref)) {
+            if (url.contains("?"))
                 url = url + "&providerCode=" + ref;
             else
                 url = url + "?providerCode=" + ref;
         }
 
-        if(url.contains("?")){
+        if (url.contains("?")) {
             url += "&";
-        }
-        else {
+        } else {
             url += "?";
         }
 
@@ -137,7 +135,7 @@ public class NeTExStopPlaceRegisterUpdater {
 
         String ref = (String) context.get("ref");
 
-        Map<String,String> fileToReferentialStopIdMap =  (Map<String,String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
+        Map<String, String> fileToReferentialStopIdMap = (Map<String, String>) context.get(FILE_TO_REFERENTIAL_STOP_ID_MAP);
         Boolean keepStopGeolocalisation = (Boolean) context.get(KEEP_STOP_GEOLOCALISATION);
         Boolean keepStopNames = (Boolean) context.get(KEEP_STOP_NAMES);
         Boolean updateStopAccessibility = (Boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
@@ -176,10 +174,32 @@ public class NeTExStopPlaceRegisterUpdater {
 
         final Map<String, Set<TransportModeNameEnum>> registeredTransportModes = stopPlaceRegisteredTransportModesMap;
 
+        Map<String, List<StopAreaTranslation>> translationsByObjectId = referential.getStopAreaTranslationsByObjectId();
+        Map<String, List<StopAreaTranslation>> fieldValueKeyedTranslations =
+                referential.getStopAreaTranslationsByFieldValue().stream().collect(Collectors.groupingBy(StopAreaTranslation::getFieldValue));
+
+        if (MapUtils.isNotEmpty(fieldValueKeyedTranslations)) {
+            for (StopArea stopArea : referential.getStopAreas().values()) {
+                List<StopAreaTranslation> matches = fieldValueKeyedTranslations.get(stopArea.getName());
+                if (matches != null) {
+                    if (translationsByObjectId.containsKey(stopArea.getObjectId())) {
+                        List<StopAreaTranslation> existingTranslations = translationsByObjectId.get(stopArea.getObjectId());
+                        for (StopAreaTranslation translationByFieldValue : matches) {
+                            if (existingTranslations.stream().noneMatch(t -> t.getFieldName().equals(translationByFieldValue.getFieldName()) && t.getLanguage().equals(translationByFieldValue.getLanguage()))) {
+                                existingTranslations.add(translationByFieldValue);
+                            }
+                        }
+                    } else {
+                        translationsByObjectId.put(stopArea.getObjectId(), new ArrayList<>(matches));
+                    }
+                }
+            }
+        }
+
         Predicate<StopArea> fullStopAreaNotCached = t -> {
             if (m.containsKey(t.getObjectId())) {
                 // stopArea has already been seen. Checking if something changed on child or if transport mode has changed
-                return hasUnprocessedChild(m, t) || hasAnotherTransportMode(registeredTransportModes,t);
+                return hasUnprocessedChild(m, t) || hasAnotherTransportMode(registeredTransportModes, t);
             }
             // never seen this stopArea before
             return true;
@@ -208,7 +228,7 @@ public class NeTExStopPlaceRegisterUpdater {
                 .filter(stopArea -> stopArea.getAreaType() == ChouetteAreaEnum.CommercialStopPoint)
                 .distinct()
                 .peek(stopArea -> log.info(stopArea.getObjectId() + " name: " + stopArea.getName() + " correlationId: " + correlationId))
-                .map(stopPlaceMapper::mapStopAreaToStopPlace)
+                .map(stopArea -> stopPlaceMapper.mapStopAreaToStopPlace(stopArea, translationsByObjectId))
                 .map(stopArea -> stopPlaceMapper.addImportedIdInfo(stopArea, referential))
                 .collect(Collectors.toList());
 
@@ -237,8 +257,7 @@ public class NeTExStopPlaceRegisterUpdater {
                 Quays_RelStructure quays = stopPlace.getQuays();
                 if (quays != null && quays.getQuayRefOrQuay() != null) {
                     for (Object q : quays.getQuayRefOrQuay()) {
-                        if (q instanceof Quay) {
-                            Quay quay = (Quay) q;
+                        if (q instanceof Quay quay) {
                             String qId = quay.getId();
                             if (qId.contains(ObjectIdTypes.STOPAREA_KEY)) {
                                 // Only replace IDs if ID already contains
@@ -286,7 +305,7 @@ public class NeTExStopPlaceRegisterUpdater {
 
             // Do not add stop places with no transport mode as they belong to no route.
             stopPlaces.removeAll(stopPlacesToDelete);
-            checkQuayAttachment(context,stopPlaces);
+            checkQuayAttachment(context, stopPlaces);
 
             siteFrame.setStopPlaces(new StopPlacesInFrame_RelStructure().withStopPlace_(stopPlaces.stream().map(netexObjectFactory::createStopPlace).collect(Collectors.toList())));
 
@@ -342,11 +361,11 @@ public class NeTExStopPlaceRegisterUpdater {
                     .peek(stopPlace -> {
                         StopPlace sp = (StopPlace) stopPlace.getValue();
                         log.info("got stop place with ID "
-                            + sp.getId()
-                            + " and name "
-                            + sp.getName()
-                            + " back. correlationId: "
-                            + correlationId);
+                                + sp.getId()
+                                + " and name "
+                                + sp.getName()
+                                + " back. correlationId: "
+                                + correlationId);
                     })
                     .map(sp -> (StopPlace) sp.getValue())
                     .collect(Collectors.toList());
@@ -359,7 +378,7 @@ public class NeTExStopPlaceRegisterUpdater {
             AtomicInteger mappedStopPlacesCount = new AtomicInteger();
             receivedStopPlaces.forEach(stopPlace -> {
                 stopAreaMapper.mapStopPlaceToStopArea(referential, stopPlace);
-                feedFileToReferentialMap(fileToReferentialStopIdMap,stopPlace);
+                feedFileToReferentialMap(fileToReferentialStopIdMap, stopPlace);
                 mappedStopPlacesCount.incrementAndGet();
             });
 
@@ -463,8 +482,8 @@ public class NeTExStopPlaceRegisterUpdater {
 
     private boolean hasAnotherTransportMode(Map<String, Set<TransportModeNameEnum>> registeredTransportModes, StopArea stopArea) {
         Set<TransportModeNameEnum> incomingTransportModes = NeTExStopPlaceUtil.findTransportModeForStopArea(new HashSet<>(), stopArea);
-        
-        if (!registeredTransportModes.containsKey(stopArea.getObjectId())){
+
+        if (!registeredTransportModes.containsKey(stopArea.getObjectId())) {
             registeredTransportModes.put(stopArea.getObjectId(), incomingTransportModes);
             return true;
         }
@@ -473,25 +492,23 @@ public class NeTExStopPlaceRegisterUpdater {
 
         boolean result = false;
         for (TransportModeNameEnum incomingTransportMode : incomingTransportModes) {
-            if (!alreadyProcessedTransportModes.contains(incomingTransportMode)){
+            if (!alreadyProcessedTransportModes.contains(incomingTransportMode)) {
                 alreadyProcessedTransportModes.add(incomingTransportMode);
                 result = true;
             }
         }
-        
+
         return result;
     }
 
     /**
      * Checks if a stopArea has unknown child
      * (it means this stopArea must be sent to stop place registery to be updated)
-     * @param m
-     *      map that contains already processed stopAreas
-     * @param t
-     *      stopArea to check
-     * @return
-     *      true : at least one child is unknown
-     *      false : all children have already been processed
+     *
+     * @param m map that contains already processed stopAreas
+     * @param t stopArea to check
+     * @return true : at least one child is unknown
+     * false : all children have already been processed
      */
     private boolean hasUnprocessedChild(Map<String, String> m, StopArea t) {
         for (StopArea child : t.getContainedStopAreas()) {
@@ -507,14 +524,14 @@ public class NeTExStopPlaceRegisterUpdater {
      * @param context
      * @param e
      */
-    private void handleSpecificErrorsFromTiamat(Context context, Exception e){
+    private void handleSpecificErrorsFromTiamat(Context context, Exception e) {
 
         if (e.getCause() == null || e.getCause().getMessage() == null)
-            return ;
+            return;
 
         JAXBContext jaxbContext = null;
         try {
-            jaxbContext = JAXBContext.newInstance( ErrorResponseEntity.class );
+            jaxbContext = JAXBContext.newInstance(ErrorResponseEntity.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             ErrorResponseEntity errorResponseEntity = (ErrorResponseEntity) jaxbUnmarshaller.unmarshal(new StringReader(e.getCause().getMessage()));
 
@@ -524,7 +541,7 @@ public class NeTExStopPlaceRegisterUpdater {
                 TiamatErrorsEnum tiamatError = TiamatErrorsEnum.fromErrorCode(error.errorCode);
                 ValidationReporter reporter = ValidationReporter.Factory.getInstance();
                 String errorType = getErrorTypeFromContext(context, tiamatError);
-                reporter.addCheckPointReportError(context,errorType,error.message ,new DataLocation(""));
+                reporter.addCheckPointReportError(context, errorType, error.message, new DataLocation(""));
             }
 
 
@@ -540,53 +557,51 @@ public class NeTExStopPlaceRegisterUpdater {
      * @param tiamatError
      * @return
      */
-    private String getErrorTypeFromContext(Context context, TiamatErrorsEnum tiamatError){
+    private String getErrorTypeFromContext(Context context, TiamatErrorsEnum tiamatError) {
         ErrorCodeConverter errorCodeConverter = (ErrorCodeConverter) context.get(TIAMAT_ERROR_CODE_CONVERTER);
         return errorCodeConverter.convert(tiamatError);
     }
 
 
-    private void feedFileToReferentialMap(Map<String,String> fileToReferentialMap, StopPlace stopPlace){
+    private void feedFileToReferentialMap(Map<String, String> fileToReferentialMap, StopPlace stopPlace) {
 
         for (Object o : stopPlace.getQuays().getQuayRefOrQuay()) {
 
             JAXBElement jaxbElt = (JAXBElement) o;
-            if (jaxbElt.getValue() instanceof Quay){
-                Quay quay = (Quay) jaxbElt.getValue();
+            if (jaxbElt.getValue() instanceof Quay quay) {
                 Optional<String> importedIdOp = NeTExStopPlaceUtil.getImportedId(quay);
-                importedIdOp.ifPresent(importedId-> fileToReferentialMap.put(importedId,quay.getId()));
+                importedIdOp.ifPresent(importedId -> fileToReferentialMap.put(importedId, quay.getId()));
             }
         }
     }
 
-    private void checkQuayAttachment(Context context, List<StopPlace> stopPlaceList){
-        stopPlaceList.forEach(stopPlace -> checkQuayAttachmentForStopPlace(context,stopPlace));
+    private void checkQuayAttachment(Context context, List<StopPlace> stopPlaceList) {
+        stopPlaceList.forEach(stopPlace -> checkQuayAttachmentForStopPlace(context, stopPlace));
     }
 
-    private void checkQuayAttachmentForStopPlace(Context context, StopPlace stopPlace){
-        Map<String,String> quayToStopPlaceMap =  (Map<String,String>) context.get(QUAY_TO_STOPPLACE_MAP);
+    private void checkQuayAttachmentForStopPlace(Context context, StopPlace stopPlace) {
+        Map<String, String> quayToStopPlaceMap = (Map<String, String>) context.get(QUAY_TO_STOPPLACE_MAP);
 
         if (quayToStopPlaceMap == null)
             return;
 
         for (Object quayObj : stopPlace.getQuays().getQuayRefOrQuay()) {
-            if (!(quayObj instanceof Quay))
+            if (!(quayObj instanceof Quay quay))
                 continue;
 
-            Quay quay = (Quay)quayObj;
             String quayId = quay.getId();
             String stopPlaceId = stopPlace.getId();
 
-            if (!quayToStopPlaceMap.containsKey(quayId)){
-                quayToStopPlaceMap.put(quayId,stopPlaceId);
+            if (!quayToStopPlaceMap.containsKey(quayId)) {
+                quayToStopPlaceMap.put(quayId, stopPlaceId);
                 continue;
             }
 
             String existingParentId = quayToStopPlaceMap.get(quayId);
-            if (existingParentId != null && !existingParentId.equals(stopPlaceId)){
-                log.error("Quay avec un nouveau parent : "+quayId);
-                log.error("ancien parent : "+existingParentId);
-                log.error("nouveau parent : "+stopPlaceId);
+            if (existingParentId != null && !existingParentId.equals(stopPlaceId)) {
+                log.error("Quay avec un nouveau parent : " + quayId);
+                log.error("ancien parent : " + existingParentId);
+                log.error("nouveau parent : " + stopPlaceId);
             }
 
         }
@@ -719,7 +734,6 @@ public class NeTExStopPlaceRegisterUpdater {
             }
         }
     }
-
 
 
     private String getAndValidateProperty(String propertyName) {

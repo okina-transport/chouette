@@ -31,14 +31,14 @@ import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import java.time.Duration;
-import java.time.LocalTime;
 import org.rutebanken.netex.model.LuggageCarriageEnumeration;
 
 import javax.xml.bind.DatatypeConverter;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -779,7 +779,7 @@ public class GtfsTripParser implements Parser, Validator, Constant {
                 dccf.setTypeOfKey("ALTERNATIVE_IDENTIFIER");
                 vehicleJourney.getKeyValues().add(dccf);
             }
-            
+
             // VehicleJourneyAtStop
             boolean afterMidnight = true;
 
@@ -1316,7 +1316,8 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
         GtfsImportParameters configuration = (GtfsImportParameters) context.get(CONFIGURATION);
 
-        String vjasObjectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), ObjectIdTypes.VEHICLE_JOURNEY_AT_STOP_KEY, UUID.randomUUID().toString());
+
+        String vjasObjectId = ObjectIdUtil.composeObjectId(configuration.isSplitIdOnDot(), configuration.getObjectIdPrefix(), ObjectIdTypes.VEHICLE_JOURNEY_AT_STOP_KEY, gtfsStopTime.getTripId() + "-" + gtfsStopTime.getStopSequence());
 
         vehicleJourneyAtStop.setObjectId(vjasObjectId);
 
@@ -1325,6 +1326,13 @@ public class GtfsTripParser implements Parser, Validator, Constant {
         vehicleJourneyAtStop.setStopPoint(stopPoint);
         vehicleJourneyAtStop.setArrivalTime(gtfsStopTime.getArrivalTime().getTime());
         vehicleJourneyAtStop.setDepartureTime(gtfsStopTime.getDepartureTime().getTime());
+        if (referential.getVehicleJourneyAtStopTranslationsByObjectId().containsKey(vjasObjectId)) {
+            for (VehicleJourneyAtStopTranslation vjasTranslation :
+                    referential.getVehicleJourneyAtStopTranslationsByObjectId().get(vjasObjectId)) {
+                vjasTranslation.setVehicleJourneyAtStop(vehicleJourneyAtStop);
+            }
+            referential.getVehicleJourneyAtStopTranslationsByObjectId().remove(vjasObjectId);
+        }
 
         /**
          * GJT : Setting arrival and departure offset to vehicleJourneyAtStop

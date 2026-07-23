@@ -9,10 +9,7 @@ import mobi.chouette.common.Pair;
 import mobi.chouette.dao.*;
 import mobi.chouette.exchange.validation.ValidationData;
 import mobi.chouette.exchange.validation.report.ValidationReporter;
-import mobi.chouette.model.AccessLink;
-import mobi.chouette.model.AccessPoint;
-import mobi.chouette.model.ConnectionLink;
-import mobi.chouette.model.StopArea;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.StopAreaImportModeEnum;
 import mobi.chouette.model.util.NeptuneUtil;
 import mobi.chouette.model.util.ObjectFactory;
@@ -28,464 +25,491 @@ import java.util.Objects;
 @Log4j
 public class StopAreaUpdater implements Updater<StopArea> {
 
-	public static final String BEAN_NAME = "StopAreaUpdater";
+    public static final String BEAN_NAME = "StopAreaUpdater";
 
 
+    @EJB
+    private StopAreaDAO stopAreaDAO;
 
-	@EJB
-	private StopAreaDAO stopAreaDAO;
+    @EJB(beanName = StopAreaUpdater.BEAN_NAME)
+    private Updater<StopArea> stopAreaUpdater;
 
-	@EJB(beanName = StopAreaUpdater.BEAN_NAME)
-	private Updater<StopArea> stopAreaUpdater;
+    @EJB
+    private AccessPointDAO accessPointDAO;
 
-	@EJB
-	private AccessPointDAO accessPointDAO;
+    @EJB(beanName = AccessPointUpdater.BEAN_NAME)
+    private Updater<AccessPoint> accessPointUpdater;
 
-	@EJB(beanName = AccessPointUpdater.BEAN_NAME)
-	private Updater<AccessPoint> accessPointUpdater;
+    @EJB
+    private AccessLinkDAO accessLinkDAO;
 
-	@EJB
-	private AccessLinkDAO accessLinkDAO;
+    @EJB(beanName = AccessLinkUpdater.BEAN_NAME)
+    private Updater<AccessLink> accessLinkUpdater;
 
-	@EJB(beanName = AccessLinkUpdater.BEAN_NAME)
-	private Updater<AccessLink> accessLinkUpdater;
+    @EJB
+    private ConnectionLinkDAO connectionLinkDAO;
 
-	@EJB
-	private ConnectionLinkDAO connectionLinkDAO;
+    @EJB(beanName = ConnectionLinkUpdater.BEAN_NAME)
+    private Updater<ConnectionLink> connectionLinkUpdater;
 
-	@EJB(beanName = ConnectionLinkUpdater.BEAN_NAME)
-	private Updater<ConnectionLink> connectionLinkUpdater;
+    @EJB
+    private VariationsDAO variationsDAO;
 
-	@EJB
-	private VariationsDAO variationsDAO;
+    @EJB(beanName = StopAreaTranslationUpdater.BEAN_NAME)
+    private Updater<StopAreaTranslation> stopAreaTranslationUpdater;
 
-	@Override
-	public void update(Context context, StopArea oldValue, StopArea newValue) throws Exception {
+    @Override
+    public void update(Context context, StopArea oldValue, StopArea newValue) throws Exception {
 
-		if (newValue.isSaved()) {
-			return;
-		}
-		newValue.setSaved(true);
+        if (newValue.isSaved()) {
+            return;
+        }
+        newValue.setSaved(true);
 
-		setImportMode(context, oldValue, newValue);
+        setImportMode(context, oldValue, newValue);
 
-		boolean shouldNotUpdate = (oldValue.getId() != null && !oldValue.getImportMode().shouldUpdateStopAreas());
-		boolean stopUpdateAccessibility = context.get(UPDATE_STOP_ACCESSIBILITY) != null && (boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
+        boolean shouldNotUpdate = (oldValue.getId() != null && !oldValue.getImportMode().shouldUpdateStopAreas());
+        boolean stopUpdateAccessibility = context.get(UPDATE_STOP_ACCESSIBILITY) != null && (boolean) context.get(UPDATE_STOP_ACCESSIBILITY);
 
 
-		Long jobid = (Long) context.get(JOB_ID);
+        Long jobid = (Long) context.get(JOB_ID);
 
-		// Gestion journal de variations des points d'arrêt
+        // Gestion journal de variations des points d'arrêt
 
-		// Nouveau point d'arrêt
-		if(oldValue.getId() == null && jobid != null) {
-			variationsDAO.makeVariationsInsert("Nouveau point d'arrêt " + newValue.getName(), "", jobid);
-		}
+        // Nouveau point d'arrêt
+        if (oldValue.getId() == null && jobid != null) {
+            variationsDAO.makeVariationsInsert("Nouveau point d'arrêt " + newValue.getName(), "", jobid);
+        }
 
-		Monitor monitor = MonitorFactory.start(BEAN_NAME);
-		Referential cache = (Referential) context.get(CACHE);
-		Referential referential = (Referential) context.get(REFERENTIAL);
+        Monitor monitor = MonitorFactory.start(BEAN_NAME);
+        Referential cache = (Referential) context.get(CACHE);
+        Referential referential = (Referential) context.get(REFERENTIAL);
 
-		// Database test init
-		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-		validationReporter.addItemToValidationReport(context, "2-DATABASE-", "StopArea", 2, "W", "E");
-		validationReporter.addItemToValidationReport(context, DATABASE_ACCESS_POINT_1, "E");
-		ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
+        // Database test init
+        ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
+        validationReporter.addItemToValidationReport(context, "2-DATABASE-", "StopArea", 2, "W", "E");
+        validationReporter.addItemToValidationReport(context, DATABASE_ACCESS_POINT_1, "E");
+        ValidationData data = (ValidationData) context.get(VALIDATION_DATA);
 
-		if (newValue.getAreaType() == null) {
-			log.error("stoparea without mandatory areatype " + newValue.getObjectId());
-			throw new IllegalArgumentException("area type null");
-		}
+        if (newValue.getAreaType() == null) {
+            log.error("stoparea without mandatory areatype " + newValue.getObjectId());
+            throw new IllegalArgumentException("area type null");
+        }
 
-		if (stopUpdateAccessibility){
-			oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
-		}
+        if (stopUpdateAccessibility) {
+            oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
+        }
 
-		if (oldValue.isDetached()) {
-			if(!shouldNotUpdate) {
-				oldValue.setObjectId(newValue.getObjectId());
-				oldValue.setObjectVersion(newValue.getObjectVersion());
-				oldValue.setCreationTime(newValue.getCreationTime());
-				oldValue.setCreatorId(newValue.getCreatorId());
-				oldValue.setAreaType(newValue.getAreaType());
-				oldValue.setNearestTopicName(newValue.getNearestTopicName());
-				oldValue.setTimeZone(newValue.getTimeZone());
-				oldValue.setFareCode(newValue.getFareCode());
-				oldValue.setLiftAvailable(newValue.getLiftAvailable());
-				oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
-				oldValue.setStairsAvailable(newValue.getStairsAvailable());
-				oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
-				oldValue.setCountryCode(newValue.getCountryCode());
-				oldValue.setZipCode(newValue.getZipCode());
-				oldValue.setCityName(newValue.getCityName());
-				oldValue.setStreetName(newValue.getStreetName());
-				oldValue.setCompassBearing(newValue.getCompassBearing());
-				oldValue.setTransportModeName(newValue.getTransportModeName());
-				oldValue.setTransportSubMode(newValue.getTransportSubMode());
-				oldValue.setStopAreaType(newValue.getStopAreaType());
-				oldValue.setDetached(false);
+        if (oldValue.isDetached()) {
+            if (!shouldNotUpdate) {
+                oldValue.setObjectId(newValue.getObjectId());
+                oldValue.setObjectVersion(newValue.getObjectVersion());
+                oldValue.setCreationTime(newValue.getCreationTime());
+                oldValue.setCreatorId(newValue.getCreatorId());
+                oldValue.setAreaType(newValue.getAreaType());
+                oldValue.setNearestTopicName(newValue.getNearestTopicName());
+                oldValue.setTimeZone(newValue.getTimeZone());
+                oldValue.setFareCode(newValue.getFareCode());
+                oldValue.setLiftAvailable(newValue.getLiftAvailable());
+                oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
+                oldValue.setStairsAvailable(newValue.getStairsAvailable());
+                oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
+                oldValue.setCountryCode(newValue.getCountryCode());
+                oldValue.setZipCode(newValue.getZipCode());
+                oldValue.setCityName(newValue.getCityName());
+                oldValue.setStreetName(newValue.getStreetName());
+                oldValue.setCompassBearing(newValue.getCompassBearing());
+                oldValue.setTransportModeName(newValue.getTransportModeName());
+                oldValue.setTransportSubMode(newValue.getTransportSubMode());
+                oldValue.setStopAreaType(newValue.getStopAreaType());
+                oldValue.setDetached(false);
 
-				oldValue.setName(newValue.getName());
-				oldValue.setTtsStopName(newValue.getTtsStopName());
-				oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
-				oldValue.setComment(newValue.getComment());
-				oldValue.setLongLatType(newValue.getLongLatType());
-				oldValue.setUrl(newValue.getUrl());
-				oldValue.setOriginalStopId(newValue.getOriginalStopId());
-				oldValue.setKeyValues(newValue.getKeyValues());
-				oldValue.setRailUic(newValue.getRailUic());
-				oldValue.setZoneId(newValue.getZoneId());
-				oldValue.setPrivateCode(newValue.getPrivateCode());
-				oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
-			}
-			if(oldValue.getLongitude() == null) {
-				oldValue.setLongitude(newValue.getLongitude());
-			}
-			if(oldValue.getLatitude() == null) {
-				oldValue.setLatitude(newValue.getLatitude());
-			}
-		} else {
-			if(!shouldNotUpdate) {
-				twoDatabaseStopAreaTwoTest(validationReporter, context, oldValue, newValue, data);
-				twoDatabaseStopAreaOneTest(validationReporter, context, oldValue, newValue, data);
-				if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
-					oldValue.setObjectId(newValue.getObjectId());
-				}
-				if (newValue.getObjectVersion() != null && !newValue.getObjectVersion().equals(oldValue.getObjectVersion())) {
-					oldValue.setObjectVersion(newValue.getObjectVersion());
-				}
-				if (newValue.getCreationTime() != null && !newValue.getCreationTime().equals(oldValue.getCreationTime())) {
-					oldValue.setCreationTime(newValue.getCreationTime());
-				}
-				if (newValue.getCreatorId() != null && !newValue.getCreatorId().equals(oldValue.getCreatorId())) {
-					oldValue.setCreatorId(newValue.getCreatorId());
-				}
-				if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName())) {
-					oldValue.setName(newValue.getName());
-				}
+                oldValue.setName(newValue.getName());
+                oldValue.setTtsStopName(newValue.getTtsStopName());
+                oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
+                oldValue.setComment(newValue.getComment());
+                oldValue.setLongLatType(newValue.getLongLatType());
+                oldValue.setUrl(newValue.getUrl());
+                oldValue.setOriginalStopId(newValue.getOriginalStopId());
+                oldValue.setKeyValues(newValue.getKeyValues());
+                oldValue.setRailUic(newValue.getRailUic());
+                oldValue.setZoneId(newValue.getZoneId());
+                oldValue.setPrivateCode(newValue.getPrivateCode());
+                oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
+            }
+            if (oldValue.getLongitude() == null) {
+                oldValue.setLongitude(newValue.getLongitude());
+            }
+            if (oldValue.getLatitude() == null) {
+                oldValue.setLatitude(newValue.getLatitude());
+            }
+        } else {
+            if (!shouldNotUpdate) {
+                twoDatabaseStopAreaTwoTest(validationReporter, context, oldValue, newValue, data);
+                twoDatabaseStopAreaOneTest(validationReporter, context, oldValue, newValue, data);
+                if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
+                    oldValue.setObjectId(newValue.getObjectId());
+                }
+                if (newValue.getObjectVersion() != null && !newValue.getObjectVersion().equals(oldValue.getObjectVersion())) {
+                    oldValue.setObjectVersion(newValue.getObjectVersion());
+                }
+                if (newValue.getCreationTime() != null && !newValue.getCreationTime().equals(oldValue.getCreationTime())) {
+                    oldValue.setCreationTime(newValue.getCreationTime());
+                }
+                if (newValue.getCreatorId() != null && !newValue.getCreatorId().equals(oldValue.getCreatorId())) {
+                    oldValue.setCreatorId(newValue.getCreatorId());
+                }
+                if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName())) {
+                    oldValue.setName(newValue.getName());
+                }
                 if (!Objects.equals(newValue.getTtsStopName(), oldValue.getTtsStopName())) {
                     oldValue.setTtsStopName(newValue.getTtsStopName());
                 }
-				if (newValue.getComment() != null && !newValue.getComment().equals(oldValue.getComment()) ) {
-					oldValue.setComment(newValue.getComment());
-				}
-				if (newValue.getAreaType() != null && !newValue.getAreaType().equals(oldValue.getAreaType())) {
-					oldValue.setAreaType(newValue.getAreaType());
-				}
-				if (!Objects.equals(newValue.getRegistrationNumber(), oldValue.getRegistrationNumber())) {
-					oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
-				}
-				if (newValue.getNearestTopicName() != null
-						&& !newValue.getNearestTopicName().equals(oldValue.getNearestTopicName())) {
-					oldValue.setNearestTopicName(newValue.getNearestTopicName());
-				}
-				if (newValue.getUrl() != null && !newValue.getUrl().equals(oldValue.getUrl())) {
-					oldValue.setUrl(newValue.getUrl());
-				}
-				if (newValue.getTimeZone() != null && !newValue.getTimeZone().equals(oldValue.getTimeZone())) {
-					oldValue.setTimeZone(newValue.getTimeZone());
-				}
-				if (newValue.getFareCode() != null && !newValue.getFareCode().equals(oldValue.getFareCode())) {
-					oldValue.setFareCode(newValue.getFareCode());
-				}
-				if (newValue.getLiftAvailable() != null && !newValue.getLiftAvailable().equals(oldValue.getLiftAvailable())) {
-					oldValue.setLiftAvailable(newValue.getLiftAvailable());
-				}
-				if (newValue.getMobilityRestrictedSuitable() != null
-						&& !newValue.getMobilityRestrictedSuitable().equals(oldValue.getMobilityRestrictedSuitable())) {
-					oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
-				}
-				if (newValue.getStairsAvailable() != null
-						&& !newValue.getStairsAvailable().equals(oldValue.getStairsAvailable())) {
-					oldValue.setStairsAvailable(newValue.getStairsAvailable());
-				}
-				if (newValue.getIntUserNeeds() != null && !newValue.getIntUserNeeds().equals(oldValue.getIntUserNeeds())) {
-					oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
-				}
-
-				if (newValue.getLongLatType() != null && !newValue.getLongLatType().equals(oldValue.getLongLatType())) {
-					oldValue.setLongLatType(newValue.getLongLatType());
-				}
-				if (newValue.getCountryCode() != null && !newValue.getCountryCode().equals(oldValue.getCountryCode())) {
-					oldValue.setCountryCode(newValue.getCountryCode());
-				}
-				if (newValue.getZipCode() != null && !newValue.getZipCode().equals(oldValue.getZipCode())) {
-					oldValue.setZipCode(newValue.getZipCode());
-				}
-				if (newValue.getCityName() != null && !newValue.getCityName().equals(oldValue.getCityName())) {
-					oldValue.setCityName(newValue.getCityName());
-				}
-				if (newValue.getStreetName() != null && !newValue.getStreetName().equals(oldValue.getStreetName())) {
-					oldValue.setStreetName(newValue.getStreetName());
-				}
-				if (newValue.getCompassBearing() != null && !newValue.getCompassBearing().equals(oldValue.getCompassBearing())) {
-					oldValue.setCompassBearing(newValue.getCompassBearing());
-				}
-
-				if (newValue.getTransportModeName() != null && !newValue.getTransportModeName().equals(oldValue.getTransportModeName())) {
-					oldValue.setTransportModeName(newValue.getTransportModeName());
-				}
-				if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
-					oldValue.setTransportSubMode(newValue.getTransportSubMode());
-				}
-				if (newValue.getStopAreaType() != null && !newValue.getStopAreaType().equals(oldValue.getStopAreaType())) {
-					oldValue.setStopAreaType(newValue.getStopAreaType());
-				}
-				if (newValue.getOriginalStopId() != null && !newValue.getOriginalStopId().equals(oldValue.getOriginalStopId())) {
-					oldValue.setOriginalStopId(newValue.getOriginalStopId());
-				}
-				if (newValue.getKeyValues() != null && !newValue.getKeyValues().equals(oldValue.getKeyValues())) {
-					oldValue.setKeyValues(newValue.getKeyValues());
-				}
-				if (newValue.getQuayAutoGenerated() != null && !newValue.getQuayAutoGenerated().equals(oldValue.getQuayAutoGenerated())) {
-					oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
-				}
-			}
-
-				if (newValue.getStopAreaType() != null){
-					oldValue.setStopAreaType(newValue.getStopAreaType());
-				}
-
-				if (newValue.getTransportModeName() != null && !newValue.getTransportModeName().equals(oldValue.getTransportModeName())) {
-					oldValue.setTransportModeName(newValue.getTransportModeName());
-				}
-				if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
-					oldValue.setTransportSubMode(newValue.getTransportSubMode());
-				}
-                if (!Objects.equals(newValue.getTtsStopName(), oldValue.getTtsStopName())) {
-                    oldValue.setTtsStopName(newValue.getTtsStopName());
+                if (newValue.getComment() != null && !newValue.getComment().equals(oldValue.getComment())) {
+                    oldValue.setComment(newValue.getComment());
+                }
+                if (newValue.getAreaType() != null && !newValue.getAreaType().equals(oldValue.getAreaType())) {
+                    oldValue.setAreaType(newValue.getAreaType());
+                }
+                if (!Objects.equals(newValue.getRegistrationNumber(), oldValue.getRegistrationNumber())) {
+                    oldValue.setRegistrationNumber(newValue.getRegistrationNumber());
+                }
+                if (newValue.getNearestTopicName() != null
+                        && !newValue.getNearestTopicName().equals(oldValue.getNearestTopicName())) {
+                    oldValue.setNearestTopicName(newValue.getNearestTopicName());
+                }
+                if (newValue.getUrl() != null && !newValue.getUrl().equals(oldValue.getUrl())) {
+                    oldValue.setUrl(newValue.getUrl());
+                }
+                if (newValue.getTimeZone() != null && !newValue.getTimeZone().equals(oldValue.getTimeZone())) {
+                    oldValue.setTimeZone(newValue.getTimeZone());
+                }
+                if (newValue.getFareCode() != null && !newValue.getFareCode().equals(oldValue.getFareCode())) {
+                    oldValue.setFareCode(newValue.getFareCode());
+                }
+                if (newValue.getLiftAvailable() != null && !newValue.getLiftAvailable().equals(oldValue.getLiftAvailable())) {
+                    oldValue.setLiftAvailable(newValue.getLiftAvailable());
+                }
+                if (newValue.getMobilityRestrictedSuitable() != null
+                        && !newValue.getMobilityRestrictedSuitable().equals(oldValue.getMobilityRestrictedSuitable())) {
+                    oldValue.setMobilityRestrictedSuitable(newValue.getMobilityRestrictedSuitable());
+                }
+                if (newValue.getStairsAvailable() != null
+                        && !newValue.getStairsAvailable().equals(oldValue.getStairsAvailable())) {
+                    oldValue.setStairsAvailable(newValue.getStairsAvailable());
+                }
+                if (newValue.getIntUserNeeds() != null && !newValue.getIntUserNeeds().equals(oldValue.getIntUserNeeds())) {
+                    oldValue.setIntUserNeeds(newValue.getIntUserNeeds());
                 }
 
-				if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
-					oldValue.setLongitude(newValue.getLongitude());
-				}
-				if (newValue.getLatitude() != null && !newValue.getLatitude().equals(oldValue.getLatitude())) {
-					oldValue.setLatitude(newValue.getLatitude());
-				}
-				if (newValue.getRailUic() != null && !newValue.getRailUic().equals(oldValue.getRailUic())) {
-					oldValue.setRailUic(newValue.getRailUic());
-				}
-				if (newValue.getZoneId() != null && !newValue.getZoneId().equals(oldValue.getZoneId())) {
-					oldValue.setZoneId(newValue.getZoneId());
-				}
-				if (newValue.getPrivateCode() != null && !newValue.getPrivateCode().equals(oldValue.getPrivateCode())) {
-					oldValue.setPrivateCode(newValue.getPrivateCode());
-				}
-				if (newValue.getQuayAutoGenerated() != null && !newValue.getQuayAutoGenerated().equals(oldValue.getQuayAutoGenerated())) {
-					oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
-				}
-		}
+                if (newValue.getLongLatType() != null && !newValue.getLongLatType().equals(oldValue.getLongLatType())) {
+                    oldValue.setLongLatType(newValue.getLongLatType());
+                }
+                if (newValue.getCountryCode() != null && !newValue.getCountryCode().equals(oldValue.getCountryCode())) {
+                    oldValue.setCountryCode(newValue.getCountryCode());
+                }
+                if (newValue.getZipCode() != null && !newValue.getZipCode().equals(oldValue.getZipCode())) {
+                    oldValue.setZipCode(newValue.getZipCode());
+                }
+                if (newValue.getCityName() != null && !newValue.getCityName().equals(oldValue.getCityName())) {
+                    oldValue.setCityName(newValue.getCityName());
+                }
+                if (newValue.getStreetName() != null && !newValue.getStreetName().equals(oldValue.getStreetName())) {
+                    oldValue.setStreetName(newValue.getStreetName());
+                }
+                if (newValue.getCompassBearing() != null && !newValue.getCompassBearing().equals(oldValue.getCompassBearing())) {
+                    oldValue.setCompassBearing(newValue.getCompassBearing());
+                }
 
-		// StopArea Parent
-		if (newValue.getParent() == null) {
-			oldValue.setParent(null);
-		} else {
-			String objectId = newValue.getParent().getObjectId();
-			StopArea stopArea = cache.getStopAreas().get(objectId);
-			if (stopArea == null) {
-				stopArea = stopAreaDAO.findByObjectId(objectId);
-				if (stopArea != null) {
-					cache.getStopAreas().put(objectId, stopArea);
-				}
-			}
+                if (newValue.getTransportModeName() != null && !newValue.getTransportModeName().equals(oldValue.getTransportModeName())) {
+                    oldValue.setTransportModeName(newValue.getTransportModeName());
+                }
+                if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
+                    oldValue.setTransportSubMode(newValue.getTransportSubMode());
+                }
+                if (newValue.getStopAreaType() != null && !newValue.getStopAreaType().equals(oldValue.getStopAreaType())) {
+                    oldValue.setStopAreaType(newValue.getStopAreaType());
+                }
+                if (newValue.getOriginalStopId() != null && !newValue.getOriginalStopId().equals(oldValue.getOriginalStopId())) {
+                    oldValue.setOriginalStopId(newValue.getOriginalStopId());
+                }
+                if (newValue.getKeyValues() != null && !newValue.getKeyValues().equals(oldValue.getKeyValues())) {
+                    oldValue.setKeyValues(newValue.getKeyValues());
+                }
+                if (newValue.getQuayAutoGenerated() != null && !newValue.getQuayAutoGenerated().equals(oldValue.getQuayAutoGenerated())) {
+                    oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
+                }
+            }
 
-			if (stopArea == null) {
-				stopArea = ObjectFactory.getStopArea(cache, objectId);
-			}
-			if (context.containsKey(AREA_BLOC))
-				oldValue.forceParent(stopArea);
-			else
-				oldValue.setParent(stopArea);
-			stopAreaUpdater.update(context, oldValue.getParent(), newValue.getParent());
-		}
+            if (newValue.getStopAreaType() != null) {
+                oldValue.setStopAreaType(newValue.getStopAreaType());
+            }
 
-		// AccessPoint
-		Collection<AccessPoint> addedAccessPoint = CollectionUtil.substract(newValue.getAccessPoints(),
-				oldValue.getAccessPoints(), NeptuneIdentifiedObjectComparator.INSTANCE);
+            if (newValue.getTransportModeName() != null && !newValue.getTransportModeName().equals(oldValue.getTransportModeName())) {
+                oldValue.setTransportModeName(newValue.getTransportModeName());
+            }
+            if (!Objects.equals(newValue.getTransportSubMode(), oldValue.getTransportSubMode())) {
+                oldValue.setTransportSubMode(newValue.getTransportSubMode());
+            }
+            if (!Objects.equals(newValue.getTtsStopName(), oldValue.getTtsStopName())) {
+                oldValue.setTtsStopName(newValue.getTtsStopName());
+            }
 
-		List<AccessPoint> accessPoints = null;
-		for (AccessPoint item : addedAccessPoint) {
-			AccessPoint accessPoint = cache.getAccessPoints().get(item.getObjectId());
-			if (accessPoint == null) {
-				if (accessPoints == null) {
-					accessPoints = accessPointDAO.findByObjectId(UpdaterUtils.getObjectIds(addedAccessPoint));
-					for (AccessPoint object : accessPoints) {
-						cache.getAccessPoints().put(object.getObjectId(), object);
-					}
-				}
-				accessPoint = cache.getAccessPoints().get(item.getObjectId());
-			}
+            if (newValue.getLongitude() != null && !newValue.getLongitude().equals(oldValue.getLongitude())) {
+                oldValue.setLongitude(newValue.getLongitude());
+            }
+            if (newValue.getLatitude() != null && !newValue.getLatitude().equals(oldValue.getLatitude())) {
+                oldValue.setLatitude(newValue.getLatitude());
+            }
+            if (newValue.getRailUic() != null && !newValue.getRailUic().equals(oldValue.getRailUic())) {
+                oldValue.setRailUic(newValue.getRailUic());
+            }
+            if (newValue.getZoneId() != null && !newValue.getZoneId().equals(oldValue.getZoneId())) {
+                oldValue.setZoneId(newValue.getZoneId());
+            }
+            if (newValue.getPrivateCode() != null && !newValue.getPrivateCode().equals(oldValue.getPrivateCode())) {
+                oldValue.setPrivateCode(newValue.getPrivateCode());
+            }
+            if (newValue.getQuayAutoGenerated() != null && !newValue.getQuayAutoGenerated().equals(oldValue.getQuayAutoGenerated())) {
+                oldValue.setQuayAutoGenerated(newValue.getQuayAutoGenerated());
+            }
+        }
 
-			if (accessPoint == null) {
-				accessPoint = ObjectFactory.getAccessPoint(cache, item.getObjectId());
-			} else {
-				twoDatabaseAccessPointOneTest(validationReporter, context, accessPoint, item, data);
-			}
-			accessPoint.setContainedIn(oldValue);
-		}
+        // StopArea Parent
+        if (newValue.getParent() == null) {
+            oldValue.setParent(null);
+        } else {
+            String objectId = newValue.getParent().getObjectId();
+            StopArea stopArea = cache.getStopAreas().get(objectId);
+            if (stopArea == null) {
+                stopArea = stopAreaDAO.findByObjectId(objectId);
+                if (stopArea != null) {
+                    cache.getStopAreas().put(objectId, stopArea);
+                }
+            }
 
-		Collection<Pair<AccessPoint, AccessPoint>> modifiedAccessPoint = CollectionUtil.intersection(
-				oldValue.getAccessPoints(), newValue.getAccessPoints(), NeptuneIdentifiedObjectComparator.INSTANCE);
-		for (Pair<AccessPoint, AccessPoint> pair : modifiedAccessPoint) {
-			accessPointUpdater.update(context, pair.getLeft(), pair.getRight());
-		}
+            if (stopArea == null) {
+                stopArea = ObjectFactory.getStopArea(cache, objectId);
+            }
+            if (context.containsKey(AREA_BLOC))
+                oldValue.forceParent(stopArea);
+            else
+                oldValue.setParent(stopArea);
+            stopAreaUpdater.update(context, oldValue.getParent(), newValue.getParent());
+        }
 
-		// AccessLink
-		Collection<AccessLink> addedAccessLink = CollectionUtil.substract(newValue.getAccessLinks(),
-				oldValue.getAccessLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        // AccessPoint
+        Collection<AccessPoint> addedAccessPoint = CollectionUtil.substract(newValue.getAccessPoints(),
+                oldValue.getAccessPoints(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
-		List<AccessLink> accessLinks = null;
-		for (AccessLink item : addedAccessLink) {
+        List<AccessPoint> accessPoints = null;
+        for (AccessPoint item : addedAccessPoint) {
+            AccessPoint accessPoint = cache.getAccessPoints().get(item.getObjectId());
+            if (accessPoint == null) {
+                if (accessPoints == null) {
+                    accessPoints = accessPointDAO.findByObjectId(UpdaterUtils.getObjectIds(addedAccessPoint));
+                    for (AccessPoint object : accessPoints) {
+                        cache.getAccessPoints().put(object.getObjectId(), object);
+                    }
+                }
+                accessPoint = cache.getAccessPoints().get(item.getObjectId());
+            }
 
-			AccessLink accessLink = cache.getAccessLinks().get(item.getObjectId());
-			if (accessLink == null) {
-				if (accessLinks == null) {
-					accessLinks = accessLinkDAO.findByObjectId(UpdaterUtils.getObjectIds(addedAccessLink));
-					for (AccessLink object : accessLinks) {
-						cache.getAccessLinks().put(object.getObjectId(), object);
-					}
-				}
-				accessLink = cache.getAccessLinks().get(item.getObjectId());
-			}
+            if (accessPoint == null) {
+                accessPoint = ObjectFactory.getAccessPoint(cache, item.getObjectId());
+            } else {
+                twoDatabaseAccessPointOneTest(validationReporter, context, accessPoint, item, data);
+            }
+            accessPoint.setContainedIn(oldValue);
+        }
 
-			if (accessLink == null) {
-				accessLink = ObjectFactory.getAccessLink(cache, item.getObjectId());
-			}
-			accessLink.setStopArea(oldValue);
-		}
+        Collection<Pair<AccessPoint, AccessPoint>> modifiedAccessPoint = CollectionUtil.intersection(
+                oldValue.getAccessPoints(), newValue.getAccessPoints(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<AccessPoint, AccessPoint> pair : modifiedAccessPoint) {
+            accessPointUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
 
-		Collection<Pair<AccessLink, AccessLink>> modifiedAccessLink = CollectionUtil.intersection(
-				oldValue.getAccessLinks(), newValue.getAccessLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
-		for (Pair<AccessLink, AccessLink> pair : modifiedAccessLink) {
-			accessLinkUpdater.update(context, pair.getLeft(), pair.getRight());
-		}
+        // AccessLink
+        Collection<AccessLink> addedAccessLink = CollectionUtil.substract(newValue.getAccessLinks(),
+                oldValue.getAccessLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
-		if (!context.containsKey(AREA_BLOC)) {
-			// StartOfLink
-			Collection<ConnectionLink> addedStartOfLink = CollectionUtil.substract(newValue.getConnectionStartLinks(),
-					oldValue.getConnectionStartLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        List<AccessLink> accessLinks = null;
+        for (AccessLink item : addedAccessLink) {
 
-			for (ConnectionLink item : addedStartOfLink) {
-				//Connection Links are update by a specific command after all lines are persisted to avoid transient exception
-				referential.getSharedConnectionLinks().put(item.getObjectId(),item);
-			}
+            AccessLink accessLink = cache.getAccessLinks().get(item.getObjectId());
+            if (accessLink == null) {
+                if (accessLinks == null) {
+                    accessLinks = accessLinkDAO.findByObjectId(UpdaterUtils.getObjectIds(addedAccessLink));
+                    for (AccessLink object : accessLinks) {
+                        cache.getAccessLinks().put(object.getObjectId(), object);
+                    }
+                }
+                accessLink = cache.getAccessLinks().get(item.getObjectId());
+            }
 
-			// EndOfLink
-			Collection<ConnectionLink> addedEndOfLink = CollectionUtil.substract(newValue.getConnectionEndLinks(),
-					oldValue.getConnectionEndLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
+            if (accessLink == null) {
+                accessLink = ObjectFactory.getAccessLink(cache, item.getObjectId());
+            }
+            accessLink.setStopArea(oldValue);
+        }
 
-			for (ConnectionLink item : addedEndOfLink) {
-				referential.getSharedConnectionLinks().put(item.getObjectId(),item);
-			}
-		}
+        Collection<Pair<AccessLink, AccessLink>> modifiedAccessLink = CollectionUtil.intersection(
+                oldValue.getAccessLinks(), newValue.getAccessLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<AccessLink, AccessLink> pair : modifiedAccessLink) {
+            accessLinkUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
 
-		// TODO list routing_constraints_lines (routingConstraintLines)
-		// TODO list stop_areas_stop_areas (routingConstraintAreas)
-		Collection<StopArea> addedStopAreas = CollectionUtil.substract(newValue.getRoutingConstraintAreas(),
-				oldValue.getRoutingConstraintAreas(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        if (!context.containsKey(AREA_BLOC)) {
+            // StartOfLink
+            Collection<ConnectionLink> addedStartOfLink = CollectionUtil.substract(newValue.getConnectionStartLinks(),
+                    oldValue.getConnectionStartLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
-		List<StopArea> stopAreas = null;
-		for (StopArea item : addedStopAreas) {
+            for (ConnectionLink item : addedStartOfLink) {
+                //Connection Links are update by a specific command after all lines are persisted to avoid transient exception
+                referential.getSharedConnectionLinks().put(item.getObjectId(), item);
+            }
 
-			StopArea area = cache.getStopAreas().get(item.getObjectId());
-			if (area == null) {
-				if (stopAreas == null) {
-					stopAreas = stopAreaDAO.findByObjectId(UpdaterUtils.getObjectIds(addedStopAreas));
-					for (StopArea object : addedStopAreas) {
-						cache.getStopAreas().put(object.getObjectId(), object);
-					}
-				}
-				area = cache.getStopAreas().get(item.getObjectId());
-			}
+            // EndOfLink
+            Collection<ConnectionLink> addedEndOfLink = CollectionUtil.substract(newValue.getConnectionEndLinks(),
+                    oldValue.getConnectionEndLinks(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
-			if (area == null) {
-				area = ObjectFactory.getStopArea(cache, item.getObjectId());
-			}
+            for (ConnectionLink item : addedEndOfLink) {
+                referential.getSharedConnectionLinks().put(item.getObjectId(), item);
+            }
+        }
 
-			if (!area.isDetached() || area.isFilled())
-				oldValue.getRoutingConstraintAreas().add(area);
-		}
+        // TODO list routing_constraints_lines (routingConstraintLines)
+        // TODO list stop_areas_stop_areas (routingConstraintAreas)
+        Collection<StopArea> addedStopAreas = CollectionUtil.substract(newValue.getRoutingConstraintAreas(),
+                oldValue.getRoutingConstraintAreas(), NeptuneIdentifiedObjectComparator.INSTANCE);
 
-		Collection<Pair<StopArea, StopArea>> modifiedStopArea = CollectionUtil.intersection(
-				oldValue.getRoutingConstraintAreas(), newValue.getRoutingConstraintAreas(),
-				NeptuneIdentifiedObjectComparator.INSTANCE);
-		for (Pair<StopArea, StopArea> pair : modifiedStopArea) {
-			stopAreaUpdater.update(context, pair.getLeft(), pair.getRight());
-		}
-		monitor.stop();
+        List<StopArea> stopAreas = null;
+        for (StopArea item : addedStopAreas) {
 
-	}
+            StopArea area = cache.getStopAreas().get(item.getObjectId());
+            if (area == null) {
+                if (stopAreas == null) {
+                    stopAreas = stopAreaDAO.findByObjectId(UpdaterUtils.getObjectIds(addedStopAreas));
+                    for (StopArea object : addedStopAreas) {
+                        cache.getStopAreas().put(object.getObjectId(), object);
+                    }
+                }
+                area = cache.getStopAreas().get(item.getObjectId());
+            }
 
-	private void setImportMode(Context context, StopArea oldValue, StopArea newValue) {
-		Object importModeObj = context.get(StopArea.IMPORT_MODE);
-		if (importModeObj instanceof StopAreaImportModeEnum) {
-			StopAreaImportModeEnum importMode= (StopAreaImportModeEnum)importModeObj;
-			oldValue.setImportMode(importMode);
-			newValue.setImportMode(importMode);
-		}
-	}
+            if (area == null) {
+                area = ObjectFactory.getStopArea(cache, item.getObjectId());
+            }
 
-	/**
-	 * Test 2-DATABASE-StopArea-1
-	 * @param validationReporter
-	 * @param context
-	 * @param oldValue
-	 * @param newValue
-	 * @param data
-	 */
-	private void twoDatabaseStopAreaOneTest(ValidationReporter validationReporter, Context context, StopArea oldValue,
-			StopArea newValue, ValidationData data) {
-		if (!NeptuneUtil.sameValue(oldValue.getParent(), newValue.getParent())) {
-			if(data != null && data.getDataLocations() != null) {
-				validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_1,
-						data.getDataLocations().get(newValue.getObjectId()));
-			} else {
-				validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_1,null);
+            if (!area.isDetached() || area.isFilled())
+                oldValue.getRoutingConstraintAreas().add(area);
+        }
 
-			}
+        Collection<Pair<StopArea, StopArea>> modifiedStopArea = CollectionUtil.intersection(
+                oldValue.getRoutingConstraintAreas(), newValue.getRoutingConstraintAreas(),
+                NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<StopArea, StopArea> pair : modifiedStopArea) {
+            stopAreaUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
+
+        updateTranslations(context, oldValue, newValue);
+        monitor.stop();
+
+    }
+
+    private void updateTranslations(Context context, StopArea oldValue, StopArea newValue) throws Exception {
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        List<StopAreaTranslation> newTranslations = referential.getStopAreaTranslationsByObjectId()
+                .getOrDefault(newValue.getObjectId(), List.of());
+
+        Collection<StopAreaTranslation> addedTranslations = CollectionUtil.substract(
+                newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (StopAreaTranslation translation : addedTranslations) {
+            translation.setStopArea(oldValue);
+        }
+
+        Collection<StopAreaTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (StopAreaTranslation translation : removedTranslations) {
+            oldValue.getTranslations().remove(translation);
+        }
+
+        Collection<Pair<StopAreaTranslation, StopAreaTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+        for (Pair<StopAreaTranslation, StopAreaTranslation> pair : modifiedTranslations) {
+            stopAreaTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
+        }
+    }
+
+    private void setImportMode(Context context, StopArea oldValue, StopArea newValue) {
+        Object importModeObj = context.get(StopArea.IMPORT_MODE);
+        if (importModeObj instanceof StopAreaImportModeEnum importMode) {
+            oldValue.setImportMode(importMode);
+            newValue.setImportMode(importMode);
+        }
+    }
+
+    /**
+     * Test 2-DATABASE-StopArea-1
+     *
+     * @param validationReporter
+     * @param context
+     * @param oldValue
+     * @param newValue
+     * @param data
+     */
+    private void twoDatabaseStopAreaOneTest(ValidationReporter validationReporter, Context context, StopArea oldValue,
+                                            StopArea newValue, ValidationData data) {
+        if (!NeptuneUtil.sameValue(oldValue.getParent(), newValue.getParent())) {
+            if (data != null && data.getDataLocations() != null) {
+                validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_1,
+                        data.getDataLocations().get(newValue.getObjectId()));
+            } else {
+                validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_1, null);
+
+            }
 
 
-		}
-		else {
-			validationReporter.reportSuccess(context, DATABASE_STOP_AREA_1);
-		}
-	}
+        } else {
+            validationReporter.reportSuccess(context, DATABASE_STOP_AREA_1);
+        }
+    }
 
-	/**
-	 * Test 2-DATABASE-StopArea-2
-	 *
-	 * @param validationReporter
-	 * @param context
-	 * @param oldSA
-	 * @param newSA
-	 */
-	private void twoDatabaseStopAreaTwoTest(ValidationReporter validationReporter, Context context, StopArea oldSA,
-			StopArea newSA, ValidationData data) {
-		if (oldSA != null && newSA != null) {
-			if (!NeptuneUtil.sameValue(oldSA.getAreaType(), newSA.getAreaType()))
-				validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_2,
-						data.getDataLocations().get(newSA.getObjectId()));
-			else
-				validationReporter.reportSuccess(context, DATABASE_STOP_AREA_2);
-		}
-	}
+    /**
+     * Test 2-DATABASE-StopArea-2
+     *
+     * @param validationReporter
+     * @param context
+     * @param oldSA
+     * @param newSA
+     */
+    private void twoDatabaseStopAreaTwoTest(ValidationReporter validationReporter, Context context, StopArea oldSA,
+                                            StopArea newSA, ValidationData data) {
+        if (oldSA != null && newSA != null) {
+            if (!NeptuneUtil.sameValue(oldSA.getAreaType(), newSA.getAreaType()))
+                validationReporter.addCheckPointReportError(context, DATABASE_STOP_AREA_2,
+                        data.getDataLocations().get(newSA.getObjectId()));
+            else
+                validationReporter.reportSuccess(context, DATABASE_STOP_AREA_2);
+        }
+    }
 
-	/**
-	 * Test 2-DATABASE-Access-Point-1
-	 *
-	 * @param validationReporter
-	 * @param context
-	 * @param oldAP
-	 * @param newAP
-	 * @param data
-	 */
-	private void twoDatabaseAccessPointOneTest(ValidationReporter validationReporter, Context context,
-			AccessPoint oldAP, AccessPoint newAP, ValidationData data) {
-		if (!NeptuneUtil.sameValue(oldAP.getContainedIn(), newAP.getContainedIn()))
-			validationReporter.addCheckPointReportError(context, DATABASE_ACCESS_POINT_1,
-					data.getDataLocations().get(newAP.getObjectId()));
-		else
-			validationReporter.reportSuccess(context, DATABASE_ACCESS_POINT_1);
-	}
+    /**
+     * Test 2-DATABASE-Access-Point-1
+     *
+     * @param validationReporter
+     * @param context
+     * @param oldAP
+     * @param newAP
+     * @param data
+     */
+    private void twoDatabaseAccessPointOneTest(ValidationReporter validationReporter, Context context,
+                                               AccessPoint oldAP, AccessPoint newAP, ValidationData data) {
+        if (!NeptuneUtil.sameValue(oldAP.getContainedIn(), newAP.getContainedIn()))
+            validationReporter.addCheckPointReportError(context, DATABASE_ACCESS_POINT_1,
+                    data.getDataLocations().get(newAP.getObjectId()));
+        else
+            validationReporter.reportSuccess(context, DATABASE_ACCESS_POINT_1);
+    }
 
 }

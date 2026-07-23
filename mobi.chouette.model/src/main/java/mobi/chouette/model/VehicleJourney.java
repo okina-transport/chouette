@@ -9,8 +9,6 @@ import mobi.chouette.model.type.ServiceAlterationEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.type.TransportSubModeNameEnum;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -337,6 +335,18 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	private List<VehicleJourneyAtStop> vehicleJourneyAtStops = new ArrayList<>(0);
+
+	/**
+	 * translations
+	 *
+	 * @param translations
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<VehicleJourneyTranslation> translations = new ArrayList<>(0);
 
 	/**
 	 * To distinguish the timesheets journeys and the frequencies ones. Defaults to Timesheet.

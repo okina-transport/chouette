@@ -6,7 +6,9 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
@@ -49,7 +51,6 @@ public class Referential implements java.io.Serializable {
     @Getter
     @Setter
     private Map<String, GroupOfLine> sharedGroupOfLines = new HashMap<String, GroupOfLine>();
-
 
     @Getter
     @Setter
@@ -102,6 +103,54 @@ public class Referential implements java.io.Serializable {
     @Getter
     @Setter
     private Map<String, Transfers> transfers = new HashMap<String, Transfers>();
+
+    @Getter
+    @Setter
+    private Map<String, List<NetworkTranslation>> networkTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<NetworkTranslation> networkTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, List<CompanyTranslation>> companyTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<CompanyTranslation> companyTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, List<LineTranslation>> lineTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<LineTranslation> lineTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, List<StopAreaTranslation>> stopAreaTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<StopAreaTranslation> stopAreaTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, List<VehicleJourneyTranslation>> vehicleJourneyTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<VehicleJourneyTranslation> vehicleJourneyTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, List<VehicleJourneyAtStopTranslation>> vehicleJourneyAtStopTranslationsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private List<VehicleJourneyAtStopTranslation> vehicleJourneyAtStopTranslationsByFieldValue = new ArrayList<>();
 
     @Getter
     @Setter
@@ -222,6 +271,7 @@ public class Referential implements java.io.Serializable {
                 line.getFootnotes().clear();
                 line.getRoutingConstraints().clear();
                 line.getGroupOfLines().clear();
+                line.getTranslations().clear();
             }
             for (Route route : routes.values()) {
                 route.getRoutePoints().clear();
@@ -241,6 +291,7 @@ public class Referential implements java.io.Serializable {
             for (VehicleJourney vj : vehicleJourneys.values()) {
                 for (VehicleJourneyAtStop vjas : vj.getVehicleJourneyAtStops()) {
                     vjas.getFootnotes().clear();
+                    vjas.getTranslations().clear();
                 }
                 vj.getVehicleJourneyAtStops().clear();
                 vj.getTimetables().clear();
@@ -248,6 +299,7 @@ public class Referential implements java.io.Serializable {
                 vj.getFootnotes().clear();
                 vj.getTrains().clear();
                 vj.getVehicleJourneyFacilities().clear();
+                vj.getTranslations().clear();
             }
             for (Timetable timetable : timetables.values()) {
                 timetable.getVehicleJourneys().clear();
@@ -308,6 +360,12 @@ public class Referential implements java.io.Serializable {
         sharedPTNetworks.clear();
         sharedStopAreas.clear();
         stopAreaMapping.clear();
+        networkTranslationsByObjectId.clear();
+        networkTranslationsByFieldValue.clear();
+        companyTranslationsByObjectId.clear();
+        companyTranslationsByFieldValue.clear();
+        stopAreaTranslationsByObjectId.clear();
+        stopAreaTranslationsByFieldValue.clear();
         sharedTimebands.clear();
         sharedTimetables.clear();
         sharedDestinationDisplays.clear();

@@ -14,8 +14,6 @@ import lombok.ToString;
 import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectIdTypes;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -390,6 +388,18 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 	private List<Route> routes = new ArrayList<Route>(0);
 
 	/**
+	 * translations
+	 *
+	 * @param translations
+	 *            New value
+	 * @return The actual value
+	 */
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "line", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<LineTranslation> translations = new ArrayList<>(0);
+
+	/**
 	 * footnotes refs
 	 * 
 	 * @param footnotes
@@ -519,7 +529,6 @@ public class Line extends NeptuneIdentifiedObject implements ObjectIdTypes {
 		if(!StringUtils.equals(this.getPublishedName(),      l.getPublishedName()))      return false;
 		if(!StringUtils.equals(this.getRegistrationNumber(), l.getRegistrationNumber())) return false;
 		if(!StringUtils.equals(this.getColor(),              l.getColor()))              return false;
-		if(!StringUtils.equals(this.getTextColor(),          l.getTextColor()))          return false;
-		return true;
-	}
+        return StringUtils.equals(this.getTextColor(), l.getTextColor());
+    }
 }
