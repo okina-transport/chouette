@@ -170,8 +170,12 @@ public class NetexXMLProcessingHelperFactory {
 
 	public static IndentingXMLStreamWriter createXMLWriter(Path filePath) throws XMLStreamException, IOException {
 		Writer bufferedWriter = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8, CREATE, APPEND);
+		return createXMLWriter(bufferedWriter);
+	}
+
+	public static IndentingXMLStreamWriter createXMLWriter(Writer underlyingWriter) throws XMLStreamException {
 		XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
-		XMLStreamWriter xmlStreamWriter = outputFactory.createXMLStreamWriter(bufferedWriter);
+		XMLStreamWriter xmlStreamWriter = outputFactory.createXMLStreamWriter(underlyingWriter);
 		xmlStreamWriter.setDefaultNamespace(Constant.NETEX_NAMESPACE);
 
 		IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter(new EscapingXMLStreamWriter(xmlStreamWriter));
