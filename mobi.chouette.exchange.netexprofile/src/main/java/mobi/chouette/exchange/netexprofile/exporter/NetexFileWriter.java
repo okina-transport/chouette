@@ -1,8 +1,11 @@
 package mobi.chouette.exchange.netexprofile.exporter;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
@@ -21,25 +24,18 @@ class NetexFileWriter implements Constant {
 	void writeXmlFile(Context context, Path filePath, ExportableData exportableData, ExportableNetexData exportableNetexData, NetexFragmentMode fragmentMode,
 			Marshaller marshaller) throws XMLStreamException {
 
-		IndentingXMLStreamWriter writer = null;
+		try (Writer bufferedWriter = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+			IndentingXMLStreamWriter writer = NetexXMLProcessingHelperFactory.createXMLWriter(bufferedWriter);
 
-		try {
-			writer = NetexXMLProcessingHelperFactory.createXMLWriter(filePath);
+			try {
+				writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
 
-			writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
-
-			// TODO changer d'un data producer à l'autre pour changer de PROFIL IDFM Norvégien
-//			PublicationDeliveryWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
-			PublicationDeliveryFranceWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
-
-		} catch (XMLStreamException | IOException e) {
-			log.error("Could not produce XML file", e);
-			throw new RuntimeException(e);
-
-		} finally {
-			if (writer != null) {
+				// TODO changer d'un data producer à l'autre pour changer de PROFIL IDFM Norvégien
+//				PublicationDeliveryWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
+				PublicationDeliveryFranceWriter.write(context, writer, exportableData, exportableNetexData, fragmentMode, marshaller);
+				writer.flush();
+			} finally {
 				try {
-					writer.flush();
 					writer.close();
 				} catch (XMLStreamException e) {
 					log.error("Error flushing and closing Netex Export XML file "+filePath.toString(),e);
@@ -47,6 +43,9 @@ class NetexFileWriter implements Constant {
 				}
 			}
 
+		} catch (XMLStreamException | IOException e) {
+			log.error("Could not produce XML file", e);
+			throw new RuntimeException(e);
 		}
 	}
 
