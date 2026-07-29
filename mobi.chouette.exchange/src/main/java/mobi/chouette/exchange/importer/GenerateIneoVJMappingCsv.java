@@ -3,7 +3,6 @@ package mobi.chouette.exchange.importer;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.ObjectIdUtil;
-import mobi.chouette.common.TimeUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.ProviderDAO;
@@ -71,12 +70,13 @@ public class GenerateIneoVJMappingCsv implements Command {
         List<Provider> referentials = providerDAO.getAllProviders()
                 .stream()
                 .filter(isProviderForCsvGeneration())
-                .collect(Collectors.toList());
+                .toList();
         try (BufferedWriter csvWriter = Files.newBufferedWriter(OUTDIR.resolve(INEO_VJ_MAPPING_CSV),
-                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
+                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+             CSVPrinter csvPrinter = new CSVPrinter(csvWriter,
+                     CSVFormat.Builder.create().setHeader(CSV_HEADERS).get())
         ) {
-            CSVPrinter csvPrinter = new CSVPrinter(csvWriter,
-                    CSVFormat.Builder.create().setHeader(CSV_HEADERS).build());
+
             for (Provider referential : referentials) {
                 ContextHolder.clear();
                 ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
@@ -86,7 +86,7 @@ public class GenerateIneoVJMappingCsv implements Command {
                     // certain passages associés aux courses de la veille peuvent avoir lieu le jour J
                     // ex: bus qui commence sa course à 23h30 et la termine le lendemain à 1h du matin
                     yesterdayEntities = yesterdayEntities.stream()
-                            .filter(e -> e.getDate().equals(TimeUtil.toDate(today)))
+                            .filter(e -> e.getDate().equals(today))
                             .collect(Collectors.toList());
                 }
                 List<IneoVJMapping> todayEntities = vjDAO.getIneoVJMappingData(today);
