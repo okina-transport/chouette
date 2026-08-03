@@ -66,8 +66,8 @@ public class GtfsTranslationParserTest {
     public void parseResolvesEachTableToItsChouetteOwnerEntity() throws Exception {
         new GtfsTranslationParser().parse(context);
 
-        // 2 stops + 3 routes + 1 trip + 2 agency (network + authority)
-        // + 1 field_value-keyed stop = 9
+        // 2 stops + 3 routes + 1 trip + 3 agencies (network + authority + operator)
+        // + 1 field_value-keyed stop = 10
         // the feed_info/levels rows have no NeTEx-exportable counterpart, so no *Translation entity
         // is ever created for them - there is no generic bucket left to fall into.
         int total = countAll(referential.getStopAreaTranslationsByObjectId(), referential.getStopAreaTranslationsByFieldValue())
@@ -75,7 +75,7 @@ public class GtfsTranslationParserTest {
                 + countAll(referential.getVehicleJourneyTranslationsByObjectId(), referential.getVehicleJourneyTranslationsByFieldValue())
                 + countAll(referential.getNetworkTranslationsByObjectId(), referential.getNetworkTranslationsByFieldValue())
                 + countAll(referential.getCompanyTranslationsByObjectId(), referential.getCompanyTranslationsByFieldValue());
-        Assert.assertEquals(total, 9);
+        Assert.assertEquals(total, 10);
 
         assertStopAreaTranslation("GtfsTest:Quay:S1", "stopName", "Stop One EN");
         assertStopAreaTranslation("GtfsTest:StopPlace:ST1", "stopName", "Station One EN");
@@ -85,6 +85,7 @@ public class GtfsTranslationParserTest {
         assertVehicleJourneyTranslation("GtfsTest:VehicleJourney:T1", "publishedJourneyName", "Headsign EN");
         assertNetworkTranslation("GtfsTest:Network:A1", "name", "Agency EN");
         assertCompanyTranslation("GtfsTest:Authority:A1", "name", "Agency EN");
+        assertCompanyTranslation("GtfsTest:Operator:A1o", "name", "Agency EN");
 
         StopAreaTranslation fieldValueKeyed = referential.getStopAreaTranslationsByFieldValue().stream()
                 .filter(t -> "Stop Two EN".equals(t.getTranslation()))
