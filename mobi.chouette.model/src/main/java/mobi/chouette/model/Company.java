@@ -13,6 +13,8 @@ import lombok.Setter;
 import lombok.ToString;
 import mobi.chouette.model.type.OrganisationTypeEnum;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * name
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -67,7 +69,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set name <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -77,7 +79,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * short name
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -87,7 +89,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set short name <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -117,7 +119,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * organizational unit
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -127,7 +129,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set organizational unit <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -138,7 +140,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * operating department name
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -148,7 +150,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set operating department name <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -160,7 +162,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * organization code <br/>
 	 * usually fixed by Transport Authority
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -180,7 +182,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set organization code <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -201,7 +203,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * phone number
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -211,7 +213,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set phone number <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -221,7 +223,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * fax number
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -231,7 +233,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set fax number <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -241,7 +243,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * email
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -251,7 +253,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set email <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -321,7 +323,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * registration number
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -331,7 +333,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set registration number <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -342,7 +344,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * web site url
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -352,7 +354,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set web site url <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -362,7 +364,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * default timezone
-	 *
+	 * 
 	 * @return The actual value
 	 */
 	@Getter
@@ -372,7 +374,7 @@ public class Company extends NeptuneIdentifiedObject {
 	/**
 	 * set default timezone <br/>
 	 * truncated to 255 characters if too long
-	 *
+	 * 
 	 * @param value
 	 *            New value
 	 */
@@ -382,7 +384,7 @@ public class Company extends NeptuneIdentifiedObject {
 
 	/**
 	 * lines
-	 *
+	 * 
 	 * @param lines
 	 *            New value
 	 * @return The actual value
@@ -391,18 +393,6 @@ public class Company extends NeptuneIdentifiedObject {
 	@Setter
 	@OneToMany(mappedBy = "company")
 	private List<Line> lines = new ArrayList<Line>(0);
-
-	/**
-	 * translations
-	 *
-	 * @param translations
-	 *            New value
-	 * @return The actual value
-	 */
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "company", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
-	private List<CompanyTranslation> translations = new ArrayList<>(0);
 
 	/**
 	 * lines
@@ -452,7 +442,7 @@ public class Company extends NeptuneIdentifiedObject {
 	@Setter
 	@Column(name = "fare_url")
 	private String fareUrl;
-
+	
 	/**
 	 * keyvalues
 	 *

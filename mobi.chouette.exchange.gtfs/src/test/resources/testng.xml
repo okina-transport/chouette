@@ -37,10 +37,4 @@
       </package>
    </packages>
   </test>
-  <test name="ParserGTFS" >
-    <packages>
-      <package name="mobi.chouette.exchange.gtfs.parser" >
-      </package>
-   </packages>
-  </test>
 </suite>

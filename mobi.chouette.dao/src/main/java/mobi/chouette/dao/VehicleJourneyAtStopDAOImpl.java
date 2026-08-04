@@ -42,14 +42,14 @@ public class VehicleJourneyAtStopDAOImpl extends GenericDAOImpl<VehicleJourneyAt
 
     @Override
     public int deleteByVehicleJourneyObjectIds(List<String> vehicleJourneyObjectIds) {
-        if (CollectionUtils.isEmpty(vehicleJourneyObjectIds)) {
+         if (CollectionUtils.isEmpty(vehicleJourneyObjectIds)) {
             log.info("No vjas to delete");
             return 0;
         }
         log.info("Delete vjas started");
         int nbVjasDeleted = em.createNativeQuery(
-                        "delete from vehicle_journey_at_stops where vehicle_journey_id in (select id from " +
-                                "vehicle_journeys where objectid in (:objectIds))")
+                "delete from vehicle_journey_at_stops where vehicle_journey_id in (select id from " +
+                        "vehicle_journeys where objectid in (:objectIds))")
                 .setParameter("objectIds", vehicleJourneyObjectIds)
                 .executeUpdate();
         log.info(String.format("Deleted %d vjas", nbVjasDeleted));

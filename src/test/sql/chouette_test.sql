@@ -262,38 +262,6 @@ ALTER SEQUENCE companies_id_seq OWNED BY companies.id;
 
 
 --
--- Name: company_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE company_translations
-(
-    id             bigint NOT NULL,
-    objectid       character varying(255),
-    object_version integer,
-    creation_time  date,
-    creator_id     character varying(255),
-    company_id     bigint,
-    field_name     character varying(255),
-    language       character varying(255),
-    translation    text,
-    field_value    character varying(255),
-    CONSTRAINT company_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.company_translations OWNER TO chouette;
-
-CREATE SEQUENCE company_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.company_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE company_translations_id_seq OWNED BY company_translations.id;
-
-
---
 -- TOC entry 182 (class 1259 OID 938883)
 -- Name: connection_links; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
 --
@@ -1139,38 +1107,6 @@ ALTER SEQUENCE lines_id_seq OWNED BY lines.id;
 
 
 --
--- Name: line_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE line_translations
-(
-    id             bigint NOT NULL,
-    objectid       character varying(255),
-    object_version integer,
-    creation_time  date,
-    creator_id     character varying(255),
-    line_id        bigint,
-    field_name     character varying(255),
-    language       character varying(255),
-    translation    text,
-    field_value    character varying(255),
-    CONSTRAINT line_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.line_translations OWNER TO chouette;
-
-CREATE SEQUENCE line_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.line_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE line_translations_id_seq OWNED BY line_translations.id;
-
-
---
 -- TOC entry 202 (class 1259 OID 938962)
 -- Name: networks; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
 --
@@ -1220,37 +1156,6 @@ ALTER TABLE chouette_gui.networks_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE networks_id_seq OWNED BY networks.id;
 
-
---
--- Name: network_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE network_translations
-(
-    id             bigint NOT NULL,
-    objectid       character varying(255),
-    object_version integer,
-    creation_time  date,
-    creator_id     character varying(255),
-    network_id     bigint,
-    field_name     character varying(255),
-    language       character varying(255),
-    translation    text,
-    field_value    character varying(255),
-    CONSTRAINT network_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.network_translations OWNER TO chouette;
-
-CREATE SEQUENCE network_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.network_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE network_translations_id_seq OWNED BY network_translations.id;
 
 
 --
@@ -1645,37 +1550,6 @@ CREATE TABLE chouette_gui.stop_areas (
     is_quay_auto_generated boolean default false
 );
 
---
--- Name: stop_area_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE stop_area_translations
-(
-    id             bigint NOT NULL,
-    objectid       character varying(255),
-    object_version integer,
-    creation_time  date,
-    creator_id     character varying(255),
-    stop_area_id   bigint,
-    field_name     character varying(255),
-    language       character varying(255),
-    translation    text,
-    field_value    character varying(255),
-    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.stop_area_translations OWNER TO chouette;
-
-CREATE SEQUENCE stop_area_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.stop_area_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE stop_area_translations_id_seq OWNED BY stop_area_translations.id;
-
 -- Route points
 
 CREATE TABLE route_points (
@@ -1946,37 +1820,6 @@ ALTER TABLE chouette_gui.vehicle_journey_at_stops_id_seq OWNER TO chouette;
 
 ALTER SEQUENCE vehicle_journey_at_stops_id_seq OWNED BY vehicle_journey_at_stops.id;
 
---
--- Name: vehicle_journey_at_stop_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE vehicle_journey_at_stop_translations
-(
-    id                         bigint NOT NULL,
-    objectid                   character varying(255),
-    object_version             integer,
-    creation_time              date,
-    creator_id                 character varying(255),
-    vehicle_journey_at_stop_id bigint,
-    field_name                 character varying(255),
-    language                   character varying(255),
-    translation                text,
-    field_value                character varying(255),
-    CONSTRAINT vehicle_journey_at_stop_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.vehicle_journey_at_stop_translations OWNER TO chouette;
-
-CREATE SEQUENCE vehicle_journey_at_stop_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.vehicle_journey_at_stop_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE vehicle_journey_at_stop_translations_id_seq OWNED BY vehicle_journey_at_stop_translations.id;
-
 CREATE TABLE flexible_service_properties (
     id bigint NOT NULL,
     objectid character varying(255) NOT NULL,
@@ -2076,38 +1919,6 @@ ALTER TABLE chouette_gui.vehicle_journeys_id_seq OWNER TO chouette;
 --
 
 ALTER SEQUENCE vehicle_journeys_id_seq OWNED BY vehicle_journeys.id;
-
-
---
--- Name: vehicle_journey_translations; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
---
-
-CREATE TABLE vehicle_journey_translations
-(
-    id                 bigint NOT NULL,
-    objectid           character varying(255),
-    object_version     integer,
-    creation_time      date,
-    creator_id         character varying(255),
-    vehicle_journey_id bigint,
-    field_name         character varying(255),
-    language           character varying(255),
-    translation        text,
-    field_value        character varying(255),
-    CONSTRAINT vehicle_journey_translations_id_pkey PRIMARY KEY (id)
-);
-
-ALTER TABLE chouette_gui.vehicle_journey_translations OWNER TO chouette;
-
-CREATE SEQUENCE vehicle_journey_translations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE chouette_gui.vehicle_journey_translations_id_seq OWNER TO chouette;
-ALTER SEQUENCE vehicle_journey_translations_id_seq OWNED BY vehicle_journey_translations.id;
 
 
 --
@@ -5591,26 +5402,6 @@ CREATE SEQUENCE IF NOT EXISTS chouette_gui.vehicle_journeys_facilities_id_seq
 ALTER SEQUENCE chouette_gui.vehicle_journeys_facilities_id_seq OWNED BY chouette_gui.vehicle_journeys_facilities.id;
 
 ALTER TABLE ONLY chouette_gui.vehicle_journeys_facilities ALTER COLUMN id SET DEFAULT nextval('vehicle_journeys_facilities_id_seq'::regclass);
-
--- deferred to end of file: chouette_gui.stop_areas only gets its pkey constraint further up in this
--- same file (see stop_areas_pkey near the stop_areas_key_values tables), so these FKs must come after it
-ALTER TABLE ONLY company_translations
-    ADD CONSTRAINT company_translations_company_fkey FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY line_translations
-    ADD CONSTRAINT line_translations_line_fkey FOREIGN KEY (line_id) REFERENCES lines (id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY network_translations
-    ADD CONSTRAINT network_translations_network_fkey FOREIGN KEY (network_id) REFERENCES networks (id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY stop_area_translations
-    ADD CONSTRAINT stop_area_translations_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES stop_areas (id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY vehicle_journey_translations
-    ADD CONSTRAINT vehicle_journey_translations_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys (id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY vehicle_journey_at_stop_translations
-    ADD CONSTRAINT vehicle_journey_at_stop_translations_vjas_fkey FOREIGN KEY (vehicle_journey_at_stop_id) REFERENCES vehicle_journey_at_stops (id) ON DELETE CASCADE;
 
 
 

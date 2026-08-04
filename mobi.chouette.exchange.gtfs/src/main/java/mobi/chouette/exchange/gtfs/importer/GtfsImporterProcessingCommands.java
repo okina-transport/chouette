@@ -33,348 +33,346 @@ import java.util.Set;
 @Log4j
 public class GtfsImporterProcessingCommands implements ProcessingCommands, Constant {
 
-    private static final String CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND = "CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND";
+	private static final String CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND = "CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND";
 
-    static {
-        ProcessingCommandsFactory.factories.put(GtfsImporterProcessingCommands.class.getName(), new DefaultFactory());
-    }
+	static {
+		ProcessingCommandsFactory.factories.put(GtfsImporterProcessingCommands.class.getName(), new DefaultFactory());
+	}
 
-    @Override
-    public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        try {
-            if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
-                context.put(CLEAR_FOR_IMPORT, Boolean.TRUE);
-                commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
-            }
-            commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
-            if (parameters.isUseTargetNetwork()) {
-                commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
-            }
-            commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
+	@Override
+	public List<? extends Command> getPreProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		try {
+			if (withDao && CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.PURGE)) {
+				context.put(CLEAR_FOR_IMPORT, Boolean.TRUE);
+				commands.add(CommandFactory.create(initialContext, CleanRepositoryCommand.class.getName()));
+			}
+			commands.add(CommandFactory.create(initialContext, UncompressCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsValidationRulesCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsInitImportCommand.class.getName()));
+			if (parameters.isUseTargetNetwork()) {
+				commands.add(CommandFactory.create(initialContext, TargetNetworkPreprocessCommand.class.getName()));
+			}
+			commands.add(CommandFactory.create(initialContext, GtfsValidationCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
 
-    @Override
-    public List<? extends Command> getFaresCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        List<Command> commands = new ArrayList<>();
-        GtfsImporter importer = (GtfsImporter) context.get(PARSER);
-        Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
+	@Override
+	public List<? extends Command> getFaresCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		List<Command> commands = new ArrayList<>();
+		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
 
-        try {
-            if (parameters.isImportFareFiles()) {
-                if (importer.hasFareRuleImporter()) {
-                    ArrayList<String> savedLines = new ArrayList<>();
-                    String splitCharacter = parameters.getSplitCharacter();
+		try {
+			if (parameters.isImportFareFiles()) {
+				if (importer.hasFareRuleImporter()) {
+					ArrayList<String> savedLines = new ArrayList<>();
+					String splitCharacter = parameters.getSplitCharacter();
 
-                    Index<GtfsFareRule> indexFareRules = importer.getFareRuleById();
-                    for (GtfsFareRule gtfsFareRule : indexFareRules) {
-                        if (StringUtils.isNotEmpty(splitCharacter) && gtfsFareRule.getRouteId() != null) {
-                            if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsFareRule.getRouteId())) {
-                                String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
-                                if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
-                                    continue;
-                                savedLines.add(newRouteId);
-                                gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-                            } else {
-                                log.info("Target routes enabled - Skipping import for route " + gtfsFareRule.getRouteId());
-                            }
-                        }
-                    }
+					Index<GtfsFareRule> indexFareRules = importer.getFareRuleById();
+					for (GtfsFareRule gtfsFareRule : indexFareRules) {
+						if (StringUtils.isNotEmpty(splitCharacter) && gtfsFareRule.getRouteId() != null) {
+							if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsFareRule.getRouteId())) {
+								String newRouteId = gtfsFareRule.getRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
+									continue;
+								savedLines.add(newRouteId);
+								gtfsFareRule.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							} else {
+								log.info("Target routes enabled - Skipping import for route " + gtfsFareRule.getRouteId());
+							}
+						}
+					}
 
-                    Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-                    if (importer.hasFareRuleImporter()) {
-                        GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
-                        chain.add(fareRulesParser);
+					if (importer.hasFareRuleImporter()) {
+						GtfsFareRulesParserCommand fareRulesParser = (GtfsFareRulesParserCommand) CommandFactory.create(initialContext, GtfsFareRulesParserCommand.class.getName());
+						chain.add(fareRulesParser);
 
-                        Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
-                        chain.add(registerRuleAttr);
-                    }
+						Command registerRuleAttr = CommandFactory.create(initialContext, FareRuleRegisterCommand.class.getName());
+						chain.add(registerRuleAttr);
+					}
 
-                    commands.add(chain);
-                }
+					commands.add(chain);
+				}
 
-                if (importer.hasFareAttributeImporter()) {
-                    Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				if (importer.hasFareAttributeImporter()) {
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-                    GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
-                    chain.add(fareAttributesParser);
+					GtfsFareAttributesParserCommand fareAttributesParser = (GtfsFareAttributesParserCommand) CommandFactory.create(initialContext, GtfsFareAttributesParserCommand.class.getName());
+					chain.add(fareAttributesParser);
 
-                    Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
-                    chain.add(registerFareAttr);
+					Command registerFareAttr = CommandFactory.create(initialContext, FareAttributeRegisterCommand.class.getName());
+					chain.add(registerFareAttr);
 
-                    commands.add(chain);
-                }
-                if (importer.hasTransferImporter()) {
-                    ArrayList<String> savedFromLines = new ArrayList<String>();
-                    ArrayList<String> savedToLines = new ArrayList<String>();
-                    String splitCharacter = parameters.getSplitCharacter();
+					commands.add(chain);
+				}
+				if (importer.hasTransferImporter()) {
+					ArrayList<String> savedFromLines = new ArrayList<String>();
+					ArrayList<String> savedToLines = new ArrayList<String>();
+					String splitCharacter = parameters.getSplitCharacter();
 
-                    Index<GtfsTransfer> transferByFromStop = importer.getTransferByFromStop();
-                    for (GtfsTransfer gtfsTransfer : transferByFromStop) {
-                        if (StringUtils.isNotEmpty(splitCharacter)) {
-                            if (gtfsTransfer.getFromRouteId() != null) {
-                                String newRouteId = gtfsTransfer.getFromRouteId().split(parameters.getSplitCharacter())[0];
-                                if (parameters.getRouteMerge() && savedFromLines.contains(newRouteId))
-                                    continue;
-                                savedFromLines.add(newRouteId);
-                                gtfsTransfer.setFromRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-                            }
-                            if (gtfsTransfer.getToRouteId() != null) {
-                                String newRouteId = gtfsTransfer.getToRouteId().split(parameters.getSplitCharacter())[0];
-                                if (parameters.getRouteMerge() && savedToLines.contains(newRouteId))
-                                    continue;
-                                savedToLines.add(newRouteId);
-                                gtfsTransfer.setToRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-                            }
-                        }
-                    }
-                    Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+					Index<GtfsTransfer> transferByFromStop = importer.getTransferByFromStop();
+					for (GtfsTransfer gtfsTransfer : transferByFromStop) {
+						if (StringUtils.isNotEmpty(splitCharacter)) {
+							if (gtfsTransfer.getFromRouteId() != null) {
+								String newRouteId = gtfsTransfer.getFromRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedFromLines.contains(newRouteId))
+									continue;
+								savedFromLines.add(newRouteId);
+								gtfsTransfer.setFromRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							}
+							if (gtfsTransfer.getToRouteId() != null) {
+								String newRouteId = gtfsTransfer.getToRouteId().split(parameters.getSplitCharacter())[0];
+								if (parameters.getRouteMerge() && savedToLines.contains(newRouteId))
+									continue;
+								savedToLines.add(newRouteId);
+								gtfsTransfer.setToRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+							}
+						}
+					}
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-                    GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
-                    chain.add(transfersParser);
+					GtfsTransfersParserCommand transfersParser = (GtfsTransfersParserCommand) CommandFactory.create(initialContext, GtfsTransfersParserCommand.class.getName());
+					chain.add(transfersParser);
 
-                    Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
-                    chain.add(registerTransfersAttr);
+					Command registerTransfersAttr = CommandFactory.create(initialContext, TransfersRegisterCommand.class.getName());
+					chain.add(registerTransfersAttr);
 
-                    commands.add(chain);
-                }
-            }
-            Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+					commands.add(chain);
+				}
+			}
+			Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-            commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
 
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
 
-        return commands;
-    }
+		return commands;
+	}
 
-    @Override
-    public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-        boolean level3validation = context.get(VALIDATION) != null;
-        List<Command> commands = new ArrayList<>();
-        GtfsImporter importer = (GtfsImporter) context.get(PARSER);
-        Index<GtfsRoute> index = importer.getRouteById();
-        Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
+	@Override
+	public List<? extends Command> getLineProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+		boolean level3validation = context.get(VALIDATION) != null;
+		List<Command> commands = new ArrayList<>();
+		GtfsImporter importer = (GtfsImporter) context.get(PARSER);
+		Index<GtfsRoute> index = importer.getRouteById();
+		Set<String> targetRouteIds = (Set<String>) context.get(GTFS_TARGET_ROUTE_ID);
 
-        try {
-            {
-                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-                chain.add(CommandFactory.create(initialContext, GtfsTranslationParserCommand.class.getName()));
-                chain.add(CommandFactory.create(initialContext, FieldValueTranslationRegisterCommand.class.getName()));
-                chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
-                commands.add(chain);
-            }
+		try {
+			{
+				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
+				commands.add(chain);
+			}
 
 
-            if (CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.CONTIGUOUS)) {
-                Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-                Command productionPeriods = CommandFactory.create(initialContext, ProductionPeriodCommand.class.getName());
-                chain.add(productionPeriods);
-                commands.add(chain);
-            }
+			if (CleanModeEnum.fromValue(parameters.getCleanMode()).equals(CleanModeEnum.CONTIGUOUS)) {
+				Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+				Command productionPeriods = CommandFactory.create(initialContext, ProductionPeriodCommand.class.getName());
+				chain.add(productionPeriods);
+				commands.add(chain);
+			}
 
-            ArrayList<String> savedLines = new ArrayList<>();
-            String splitCharacter = parameters.getSplitCharacter();
-            context.put(TOTAL_NB_OF_LINES, index.getLength());
+			ArrayList<String> savedLines = new ArrayList<>();
+			String splitCharacter = parameters.getSplitCharacter();
+			context.put(TOTAL_NB_OF_LINES, index.getLength());
 
-            for (GtfsRoute gtfsRoute : index) {
-                if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsRoute.getRouteId())) {
-                    if (StringUtils.isNotEmpty(splitCharacter)) {
-                        String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
-                        if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
-                            continue;
-                        savedLines.add(newRouteId);
-                        gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-                    }
+			for (GtfsRoute gtfsRoute : index) {
+				if (targetRouteIds.isEmpty() || targetRouteIds.contains(gtfsRoute.getRouteId())) {
+					if (StringUtils.isNotEmpty(splitCharacter)) {
+						String newRouteId = gtfsRoute.getRouteId().split(parameters.getSplitCharacter())[0];
+						if (parameters.getRouteMerge() && savedLines.contains(newRouteId))
+							continue;
+						savedLines.add(newRouteId);
+						gtfsRoute.setRouteId(newRouteId.replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					}
 
-                    Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+					Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-                    GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext, GtfsRouteParserCommand.class.getName());
-                    parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
-                    chain.add(parser);
-                    if (withDao && !parameters.isNoSave()) {
+					GtfsRouteParserCommand parser = (GtfsRouteParserCommand) CommandFactory.create(initialContext, GtfsRouteParserCommand.class.getName());
+					parser.setGtfsRouteId(gtfsRoute.getRouteId().replaceFirst("^" + parameters.getLinePrefixToRemove(), ""));
+					chain.add(parser);
+					if (withDao && !parameters.isNoSave()) {
 
-                        // register
-                        Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
-                        chain.add(register);
+						// register
+						Command register = CommandFactory.create(initialContext, LineRegisterCommand.class.getName());
+						chain.add(register);
 
-                        Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
-                        chain.add(copy);
-                    }
-                    if (level3validation) {
-                        // add validation
-                        Command validate = CommandFactory.create(initialContext, ImportedLineValidatorCommand.class.getName());
-                        chain.add(validate);
-                    }
-
-
-                    Command clean = CommandFactory.create(initialContext, CleanLineInCacheCommand.class.getName());
-                    chain.add(clean);
-
-                    commands.add(chain);
-                } else {
-                    log.info("Target routes enabled - Skipping import for route " + gtfsRoute.getRouteId());
-                    int numberOfLines = (int) context.get(TOTAL_NB_OF_LINES);
-                    numberOfLines -= 1;
-                    context.put(TOTAL_NB_OF_LINES, numberOfLines);
-                }
-            }
-            Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-
-            commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
-
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-
-        return commands;
-    }
-
-    @Override
-    public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-
-        List<Command> commands = new ArrayList<>();
-        try {
-            Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
-
-            GtfsStopParserCommand parser = (GtfsStopParserCommand) CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName());
-            chain.add(parser);
-            if (withDao && !parameters.isNoSave() && parameters.getStopAreaImportMode().shouldCreateMissingStopAreas()) {
-
-                // register
-                Command register = CommandFactory.create(initialContext, StopAreaRegisterCommand.class.getName());
-                chain.add(register);
-            }
-            commands.add(chain);
-
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
-
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
-        if (!withDao) {
-            return new ArrayList<>();
-        }
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        List<Command> commands = new ArrayList<>();
-        try {
-            commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
-
-    @Override
-    public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        boolean level3validation = context.get(VALIDATION) != null;
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-
-        List<Command> commands = new ArrayList<>();
-        try {
-            commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
-            if (level3validation && !(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
-                // add shared data validation
-                commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));
-            }
-            if (!CollectionUtils.isEmpty(parameters.getGenerateMissingRouteSectionsForModes())) {
-                commands.add(CommandFactory.create(initialContext, GenerateRouteSectionsCommand.class.getName()));
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
-
-    @Override
-    public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        List<Command> commands = new ArrayList<>();
-        try {
-            commands.add(CommandFactory.create(initialContext, GtfsDisposeImportCommand.class.getName()));
-
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
-        return commands;
-    }
-
-    @Override
-    public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
-        // Ignore les commandes Mobiiti selon paramètre
-        if (Optional.ofNullable(System.getenv(CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND)).map(Boolean::parseBoolean).orElse(false)) {
-            return new ArrayList<>();
-        }
-
-        InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-        GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
-
-        List<Command> commands = new ArrayList<>();
-
-        try {
-            commands.add(CommandFactory.create(initialContext, GenerateAttributionsCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, DeleteLineWithoutOfferCommand.class.getName()));
-            if (parameters.getRouteMerge()) {
-                commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
-            }
-            //            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, AccessibilityCommand.class.getName()));
-            commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
-            if (parameters.isRoutesReorganization()) {
-                commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
-            }
-            //            if (parameters.isRouteSortOrder()) {
-            //                commands.add(CommandFactory.create(initialContext, RouteSortOrderCommand.class.getName()));
-            //            }
+						Command copy = CommandFactory.create(initialContext, CopyCommand.class.getName());
+						chain.add(copy);
+					}
+					if (level3validation) {
+						// add validation
+						Command validate = CommandFactory.create(initialContext, ImportedLineValidatorCommand.class.getName());
+						chain.add(validate);
+					}
 
 
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException("unable to call factories");
-        }
+					Command clean = CommandFactory.create(initialContext, CleanLineInCacheCommand.class.getName());
+					chain.add(clean);
 
-        return commands;
-    }
+					commands.add(chain);
+				} else {
+					log.info("Target routes enabled - Skipping import for route " + gtfsRoute.getRouteId());
+					int numberOfLines = (int) context.get(TOTAL_NB_OF_LINES);
+					numberOfLines -= 1;
+					context.put(TOTAL_NB_OF_LINES, numberOfLines);
+				}
+			}
+			Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
 
-    public static class DefaultFactory extends ProcessingCommandsFactory {
+			commands.add(CommandFactory.create(initialContext, ConnectionLinkPersisterCommand.class.getName()));
 
-        @Override
-        protected ProcessingCommands create() throws IOException {
-            ProcessingCommands result = new GtfsImporterProcessingCommands();
-            return result;
-        }
-    }
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getStopAreaProcessingCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+
+		List<Command> commands = new ArrayList<>();
+		try {
+			Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
+
+			GtfsStopParserCommand parser = (GtfsStopParserCommand) CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName());
+			chain.add(parser);
+			if (withDao && !parameters.isNoSave() && parameters.getStopAreaImportMode().shouldCreateMissingStopAreas()) {
+
+				// register
+				Command register = CommandFactory.create(initialContext, StopAreaRegisterCommand.class.getName());
+				chain.add(register);
+			}
+			commands.add(chain);
+
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao) {
+		if (!withDao) {
+			return new ArrayList<>();
+		}
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		List<Command> commands = new ArrayList<>();
+		try {
+			commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getPostProcessingCommands(Context context, boolean withDao, boolean allSchemas) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		boolean level3validation = context.get(VALIDATION) != null;
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+
+		List<Command> commands = new ArrayList<>();
+		try {
+			commands.add(CommandFactory.create(initialContext, UpdateLinePositionCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, GtfsFareImportCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, ResetStorageCommand.class.getName()));
+			if (level3validation && !(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
+				// add shared data validation
+				commands.add(CommandFactory.create(initialContext, SharedDataValidatorCommand.class.getName()));
+			}
+			if (!CollectionUtils.isEmpty(parameters.getGenerateMissingRouteSectionsForModes())) {
+				commands.add(CommandFactory.create(initialContext, GenerateRouteSectionsCommand.class.getName()));
+			}
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getDisposeCommands(Context context, boolean withDao) {
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		List<Command> commands = new ArrayList<>();
+		try {
+			commands.add(CommandFactory.create(initialContext, GtfsDisposeImportCommand.class.getName()));
+
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+		return commands;
+	}
+
+	@Override
+	public List<? extends Command> getMobiitiCommands(Context context, boolean b) {
+		// Ignore les commandes Mobiiti selon paramètre
+		if (Optional.ofNullable(System.getenv(CHOUETTE_DISABLE_MOBIITI_IMPORT_COMMAND)).map(Boolean::parseBoolean).orElse(false)) {
+			return new ArrayList<>();
+		}
+
+		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
+		GtfsImportParameters parameters = (GtfsImportParameters) context.get(CONFIGURATION);
+
+		List<Command> commands = new ArrayList<>();
+
+		try {
+			commands.add(CommandFactory.create(initialContext, GenerateAttributionsCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DeleteLineWithoutOfferCommand.class.getName()));
+			if (parameters.getRouteMerge()) {
+				commands.add(CommandFactory.create(initialContext, MergeTripIdCommand.class.getName()));
+			}
+			//            commands.add(CommandFactory.create(initialContext, MergeDuplicatedJourneyPatternsCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, AccessibilityCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, UpdateLineInfosCommand.class.getName()));
+			if (parameters.isRoutesReorganization()) {
+				commands.add(CommandFactory.create(initialContext, RouteMergerCommand.class.getName()));
+			}
+			//            if (parameters.isRouteSortOrder()) {
+			//                commands.add(CommandFactory.create(initialContext, RouteSortOrderCommand.class.getName()));
+			//            }
+
+
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException("unable to call factories");
+		}
+
+		return commands;
+	}
+
+	public static class DefaultFactory extends ProcessingCommandsFactory {
+
+		@Override
+		protected ProcessingCommands create() throws IOException {
+			ProcessingCommands result = new GtfsImporterProcessingCommands();
+			return result;
+		}
+	}
 
 }

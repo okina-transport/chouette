@@ -7,19 +7,19 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableData;
 import mobi.chouette.exchange.netexprofile.exporter.ExportableNetexData;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
-import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import mobi.chouette.model.type.LimitationStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.model.*;
+import java.time.LocalTime;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.AccessibilityLimitation;
+import org.rutebanken.netex.model.*;
 
 import java.math.BigInteger;
-import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +91,7 @@ public class ServiceJourneyFranceProducer {
             serviceJourney = netexFactory.createServiceJourney();
         }
 
-        if (vehicleJourney.getBranding() != null) {
+        if (vehicleJourney.getBranding() != null){
             BrandingRefStructure brandingRef = new BrandingRefStructure();
             brandingRef.setRef(vehicleJourney.getBranding().getName());
             serviceJourney.setBrandingRef(brandingRef);
@@ -101,21 +101,6 @@ public class ServiceJourneyFranceProducer {
         NetexProducerUtils.populateIdAndVersion(vehicleJourney, serviceJourney);
 
         serviceJourney.setName(ConversionUtil.getMultiLingualString(vehicleJourney.getPublishedJourneyName()));
-        if (vehicleJourney.getPublishedJourneyIdentifier() != null) {
-            serviceJourney.setPublicCode(vehicleJourney.getPublishedJourneyIdentifier());
-        }
-        if (vehicleJourney.getPrivateCode() != null) {
-            serviceJourney.setPrivateCode(new PrivateCodeStructure().withValue(vehicleJourney.getPrivateCode()));
-        }
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, java.util.List<mobi.chouette.model.Translation>> vehicleJourneyFieldValueTranslations =
-                (java.util.Map<String, java.util.List<mobi.chouette.model.Translation>>) context.get(Constant.VEHICLE_JOURNEY_FIELD_VALUE_TRANSLATIONS);
-        NetexProducerUtils.addAlternativeTexts(serviceJourney,
-                NetexProducerUtils.getTranslations(vehicleJourney.getTranslations(), vehicleJourneyFieldValueTranslations, "publishedJourneyName", vehicleJourney.getPublishedJourneyName()), "publishedJourneyName", "Name");
-        NetexProducerUtils.addAlternativeTexts(serviceJourney,
-                NetexProducerUtils.getTranslations(vehicleJourney.getTranslations(), vehicleJourneyFieldValueTranslations, "publishedJourneyIdentifier", vehicleJourney.getPublishedJourneyIdentifier()), "publishedJourneyIdentifier", "PublicCode");
-        NetexProducerUtils.addAlternativeTexts(serviceJourney,
-                NetexProducerUtils.getTranslations(vehicleJourney.getTranslations(), vehicleJourneyFieldValueTranslations, "privateCode", vehicleJourney.getPrivateCode()), "privateCode", "PrivateCode");
 
         JourneyPattern journeyPattern = vehicleJourney.getJourneyPattern();
         JourneyPatternRefStructure journeyPatternRefStruct = netexFactory.createJourneyPatternRefStructure();
@@ -187,7 +172,7 @@ public class ServiceJourneyFranceProducer {
         }
 
         serviceJourney.setKeyList(keyListStructureProducer.produce(vehicleJourney.getKeyValues(), exportExternalIds));
-        NetexProducerUtils.addAlternateIdentifier(serviceJourney, vehicleJourney.getObjectId());
+        NetexProducerUtils.addAlternateIdentifier(serviceJourney,vehicleJourney.getObjectId());
         serviceJourney.setServiceAlteration(ConversionUtil.toServiceAlterationEnumeration(vehicleJourney.getServiceAlteration()));
 
         getAccessibility(vehicleJourney, serviceJourney);

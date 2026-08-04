@@ -11,16 +11,16 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.exporter.producer.*;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.IO_TYPE;
-import mobi.chouette.model.*;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.Route;
 import mobi.chouette.model.VehicleJourney;
+import mobi.chouette.model.*;
 import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.ScheduledStopPoint;
+import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.Marshaller;
 import java.io.File;
@@ -41,16 +41,16 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
     protected static final String ID_STRUCTURE_REGEXP_SPECIAL_CHARACTER = "([^0-9A-Za-z-_:])";
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
-    private static final OrganisationFranceProducer organisationFranceProducer = new OrganisationFranceProducer();
-    private static final NetworkFranceProducer networkFranceProducer = new NetworkFranceProducer();
-    private static final LineFranceProducer lineFranceProducer = new LineFranceProducer();
-    private static final RouteFranceProducer routeFranceProducer = new RouteFranceProducer();
-    private static final RouteLinkProducer routeLinkProducer = new RouteLinkProducer();
-    private static final CalendarFranceProducer calendarFranceProducer = new CalendarFranceProducer();
-    private static final ServiceJourneyFranceProducer serviceJourneyFranceProducer = new ServiceJourneyFranceProducer();
-    private static final DirectionProducer directionProducer = new DirectionProducer();
-    private static final ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
-    private final List<String> alreadyProcessedRouteSections = new ArrayList<>();
+    private static OrganisationFranceProducer organisationFranceProducer = new OrganisationFranceProducer();
+    private static NetworkFranceProducer networkFranceProducer = new NetworkFranceProducer();
+    private static LineFranceProducer lineFranceProducer = new LineFranceProducer();
+    private static RouteFranceProducer routeFranceProducer = new RouteFranceProducer();
+    private static RouteLinkProducer routeLinkProducer = new RouteLinkProducer();
+    private static CalendarFranceProducer calendarFranceProducer = new CalendarFranceProducer();
+    private static ServiceJourneyFranceProducer serviceJourneyFranceProducer = new ServiceJourneyFranceProducer();
+    private static DirectionProducer directionProducer = new DirectionProducer();
+    private static ServiceJourneyPatternFranceProducer serviceJourneyPatternFranceProducer = new ServiceJourneyPatternFranceProducer();
+    private List<String> alreadyProcessedRouteSections = new ArrayList<>();
 
     public void produce(Context context) throws Exception {
 
@@ -97,7 +97,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
     private void processAlternateIdentifiers(Context context, ExportableNetexData exportableNetexData) {
         NetexprofileExportParameters parameters = (NetexprofileExportParameters) context.get(Constant.CONFIGURATION);
         if (StringUtils.isEmpty(parameters.getReferentialName())) {
-            return;
+            return ;
         }
 
         processAlternateIdentifier(exportableNetexData.getSharedDayTypes().values(), parameters);
@@ -116,18 +116,18 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         processAlternateIdentifier(exportableNetexData.getServiceJourneyPatterns(), parameters);
 
     }
-
+    
     private void processAlternateIdentifier(Collection<? extends DataManagedObjectStructure> objectsToModify, NetexprofileExportParameters parameters) {
 
         String customPrefix = parameters.getDefaultCodespacePrefix();
-        String originalPrefix = parameters.getReferentialName().replace("mobiiti_", "").toUpperCase();
+        String originalPrefix = parameters.getReferentialName().replace("mobiiti_","").toUpperCase();
 
 
         for (DataManagedObjectStructure dataManagedObjectStructure : objectsToModify) {
-            if (customPrefix.equals(originalPrefix)) {
+            if (customPrefix.equals(originalPrefix)){
                 NetexProducerUtils.removeAlternateIdentifier(dataManagedObjectStructure);
-            } else {
-                NetexProducerUtils.revertPrefixInAlternateIdentifier(dataManagedObjectStructure, originalPrefix, customPrefix);
+            }else{
+                NetexProducerUtils.revertPrefixInAlternateIdentifier(dataManagedObjectStructure,originalPrefix, customPrefix);
             }
         }
 
@@ -269,7 +269,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         produceAndCollectPassengerStopAssignments(exportableData.getRoutes(), exportableNetexData, configuration);
 
         List<Route> activeRoutes = exportableData.getVehicleJourneys().stream().map(VehicleJourney::getRoute).distinct().collect(Collectors.toList());
-        produceAndCollectDestinationDisplays(context, activeRoutes, exportableNetexData);
+        produceAndCollectDestinationDisplays(activeRoutes, exportableNetexData);
 
         for (mobi.chouette.model.VehicleJourney vehicleJourney : exportableData.getVehicleJourneys()) {
             exportableNetexData.getServiceJourneys().add(serviceJourneyFranceProducer.produce(context, vehicleJourney, configuration.isExportExternalIds()));
@@ -341,23 +341,23 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
                     exportableNetexData.getScheduledStopPoints().put(scheduledStopPoint.getId(), scheduledStopPoint);
                 }
             } else {
-                log.warn("ScheduledStopPoint with id : {} is not contained in a StopArea. Cannot produce ScheduledStopPoint.", chouetteScheduledStopPoint.getObjectId());
+               log.warn("ScheduledStopPoint with id : {} is not contained in a StopArea. Cannot produce ScheduledStopPoint.", chouetteScheduledStopPoint.getObjectId());
             }
         }
     }
 
-    private void produceAndCollectDestinationDisplays(Context context, List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
+    private void produceAndCollectDestinationDisplays(List<mobi.chouette.model.Route> routes, ExportableNetexData exportableNetexData) {
         for (mobi.chouette.model.Route route : routes) {
             for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
                 mobi.chouette.model.DestinationDisplay ddjp = journeyPattern.getDestinationDisplay();
                 if (ddjp != null) {
-                    addDestinationDisplay(context, ddjp, exportableNetexData);
+                    addDestinationDisplay(ddjp, exportableNetexData);
                 }
                 for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
                     if (stopPoint != null) {
                         mobi.chouette.model.DestinationDisplay ddsp = stopPoint.getDestinationDisplay();
                         if (ddsp != null) {
-                            addDestinationDisplay(context, ddsp, exportableNetexData);
+                            addDestinationDisplay(ddsp, exportableNetexData);
                         }
                     }
                 }
@@ -365,7 +365,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
         }
     }
 
-    protected void addDestinationDisplay(Context context, mobi.chouette.model.DestinationDisplay dd, ExportableNetexData exportableNetexData) {
+    protected void addDestinationDisplay(mobi.chouette.model.DestinationDisplay dd, ExportableNetexData exportableNetexData) {
         DestinationDisplay netexDestinationDisplay = netexFactory.createDestinationDisplay();
         NetexProducerUtils.populateIdAndVersion(dd, netexDestinationDisplay);
         netexDestinationDisplay.setFrontText(ConversionUtil.getMultiLingualString(dd.getFrontText()));
@@ -395,7 +395,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
             String passengerStopAssignmentIdSuffix = scheduledStopPoint.objectIdSuffix();
             String passengerStopAssignmentId = netexId(scheduledStopPoint.objectIdPrefix(), PASSENGER_STOP_ASSIGNMENT, passengerStopAssignmentIdSuffix);
             PassengerStopAssignment stopAssignment = createPassengerStopAssignment(scheduledStopPoint, passengerStopAssignmentId, parameters);
-            NetexProducerUtils.addAlternateIdentifier(stopAssignment, passengerStopAssignmentId);
+            NetexProducerUtils.addAlternateIdentifier(stopAssignment,passengerStopAssignmentId);
             stopAssignment.setOrder(order);
             exportableNetexData.getStopAssignments().put(stopAssignment.getId(), stopAssignment);
         } else {
@@ -413,7 +413,7 @@ public class NetexLineDataFranceProducer extends NetexProducer implements Consta
 
         passengerStopAssignment.setScheduledStopPointRef(netexFactory.createScheduledStopPointRef(scheduledStopPointRef));
 
-        if (isSet(scheduledStopPoint.getContainedInStopAreaRef().getObject())) {
+		if (isSet(scheduledStopPoint.getContainedInStopAreaRef().getObject())) {
             mobi.chouette.model.StopArea containedInStopArea = scheduledStopPoint.getContainedInStopAreaRef().getObject();
 
             if (parameters.isExportGeneratedMissingQuays() || !containedInStopArea.getQuayAutoGenerated()) {

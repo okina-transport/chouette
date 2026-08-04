@@ -113,10 +113,6 @@ public abstract class NamingUtil {
 		return object.getObjectId();
 	}
 
-	public static String getName(Translation object) {
-		return object.getObjectId();
-	}
-
 	public static boolean isFilled(String data) {
 		return (data != null && !data.trim().isEmpty());
 	}

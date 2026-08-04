@@ -10,10 +10,7 @@ import mobi.chouette.common.PropertyNames;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.VehicleJourneyAtStopDAO;
-import mobi.chouette.dao.VehicleJourneyAtStopTranslationDAO;
-import mobi.chouette.model.VehicleJourneyAtStopTranslation;
 import mobi.chouette.persistence.hibernate.ContextHolder;
-import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -36,121 +33,118 @@ import java.util.concurrent.Future;
 @Stateless(name = CopyCommand.COMMAND)
 public class CopyCommand implements Command {
 
-    public static final String COMMAND = "CopyCommand";
+	public static final String COMMAND = "CopyCommand";
 
-    static {
-        CommandFactory.factories.put(CopyCommand.class.getName(), new DefaultCommandFactory());
-    }
+	@EJB 
+	private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
 
-    @Resource(lookup = "java:comp/DefaultManagedExecutorService")
-    ManagedExecutorService executor;
-    @EJB
-    private VehicleJourneyAtStopDAO vehicleJourneyAtStopDAO;
-    @EJB
-    private VehicleJourneyAtStopTranslationDAO vehicleJourneyAtStopTranslationDAO;
-    @EJB
-    private ContenerChecker checker;
+	@EJB 
+	private ContenerChecker checker;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean execute(Context context) throws Exception {
-        String sMaxCopy = System.getProperty(checker.getContext() + PropertyNames.MAX_COPY_BY_JOB, "5");
-        int maxCopy = Integer.parseInt(sMaxCopy);
+	@Resource(lookup = "java:comp/DefaultManagedExecutorService")
+	ManagedExecutorService executor;
 
-        boolean result = ERROR;
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean execute(Context context) throws Exception {
+		String sMaxCopy = System.getProperty(checker.getContext()+ PropertyNames.MAX_COPY_BY_JOB, "5");
+		int maxCopy = Integer.parseInt(sMaxCopy);
 
-        try {
+		boolean result = ERROR;
 
-            Boolean optimized = (Boolean) context.get(OPTIMIZED);
-            if (optimized) {
-                List<Future<Void>> futures = (List<Future<Void>>) context.get(COPY_IN_PROGRESS);
-                if (futures == null) {
-                    futures = new ArrayList<>();
-                    context.put(COPY_IN_PROGRESS, futures);
-                }
-                while (futures.size() >= maxCopy) {
+		try {
+
+			Boolean optimized = (Boolean) context.get(OPTIMIZED);
+			if (optimized) {
+				List<Future<Void>> futures = (List<Future<Void>>) context.get(COPY_IN_PROGRESS);
+				if (futures == null) {
+					futures = new ArrayList<>();
+					context.put(COPY_IN_PROGRESS, futures);
+				}
+				while (futures.size() >= maxCopy)
+				{
                     futures.removeIf(Future::isDone);
-                    if (futures.size() >= maxCopy) {
-                        for (Iterator<Future<Void>> iterator = futures.iterator(); iterator.hasNext(); ) {
-                            Future<Void> future = iterator.next();
-                            if (future.isDone()) iterator.remove();
-                            else {
-                                log.info("too many copy in progress, waiting ...");
-                                future.get();
-                                break;
-                            }
-                        }
-                    }
-                }
-                CommandCallable callable = new CommandCallable();
-                callable.bufferVjas = (String) context.remove(BUFFER_VJAS);
-                callable.vjasTranslations = (List<VehicleJourneyAtStopTranslation>) context.remove(VJAS_TRANSLATIONS);
+					if (futures.size() >= maxCopy)
+					{
+						for (Iterator<Future<Void>> iterator = futures.iterator(); iterator.hasNext();) {
+							Future<Void> future = iterator.next();
+							if (future.isDone()) iterator.remove();
+							else
+							{
+								log.info("too many copy in progress, waiting ...");
+								future.get();
+								break;
+							}
+						}						
+					}
+				}
+				CommandCallable callable = new CommandCallable();
+				callable.bufferVjas = (String) context.remove(BUFFER_VJAS);
 
-                callable.schema = ContextHolder.getContext();
-                Future<Void> future = executor.submit(callable);
-                futures.add(future);
-            }
+				callable.schema = ContextHolder.getContext();
+				Future<Void> future = executor.submit(callable);
+				futures.add(future);
+			}
 
 
-            result = SUCCESS;
-        } catch (Exception e) {
-            log.error(e);
-            throw e;
-        }
+			result = SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			throw e;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public static class DefaultCommandFactory extends CommandFactory {
+	private class CommandCallable implements Callable<Void> {
+		private String bufferVjas;
 
-        @Override
-        protected Command create(InitialContext context) throws IOException {
+		private String schema;
 
-            Command result = null;
-            try {
-                String name = "java:app/mobi.chouette.exchange/" + COMMAND;
-                result = (Command) context.lookup(name);
-            } catch (NamingException e) {
-                // try another way on test context
-                String name = "java:module/" + COMMAND;
-                try {
-                    result = (Command) context.lookup(name);
-                } catch (NamingException e1) {
-                    log.error(e);
-                }
-            }
-            return result;
-        }
-    }
+		@Override
+		@TransactionAttribute(TransactionAttributeType.REQUIRED)
+		public Void call() {
+			LocalDateTime start = LocalDateTime.now();
+			Monitor monitor = MonitorFactory.start(COMMAND);
+			ContextHolder.setContext(schema);
+			vehicleJourneyAtStopDAO.copy(bufferVjas);
+			log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
+			ContextHolder.setContext(null);
+			log.info("VehicleJourneyAtStop copy ended successfully");
+			LocalDateTime end = LocalDateTime.now();
+			Duration duration = Duration.between(start, end);
+			long hours = duration.toHours();
+			long minutes = duration.toMinutes() % 60;
+			long seconds = duration.getSeconds() % 60;
+			log.info("CopyCommand duration:" + " - " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
+			return null;
+		}
 
-    private class CommandCallable implements Callable<Void> {
-        private String bufferVjas;
+	}
 
-        private List<VehicleJourneyAtStopTranslation> vjasTranslations;
+	public static class DefaultCommandFactory extends CommandFactory {
 
-        private String schema;
+		@Override
+		protected Command create(InitialContext context) throws IOException {
 
-        @Override
-        @TransactionAttribute(TransactionAttributeType.REQUIRED)
-        public Void call() {
-            LocalDateTime start = LocalDateTime.now();
-            Monitor monitor = MonitorFactory.start(COMMAND);
-            ContextHolder.setContext(schema);
-            vehicleJourneyAtStopDAO.copy(bufferVjas);
-            if (CollectionUtils.isNotEmpty(vjasTranslations)) {
-                vehicleJourneyAtStopTranslationDAO.persistTranslations(vjasTranslations);
-            }
-            log.info(Color.MAGENTA + monitor.stop() + Color.NORMAL);
-            ContextHolder.setContext(null);
-            log.info("VehicleJourneyAtStop copy ended successfully");
-            LocalDateTime end = LocalDateTime.now();
-            Duration duration = Duration.between(start, end);
-            long hours = duration.toHours();
-            long minutes = duration.toMinutes() % 60;
-            long seconds = duration.getSeconds() % 60;
-            log.info("CopyCommand duration:" + " - " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds");
-            return null;
-        }
+			Command result = null;
+			try {
+				String name = "java:app/mobi.chouette.exchange/" + COMMAND;
+				result = (Command) context.lookup(name);
+			} catch (NamingException e) {
+				// try another way on test context
+				String name = "java:module/" + COMMAND;
+				try {
+					result = (Command) context.lookup(name);
+				} catch (NamingException e1) {
+					log.error(e);
+				}
+			}
+			return result;
+		}
+	}
 
-    }
+	static {
+		CommandFactory.factories.put(CopyCommand.class.getName(), new DefaultCommandFactory());
+	}
 }

@@ -108,12 +108,6 @@
         <class>mobi.chouette.model.FareAttribute</class>
         <class>mobi.chouette.model.FareRule</class>
         <class>mobi.chouette.model.Transfers</class>
-        <class>mobi.chouette.model.NetworkTranslation</class>
-        <class>mobi.chouette.model.CompanyTranslation</class>
-        <class>mobi.chouette.model.LineTranslation</class>
-        <class>mobi.chouette.model.StopAreaTranslation</class>
-        <class>mobi.chouette.model.VehicleJourneyTranslation</class>
-        <class>mobi.chouette.model.VehicleJourneyAtStopTranslation</class>
 
         <class>mobi.chouette.model.admin.Consumer</class>
         <class>mobi.chouette.model.admin.ExportTemplate</class>

@@ -1,25 +1,22 @@
 package mobi.chouette.exchange.importer.updater.netex;
 
+import mobi.chouette.model.MappingHastusZdep;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.StopAreaTranslation;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.TransportModeNameEnum;
-import org.rutebanken.netex.model.AlternativeText;
 import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopTypeEnumeration;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class StopPlaceMapperTest {
 
-    private final StopPlaceMapper stopPlaceMapper = new StopPlaceMapper();
+    private StopPlaceMapper stopPlaceMapper = new StopPlaceMapper();
 
     @Test
     public void stopPlaceWithThreeBoardingPositions() {
@@ -89,38 +86,6 @@ public class StopPlaceMapperTest {
 
         stopPlaceMapper.mapTransportMode(stopPlace, transportModeNameEnum);
         assertEquals(stopPlace.getStopPlaceType(), StopTypeEnumeration.FERRY_STOP);
-    }
-
-    @Test
-    public void stopPlaceWithTranslationsGetsAlternativeText() {
-        StopArea stopPlace = createStopPlace("Moensletta");
-        stopPlace.setObjectId("SP1");
-
-        StopAreaTranslation translation = new StopAreaTranslation();
-        translation.setFieldName("stopName");
-        translation.setLanguage("en");
-        translation.setTranslation("Moensletta EN");
-
-        Map<String, List<StopAreaTranslation>> translationsByObjectId = Collections.singletonMap("SP1", Collections.singletonList(translation));
-
-        StopPlace netexStopPlace = stopPlaceMapper.mapStopAreaToStopPlace(stopPlace, translationsByObjectId);
-
-        assertNotNull(netexStopPlace.getAlternativeTexts(), "alternativeTexts should not be null");
-        assertEquals(netexStopPlace.getAlternativeTexts().getAlternativeText().size(), 1);
-        AlternativeText alternativeText = netexStopPlace.getAlternativeTexts().getAlternativeText().get(0);
-        assertEquals(alternativeText.getAttributeName(), "Name");
-        assertEquals(alternativeText.getUseForLanguage(), "en");
-        assertEquals(alternativeText.getText().getValue(), "Moensletta EN");
-    }
-
-    @Test
-    public void stopPlaceWithoutMatchingTranslationsGetsNoAlternativeText() {
-        StopArea stopPlace = createStopPlace("Klavestadhaugen");
-        stopPlace.setObjectId("SP2");
-
-        StopPlace netexStopPlace = stopPlaceMapper.mapStopAreaToStopPlace(stopPlace, Collections.emptyMap());
-
-        assertNull(netexStopPlace.getAlternativeTexts());
     }
 
     @Test

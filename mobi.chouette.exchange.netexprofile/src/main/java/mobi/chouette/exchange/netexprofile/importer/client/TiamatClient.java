@@ -3,7 +3,6 @@ package mobi.chouette.exchange.netexprofile.importer.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.exchange.importer.utils.TokenService;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
@@ -13,6 +12,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import mobi.chouette.exchange.importer.utils.TokenService;
 
 import java.util.Set;
 
@@ -22,22 +22,11 @@ public class TiamatClient {
     public static final String PROPERTY_TIAMAT_BASE_URL = System.getenv("TIAMAT_BASE_URL");
     private static final String QUAY_GEOCODE_RESOURCE = "netex_stops/geocode";
 
-    private static String buildRequestBody(Set<String> netexIdentifiers) {
-        String jsonArrayString = "[]";
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            jsonArrayString = objectMapper.writeValueAsString(netexIdentifiers);
-        } catch (JsonProcessingException e) {
-            log.error("Error converting netex identifiers to JSON", e);
-        }
-        return jsonArrayString;
-    }
-
     public void sendQuayNetexIdForGeocoding(Set<String> netexIdentifiers) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost postRequest = new HttpPost(PROPERTY_TIAMAT_BASE_URL + QUAY_GEOCODE_RESOURCE);
             postRequest.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-            postRequest.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+            postRequest.setHeader(HttpHeaders.ACCEPT,  ContentType.APPLICATION_JSON.getMimeType());
             TokenService tokenService = mobi.chouette.exchange.utils.TokenServiceBuilder.init().build();
             postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken());
 
@@ -54,7 +43,18 @@ public class TiamatClient {
                 }
             }
         } catch (Exception e) {
-            log.error(e);
+           log.error(e);
         }
+    }
+
+    private static String buildRequestBody(Set<String> netexIdentifiers) {
+        String jsonArrayString = "[]";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            jsonArrayString = objectMapper.writeValueAsString(netexIdentifiers);
+        } catch (JsonProcessingException e) {
+           log.error("Error converting netex identifiers to JSON", e);
+        }
+        return jsonArrayString;
     }
 }

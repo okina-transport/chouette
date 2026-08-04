@@ -20,11 +20,6 @@ public interface Constant extends mobi.chouette.common.Constant {
 	String NETEX_PROFILE_VALIDATORS = "netex_profile_validators";
 	String EXPORTABLE_NETEX_DATA = "exportable_netex_data";
 	String MARSHALLER = "marshaller";
-	String NETWORK_FIELD_VALUE_TRANSLATIONS = "network_field_value_translations";
-	String COMPANY_FIELD_VALUE_TRANSLATIONS = "company_field_value_translations";
-	String LINE_FIELD_VALUE_TRANSLATIONS = "line_field_value_translations";
-	String STOP_AREA_FIELD_VALUE_TRANSLATIONS = "stop_area_field_value_translations";
-	String VEHICLE_JOURNEY_FIELD_VALUE_TRANSLATIONS = "vehicle_journey_field_value_translations";
 	
 	
 	String NETEX_NAMESPACE = "http://www.netex.org.uk/netex";
