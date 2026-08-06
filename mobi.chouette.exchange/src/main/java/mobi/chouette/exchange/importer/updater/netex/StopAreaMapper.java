@@ -4,6 +4,7 @@ import mobi.chouette.exchange.NetexParserUtils;
 import mobi.chouette.exchange.importer.updater.NeTExStopPlaceUtil;
 import mobi.chouette.model.KeyValue;
 import mobi.chouette.model.StopArea;
+import mobi.chouette.model.StopAreaTranslation;
 import mobi.chouette.model.type.ChouetteAreaEnum;
 import mobi.chouette.model.type.LongLatTypeEnum;
 import mobi.chouette.model.type.StopAreaTypeEnum;
@@ -114,6 +115,7 @@ public class StopAreaMapper {
         mapKeyValuesExternalRef(quay, boardingPosition);
         mapFareZone(quay, boardingPosition);
         mapTtsStopName(quay, boardingPosition);
+        mapAlternativeTexts(quay, boardingPosition);
         return boardingPosition;
     }
 
@@ -161,6 +163,7 @@ public class StopAreaMapper {
         mapKeyValuesExternalRef(stopPlace, stopArea);
         mapFareZone(stopPlace, stopArea);
         mapTtsStopName(stopPlace, stopArea);
+        mapAlternativeTexts(stopPlace, stopArea);
         return stopArea;
     }
 
@@ -172,6 +175,23 @@ public class StopAreaMapper {
                   break;
               }
           }
+        }
+    }
+
+    private void mapAlternativeTexts(SiteElement_VersionStructure stopPlace, StopArea stopArea) {
+        if (stopPlace.getAlternativeTexts() != null && CollectionUtils.isNotEmpty(stopPlace.getAlternativeTexts().getAlternativeText())) {
+            for (AlternativeText alternativeText : stopPlace.getAlternativeTexts().getAlternativeText()) {
+                StopAreaTranslation translation = new StopAreaTranslation();
+                translation.setObjectId(alternativeText.getId());
+                translation.setLanguage(alternativeText.getText().getLang());
+                translation.setTranslation(alternativeText.getText().getValue());
+                // only stopName handled ATM
+                translation.setFieldName("stopName");
+                translation.setSaved(false);
+                translation.setDetached(true);
+                translation.setFilled(true);
+                translation.setStopArea(stopArea);
+            }
         }
     }
 

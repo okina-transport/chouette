@@ -423,23 +423,27 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
     private void updateTranslations(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
         List<VehicleJourneyTranslation> newTranslations = referential.getVehicleJourneyTranslationsByObjectId()
                 .getOrDefault(newValue.getObjectId(), List.of());
 
         Collection<VehicleJourneyTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<VehicleJourneyTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<VehicleJourneyTranslation, VehicleJourneyTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (VehicleJourneyTranslation translation : addedTranslations) {
             translation.setVehicleJourney(oldValue);
         }
 
-        Collection<VehicleJourneyTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (VehicleJourneyTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<VehicleJourneyTranslation, VehicleJourneyTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<VehicleJourneyTranslation, VehicleJourneyTranslation> pair : modifiedTranslations) {
             vehicleJourneyTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }

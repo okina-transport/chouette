@@ -322,23 +322,27 @@ public class LineUpdater implements Updater<Line> {
 
     private void updateTranslations(Context context, Line oldValue, Line newValue) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
         List<LineTranslation> newTranslations = referential.getLineTranslationsByObjectId()
                 .getOrDefault(newValue.getObjectId(), List.of());
 
         Collection<LineTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<LineTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<LineTranslation, LineTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (LineTranslation translation : addedTranslations) {
             translation.setLine(oldValue);
         }
 
-        Collection<LineTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (LineTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<LineTranslation, LineTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<LineTranslation, LineTranslation> pair : modifiedTranslations) {
             lineTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }

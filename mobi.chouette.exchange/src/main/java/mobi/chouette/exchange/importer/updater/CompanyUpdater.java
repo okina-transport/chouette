@@ -165,23 +165,27 @@ public class CompanyUpdater implements Updater<Company> {
 
     private void updateTranslations(Context context, Company oldValue, Company newValue) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
         List<CompanyTranslation> newTranslations = referential.getCompanyTranslationsByObjectId()
                 .getOrDefault(newValue.getObjectId(), List.of());
 
         Collection<CompanyTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<CompanyTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<CompanyTranslation, CompanyTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (CompanyTranslation translation : addedTranslations) {
             translation.setCompany(oldValue);
         }
 
-        Collection<CompanyTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (CompanyTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<CompanyTranslation, CompanyTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<CompanyTranslation, CompanyTranslation> pair : modifiedTranslations) {
             companyTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }

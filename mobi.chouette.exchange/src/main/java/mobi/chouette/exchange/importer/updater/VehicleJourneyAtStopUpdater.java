@@ -108,23 +108,27 @@ public class VehicleJourneyAtStopUpdater implements
 
     private void updateTranslations(Context context, VehicleJourneyAtStop oldValue, VehicleJourneyAtStop newValue) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
         List<VehicleJourneyAtStopTranslation> newTranslations = referential.getVehicleJourneyAtStopTranslationsByObjectId()
                 .getOrDefault(newValue.getObjectId(), List.of());
 
         Collection<VehicleJourneyAtStopTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<VehicleJourneyAtStopTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<VehicleJourneyAtStopTranslation, VehicleJourneyAtStopTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (VehicleJourneyAtStopTranslation translation : addedTranslations) {
             translation.setVehicleJourneyAtStop(oldValue);
         }
 
-        Collection<VehicleJourneyAtStopTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (VehicleJourneyAtStopTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<VehicleJourneyAtStopTranslation, VehicleJourneyAtStopTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<VehicleJourneyAtStopTranslation, VehicleJourneyAtStopTranslation> pair : modifiedTranslations) {
             vehicleJourneyAtStopTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }
