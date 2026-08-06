@@ -141,6 +141,16 @@ public class GtfsExporterMock implements GtfsExporterInterface {
 		return null;
 	}
 
+	@Override
+	public Exporter<GtfsTripCompany> getTripCompanyExporter() throws Exception {
+		return null;
+	}
+
+	@Override
+	public Exporter<GtfsTripExtension> getTripExtensionExporter() throws Exception {
+		return null;
+	}
+
 	private abstract class ExporterMock<T> implements Exporter<T> {
 
 		@Override

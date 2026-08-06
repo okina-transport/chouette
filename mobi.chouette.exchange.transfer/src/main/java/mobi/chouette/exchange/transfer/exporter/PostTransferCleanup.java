@@ -92,6 +92,9 @@ public class PostTransferCleanup implements Command, Constant {
         String incorrectVehicleJourneys = cleanUpDAO.lauchCleanUpFunction(REMOVE_INCORRECT_VEHICLE_JOURNEYS_FUNCTION_NAME);
         log.info("removed incorrect vehicle journeys :" + incorrectVehicleJourneys);
 
+        String orphanTripExtensions = cleanUpDAO.removeOrphanTripExtensions();
+        log.info("removed orphan trip extensions :" + orphanTripExtensions);
+
         String emptyJourneyPatterns = cleanUpDAO.lauchCleanUpFunction(REMOVE_EMPTY_JOURNEY_PATTERNS_FUNCTION_NAME);
         log.info("removed empty journey patterns :" + emptyJourneyPatterns);
 

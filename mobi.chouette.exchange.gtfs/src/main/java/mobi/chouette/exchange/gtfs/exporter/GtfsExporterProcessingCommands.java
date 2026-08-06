@@ -74,6 +74,8 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFareAttributeProducerCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFareRuleProducerCommand.class.getName()));
 			commands.add(CommandFactory.create(initialContext, DaoGtfsTransfersProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DaoGtfsTripCompanyProducerCommand.class.getName()));
+			commands.add(CommandFactory.create(initialContext, DaoGtfsTripExtensionProducerCommand.class.getName()));
 
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFeedInfoProducerCommand.class.getName()));
 			//			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));

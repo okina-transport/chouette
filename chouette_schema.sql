@@ -3281,6 +3281,79 @@ ALTER TABLE :SCH.vehicle_journey_translations_id_seq OWNER TO chouette;
 ALTER SEQUENCE vehicle_journey_translations_id_seq OWNED BY vehicle_journey_translations.id;
 
 --
+-- Name: trip_companies; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE trip_companies
+(
+    id             bigint NOT NULL,
+    objectid       varchar(255) NOT NULL,
+    object_version integer,
+    creation_time  date,
+    creator_id     varchar(255),
+    name           varchar(255),
+    address        varchar(255),
+    zipcode        varchar(255),
+    city           varchar(255),
+    phone          varchar(255),
+    email          varchar(255),
+    CONSTRAINT trip_companies_id_pkey PRIMARY KEY (id),
+    CONSTRAINT trip_companies_objectid_key UNIQUE (objectid)
+);
+
+
+ALTER TABLE :SCH.trip_companies OWNER TO chouette;
+
+CREATE SEQUENCE trip_companies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE :SCH.trip_companies_id_seq OWNER TO chouette;
+ALTER SEQUENCE trip_companies_id_seq OWNED BY trip_companies.id;
+
+--
+-- Name: trip_extensions; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE trip_extensions
+(
+    id                  bigint NOT NULL,
+    objectid            varchar(255) NOT NULL,
+    object_version      integer,
+    creation_time       date,
+    creator_id          varchar(255),
+    vehicle_journey_id  bigint,
+    line_id             bigint,
+    contract_company_id bigint,
+    exec_company_id     bigint,
+    indic_reservation   varchar(255),
+    CONSTRAINT trip_extensions_id_pkey PRIMARY KEY (id),
+    CONSTRAINT trip_extensions_objectid_key UNIQUE (objectid),
+    CONSTRAINT trip_extensions_vj_fkey FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys (id) ON DELETE CASCADE,
+    CONSTRAINT trip_extensions_line_fkey FOREIGN KEY (line_id) REFERENCES lines (id),
+    CONSTRAINT trip_extensions_contract_company_fkey FOREIGN KEY (contract_company_id) REFERENCES trip_companies (id),
+    CONSTRAINT trip_extensions_exec_company_fkey FOREIGN KEY (exec_company_id) REFERENCES trip_companies (id)
+);
+
+
+ALTER TABLE :SCH.trip_extensions OWNER TO chouette;
+
+CREATE SEQUENCE trip_extensions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE :SCH.trip_extensions_id_seq OWNER TO chouette;
+ALTER SEQUENCE trip_extensions_id_seq OWNED BY trip_extensions.id;
+
+--
 -- Name: vehicle_journey_at_stop_translations; Type: TABLE; Schema: :SCH; Owner: chouette; Tablespace:
 --
 

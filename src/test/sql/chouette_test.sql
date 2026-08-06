@@ -2111,6 +2111,71 @@ ALTER SEQUENCE vehicle_journey_translations_id_seq OWNED BY vehicle_journey_tran
 
 
 --
+-- Name: trip_companies; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE trip_companies
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    name           character varying(255),
+    address        character varying(255),
+    zipcode        character varying(255),
+    city           character varying(255),
+    phone          character varying(255),
+    email          character varying(255),
+    CONSTRAINT trip_companies_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE chouette_gui.trip_companies OWNER TO chouette;
+
+CREATE SEQUENCE trip_companies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE chouette_gui.trip_companies_id_seq OWNER TO chouette;
+ALTER SEQUENCE trip_companies_id_seq OWNED BY trip_companies.id;
+
+
+--
+-- Name: trip_extensions; Type: TABLE; Schema: chouette_gui; Owner: chouette; Tablespace:
+--
+
+CREATE TABLE trip_extensions
+(
+    id                  bigint NOT NULL,
+    objectid            character varying(255),
+    object_version      integer,
+    creation_time       date,
+    creator_id          character varying(255),
+    vehicle_journey_id  bigint,
+    line_id             bigint,
+    contract_company_id bigint,
+    exec_company_id     bigint,
+    indic_reservation   character varying(255),
+    CONSTRAINT trip_extensions_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE chouette_gui.trip_extensions OWNER TO chouette;
+
+CREATE SEQUENCE trip_extensions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE chouette_gui.trip_extensions_id_seq OWNER TO chouette;
+ALTER SEQUENCE trip_extensions_id_seq OWNED BY trip_extensions.id;
+
+
+--
 -- TOC entry 3948 (class 2604 OID 939607)
 -- Name: id; Type: DEFAULT; Schema: chouette_gui; Owner: chouette
 --

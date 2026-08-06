@@ -104,6 +104,10 @@ public class CleanRepositoryCommand implements Command {
     private FlexibleServicePropertiesDAO flexibleServicePropertiesDAO;
     @EJB
     private StopAreaDAO stopAreaDAO;
+	@EJB
+	private TripCompanyDAO tripCompanyDAO;
+	@EJB
+	private TripExtensionDAO tripExtensionDAO;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -142,6 +146,9 @@ public class CleanRepositoryCommand implements Command {
             fareAttributeDAO.truncate();
             fareRuleDAO.truncate();
             transfersDAO.truncate();
+			// pegase
+			tripExtensionDAO.truncate();
+			tripCompanyDAO.truncate();
 
             // si pas import et ( transfert ou clean admin )
             if (context == null || !context.containsKey(CLEAR_FOR_IMPORT) || context.get(CLEAR_FOR_IMPORT) != Boolean.TRUE) {

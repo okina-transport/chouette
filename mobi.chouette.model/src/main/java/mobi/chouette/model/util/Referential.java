@@ -38,6 +38,10 @@ public class Referential implements java.io.Serializable {
 
     @Getter
     @Setter
+    private Map<String, TripCompany> sharedTripCompanies = new HashMap<>();
+
+    @Getter
+    @Setter
     private Map<String, ConnectionLink> sharedConnectionLinks = new HashMap<String, ConnectionLink>();
 
     @Getter
@@ -151,6 +155,14 @@ public class Referential implements java.io.Serializable {
     @Getter
     @Setter
     private List<VehicleJourneyAtStopTranslation> vehicleJourneyAtStopTranslationsByFieldValue = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Map<String, TripExtension> tripExtensionsByObjectId = new HashMap<>();
+
+    @Getter
+    @Setter
+    private boolean tripExtensionsProcessed = false;
 
     @Getter
     @Setter
@@ -300,6 +312,7 @@ public class Referential implements java.io.Serializable {
                 vj.getTrains().clear();
                 vj.getVehicleJourneyFacilities().clear();
                 vj.getTranslations().clear();
+                vj.setTripExtension(null);
             }
             for (Timetable timetable : timetables.values()) {
                 timetable.getVehicleJourneys().clear();
@@ -374,6 +387,9 @@ public class Referential implements java.io.Serializable {
         sharedBrandings.clear();
         sharedRoutePoints.clear();
         sharedRouteSections.clear();
+        sharedTripCompanies.clear();
+        tripExtensionsByObjectId.clear();
+        tripExtensionsProcessed = false;
     }
 
 }

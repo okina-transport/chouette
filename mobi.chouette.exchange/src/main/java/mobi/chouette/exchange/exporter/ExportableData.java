@@ -114,6 +114,14 @@ public class ExportableData {
 	@Setter
 	private List<Transfers> transfers = new ArrayList<>();
 
+	@Getter
+	@Setter
+	private List<TripCompany> tripCompanies = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private List<TripExtension> tripExtensions = new ArrayList<>();
+
 	public void clear() {
 		networks.clear();
 		line = null;
@@ -144,5 +152,7 @@ public class ExportableData {
 		fareAttributes.clear();
 		fareRules.clear();
 		transfers.clear();
+		tripCompanies.clear();
+		tripExtensions.clear();
 	}
 }
