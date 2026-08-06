@@ -96,4 +96,12 @@ public class CleanUpDAOImpl implements  CleanUpDAO{
         return fctResult;
 
     }
+
+    @Override
+    public String removeOrphanTripExtensions() {
+        int deleted = em.createNativeQuery(
+                        "DELETE FROM trip_extensions WHERE vehicle_journey_id IS NOT NULL AND vehicle_journey_id NOT IN (SELECT id FROM vehicle_journeys)")
+                .executeUpdate();
+        return String.valueOf(deleted);
+    }
 }

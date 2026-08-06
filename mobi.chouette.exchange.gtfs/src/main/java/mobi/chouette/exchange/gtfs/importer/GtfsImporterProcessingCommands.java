@@ -178,6 +178,9 @@ public class GtfsImporterProcessingCommands implements ProcessingCommands, Const
                 Chain chain = (Chain) CommandFactory.create(initialContext, ChainCommand.class.getName());
                 chain.add(CommandFactory.create(initialContext, GtfsTranslationParserCommand.class.getName()));
                 chain.add(CommandFactory.create(initialContext, FieldValueTranslationRegisterCommand.class.getName()));
+                chain.add(CommandFactory.create(initialContext, GtfsTripCompanyParserCommand.class.getName()));
+                chain.add(CommandFactory.create(initialContext, GtfsTripCompanyRegisterCommand.class.getName()));
+                chain.add(CommandFactory.create(initialContext, GtfsTripExtensionParserCommand.class.getName()));
                 chain.add(CommandFactory.create(initialContext, GtfsStopParserCommand.class.getName()));
                 commands.add(chain);
             }

@@ -133,6 +133,14 @@ public class GtfsImporter {
 		return hasImporter(TranslationIndex.FILENAME);
 	}
 
+	public boolean hasTripCompanyImporter() {
+		return hasImporter(TripCompanyById.FILENAME);
+	}
+
+	public boolean hasTripExtensionImporter() {
+		return hasImporter(TripExtensionById.FILENAME);
+	}
+
 	private boolean hasImporter(String filename) {
 		File f = new File(_path, filename);
 		return f.exists();
@@ -265,10 +273,19 @@ public class GtfsImporter {
 		return getImporter(INDEX.TRANSLATION.name(), TranslationIndex.FILENAME, TranslationIndex.class);
 	}
 
+	public Index<GtfsTripCompany> getTripCompanyById() {
+		return getImporter(INDEX.TRIP_COMPANY_BY_ID.name(), TripCompanyById.FILENAME, TripCompanyById.class);
+	}
+
+	public Index<GtfsTripExtension> getTripExtensionById() {
+		return getImporter(INDEX.TRIP_EXTENSION_BY_ID.name(), TripExtensionById.FILENAME, TripExtensionById.class);
+	}
+
 	public enum INDEX {
 		AGENCY_BY_ID, CALENDAR_BY_SERVICE, CALENDAR_DATE_BY_SERVICE, FREQUENCY_BY_TRIP, ROUTE_BY_ID, STOP_BY_ID, STOP_TIME_BY_TRIP,
 		TRANSFER_BY_FROM_STOP, TRANSFER_BY_FROM_TRIP, TRANSFER_BY_TO_TRIP, SHAPE_BY_ID, TRIP_BY_ID, TRIP_BY_ROUTE, TRIP_BY_SERVICE,
-		FARE_ID_BY_ATTRIBUTE, FARE_ID_BY_RULE, FARE_MEDIA_TYPE, FARE_RIDER_CATEGORIES, FARE_LEG_RULES, FARE_PRODUCTS, FARE_TIMEFRAME, TRANSLATION
+		FARE_ID_BY_ATTRIBUTE, FARE_ID_BY_RULE, FARE_MEDIA_TYPE, FARE_RIDER_CATEGORIES, FARE_LEG_RULES, FARE_PRODUCTS, FARE_TIMEFRAME, TRANSLATION,
+		TRIP_COMPANY_BY_ID, TRIP_EXTENSION_BY_ID
 	}
 
 }

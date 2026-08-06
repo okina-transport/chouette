@@ -142,8 +142,20 @@ public class GtfsExporter implements GtfsExporterInterface {
         return getExporter(EXPORTER.ATTRIBUTION.name(), AttributionExporter.FILENAME, AttributionExporter.class);
     }
 
+    @SuppressWarnings("unchecked")
+    public Exporter<GtfsTripCompany> getTripCompanyExporter() throws GtfsException {
+        return getExporter(EXPORTER.TRIP_COMPANY.name(), TripCompanyExporter.FILENAME,
+                TripCompanyExporter.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Exporter<GtfsTripExtension> getTripExtensionExporter() throws GtfsException {
+        return getExporter(EXPORTER.TRIP_EXTENSION.name(), TripExtensionExporter.FILENAME,
+                TripExtensionExporter.class);
+    }
+
     public enum EXPORTER {
-        AGENCY, ATTRIBUTION, CALENDAR, CALENDAR_DATE, FEED_INFO, FREQUENCY, ROUTE, STOP, STOP_TIME, TRANSFER, TRIP, SHAPE, FARE_ATTRIBUTE, FARE_RULE
+        AGENCY, ATTRIBUTION, CALENDAR, CALENDAR_DATE, FEED_INFO, FREQUENCY, ROUTE, STOP, STOP_TIME, TRANSFER, TRIP, SHAPE, FARE_ATTRIBUTE, FARE_RULE, TRIP_COMPANY, TRIP_EXTENSION
     }
 
 }

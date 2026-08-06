@@ -32,4 +32,8 @@ public interface GtfsExporterInterface {
     Exporter<GtfsFareAttribute> getFareAttributeExporter() throws Exception;
 
     Exporter<GtfsFareRule> getFareRuleExporter() throws Exception;
+
+    Exporter<GtfsTripCompany> getTripCompanyExporter() throws Exception;
+
+    Exporter<GtfsTripExtension> getTripExtensionExporter() throws Exception;
 }

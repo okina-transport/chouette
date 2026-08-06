@@ -143,4 +143,14 @@ public interface ObjectIdTypes {
      */
     String TRANSLATION_KEY = "Translation";
 
+    /**
+     * default objectId type for trip companies (GTFS companies.txt / Pegase extension)
+     */
+    String TRIP_COMPANY_KEY = "TripCompany";
+
+    /**
+     * default objectId type for trip extensions (GTFS trip_extensions.txt / Pegase extension)
+     */
+    String TRIP_EXTENSION_KEY = "TripExtension";
+
 }

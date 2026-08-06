@@ -108,6 +108,9 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
     @EJB(beanName = VehicleJourneyTranslationUpdater.BEAN_NAME)
     private Updater<VehicleJourneyTranslation> vehicleJourneyTranslationUpdater;
 
+    @EJB(beanName = TripExtensionUpdater.BEAN_NAME)
+    private Updater<TripExtension> tripExtensionUpdater;
+
     @Override
     public void update(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
 
@@ -393,7 +396,29 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
         updateTrains(context, oldValue, newValue);
         updateFacilities(context, oldValue, newValue);
         updateTranslations(context, oldValue, newValue);
+        updateTripExtension(context, oldValue, newValue);
 //		monitor.stop();
+    }
+
+    private void updateTripExtension(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {
+        Referential referential = (Referential) context.get(REFERENTIAL);
+        if (!referential.isTripExtensionsProcessed()) {
+            return;
+        }
+
+        TripExtension newTripExtension = referential.getTripExtensionsByObjectId().get(newValue.getObjectId());
+        if (newTripExtension == null) {
+            oldValue.setTripExtension(null);
+            return;
+        }
+
+        TripExtension oldTripExtension = oldValue.getTripExtension();
+        if (oldTripExtension == null) {
+            oldTripExtension = new TripExtension();
+            oldTripExtension.setDetached(true);
+            oldTripExtension.setVehicleJourney(oldValue);
+        }
+        tripExtensionUpdater.update(context, oldTripExtension, newTripExtension);
     }
 
     private void updateTranslations(Context context, VehicleJourney oldValue, VehicleJourney newValue) throws Exception {

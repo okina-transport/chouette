@@ -17,4 +17,7 @@ public interface Constant extends mobi.chouette.common.Constant {
     String GTFS_FARE_ATTRIBUTES_FILE = "fare_attributes.txt";
     String GTFS_FARE_RULES_FILE = "fare_rules.txt";
     String GTFS_TRANSLATIONS_FILE = "translations.txt";
+
+    String GTFS_TRIP_COMPANIES_FILE = "companies.txt";
+    String GTFS_TRIP_EXTENSIONS_FILE = "trips_extensions.txt";
 }

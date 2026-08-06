@@ -92,6 +92,17 @@ public class ObjectFactory {
         return result;
     }
 
+    public static TripCompany getTripCompany(Referential referential, String objectId) {
+        TripCompany result = referential.getSharedTripCompanies().get(objectId);
+        if (result == null) {
+            result = new TripCompany();
+            result.setObjectId(objectId);
+            result.setDetached(true);
+            referential.getSharedTripCompanies().put(objectId, result);
+        }
+        return result;
+    }
+
     public static Route getRoute(Referential referential, String objectId) {
         Route result = referential.getRoutes().get(objectId);
         if (result == null) {

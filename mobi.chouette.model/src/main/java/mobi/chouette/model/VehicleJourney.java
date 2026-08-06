@@ -451,6 +451,11 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 	@Column(name = "block_id")
 	private String blockId;
 
+	@Getter
+	@Setter
+	@OneToOne(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
+	private TripExtension tripExtension;
+
 	public void addVehicleJourneyFacility(VehicleJourneyFacility vehicleJourneyFacility) {
 		vehicleJourneyFacility.setVehicleJourney(this);
 		this.vehicleJourneyFacilities.add(vehicleJourneyFacility);
