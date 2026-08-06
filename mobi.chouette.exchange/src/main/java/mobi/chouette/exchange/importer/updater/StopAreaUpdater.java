@@ -275,6 +275,8 @@ public class StopAreaUpdater implements Updater<StopArea> {
             }
         }
 
+        updateTranslations(context, oldValue, newValue);
+
         // StopArea Parent
         if (newValue.getParent() == null) {
             oldValue.setParent(null);
@@ -412,30 +414,30 @@ public class StopAreaUpdater implements Updater<StopArea> {
             stopAreaUpdater.update(context, pair.getLeft(), pair.getRight());
         }
 
-        updateTranslations(context, oldValue, newValue);
         monitor.stop();
 
     }
 
     private void updateTranslations(Context context, StopArea oldValue, StopArea newValue) throws Exception {
-        Referential referential = (Referential) context.get(REFERENTIAL);
-        List<StopAreaTranslation> newTranslations = referential.getStopAreaTranslationsByObjectId()
-                .getOrDefault(newValue.getObjectId(), List.of());
+        List<StopAreaTranslation> newTranslations = newValue.getTranslations();
 
         Collection<StopAreaTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<StopAreaTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<StopAreaTranslation, StopAreaTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (StopAreaTranslation translation : addedTranslations) {
             translation.setStopArea(oldValue);
         }
 
-        Collection<StopAreaTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (StopAreaTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<StopAreaTranslation, StopAreaTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<StopAreaTranslation, StopAreaTranslation> pair : modifiedTranslations) {
             stopAreaTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }

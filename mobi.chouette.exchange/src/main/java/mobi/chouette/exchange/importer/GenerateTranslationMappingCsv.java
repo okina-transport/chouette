@@ -102,7 +102,7 @@ public class GenerateTranslationMappingCsv implements Command {
                     }
                     for (StopAreaTranslation translation : stopAreaTranslationDAO.findAllNewTransaction()) {
                         printTranslation(csvPrinter, dataset, STOP_OBJECT_TYPE,
-                                translation.getStopArea() != null ? ObjectIdUtil.extractOriginalId(translation.getStopArea().getObjectId()) : null, translation);
+                                translation.getStopArea() != null ? translation.getStopArea().getOriginalStopId() : null, translation);
                     }
                     for (VehicleJourneyTranslation translation : vehicleJourneyTranslationDAO.findAllNewTransaction()) {
                         printTranslation(csvPrinter, dataset, VEHICLE_JOURNEY_OBJECT_TYPE,

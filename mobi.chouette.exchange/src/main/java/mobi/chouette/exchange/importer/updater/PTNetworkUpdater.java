@@ -118,23 +118,27 @@ public class PTNetworkUpdater implements Updater<Network> {
 
     private void updateTranslations(Context context, Network oldValue, Network newValue) throws Exception {
         Referential referential = (Referential) context.get(REFERENTIAL);
+
         List<NetworkTranslation> newTranslations = referential.getNetworkTranslationsByObjectId()
                 .getOrDefault(newValue.getObjectId(), List.of());
 
         Collection<NetworkTranslation> addedTranslations = CollectionUtil.substract(
                 newTranslations, oldValue.getTranslations(), NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<NetworkTranslation> removedTranslations = CollectionUtil.substract(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
+        Collection<Pair<NetworkTranslation, NetworkTranslation>> modifiedTranslations = CollectionUtil.intersection(
+                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
+
         for (NetworkTranslation translation : addedTranslations) {
             translation.setNetwork(oldValue);
         }
 
-        Collection<NetworkTranslation> removedTranslations = CollectionUtil.substract(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (NetworkTranslation translation : removedTranslations) {
             oldValue.getTranslations().remove(translation);
         }
 
-        Collection<Pair<NetworkTranslation, NetworkTranslation>> modifiedTranslations = CollectionUtil.intersection(
-                oldValue.getTranslations(), newTranslations, NeptuneIdentifiedObjectComparator.INSTANCE);
         for (Pair<NetworkTranslation, NetworkTranslation> pair : modifiedTranslations) {
             networkTranslationUpdater.update(context, pair.getLeft(), pair.getRight());
         }
