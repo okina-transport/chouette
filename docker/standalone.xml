@@ -111,7 +111,7 @@
                 <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
             </formatter>
             <formatter name="BASIC">
-                <pattern-formatter pattern="%s%n"/>
+                <pattern-formatter pattern="%s%e%n"/>
             </formatter>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:batch-jberet:3.0">
