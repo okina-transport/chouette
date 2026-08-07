@@ -453,12 +453,17 @@ public class VehicleJourney extends NeptuneIdentifiedObject {
 
 	@Getter
 	@Setter
-	@OneToOne(mappedBy = "vehicleJourney", cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, orphanRemoval = true)
-	private TripExtension tripExtension;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "vehicleJourney", orphanRemoval = true)
+	private List<TripExtension> tripExtensions = new ArrayList<>(0);
 
 	public void addVehicleJourneyFacility(VehicleJourneyFacility vehicleJourneyFacility) {
 		vehicleJourneyFacility.setVehicleJourney(this);
 		this.vehicleJourneyFacilities.add(vehicleJourneyFacility);
+	}
+
+	public void addTripExtension(TripExtension tripExtension) {
+		tripExtension.setVehicleJourney(this);
+		this.tripExtensions.add(tripExtension);
 	}
 
 }

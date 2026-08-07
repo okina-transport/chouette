@@ -408,15 +408,15 @@ public class VehicleJourneyUpdater implements Updater<VehicleJourney> {
 
         TripExtension newTripExtension = referential.getTripExtensionsByObjectId().get(newValue.getObjectId());
         if (newTripExtension == null) {
-            oldValue.setTripExtension(null);
+            oldValue.getTripExtensions().clear();
             return;
         }
 
-        TripExtension oldTripExtension = oldValue.getTripExtension();
+        TripExtension oldTripExtension = oldValue.getTripExtensions().stream().findFirst().orElse(null);
         if (oldTripExtension == null) {
             oldTripExtension = new TripExtension();
             oldTripExtension.setDetached(true);
-            oldTripExtension.setVehicleJourney(oldValue);
+            oldValue.addTripExtension(oldTripExtension);
         }
         tripExtensionUpdater.update(context, oldTripExtension, newTripExtension);
     }

@@ -312,7 +312,7 @@ public class Referential implements java.io.Serializable {
                 vj.getTrains().clear();
                 vj.getVehicleJourneyFacilities().clear();
                 vj.getTranslations().clear();
-                vj.setTripExtension(null);
+                vj.getTripExtensions().clear();
             }
             for (Timetable timetable : timetables.values()) {
                 timetable.getVehicleJourneys().clear();
