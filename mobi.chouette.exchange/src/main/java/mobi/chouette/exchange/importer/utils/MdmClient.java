@@ -81,7 +81,7 @@ public class MdmClient {
                         for (mobi.chouette.model.util.OkinaIdentifier identifier : identifiers) {
                             importedIdSuperIdMapping.put(
                                     identifier.getDataset() + type + identifier.getOriginalId(),
-                                    StringUtils.upperCase(SUPERSPACE_PREFIX) + type + identifier.getSuperId()
+                                    StringUtils.upperCase(NETEX_VALID_PREFIX) + type + identifier.getSuperId()
                             );
                         }
                     } else {
