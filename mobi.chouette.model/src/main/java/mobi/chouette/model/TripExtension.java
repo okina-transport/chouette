@@ -33,16 +33,10 @@ public class TripExtension extends NeptuneIdentifiedObject {
 	protected Long id;
 
 	@Getter
+	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "vehicle_journey_id")
 	private VehicleJourney vehicleJourney;
-
-	public void setVehicleJourney(VehicleJourney vehicleJourney) {
-		this.vehicleJourney = vehicleJourney;
-		if (vehicleJourney != null && vehicleJourney.getTripExtension() != this) {
-			vehicleJourney.setTripExtension(this);
-		}
-	}
 
 	@Getter
 	@Setter
