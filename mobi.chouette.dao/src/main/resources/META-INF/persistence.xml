@@ -114,6 +114,8 @@
         <class>mobi.chouette.model.StopAreaTranslation</class>
         <class>mobi.chouette.model.VehicleJourneyTranslation</class>
         <class>mobi.chouette.model.VehicleJourneyAtStopTranslation</class>
+        <class>mobi.chouette.model.TripCompany</class>
+        <class>mobi.chouette.model.TripExtension</class>
 
         <class>mobi.chouette.model.admin.Consumer</class>
         <class>mobi.chouette.model.admin.ExportTemplate</class>
