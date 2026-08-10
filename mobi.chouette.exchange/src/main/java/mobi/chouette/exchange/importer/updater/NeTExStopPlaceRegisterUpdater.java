@@ -75,6 +75,9 @@ public class NeTExStopPlaceRegisterUpdater {
     private final Set<TransportModeNameEnum> busEnums = new HashSet<>(Arrays.asList(TransportModeNameEnum.Coach, TransportModeNameEnum.Bus));
     private final NavigationPathMapper navigationPathMapper = new NavigationPathMapper();
     private PublicationDeliveryClient client;
+
+    public static final boolean IS_MDM_ACTIVATED = Boolean.parseBoolean(System.getenv("IS_MDM_ACTIVATED"));
+
     @EJB
     private ContenerChecker contenerChecker;
     @EJB
@@ -407,10 +410,14 @@ public class NeTExStopPlaceRegisterUpdater {
                     }
                 }
             }
-            Map<String, String> stopImportedIdToSuperIdMapping = mdmClient.getStopImportedId(stopPlaceSuperId);
-            Map<String, String> quayImportedIdToSuperIdMapping = mdmClient.getQuayImportedId(quaySuperId);
-            stopPlaceRegisterMap.putAll(stopImportedIdToSuperIdMapping);
-            stopPlaceRegisterMap.putAll(quayImportedIdToSuperIdMapping);
+
+            if (IS_MDM_ACTIVATED){
+                Map<String, String> stopImportedIdToSuperIdMapping = mdmClient.getStopImportedId(stopPlaceSuperId);
+                Map<String, String> quayImportedIdToSuperIdMapping = mdmClient.getQuayImportedId(quaySuperId);
+                stopPlaceRegisterMap.putAll(stopImportedIdToSuperIdMapping);
+                stopPlaceRegisterMap.putAll(quayImportedIdToSuperIdMapping);
+            }
+
 
             log.info("Map with objectId->newObjectId now contains "
                     + stopPlaceRegisterMap.size()
