@@ -12,15 +12,15 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.util.NetexObjectIdTypes;
 import mobi.chouette.exchange.netexprofile.util.NetexReferential;
+import mobi.chouette.model.*;
 import mobi.chouette.model.Line;
 import mobi.chouette.model.Network;
-import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import org.apache.commons.collections4.CollectionUtils;
-import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.AccessibilityAssessment;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
@@ -50,7 +50,7 @@ public class LineParser implements Parser, Constant {
         NetexReferential netexReferential = (NetexReferential) context.get(NETEX_REFERENTIAL);
         LinesInFrame_RelStructure linesInFrameStruct = (LinesInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
-		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
+		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_LINE_MAP);
 
         List incomingLineList = (List) context.get(INCOMING_LINE_LIST);
 
@@ -153,9 +153,8 @@ public class LineParser implements Parser, Constant {
                 chouetteLine.setAccessibilityAssessment(newAccess);
             }
 
-            if (netexLine instanceof FlexibleLine) {
+            if (netexLine instanceof FlexibleLine flexibleLine) {
                 chouetteLine.setFlexibleService(true);
-                FlexibleLine flexibleLine = (FlexibleLine) netexLine;
                 FlexibleLineProperties flexibleLineProperties = new FlexibleLineProperties();
 
                 flexibleLineProperties.setFlexibleLineType(NetexParserUtils.toFlexibleLineType(flexibleLine.getFlexibleLineType()));
@@ -178,13 +177,7 @@ public class LineParser implements Parser, Constant {
 
 			if (netexLine.getBrandingRef() != null && netexLine.getBrandingRef().getRef() != null){
 				String brandingRef = netexLine.getBrandingRef().getRef();
-				if (brandingRefMap.containsKey(brandingRef)){
-					brandingRefMap.get(brandingRef).add(lineId);
-				}else{
-					Set<String> lineIdsByBrand = new HashSet<>();
-					lineIdsByBrand.add(lineId);
-					brandingRefMap.put(brandingRef, lineIdsByBrand);
-				}
+                brandingRefMap.computeIfAbsent(brandingRef, key -> new HashSet<>()).add(lineId);
 			}
 
         }

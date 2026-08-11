@@ -11,18 +11,18 @@ import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexTimeConversionUtil;
 import mobi.chouette.exchange.report.AnalyzeReport;
+import mobi.chouette.model.*;
 import mobi.chouette.model.DestinationDisplay;
 import mobi.chouette.model.JourneyPattern;
 import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
-import mobi.chouette.model.*;
 import mobi.chouette.model.type.TransportModeNameEnum;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.ObjectIdTypes;
 import mobi.chouette.model.util.Referential;
+import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.AccessibilityAssessment;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
-import org.rutebanken.netex.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.*;
@@ -42,7 +42,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 		Referential referential = (Referential) context.get(REFERENTIAL);
 		JourneysInFrame_RelStructure journeyStructs = (JourneysInFrame_RelStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 		NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
-		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
+		Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_SERVICE_JOURNEY_MAP);
 
 		Map<AccessibilityAssessment, List<VehicleJourney>> accessibilityMap =
 				(Map<AccessibilityAssessment, List<VehicleJourney>>) context.get(NETEX_ACCESSIBILITY_MAP);
@@ -55,12 +55,11 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 		for (Journey_VersionStructure journeyStruct : serviceJourneys) {
 
-			if (! (journeyStruct instanceof ServiceJourney)) {
+			if (! (journeyStruct instanceof ServiceJourney serviceJourney)) {
 				log.debug("Ignoring non-ServiceJourney journey or deadrun with id: " + journeyStruct.getId());
 				continue;
 			}
-			ServiceJourney serviceJourney = (ServiceJourney) journeyStruct;
-			String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"VehicleJourney", serviceJourney.getId());
+            String serviceJourneyId = NetexImportUtil.composeObjectIdFromNetexId(context,"VehicleJourney", serviceJourney.getId());
 
 			if (serviceJourney.getBrandingRef() != null && serviceJourney.getBrandingRef().getRef() != null){
 				String brandingRef = serviceJourney.getBrandingRef().getRef();
@@ -368,7 +367,7 @@ public class ServiceJourneyParser extends NetexParser implements Parser, Constan
 
 	static {
 		ParserFactory.register(ServiceJourneyParser.class.getName(), new ParserFactory() {
-			private ServiceJourneyParser instance = new ServiceJourneyParser();
+			private final ServiceJourneyParser instance = new ServiceJourneyParser();
 
 			@Override
 			protected Parser create() {

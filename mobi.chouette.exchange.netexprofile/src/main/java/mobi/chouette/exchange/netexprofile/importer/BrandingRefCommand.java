@@ -7,11 +7,10 @@ import mobi.chouette.common.Constant;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-
 import mobi.chouette.dao.BrandingDAO;
+import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyDAO;
 import mobi.chouette.model.Branding;
-
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -22,18 +21,24 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Log4j
 @Stateless(name = BrandingRefCommand.COMMAND)
 public class BrandingRefCommand implements Command, Constant {
 
     @EJB
+    LineDAO lineDAO;
+
+    @EJB
     VehicleJourneyDAO vehicleJourneyDAO;
+
 
     @EJB
     BrandingDAO brandingDAO;
-
 
     public static final String COMMAND = "BrandingRefCommand";
 
@@ -41,12 +46,20 @@ public class BrandingRefCommand implements Command, Constant {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean execute(Context context) throws Exception {
         LocalDateTime start = LocalDateTime.now();
-        Map<String, Set<String>> brandingRefMap = (Map<String, Set<String>>) context.get(BRANDING_REF_MAP);
+        Map<String, Set<String>> brandingRefLineMap = (Map<String, Set<String>>) context.get(BRANDING_REF_LINE_MAP);
+        Map<String, Set<String>> brandingRefServiceJourneyMap = (Map<String, Set<String>>) context.get(BRANDING_REF_SERVICE_JOURNEY_MAP);
         NetexprofileImportParameters parameters = (NetexprofileImportParameters) context.get(CONFIGURATION);
         String objectPrefix = parameters.getObjectIdPrefix();
-        createBrandingRefs(brandingRefMap, objectPrefix);
+        createBrandingRefs(brandingRefLineMap, objectPrefix);
+        createBrandingRefs(brandingRefServiceJourneyMap, objectPrefix);
 
-        for (Map.Entry<String, Set<String>> brandingEntry : brandingRefMap.entrySet()) {
+        for (Map.Entry<String, Set<String>> brandingEntry : brandingRefLineMap.entrySet()) {
+            String brandingObjectId = objectPrefix + ":Branding:" + brandingEntry.getKey();
+            Branding branding = brandingDAO.findByObjectId(brandingObjectId);
+            updateLineBrandings(branding.getId(), brandingEntry.getValue());
+        }
+
+        for (Map.Entry<String, Set<String>> brandingEntry : brandingRefServiceJourneyMap.entrySet()) {
             String brandingObjectId = objectPrefix + ":Branding:" + brandingEntry.getKey();
             Branding branding = brandingDAO.findByObjectId(brandingObjectId);
             updateVehicleJourneyBrandings(branding.getId(), brandingEntry.getValue());
@@ -61,12 +74,18 @@ public class BrandingRefCommand implements Command, Constant {
         return SUCCESS;
     }
 
+    private void updateLineBrandings(Long id, Set<String> objectIdSet) {
+        lineDAO.updateBrandingId(id, objectIdSet);
+        log.info("Branding - updated lines:" + objectIdSet.size());
+    }
+
     private void updateVehicleJourneyBrandings(Long id, Set<String> objectIdSet) {
         for (List<String> batch : Lists.partition(new ArrayList<>(objectIdSet), 30000)) {
             long updatedlines = vehicleJourneyDAO.updateBrandingId(id, batch);
             log.info("Branding - updated vehicle journeys:" + updatedlines);
         }
     }
+
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void createBrandingRefs(Map<String, Set<String>> brandingRefMap, String objectIdPrefix) {

@@ -12,6 +12,7 @@ import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Stateless (name="LineDAO")
@@ -157,4 +158,12 @@ public class LineDAOImpl extends GenericDAOImpl<Line> implements LineDAO {
 	public boolean checkHasAnyLineInNewTransaction() {
 		return (Boolean) em.createNativeQuery("SELECT EXISTS (SELECT 1 FROM lines l)").getSingleResult();
 	}
+
+    @Override
+    public void updateBrandingId(Long brandingId, Set<String> objectIds) {
+        em.createNativeQuery("UPDATE lines SET branding_id = :brandId WHERE objectid IN (:objectIdList)")
+            .setParameter("brandId", brandingId)
+            .setParameter("objectIdList", objectIds)
+            .executeUpdate();
+    }
 }
