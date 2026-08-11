@@ -78,6 +78,7 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         for (StopPoint stopPoint : journeyPattern.getStopPoints()) {
             StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
             NetexProducerUtils.populateIdAndVersion(stopPoint, stopPointInJourneyPattern);
+            suffixByJourneyPatternId(stopPointInJourneyPattern, journeyPattern.getId());
 
             stopPointInJourneyPattern.setOrder(BigInteger.valueOf(stopPoint.getPosition() + 1));
 
@@ -126,6 +127,17 @@ public class ServiceJourneyPatternFranceProducer extends NetexProducer {
         NetexProducerUtils.addAlternateIdentifier(netexServiceJourneyPattern, journeyPattern.getObjectId());
 
         return netexServiceJourneyPattern;
+    }
+
+    private void suffixByJourneyPatternId(StopPointInJourneyPattern stopPointInJourneyPattern, Long id) {
+        String rawId = stopPointInJourneyPattern.getId();
+        String[] splittedId = rawId.split(":");
+        if (splittedId.length != 4){
+            return;
+        }
+
+        String newId = splittedId[0] + ":" + splittedId[1] + ":" + splittedId[2] + "_" + id + ":" + splittedId[3];
+        stopPointInJourneyPattern.setId(newId);
     }
 
 
