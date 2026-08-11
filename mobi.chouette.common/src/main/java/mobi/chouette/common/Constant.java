@@ -83,7 +83,8 @@ public interface Constant {
     String AREA_CENTROID_MAP = "areaCentroidMap";
 
     String FILE_TO_REFERENTIAL_STOP_ID_MAP = "fileToReferentialStopIdMap";
-    String BRANDING_REF_MAP = "brandingRefMap";
+    String BRANDING_REF_LINE_MAP = "brandingRefLineMap";
+    String BRANDING_REF_SERVICE_JOURNEY_MAP = "brandingRefServiceJourneyMap";
     String QUAY_TO_STOPPLACE_MAP = "quayToStopPlaceMap";
     String RAIL_UIC_REGEXP = "railUICregexp";
 

@@ -5,6 +5,7 @@ import mobi.chouette.model.Line;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface LineDAO extends GenericDAO<Line> {
 
@@ -29,4 +30,6 @@ public interface LineDAO extends GenericDAO<Line> {
     Map<String, String> findColorLines();
 
     boolean checkHasAnyLineInNewTransaction();
+
+    void updateBrandingId(Long brandingId, Set<String> objectIds);
 }
