@@ -146,7 +146,7 @@ public class NetexLineProducerCommand implements Command, Constant {
             boolean cont = (collector.collect(collection, line, startDate, endDate, configuration.isExportGeneratedMissingQuays()));
 
             reporter.addObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, NamingUtil.getName(line), ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 0);
+            reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 1);
             reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.JOURNEY_PATTERN, collection.getJourneyPatterns().size());
             reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.ROUTE, collection.getRoutes().size());
             reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.VEHICLE_JOURNEY, collection.getVehicleJourneys().size());
@@ -163,19 +163,7 @@ public class NetexLineProducerCommand implements Command, Constant {
                     NetexLineDataFranceProducer producer = new NetexLineDataFranceProducer();
                     producer.produce(context);
 
-                    reporter.setStatToObjectReport(context, line.getObjectId(), ActionReporter.OBJECT_TYPE.LINE, ActionReporter.OBJECT_TYPE.LINE, 1);
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.NETWORK, "networks", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.NETWORK, ActionReporter.OBJECT_TYPE.NETWORK, sharedData.getNetworkIds().size());
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.COMPANY, "companies", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.COMPANY, ActionReporter.OBJECT_TYPE.COMPANY, sharedData.getCompanyIds().size());
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.CONNECTION_LINK, "connection links", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.CONNECTION_LINK, ActionReporter.OBJECT_TYPE.CONNECTION_LINK, sharedData.getConnectionLinkIds().size());
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.ACCESS_POINT, "access points", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.ACCESS_POINT, ActionReporter.OBJECT_TYPE.ACCESS_POINT, sharedData.getAccessPointIds().size());
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.STOP_AREA, "stop areas", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.STOP_AREA, ActionReporter.OBJECT_TYPE.STOP_AREA, sharedData.getStopAreaIds().size());
-                    reporter.addObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.TIMETABLE, "calendars", ActionReporter.OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-                    reporter.setStatToObjectReport(context, "merged", ActionReporter.OBJECT_TYPE.TIMETABLE, ActionReporter.OBJECT_TYPE.TIMETABLE, sharedData.getTimetableIds().size());
+
                     result = SUCCESS;
                 } catch (MarshalException e) {
                     if (e.getCause() != null && e.getCause() instanceof SAXParseException) {

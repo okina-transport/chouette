@@ -29,10 +29,10 @@ import mobi.chouette.exchange.report.ActionReporter.OBJECT_TYPE;
 import mobi.chouette.exchange.report.IO_TYPE;
 import mobi.chouette.model.*;
 import org.apache.commons.lang3.StringUtils;
-import java.time.LocalDate;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -54,20 +54,22 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 
 		try {
 
-			ExportableData collection = (ExportableData) context.get(EXPORTABLE_DATA);
-			if (collection == null) {
+			ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
+			if (exportableData == null) {
 				return ERROR;
 			}
 
 			saveData(context);
-			reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY, collection.getAgencyCompanies().size());
+            reporter.addObjectReport(context, "merged", OBJECT_TYPE.NETWORK, "networks", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+            reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.NETWORK, OBJECT_TYPE.NETWORK, exportableData.getNetworks().size());
+            reporter.addObjectReport(context, "merged", OBJECT_TYPE.COMPANY, "companies", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
+            reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.COMPANY, OBJECT_TYPE.COMPANY, exportableData.getAgencyCompanies().size() + exportableData.getOperatorCompanies().size());
 			reporter.addObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, "connection links", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, OBJECT_TYPE.CONNECTION_LINK, collection.getConnectionLinks().size());
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.CONNECTION_LINK, OBJECT_TYPE.CONNECTION_LINK, exportableData.getConnectionLinks().size());
 			reporter.addObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, "stop areas", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA, collection.getCommercialStops().size() + collection.getPhysicalStops().size());
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.STOP_AREA, OBJECT_TYPE.STOP_AREA, exportableData.getCommercialStops().size() + exportableData.getPhysicalStops().size());
 			reporter.addObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, "calendars", OBJECT_STATE.OK, IO_TYPE.OUTPUT);
-			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE, collection.getTimetables().size());
+			reporter.setStatToObjectReport(context, "merged", OBJECT_TYPE.TIMETABLE, OBJECT_TYPE.TIMETABLE, exportableData.getTimetables().size());
 			result = SUCCESS;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
