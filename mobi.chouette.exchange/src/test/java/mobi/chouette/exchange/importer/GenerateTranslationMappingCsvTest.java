@@ -76,6 +76,7 @@ public class GenerateTranslationMappingCsvTest {
 
         StopArea stopArea = new StopArea();
         stopArea.setObjectId("TESTDS:StopArea:1");
+        stopArea.setOriginalStopId("1");
         StopAreaTranslation stopAreaTranslation = new StopAreaTranslation();
         stopAreaTranslation.setObjectId("TESTDS:Translation:2");
         stopAreaTranslation.setStopArea(stopArea);
@@ -102,9 +103,9 @@ public class GenerateTranslationMappingCsvTest {
         List<CSVRecord> records = readCsv();
         Assert.assertEquals(records.size(), 3);
 
-        assertRecord(records.get(0), DATASET, "LINE", "TESTDS:Line:1", "name", "", "en", "Line one");
-        assertRecord(records.get(1), DATASET, "STOP", "TESTDS:StopArea:1", "stopName", "", "es", "Parada uno");
-        assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "TESTDS:VehicleJourney:1", "publishedJourneyName", "", "de", "Fahrt eins");
+        assertRecord(records.get(0), DATASET, "LINE", "1", "name", "", "en", "Line one");
+        assertRecord(records.get(1), DATASET, "STOP", "1", "stopName", "", "es", "Parada uno");
+        assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "1", "publishedJourneyName", "", "de", "Fahrt eins");
     }
 
     @Test
