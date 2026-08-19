@@ -78,4 +78,12 @@ public class TripCompany extends NeptuneIdentifiedObject {
 		email = StringUtils.abbreviate(value, 255);
 	}
 
+	@Getter
+	@Column(name = "original_company_id", unique = true)
+	private String originalCompanyId;
+
+	public void setOriginalCompanyId(String value) {
+		originalCompanyId = StringUtils.abbreviate(value, 255);
+	}
+
 }

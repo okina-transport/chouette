@@ -99,6 +99,7 @@ public class GtfsTripCompanyParser implements Parser, Validator, Constant {
             tripCompany.setCity(gtfsTripCompany.getCompanyCity());
             tripCompany.setPhone(gtfsTripCompany.getCompanyPhone());
             tripCompany.setEmail(gtfsTripCompany.getCompanyEmail());
+			tripCompany.setOriginalCompanyId(gtfsTripCompany.getCompanyId());
         }
     }
 

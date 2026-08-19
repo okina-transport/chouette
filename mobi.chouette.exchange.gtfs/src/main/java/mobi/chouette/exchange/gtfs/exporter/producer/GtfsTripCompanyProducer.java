@@ -8,7 +8,6 @@
 package mobi.chouette.exchange.gtfs.exporter.producer;
 
 import lombok.extern.log4j.Log4j;
-import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.exchange.gtfs.exporter.GtfsExportParameters;
 import mobi.chouette.exchange.gtfs.model.GtfsTripCompany;
 import mobi.chouette.exchange.gtfs.model.exporter.GtfsExporterInterface;
@@ -24,7 +23,7 @@ public class GtfsTripCompanyProducer extends AbstractProducer {
 	public boolean save(TripCompany neptuneObject, GtfsExportParameters configuration) {
 		GtfsTripCompany company = new GtfsTripCompany();
 
-		company.setCompanyId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), configuration.getObjectIdPrefix(), configuration.isKeepOriginalId()));
+		company.setCompanyId(neptuneObject.getOriginalCompanyId());
 		company.setCompanyName(neptuneObject.getName());
 		company.setCompanyAddress(neptuneObject.getAddress());
 		company.setCompanyZipcode(neptuneObject.getZipcode());

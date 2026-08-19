@@ -3297,12 +3297,15 @@ CREATE TABLE trip_companies
     city           varchar(255),
     phone          varchar(255),
     email          varchar(255),
+    original_company_id character varying(255),
     CONSTRAINT trip_companies_id_pkey PRIMARY KEY (id),
     CONSTRAINT trip_companies_objectid_key UNIQUE (objectid)
 );
 
 
 ALTER TABLE :SCH.trip_companies OWNER TO chouette;
+CREATE INDEX trip_companies_original_company_key ON trip_companies USING btree (original_company_id);
+
 
 CREATE SEQUENCE trip_companies_id_seq
     START WITH 1

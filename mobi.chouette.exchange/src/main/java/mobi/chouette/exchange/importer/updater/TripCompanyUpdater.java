@@ -20,6 +20,9 @@ public class TripCompanyUpdater implements Updater<TripCompany> {
         if (newValue.getObjectId() != null && !newValue.getObjectId().equals(oldValue.getObjectId())) {
             oldValue.setObjectId(newValue.getObjectId());
         }
+		if (newValue.getOriginalCompanyId() != null && !newValue.getOriginalCompanyId().equals(oldValue.getOriginalCompanyId())) {
+			oldValue.setOriginalCompanyId(newValue.getOriginalCompanyId());
+		}
         if (newValue.getName() != null && !newValue.getName().equals(oldValue.getName())) {
             oldValue.setName(newValue.getName());
         }
