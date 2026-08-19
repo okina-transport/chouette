@@ -45,12 +45,12 @@ public class GtfsTripExtensionProducer extends AbstractProducer {
 
 		TripCompany contractCompany = neptuneObject.getContractCompany();
 		if (contractCompany != null) {
-			tripExtension.setContractCompanyId(ObjectIdUtil.toGtfsId(contractCompany.getObjectId(), prefix, keepOriginalId));
+			tripExtension.setContractCompanyId(contractCompany.getOriginalCompanyId());
 		}
 
 		TripCompany execCompany = neptuneObject.getExecCompany();
 		if (execCompany != null) {
-			tripExtension.setExecCompanyId(ObjectIdUtil.toGtfsId(execCompany.getObjectId(), prefix, keepOriginalId));
+			tripExtension.setExecCompanyId(execCompany.getOriginalCompanyId());
 		}
 
 		tripExtension.setIndicReservation(neptuneObject.getIndicReservation());

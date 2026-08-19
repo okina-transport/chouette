@@ -2127,10 +2127,13 @@ CREATE TABLE trip_companies
     city           character varying(255),
     phone          character varying(255),
     email          character varying(255),
+    original_company_id character varying(255),
     CONSTRAINT trip_companies_id_pkey PRIMARY KEY (id)
 );
 
 ALTER TABLE chouette_gui.trip_companies OWNER TO chouette;
+CREATE INDEX trip_companies_original_company_key ON chouette_gui.trip_companies USING btree (original_company_id);
+
 
 CREATE SEQUENCE trip_companies_id_seq
     START WITH 1
