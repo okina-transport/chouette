@@ -1,12 +1,7 @@
 package mobi.chouette.exchange.gtfs.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import javax.naming.InitialContext;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import lombok.extern.log4j.Log4j;
 import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
@@ -15,16 +10,14 @@ import mobi.chouette.common.JobData;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.gtfs.Constant;
-import mobi.chouette.exchange.gtfs.importer.GtfsDisposeImportCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsImportParameters;
-import mobi.chouette.exchange.gtfs.importer.GtfsInitImportCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsValidationCommand;
-import mobi.chouette.exchange.gtfs.importer.GtfsValidationRulesCommand;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import mobi.chouette.exchange.gtfs.model.importer.GtfsImporter;
+import mobi.chouette.exchange.gtfs.importer.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+
+import javax.naming.InitialContext;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 @Log4j
 public class GtfsValidateExportCommand implements Command, Constant {
@@ -41,6 +34,7 @@ public class GtfsValidateExportCommand implements Command, Constant {
 			// create specific context
 			Context validateContext = new Context();
 			validateContext.putAll(context);
+            ExportableData exportableData = (ExportableData) context.get(EXPORTABLE_DATA);
 			// build parameter
 			GtfsImportParameters parameters = new GtfsImportParameters();
 			GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
@@ -51,6 +45,7 @@ public class GtfsValidateExportCommand implements Command, Constant {
 			parameters.setReferentialName(configuration.getReferentialName());
 			parameters.setReferencesType(configuration.getReferencesType());
 			parameters.setObjectIdPrefix(configuration.getObjectIdPrefix());
+            parameters.setImportFareFiles(CollectionUtils.isNotEmpty(exportableData.getFareRules()) || CollectionUtils.isNotEmpty(exportableData.getFareAttributes()));
 			validateContext.put(CONFIGURATION, parameters);
 			validateContext.put(REPORT, context.get(REPORT));
 			// rename output folder to input folder
@@ -101,8 +96,7 @@ public class GtfsValidateExportCommand implements Command, Constant {
 
 		@Override
 		protected Command create(InitialContext context) throws IOException {
-			Command result = new GtfsValidateExportCommand();
-			return result;
+			return new GtfsValidateExportCommand();
 		}
 	}
 
