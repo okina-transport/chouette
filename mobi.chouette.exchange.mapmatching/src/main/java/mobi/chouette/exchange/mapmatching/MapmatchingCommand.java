@@ -22,9 +22,8 @@ import mobi.chouette.exchange.report.MapMatchingReport;
 import mobi.chouette.model.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
 import mobi.chouette.service.OSRMService;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import mobi.chouette.service.OsrmLeg;
+import mobi.chouette.service.OsrmRouteResponse;
 import org.wololo.geojson.GeoJSON;
 
 import javax.ejb.EJB;
@@ -38,8 +37,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static mobi.chouette.service.OSRMService.GEOMETRY;
-import static mobi.chouette.service.OSRMService.ROUTES;
 
 @Log4j
 @Stateless(name = MapmatchingCommand.COMMAND)
@@ -192,11 +189,11 @@ public class MapmatchingCommand implements Command, Constant {
 
 
 		// full journey pattern osrm line: we use this as a reference for section lines
-		List<JSONObject> osrmResponseMultiLines = fetchOsrmLinesWithTurnBack(listStopPoints, osrmProfile);
+		List<OsrmRouteResponse> osrmResponseMultiLines = fetchOsrmLinesWithTurnBack(listStopPoints, osrmProfile);
 
 		// On utilise le LineMerger pour transformer l'ensemble des sous lignes en une seule ligne
 		LineMerger lineMerger = new LineMerger();
-		for (JSONObject osrmResponse : osrmResponseMultiLines) {
+		for (OsrmRouteResponse osrmResponse : osrmResponseMultiLines) {
 			lineMerger.add(parseOsrmJsonResponseToGeometry(osrmResponse));
 		}
 
@@ -232,7 +229,7 @@ public class MapmatchingCommand implements Command, Constant {
 		}
 
 		for (List<LatLngMapMatching> sectionStopPoint : listOfSectionStopPoints) {
-			JSONObject osrmResponseSection = osrmService.getRoute(osrmProfile, sectionStopPoint);
+			OsrmRouteResponse osrmResponseSection = osrmService.getRoute(osrmProfile, sectionStopPoint);
 
 			com.vividsolutions.jts.geom.LineString osrmSectionLine = parseOsrmJsonResponseToGeometry(osrmResponseSection);
 
@@ -256,12 +253,7 @@ public class MapmatchingCommand implements Command, Constant {
 
 			RouteSection routeSection = new RouteSection();
 			if (OSRMProfile.AIR.equals(osrmProfile) || OSRMProfile.FERRY.equals(osrmProfile) || OSRMProfile.METRO.equals(osrmProfile)) {
-				try {
-					routeSection.setDistance(BigDecimal.valueOf(osrmResponseSection.getJSONArray(ROUTES).getJSONObject(0).getDouble("distance")));
-				} catch (JSONException e) {
-					log.error("Error while setting distance for air section", e);
-				}
-
+				routeSection.setDistance(BigDecimal.valueOf(osrmResponseSection.getFirstRoute().getDistance()));
 			} else {
 				// Inscription en base des interStop
 				ProfileOSRMInterStopJourneyPattern profileInterStopJP = getInterStopInformations(osrmResponseMultiLines,
@@ -317,10 +309,10 @@ public class MapmatchingCommand implements Command, Constant {
 	 *
 	 * @param journeyPattern
 	 * @param profile
-	 * @param json
+	 * @param responses
 	 * @return
 	 */
-	private ProfileOSRMJourneyPattern addProfileJourneyPattern(JourneyPattern journeyPattern, OSRMProfile profile, List<JSONObject> json) throws Exception {
+	private ProfileOSRMJourneyPattern addProfileJourneyPattern(JourneyPattern journeyPattern, OSRMProfile profile, List<OsrmRouteResponse> responses) {
 		// S'il existe un élément, on le supprime
 		ProfileOSRMJourneyPattern profileJP = journeyPattern.getProfileOSRMJourneyPatterns().stream().findFirst()
 				// On créé un nouvel élément s'il n'existe pas
@@ -332,23 +324,15 @@ public class MapmatchingCommand implements Command, Constant {
 				});
 
 		profileJP.setProfile(profile);
-		try {
-			double distance = 0;
-			double duration = 0;
-			JSONArray array = new JSONArray();
-			for (JSONObject obj : json) {
-				distance += obj.getJSONArray(ROUTES).getJSONObject(0).getDouble("distance");
-				duration += obj.getJSONArray(ROUTES).getJSONObject(0).getDouble("duration");
-				array.put(obj);
-			}
-
-			profileJP.setDistance(distance);
-			profileJP.setDuration(duration);
-		} catch (JSONException e) {
-			String motif = "Unable to get the distance or time contained in the OSRM response.";
-			log.error(motif, e);
-			throw new Exception(motif);
+		double distance = 0;
+		double duration = 0;
+		for (OsrmRouteResponse response : responses) {
+			distance += response.getFirstRoute().getDistance();
+			duration += response.getFirstRoute().getDuration();
 		}
+		profileJP.setDistance(distance);
+		profileJP.setDuration(duration);
+
 		profileJP = profileOSRMJourneyPatternDAO.update(profileJP);
 
 		return profileJP;
@@ -385,7 +369,7 @@ public class MapmatchingCommand implements Command, Constant {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<JSONObject> fetchOsrmLinesWithTurnBack(List<LatLngMapMatching> stopPoints, OSRMProfile osrmProfile) throws Exception {
+	private List<OsrmRouteResponse> fetchOsrmLinesWithTurnBack(List<LatLngMapMatching> stopPoints, OSRMProfile osrmProfile) throws Exception {
 		List<List<LatLngMapMatching>> listToFetch = new ArrayList<>();
 		List<LatLngMapMatching> currentList = new ArrayList<>();
 		for (LatLngMapMatching point : stopPoints) {
@@ -401,7 +385,7 @@ public class MapmatchingCommand implements Command, Constant {
 		// Ajout de la dernière liste de point construite
 		listToFetch.add(currentList);
 
-		List<JSONObject> result = new ArrayList<>();
+		List<OsrmRouteResponse> result = new ArrayList<>();
 		for (List<LatLngMapMatching> list : listToFetch) {
 			result.add(osrmService.getRoute(osrmProfile, list));
 		}
@@ -409,15 +393,8 @@ public class MapmatchingCommand implements Command, Constant {
 		return result;
 	}
 
-	private com.vividsolutions.jts.geom.LineString parseOsrmJsonResponseToGeometry(JSONObject json) throws Exception {
-		// Trouver l'élément Geometry
-		try {
-			return osrmService.getLineStringFromOSRM(json.getJSONArray(ROUTES).getJSONObject(0).getJSONObject(GEOMETRY));
-		} catch (JSONException e) {
-			String motif = "Failed to get the GeoJson in the OSRM response.";
-			log.error(motif, e);
-			throw new Exception(motif);
-		}
+	private com.vividsolutions.jts.geom.LineString parseOsrmJsonResponseToGeometry(OsrmRouteResponse response) {
+		return osrmService.getLineStringFromOSRM(response.getFirstRoute().getGeometry());
 	}
 
 	/**
@@ -481,7 +458,7 @@ public class MapmatchingCommand implements Command, Constant {
 	 * @param sectionIndexEnd   Indicates the end identifier of the section in the legs of the full route OSRM response
 	 * @throws Exception
 	 */
-	private ProfileOSRMInterStopJourneyPattern getInterStopInformations(List<JSONObject> mainGeoJsonList, StopPoint departureStop, StopPoint arrivalStop, int sectionIndexStart, int sectionIndexEnd, List<ProfileOSRMInterStopJourneyPattern> existingListOnProfile) throws Exception {
+	private ProfileOSRMInterStopJourneyPattern getInterStopInformations(List<OsrmRouteResponse> mainGeoJsonList, StopPoint departureStop, StopPoint arrivalStop, int sectionIndexStart, int sectionIndexEnd, List<ProfileOSRMInterStopJourneyPattern> existingListOnProfile) {
 
 		// S'il existe un élément, on le supprime
 		ProfileOSRMInterStopJourneyPattern profileInterStopJP = existingListOnProfile.stream().filter(interStop -> Objects.equals(interStop.getDepartureStopPoint(), departureStop) && Objects.equals(interStop.getArrivalStopPoint(), arrivalStop)).findFirst()
@@ -493,45 +470,28 @@ public class MapmatchingCommand implements Command, Constant {
 					return profile;
 				});
 
-		try {
-			JSONArray legs = new JSONArray();
-
-			// Récupération de l'objet JSON correspondant à la réponse complète sur l'ensemble de l'itinéraire
-			for (JSONObject partOfGeojson : mainGeoJsonList) {
-				// Récupération du tableau des "legs" correspondant a la description du tracé entre chaque point
-				JSONArray currentLegs = partOfGeojson.getJSONArray(ROUTES).getJSONObject(0).getJSONArray("legs");
-				for (int i = 0; i < currentLegs.length(); i++) {
-					legs.put(currentLegs.getJSONObject(i));
-				}
-			}
-
-			// On recherche la sous liste correspondant au sectionIndexStart et sectionIndexEnd
-			List<JSONObject> listLegs = new ArrayList<>();
-			if (sectionIndexStart == sectionIndexEnd) {
-				listLegs.add(legs.getJSONObject(sectionIndexStart));
-			} else {
-				for (int i = sectionIndexStart; i < sectionIndexEnd; i++) {
-					listLegs.add(legs.getJSONObject(i));
-				}
-			}
-
-			double distance = 0;
-			double duration = 0;
-
-			// On somme la distance et la durée de la sous liste
-			for (JSONObject leg : listLegs) {
-				distance += leg.getDouble("distance");
-				duration += leg.getDouble("duration");
-			}
-
-			profileInterStopJP.setDistance(distance);
-			profileInterStopJP.setDuration(duration);
-
-		} catch (JSONException e) {
-			String motif = "Unable to get the distance or time contained in the OSRM response.";
-			log.error(motif, e);
-			throw new Exception(motif);
+		// Récupération des "legs" décrivant le tracé entre chaque point, sur l'ensemble de l'itinéraire
+		List<OsrmLeg> legs = new ArrayList<>();
+		for (OsrmRouteResponse partOfGeojson : mainGeoJsonList) {
+			legs.addAll(partOfGeojson.getFirstRoute().getLegs());
 		}
+
+		// On recherche la sous liste correspondant au sectionIndexStart et sectionIndexEnd
+		List<OsrmLeg> sectionLegs = sectionIndexStart == sectionIndexEnd
+				? List.of(legs.get(sectionIndexStart))
+				: legs.subList(sectionIndexStart, sectionIndexEnd);
+
+		double distance = 0;
+		double duration = 0;
+
+		// On somme la distance et la durée de la sous liste
+		for (OsrmLeg leg : sectionLegs) {
+			distance += leg.getDistance();
+			duration += leg.getDuration();
+		}
+
+		profileInterStopJP.setDistance(distance);
+		profileInterStopJP.setDuration(duration);
 
 		return profileInterStopJP;
 	}
