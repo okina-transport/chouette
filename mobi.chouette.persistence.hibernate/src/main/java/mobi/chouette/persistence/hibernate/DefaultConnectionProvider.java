@@ -37,6 +37,7 @@ public class DefaultConnectionProvider implements
 						"SET SCHEMA '" + identifier + "'");
 			}
 		} catch (SQLException e) {
+			connection.close();
 			throw new HibernateException(
 					"Could not alter JDBC connection to specified schema ["
 							+ identifier + "]", e);
