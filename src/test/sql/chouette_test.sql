@@ -3371,6 +3371,15 @@ CREATE SEQUENCE chouette_gui.access_points_id_seq
     NO MAXVALUE
     CACHE 1;
 
+
+CREATE SEQUENCE chouette_gui.attributions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
 ALTER TABLE chouette_gui.access_points_id_seq OWNER TO chouette;
 
 CREATE TABLE chouette_gui.feed_info (
@@ -3707,6 +3716,15 @@ CREATE SEQUENCE tro.stop_areas_id_seq
     NO MAXVALUE
     CACHE 1;
 
+CREATE SEQUENCE tro.attributions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
 
 ALTER TABLE tro.stop_areas_id_seq OWNER TO chouette;
 
@@ -3868,6 +3886,13 @@ ALTER TABLE ONLY sky.stop_areas
 
 
 CREATE SEQUENCE sky.stop_areas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE sky.attributions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4037,6 +4062,13 @@ CREATE SEQUENCE rut.stop_areas_id_seq
     NO MAXVALUE
     CACHE 1;
 
+CREATE SEQUENCE rut.attributions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 ALTER TABLE rut.stop_areas_id_seq OWNER TO chouette;
 
@@ -4194,6 +4226,13 @@ ALTER TABLE ONLY nri.stop_areas
 
 
 CREATE SEQUENCE nri.stop_areas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE nri.attributions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4361,6 +4400,14 @@ CREATE SEQUENCE akt.stop_areas_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+CREATE SEQUENCE akt.attributions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 
 ALTER TABLE akt.stop_areas_id_seq OWNER TO chouette;
