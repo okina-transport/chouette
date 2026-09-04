@@ -378,7 +378,7 @@ public class NetexFranceProfileTest {
 
         Assert.assertEquals(firstPoint.getOrder(), new BigInteger("1"), "wrong order in first point");
         Assert.assertEquals(firstPoint.getVersion(), "any", "wrong version in first point");
-        Assert.assertEquals(firstPoint.getId(), "TEST:StopPointInJourneyPattern:sp1:LOC", "wrong id in first point");
+        Assert.assertEquals(firstPoint.getId(), "TEST:StopPointInJourneyPattern:sp1_1:LOC", "wrong id in first point");
         Assert.assertEquals(firstPoint.getScheduledStopPointRef().getValue().getRef(), "TEST:ScheduledStopPoint:ssp1:LOC", "wrong scheduled stop point Ref in first point");
         Assert.assertEquals(firstPoint.getScheduledStopPointRef().getValue().getVersion(), "any", "wrong version in scheduled stop point Ref");
 
@@ -389,7 +389,7 @@ public class NetexFranceProfileTest {
 
         Assert.assertEquals(secondPoint.getOrder(), new BigInteger("2"), "wrong order in second point");
         Assert.assertEquals(secondPoint.getVersion(), "any", "wrong version in second point");
-        Assert.assertEquals(secondPoint.getId(), "TEST:StopPointInJourneyPattern:sp2:LOC", "wrong id in second point");
+        Assert.assertEquals(secondPoint.getId(), "TEST:StopPointInJourneyPattern:sp2_1:LOC", "wrong id in second point");
         Assert.assertEquals(secondPoint.getScheduledStopPointRef().getValue().getRef(), "TEST:ScheduledStopPoint:ssp2:LOC", "wrong scheduled stop point Ref in second point");
         Assert.assertEquals(secondPoint.getScheduledStopPointRef().getValue().getVersion(), "any", "wrong version in scheduled stop point Ref");
 
@@ -399,7 +399,7 @@ public class NetexFranceProfileTest {
 
         Assert.assertEquals(thirdPoint.getOrder(), new BigInteger("3"), "wrong order in third point");
         Assert.assertEquals(thirdPoint.getVersion(), "any", "wrong version in third point");
-        Assert.assertEquals(thirdPoint.getId(), "TEST:StopPointInJourneyPattern:sp3:LOC", "wrong id in third point");
+        Assert.assertEquals(thirdPoint.getId(), "TEST:StopPointInJourneyPattern:sp3_1:LOC", "wrong id in third point");
         Assert.assertEquals(thirdPoint.getScheduledStopPointRef().getValue().getRef(), "TEST:ScheduledStopPoint:ssp3:LOC", "wrong scheduled stop point Ref in third point");
         Assert.assertEquals(thirdPoint.getScheduledStopPointRef().getValue().getVersion(), "any", "wrong version in scheduled stop point Ref");
 
@@ -580,6 +580,7 @@ public class NetexFranceProfileTest {
         journeyPattern.setObjectId("TEST:JourneyPattern:jp1");
         journeyPattern.setName("Test Journey Pattern");
         journeyPattern.setRoute(route);
+        journeyPattern.setId(1L);
         List<StopPoint> stopPoints = new ArrayList<>();
         stopPoints.add(stopPoint1);
         stopPoints.add(stopPoint2);
@@ -700,6 +701,15 @@ public class NetexFranceProfileTest {
         context.put(MARSHALLER, netexXMLFactory.createFragmentMarshaller());
         context.put(LINE,line);
         context.put(STREAM_TO_CLOSE, new ArrayList<>());
+
+        // NetexLineProducerCommand is instantiated directly (no DI container), so its
+        // *TranslationDAO fields are never injected. Pre-populating these maps skips the
+        // DAO lookups in NetexLineProducerCommand#execute, avoiding a NullPointerException.
+        context.put(Constant.NETWORK_FIELD_VALUE_TRANSLATIONS, new HashMap<>());
+        context.put(Constant.COMPANY_FIELD_VALUE_TRANSLATIONS, new HashMap<>());
+        context.put(Constant.LINE_FIELD_VALUE_TRANSLATIONS, new HashMap<>());
+        context.put(Constant.STOP_AREA_FIELD_VALUE_TRANSLATIONS, new HashMap<>());
+        context.put(Constant.VEHICLE_JOURNEY_FIELD_VALUE_TRANSLATIONS, new HashMap<>());
 
 
         return context;

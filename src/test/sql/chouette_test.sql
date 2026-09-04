@@ -95,6 +95,14 @@ CREATE SEQUENCE public.access_links_id_seq
     CACHE 1;
 
 
+CREATE SEQUENCE public.attributions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
 ALTER TABLE public.access_links_id_seq OWNER TO chouette;
 
 --

@@ -70,15 +70,15 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getDestinationDisplayRef().getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getServiceJourneyPatternType().value(), "passenger");
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(0).getId(), "TEST:StopPointInJourneyPattern:sp1:LOC");
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(0).getId(), "TEST:StopPointInJourneyPattern:sp1_6:LOC");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(0).getOrder(), BigInteger.valueOf(1));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(0).getVersion(), "any");
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(1).getId(), "TEST:StopPointInJourneyPattern:sp2:LOC");
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(1).getId(), "TEST:StopPointInJourneyPattern:sp2_6:LOC");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(1).getOrder(), BigInteger.valueOf(2));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(1).getVersion(), "any");
 
-        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(2).getId(), "TEST:StopPointInJourneyPattern:sp3:LOC");
+        Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(2).getId(), "TEST:StopPointInJourneyPattern:sp3_6:LOC");
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(2).getOrder(), BigInteger.valueOf(3));
         Assert.assertEquals(exportableNetexDataResult.getServiceJourneyPatterns().get(0).getPointsInSequence().getPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern().get(2).getVersion(), "any");
 
@@ -302,6 +302,7 @@ public class NetexLineDataFranceProducerTest {
         journeyPattern.setObjectId("TEST:JourneyPattern:jp1");
         journeyPattern.setName("Test Journey Pattern");
         journeyPattern.setRoute(route);
+        journeyPattern.setId(6L);
         List<StopPoint> stopPoints = new ArrayList<>();
         stopPoints.add(stopPoint1);
         stopPoints.add(stopPoint2);
