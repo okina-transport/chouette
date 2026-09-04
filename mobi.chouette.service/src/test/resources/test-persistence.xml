@@ -45,16 +45,16 @@
 		<class>mobi.chouette.model.AccessibilityAssessment</class>
 		<class>mobi.chouette.model.AccessibilityLimitation</class>
 		<class>mobi.chouette.model.AccessLink</class>
-		<class>mobi.chouette.model.Agency</class>
-		<class>mobi.chouette.model.Attribution</class>
-		<class>mobi.chouette.model.AlternativeRegistrationNumber</class>
 		<class>mobi.chouette.model.AccessPoint</class>
+		<class>mobi.chouette.model.AlternativeRegistrationNumber</class>
 		<class>mobi.chouette.model.BookingArrangement</class>
 		<class>mobi.chouette.model.Branding</class>
 		<class>mobi.chouette.model.CalendarDay</class>
 		<class>mobi.chouette.model.CategoriesForLines</class>
 		<class>mobi.chouette.model.Codespace</class>
 		<class>mobi.chouette.model.Company</class>
+		<class>mobi.chouette.model.Agency</class>
+		<class>mobi.chouette.model.Attribution</class>
 		<class>mobi.chouette.model.ConnectionLink</class>
 		<class>mobi.chouette.model.ContactStructure</class>
 		<class>mobi.chouette.model.DestinationDisplay</class>
@@ -80,8 +80,8 @@
 		<class>mobi.chouette.model.RouteSection</class>
 		<class>mobi.chouette.model.StopArea</class>
 		<class>mobi.chouette.model.StopPoint</class>
+		<class>mobi.chouette.model.Storage</class>
 		<class>mobi.chouette.model.ScheduledStopPoint</class>
-		<class>mobi.chouette.model.StopArea</class>
 		<class>mobi.chouette.model.Timeband</class>
 		<class>mobi.chouette.model.Timetable</class>
 		<class>mobi.chouette.model.Train</class>
@@ -89,6 +89,17 @@
 		<class>mobi.chouette.model.VehicleJourney</class>
 		<class>mobi.chouette.model.VehicleJourneyFacility</class>
 		<class>mobi.chouette.model.Variations</class>
+		<class>mobi.chouette.model.FareAttribute</class>
+		<class>mobi.chouette.model.FareRule</class>
+		<class>mobi.chouette.model.Transfers</class>
+		<class>mobi.chouette.model.NetworkTranslation</class>
+		<class>mobi.chouette.model.CompanyTranslation</class>
+		<class>mobi.chouette.model.LineTranslation</class>
+		<class>mobi.chouette.model.StopAreaTranslation</class>
+		<class>mobi.chouette.model.VehicleJourneyTranslation</class>
+		<class>mobi.chouette.model.VehicleJourneyAtStopTranslation</class>
+		<class>mobi.chouette.model.TripCompany</class>
+		<class>mobi.chouette.model.TripExtension</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>

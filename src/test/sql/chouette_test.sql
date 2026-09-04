@@ -5607,6 +5607,33 @@ ALTER TABLE tro.stop_areas_key_values OWNER TO chouette;
 ALTER TABLE ONLY tro.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES tro.stop_areas(id) ON DELETE CASCADE;
 
+CREATE TABLE tro.stop_area_translations
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    stop_area_id   bigint,
+    field_name     character varying(255),
+    language       character varying(255),
+    translation    text,
+    field_value    character varying(255),
+    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE tro.stop_area_translations OWNER TO chouette;
+
+CREATE SEQUENCE tro.stop_area_translations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE tro.stop_area_translations_id_seq OWNER TO chouette;
+ALTER SEQUENCE tro.stop_area_translations_id_seq OWNED BY tro.stop_area_translations.id;
+
 CREATE TABLE sky.stop_areas_key_values (
     stop_area_id bigint NOT NULL,
     type_of_key character varying,
@@ -5618,6 +5645,33 @@ ALTER TABLE sky.stop_areas_key_values OWNER TO chouette;
 
 ALTER TABLE ONLY sky.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES sky.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE sky.stop_area_translations
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    stop_area_id   bigint,
+    field_name     character varying(255),
+    language       character varying(255),
+    translation    text,
+    field_value    character varying(255),
+    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE sky.stop_area_translations OWNER TO chouette;
+
+CREATE SEQUENCE sky.stop_area_translations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE sky.stop_area_translations_id_seq OWNER TO chouette;
+ALTER SEQUENCE sky.stop_area_translations_id_seq OWNED BY sky.stop_area_translations.id;
 
 CREATE TABLE rut.stop_areas_key_values (
     stop_area_id bigint NOT NULL,
@@ -5631,6 +5685,34 @@ ALTER TABLE rut.stop_areas_key_values OWNER TO chouette;
 ALTER TABLE ONLY rut.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES rut.stop_areas(id) ON DELETE CASCADE;
 
+
+CREATE TABLE rut.stop_area_translations
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    stop_area_id   bigint,
+    field_name     character varying(255),
+    language       character varying(255),
+    translation    text,
+    field_value    character varying(255),
+    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE rut.stop_area_translations OWNER TO chouette;
+
+CREATE SEQUENCE rut.stop_area_translations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE rut.stop_area_translations_id_seq OWNER TO chouette;
+ALTER SEQUENCE rut.stop_area_translations_id_seq OWNED BY rut.stop_area_translations.id;
+
 CREATE TABLE nri.stop_areas_key_values (
     stop_area_id bigint NOT NULL,
     type_of_key character varying,
@@ -5643,6 +5725,33 @@ ALTER TABLE nri.stop_areas_key_values OWNER TO chouette;
 ALTER TABLE ONLY nri.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES nri.stop_areas(id) ON DELETE CASCADE;
 
+CREATE TABLE nri.stop_area_translations
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    stop_area_id   bigint,
+    field_name     character varying(255),
+    language       character varying(255),
+    translation    text,
+    field_value    character varying(255),
+    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE nri.stop_area_translations OWNER TO chouette;
+
+CREATE SEQUENCE nri.stop_area_translations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE nri.stop_area_translations_id_seq OWNER TO chouette;
+ALTER SEQUENCE nri.stop_area_translations_id_seq OWNED BY nri.stop_area_translations.id;
+
 CREATE TABLE akt.stop_areas_key_values (
     stop_area_id bigint NOT NULL,
     type_of_key character varying,
@@ -5654,6 +5763,33 @@ ALTER TABLE akt.stop_areas_key_values OWNER TO chouette;
 
 ALTER TABLE ONLY akt.stop_areas_key_values
 ADD CONSTRAINT stop_areas_key_values_stop_area_fkey FOREIGN KEY (stop_area_id) REFERENCES akt.stop_areas(id) ON DELETE CASCADE;
+
+CREATE TABLE akt.stop_area_translations
+(
+    id             bigint NOT NULL,
+    objectid       character varying(255),
+    object_version integer,
+    creation_time  date,
+    creator_id     character varying(255),
+    stop_area_id   bigint,
+    field_name     character varying(255),
+    language       character varying(255),
+    translation    text,
+    field_value    character varying(255),
+    CONSTRAINT stop_area_translations_id_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE akt.stop_area_translations OWNER TO chouette;
+
+CREATE SEQUENCE akt.stop_area_translations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE akt.stop_area_translations_id_seq OWNER TO chouette;
+ALTER SEQUENCE akt.stop_area_translations_id_seq OWNED BY akt.stop_area_translations.id;
 
 CREATE TABLE IF NOT EXISTS chouette_gui.trains
 (
