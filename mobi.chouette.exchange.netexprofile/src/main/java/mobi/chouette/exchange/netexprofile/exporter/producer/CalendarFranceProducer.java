@@ -51,7 +51,7 @@ public class CalendarFranceProducer extends NetexProducer {
                 for (int i = 0; i < timetable.getPeriods().size(); i++) {
                     // Assign operatingperiod or date to daytype
                     String dayTypeAssignmentId = netexDaytypeId.replace("DayType", "DayTypeAssignment");
-                    dayTypeAssignmentId = dayTypeAssignmentId.substring(0, dayTypeAssignmentId.indexOf(":LOC")) + uniqueID + ":LOC";
+                    dayTypeAssignmentId = dayTypeAssignmentId.substring(0, dayTypeAssignmentId.indexOf(":LOC")) + "-" + uniqueID + ":LOC";
                     uniqueID++;
                     DayTypeAssignment dayTypeAssignment;
 
@@ -104,7 +104,7 @@ public class CalendarFranceProducer extends NetexProducer {
                 for (CalendarDay day : timetable.getCalendarDays()) {
 
                     String dayTypeAssignmentId = netexDaytypeId.replace("DayType", "DayTypeAssignment");
-                    dayTypeAssignmentId = dayTypeAssignmentId.substring(0, dayTypeAssignmentId.indexOf(":LOC")) + uniqueID + ":LOC";
+                    dayTypeAssignmentId = dayTypeAssignmentId.substring(0, dayTypeAssignmentId.indexOf(":LOC")) + "-" + uniqueID + ":LOC";
                     uniqueID++;
                     DayTypeAssignment dayTypeAssignment = netexFactory.createDayTypeAssignment()
                             .withId(dayTypeAssignmentId)
