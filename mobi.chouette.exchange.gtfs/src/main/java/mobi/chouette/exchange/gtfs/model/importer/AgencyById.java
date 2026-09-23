@@ -1,30 +1,29 @@
 package mobi.chouette.exchange.gtfs.model.importer;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
-
 import mobi.chouette.common.HTMLTagValidator;
 import mobi.chouette.dao.ReferentialDAO;
 import mobi.chouette.exchange.gtfs.model.GtfsAgency;
 
 import javax.ejb.EJB;
+import java.io.IOException;
+import java.util.IllformedLocaleException;
+import java.util.Locale;
+import java.util.Map;
 
 public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 
 	@EJB
 	private ReferentialDAO referentialDAO;
 
-	public static enum FIELDS {
-		agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang, agency_fare_url, agency_email;
-	};
+	public enum FIELDS {
+		agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang, agency_fare_url, agency_email
+    }
 
-	public static final String FILENAME = "agency.txt";
+    public static final String FILENAME = "agency.txt";
 	public static final String KEY = FIELDS.agency_id.name();
 
-	private GtfsAgency bean = new GtfsAgency();
-	private String[] array = new String[FIELDS.values().length];
+	private final GtfsAgency bean = new GtfsAgency();
+	private final String[] array = new String[FIELDS.values().length];
 
 	public AgencyById(String name) throws IOException {
 		super(name, KEY, GtfsAgency.DEFAULT_ID, true);
@@ -250,12 +249,13 @@ public class AgencyById extends IndexImpl<GtfsAgency> implements GtfsConverter {
 	}
 
 	private boolean isUnknownAsIsoLanguage(String lang) {
-		if (lang == null)
-			return true;
-		if (!lang.toUpperCase().equals(lang) && !lang.toLowerCase().equals(lang))
-			return true;
-		return !Arrays.asList(Locale.getISOLanguages()).contains(lang.toLowerCase());
-	}
+        try {
+            new Locale.Builder().setLanguageTag(lang);
+            return false;
+        } catch (IllformedLocaleException e) {
+            return true;
+        }
+    }
 
 	public static class DefaultImporterFactory extends IndexFactory {
 		@SuppressWarnings("rawtypes")
