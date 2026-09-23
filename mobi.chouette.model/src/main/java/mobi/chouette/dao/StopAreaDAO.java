@@ -4,6 +4,7 @@ import mobi.chouette.core.CoreException;
 import mobi.chouette.model.SearchAddressFeatures;
 import mobi.chouette.model.StopArea;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface StopAreaDAO extends GenericDAO<StopArea> {
@@ -16,4 +17,5 @@ public interface StopAreaDAO extends GenericDAO<StopArea> {
     int deleteEmptyStopPlaces();
     List<SearchAddressFeatures> findByNamePatternSearchAddressFeatures(String namePattern);
     int safeDeleteStopArea(String objectId);
+    Collection<StopArea> findAllNewTransaction();
 }

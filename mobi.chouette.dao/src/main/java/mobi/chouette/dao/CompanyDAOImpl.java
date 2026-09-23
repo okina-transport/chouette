@@ -6,6 +6,7 @@ import mobi.chouette.model.type.OrganisationTypeEnum;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Stateless
@@ -27,5 +28,12 @@ public class CompanyDAOImpl extends GenericDAOImpl<Company> implements CompanyDA
 				.setParameter("orgType", organisationType)
 				.getResultList();
 	}
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Override
+    public List<Company> findActiveCompaniesNewTransaction() {
+        return em.createQuery("SELECT c FROM Company c WHERE c.active = true", Company.class)
+                .getResultList();
+    }
 
 }

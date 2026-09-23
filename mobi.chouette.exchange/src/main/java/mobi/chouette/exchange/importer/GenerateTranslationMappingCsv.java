@@ -5,15 +5,14 @@ import mobi.chouette.common.Context;
 import mobi.chouette.common.ObjectIdUtil;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.LineTranslationDAO;
-import mobi.chouette.dao.ProviderDAO;
-import mobi.chouette.dao.StopAreaTranslationDAO;
-import mobi.chouette.dao.VehicleJourneyTranslationDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.importer.utils.FileUtils;
 import mobi.chouette.model.*;
 import mobi.chouette.persistence.hibernate.ContextHolder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Set;
 
 import static mobi.chouette.exchange.importer.utils.ProviderPredicate.isProviderForCsvGeneration;
 
@@ -36,10 +36,15 @@ public class GenerateTranslationMappingCsv implements Command {
     public static final String COMMAND = "GenerateTranslationMappingCsv";
     public static final Path OUTDIR = Paths.get("/opt/jboss/data/referentials/mobiiti_technique/translations/");
     public static final String TRANSLATION_MAPPING_CSV = "translationMapping.csv";
-    protected static final String[] CSV_HEADERS = { "dataset", "object_type", "object_id", "field_name", "field_value", "language", "translation" };
+    protected static final String[] CSV_HEADERS = { "dataset", "object_type", "object_id", "field_name", "field_value", "language", "translation", "is_default" };
     private static final String LINE_OBJECT_TYPE = "LINE";
     private static final String VEHICLE_JOURNEY_OBJECT_TYPE = "VEHICLE_JOURNEY";
     private static final String STOP_OBJECT_TYPE = "STOP";
+    private static final String LINE_NAME_FIELD = "publishedName";
+    private static final String LINE_NUMBER_FIELD = "number";
+    private static final String STOP_NAME_FIELD = "stopName";
+    private static final String VEHICLE_JOURNEY_NAME_FIELD = "publishedJourneyName";
+    private static final String DEFAULT_LOCALE = "fr-FR";
 
     @EJB
     LineTranslationDAO lineTranslationDAO;
@@ -49,6 +54,18 @@ public class GenerateTranslationMappingCsv implements Command {
 
     @EJB
     VehicleJourneyTranslationDAO vehicleJourneyTranslationDAO;
+
+    @EJB
+    LineDAO lineDAO;
+
+    @EJB
+    StopAreaDAO stopAreaDAO;
+
+    @EJB
+    VehicleJourneyDAO vehicleJourneyDAO;
+
+    @EJB
+    CompanyDAO companyDAO;
 
     @EJB
     ProviderDAO providerDAO;
@@ -62,11 +79,16 @@ public class GenerateTranslationMappingCsv implements Command {
     }
 
     public GenerateTranslationMappingCsv(LineTranslationDAO lineTranslationDAO, StopAreaTranslationDAO stopAreaTranslationDAO,
-            VehicleJourneyTranslationDAO vehicleJourneyTranslationDAO, ProviderDAO providerDAO, FileUtils fileUtils,
+            VehicleJourneyTranslationDAO vehicleJourneyTranslationDAO, LineDAO lineDAO, StopAreaDAO stopAreaDAO,
+            VehicleJourneyDAO vehicleJourneyDAO, CompanyDAO companyDAO, ProviderDAO providerDAO, FileUtils fileUtils,
             Path outputDir) {
         this.lineTranslationDAO = lineTranslationDAO;
         this.stopAreaTranslationDAO = stopAreaTranslationDAO;
         this.vehicleJourneyTranslationDAO = vehicleJourneyTranslationDAO;
+        this.lineDAO = lineDAO;
+        this.stopAreaDAO = stopAreaDAO;
+        this.vehicleJourneyDAO = vehicleJourneyDAO;
+        this.companyDAO = companyDAO;
         this.providerDAO = providerDAO;
         this.fileUtils = fileUtils;
         this.outputDir = outputDir;
@@ -94,8 +116,25 @@ public class GenerateTranslationMappingCsv implements Command {
                 try {
                     ContextHolder.clear();
                     ContextHolder.setContext(SUPERSPACE_PREFIX + "_" + referential.getCode());
-                    String dataset = referential.getCode();
-
+                    List<Company> companies = this.companyDAO.findActiveCompaniesNewTransaction();
+                    String defaultLocale = getDefaultLocale(companies);
+                    String dataset = referential.getCode().toUpperCase();
+                    for (Line line : lineDAO.findNotDeletedInNewTransaction()) {
+                        printDefaultTranslation(csvPrinter, dataset, LINE_OBJECT_TYPE,
+                                ObjectIdUtil.extractOriginalId(line.getObjectId()), LINE_NAME_FIELD, line.getName(), defaultLocale);
+                        printDefaultTranslation(csvPrinter, dataset, LINE_OBJECT_TYPE,
+                                ObjectIdUtil.extractOriginalId(line.getObjectId()), LINE_NUMBER_FIELD, line.getNumber(),
+                                defaultLocale);
+                    }
+                    for (StopArea stopArea : stopAreaDAO.findAllNewTransaction()) {
+                        printDefaultTranslation(csvPrinter, dataset, STOP_OBJECT_TYPE,
+                                stopArea.getOriginalStopId(), STOP_NAME_FIELD, stopArea.getName(), defaultLocale);
+                    }
+                    for (VehicleJourney vehicleJourney : vehicleJourneyDAO.findAllNewTransaction()) {
+                        printDefaultTranslation(csvPrinter, dataset, VEHICLE_JOURNEY_OBJECT_TYPE,
+                                ObjectIdUtil.extractOriginalId(vehicleJourney.getObjectId()), VEHICLE_JOURNEY_NAME_FIELD,
+                                vehicleJourney.getPublishedJourneyName(), defaultLocale);
+                    }
                     for (LineTranslation translation : lineTranslationDAO.findAllNewTransaction()) {
                         printTranslation(csvPrinter, dataset, LINE_OBJECT_TYPE,
                                 translation.getLine() != null ? ObjectIdUtil.extractOriginalId(translation.getLine().getObjectId()) : null, translation);
@@ -132,7 +171,35 @@ public class GenerateTranslationMappingCsv implements Command {
     private void printTranslation(CSVPrinter csvPrinter, String datasetCode, String objectType, String objectId,
             Translation translation) throws IOException {
         csvPrinter.printRecord(datasetCode.toUpperCase(), objectType, objectId, translation.getFieldName(),
-                translation.getFieldValue(), translation.getLanguage(), translation.getTranslation());
+                translation.getFieldValue(), translation.getLanguage(), translation.getTranslation(), "0");
+    }
+
+    private void printDefaultTranslation(CSVPrinter csvPrinter, String datasetCode, String objectType, String objectId,
+            String fieldName, String value, String defaultLocale) throws IOException {
+        if (StringUtils.isBlank(value)) {
+            return;
+        }
+        csvPrinter.printRecord(datasetCode.toUpperCase(), objectType, objectId, fieldName, "", defaultLocale, value, "1");
+    }
+
+    private String getDefaultLocale(List<Company> companies) {
+        if (CollectionUtils.isEmpty(companies)) {
+            log.warn("No companies company found on schema " + ContextHolder.getContext());
+            return DEFAULT_LOCALE;
+        } else {
+            Set<String> locales = companies.stream()
+                    .map(Company::getLang)
+                    .filter(StringUtils::isNotBlank)
+                    .filter(l -> !l.equalsIgnoreCase(DEFAULT_LOCALE))
+                    .collect(java.util.stream.Collectors.toSet());
+            if (CollectionUtils.isEmpty(locales)) {
+                return DEFAULT_LOCALE;
+            } else if (locales.size() > 1) {
+                log.warn("Multiple locales found on schema " + ContextHolder.getContext() + " : " + String.join(", ", locales));
+                return DEFAULT_LOCALE;
+            }
+            return locales.iterator().next();
+        }
     }
 
     public static class DefaultCommandFactory extends CommandFactory {

@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Stateless
@@ -210,6 +211,12 @@ public class StopAreaDAOImpl extends GenericDAOImpl<StopArea> implements StopAre
 //                .setParameter("objectIdParam", objectId )
 //                .executeUpdate();
         return 0;
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public Collection<StopArea> findAllNewTransaction() {
+        return findAll();
     }
 
     public List<StopArea> findByNamePatternWithLazyDepsAllAreaType(String namePattern) {

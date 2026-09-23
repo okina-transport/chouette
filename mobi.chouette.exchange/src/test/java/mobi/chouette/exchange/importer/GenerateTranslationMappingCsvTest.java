@@ -1,10 +1,7 @@
 package mobi.chouette.exchange.importer;
 
 import mobi.chouette.common.Context;
-import mobi.chouette.dao.LineTranslationDAO;
-import mobi.chouette.dao.ProviderDAO;
-import mobi.chouette.dao.StopAreaTranslationDAO;
-import mobi.chouette.dao.VehicleJourneyTranslationDAO;
+import mobi.chouette.dao.*;
 import mobi.chouette.exchange.importer.utils.FileUtils;
 import mobi.chouette.model.*;
 import org.apache.commons.csv.CSVFormat;
@@ -30,6 +27,10 @@ public class GenerateTranslationMappingCsvTest {
     private LineTranslationDAO lineTranslationDAOMock;
     private StopAreaTranslationDAO stopAreaTranslationDAOMock;
     private VehicleJourneyTranslationDAO vehicleJourneyTranslationDAOMock;
+    private LineDAO lineDAOMock;
+    private StopAreaDAO stopAreaDAOMock;
+    private VehicleJourneyDAO vehicleJourneyDAOMock;
+    private CompanyDAO companyDAOMock;
     private ProviderDAO providerDAOMock;
     private Path outputDir;
     GenerateTranslationMappingCsv tested;
@@ -39,10 +40,15 @@ public class GenerateTranslationMappingCsvTest {
         lineTranslationDAOMock = Mockito.mock(LineTranslationDAO.class);
         stopAreaTranslationDAOMock = Mockito.mock(StopAreaTranslationDAO.class);
         vehicleJourneyTranslationDAOMock = Mockito.mock(VehicleJourneyTranslationDAO.class);
+        lineDAOMock = Mockito.mock(LineDAO.class);
+        stopAreaDAOMock = Mockito.mock(StopAreaDAO.class);
+        vehicleJourneyDAOMock = Mockito.mock(VehicleJourneyDAO.class);
+        companyDAOMock = Mockito.mock(CompanyDAO.class);
         providerDAOMock = Mockito.mock(ProviderDAO.class);
         outputDir = Files.createTempDirectory("translationMappingCsvTest");
         tested = new GenerateTranslationMappingCsv(lineTranslationDAOMock, stopAreaTranslationDAOMock,
-                vehicleJourneyTranslationDAOMock, providerDAOMock, new FileUtils(), outputDir);
+                vehicleJourneyTranslationDAOMock, lineDAOMock, stopAreaDAOMock, vehicleJourneyDAOMock,
+                companyDAOMock, providerDAOMock, new FileUtils(), outputDir);
 
         Provider provider = new Provider();
         provider.setCode(PROVIDER_CODE);
@@ -52,6 +58,10 @@ public class GenerateTranslationMappingCsvTest {
         Mockito.when(lineTranslationDAOMock.findAllNewTransaction()).thenReturn(Collections.emptyList());
         Mockito.when(stopAreaTranslationDAOMock.findAllNewTransaction()).thenReturn(Collections.emptyList());
         Mockito.when(vehicleJourneyTranslationDAOMock.findAllNewTransaction()).thenReturn(Collections.emptyList());
+        Mockito.when(companyDAOMock.findActiveCompaniesNewTransaction()).thenReturn(Collections.emptyList());
+        Mockito.when(lineDAOMock.findNotDeletedInNewTransaction()).thenReturn(Collections.emptyList());
+        Mockito.when(stopAreaDAOMock.findAllNewTransaction()).thenReturn(Collections.emptyList());
+        Mockito.when(vehicleJourneyDAOMock.findAllNewTransaction()).thenReturn(Collections.emptyList());
     }
 
     @AfterMethod
@@ -103,9 +113,9 @@ public class GenerateTranslationMappingCsvTest {
         List<CSVRecord> records = readCsv();
         Assert.assertEquals(records.size(), 3);
 
-        assertRecord(records.get(0), DATASET, "LINE", "1", "name", "", "en", "Line one");
-        assertRecord(records.get(1), DATASET, "STOP", "1", "stopName", "", "es", "Parada uno");
-        assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "1", "publishedJourneyName", "", "de", "Fahrt eins");
+        assertRecord(records.get(0), DATASET, "LINE", "1", "name", "", "en", "Line one", "0");
+        assertRecord(records.get(1), DATASET, "STOP", "1", "stopName", "", "es", "Parada uno", "0");
+        assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "1", "publishedJourneyName", "", "de", "Fahrt eins", "0");
     }
 
     @Test
@@ -126,7 +136,58 @@ public class GenerateTranslationMappingCsvTest {
         Assert.assertTrue(out, "should return true");
         List<CSVRecord> records = readCsv();
         Assert.assertEquals(records.size(), 1);
-        assertRecord(records.get(0), DATASET, "LINE", "", "name", "Downtown Express", "en", "Downtown Express (EN)");
+        assertRecord(records.get(0), DATASET, "LINE", "", "name", "Downtown Express", "en", "Downtown Express (EN)", "0");
+    }
+
+    @Test
+    public void testExecute_writesDefaultTranslationForAllLinesStopAreasAndVehicleJourneys() throws Exception {
+        Company company = new Company();
+        company.setLang("en_UK");
+        Mockito.when(companyDAOMock.findActiveCompaniesNewTransaction())
+                .thenReturn(Collections.singletonList(company));
+
+        Line line = new Line();
+        line.setObjectId("TESTDS:Line:1");
+        line.setName("Downtown Express");
+        Mockito.when(lineDAOMock.findNotDeletedInNewTransaction()).thenReturn(Collections.singletonList(line));
+
+        StopArea stopArea = new StopArea();
+        stopArea.setObjectId("TESTDS:StopArea:1");
+        stopArea.setOriginalStopId("1");
+        stopArea.setName("Central Station");
+        Mockito.when(stopAreaDAOMock.findAllNewTransaction()).thenReturn(Collections.singletonList(stopArea));
+
+        VehicleJourney vehicleJourney = new VehicleJourney();
+        vehicleJourney.setObjectId("TESTDS:VehicleJourney:1");
+        vehicleJourney.setPublishedJourneyName("Trip one");
+        Mockito.when(vehicleJourneyDAOMock.findAllNewTransaction()).thenReturn(Collections.singletonList(vehicleJourney));
+
+        // act
+        boolean out = tested.execute(new Context());
+
+        // assert
+        Assert.assertTrue(out, "should return true");
+        List<CSVRecord> records = readCsv();
+        Assert.assertEquals(records.size(), 3);
+
+        assertRecord(records.get(0), DATASET, "LINE", "1", "name", "", "en_UK", "Downtown Express", "1");
+        assertRecord(records.get(1), DATASET, "STOP", "1", "stopName", "", "en_UK", "Central Station", "1");
+        assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "1", "publishedJourneyName", "", "en_UK", "Trip one", "1");
+    }
+
+    @Test
+    public void testExecute_skipsDefaultTranslationWhenFieldBlank() throws Exception {
+        // arrange
+        Line line = new Line();
+        line.setObjectId("TESTDS:Line:1");
+        Mockito.when(lineDAOMock.findAll()).thenReturn(Collections.singletonList(line));
+
+        // act
+        boolean out = tested.execute(new Context());
+
+        // assert
+        Assert.assertTrue(out, "should return true");
+        Assert.assertTrue(readCsv().isEmpty());
     }
 
     @Test
@@ -151,7 +212,7 @@ public class GenerateTranslationMappingCsvTest {
     }
 
     private void assertRecord(CSVRecord csvRecord, String dataset, String objectType, String objectId, String fieldName,
-            String fieldValue, String language, String translation) {
+            String fieldValue, String language, String translation, String isDefault) {
         Assert.assertEquals(csvRecord.get("dataset"), dataset);
         Assert.assertEquals(csvRecord.get("object_type"), objectType);
         Assert.assertEquals(csvRecord.get("object_id"), objectId);
@@ -159,5 +220,6 @@ public class GenerateTranslationMappingCsvTest {
         Assert.assertEquals(csvRecord.get("field_value"), fieldValue);
         Assert.assertEquals(csvRecord.get("language"), language);
         Assert.assertEquals(csvRecord.get("translation"), translation);
+        Assert.assertEquals(csvRecord.get("is_default"), isDefault);
     }
 }

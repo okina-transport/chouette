@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface CompanyDAO extends GenericDAO<Company> {
 
-        List<Company> findActiveCompaniesByNameAndOrganisationType(String name, OrganisationTypeEnum organisationType);
+    List<Company> findActiveCompaniesByNameAndOrganisationType(String name, OrganisationTypeEnum organisationType);
+
+    List<Company> findActiveCompaniesNewTransaction();
 
 }

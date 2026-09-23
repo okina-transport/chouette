@@ -4,8 +4,9 @@ import mobi.chouette.model.FirstOrLastJourneyInfo;
 import mobi.chouette.model.IneoVJMapping;
 import mobi.chouette.model.TheoreticalStopMonitoringInfo;
 import mobi.chouette.model.VehicleJourney;
-import java.time.LocalDate;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 public interface VehicleJourneyDAO extends GenericDAO<VehicleJourney> {
@@ -22,4 +23,5 @@ public interface VehicleJourneyDAO extends GenericDAO<VehicleJourney> {
 
 	List<TheoreticalStopMonitoringInfo> getAllTheoreticalStopMonitoringInfoByDate(LocalDate date);
 
+    Collection<VehicleJourney> findAllNewTransaction();
 }

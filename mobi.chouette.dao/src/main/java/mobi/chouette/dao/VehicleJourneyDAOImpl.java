@@ -6,7 +6,6 @@ import mobi.chouette.model.type.PTDirectionEnum;
 import mobi.chouette.model.type.ServicePosition;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import java.time.LocalDate;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -170,8 +170,13 @@ public class VehicleJourneyDAOImpl extends GenericDAOImpl<VehicleJourney> implem
         return results;
     }
 
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public Collection<VehicleJourney> findAllNewTransaction() {
+        return findAll();
+    }
 
-        public List<TheoreticalStopMonitoringInfo> getAllTheoreticalStopMonitoringInfoByDateAndLine(LocalDate date, Long lineId) {
+    public List<TheoreticalStopMonitoringInfo> getAllTheoreticalStopMonitoringInfoByDateAndLine(LocalDate date, Long lineId) {
         Collection<? extends Number> activeTimetableIds = timetableDAO.getActiveTimetableIdsByDay(date);
 
         log.info("Recovering TH data for date:" + date + " and lineId:" + lineId);
