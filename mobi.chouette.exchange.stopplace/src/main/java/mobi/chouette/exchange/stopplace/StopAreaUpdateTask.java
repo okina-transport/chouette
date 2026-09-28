@@ -12,14 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,18 +21,17 @@ import static mobi.chouette.common.Constant.NETEX_VALID_PREFIX;
 @Log4j
 public class StopAreaUpdateTask {
 
-	private StopAreaDAO stopAreaDAO;
+	private final StopAreaDAO stopAreaDAO;
 
-	private Updater<StopArea> stopAreaUpdater;
+	private final Updater<StopArea> stopAreaUpdater;
 
-	private Context context;
+	private final Context context;
 
-	private StopAreaUpdateContext updateContext;
+	private final StopAreaUpdateContext updateContext;
 
-	List<String> stopAreasToDelete = new ArrayList<>();
+	private final List<String> stopAreasToDelete = new ArrayList<>();
 
-
-	private Map<String, StopArea> removedContainedStopAreas = new HashMap<>();
+	private final Map<String, StopArea> removedContainedStopAreas = new HashMap<>();
 
 	public StopAreaUpdateTask(StopAreaDAO stopAreaDAO, Updater<StopArea> stopAreaUpdater, Context context, StopAreaUpdateContext updateContext) {
 		this.stopAreaDAO = stopAreaDAO;
@@ -266,23 +258,19 @@ public class StopAreaUpdateTask {
 	}
 
 	private void removeStopArea(String objectId) {
-		log.info("Deleting obsolete StopArea : " + objectId);
-
 		StopArea stopArea = stopAreaDAO.findByObjectId(objectId);
 		if (stopArea != null) {
-			new ArrayList<>(stopArea.getContainedStopAreas()).forEach(containedStopArea -> registerRemovedContainedStopArea(containedStopArea));
+            log.info("Deleting obsolete StopArea : " + objectId);
+			new ArrayList<>(stopArea.getContainedStopAreas()).forEach(this::registerRemovedContainedStopArea);
 			stopAreasToDelete.add(stopArea.getObjectId());
-		} else {
-			log.warn("Could not remove unknown stopArea: " + objectId);
 		}
-
 	}
 
 	private void removeContainedStopArea(StopArea containedStopArea) {
 		log.info("Deleting obsolete contained StopArea: " + containedStopArea.getObjectId());
 		stopAreasToDelete.add(containedStopArea.getObjectId());
 		if (containedStopArea.getContainedStopAreas() != null) {
-			containedStopArea.getContainedStopAreas().forEach(grandChild -> removeContainedStopArea(grandChild));
+			containedStopArea.getContainedStopAreas().forEach(this::removeContainedStopArea);
 		}
 	}
 
@@ -298,7 +286,4 @@ public class StopAreaUpdateTask {
 		return stopAreasToDelete;
 	}
 
-	public void setStopAreasToDelete(List<String> stopAreasToDelete) {
-		this.stopAreasToDelete = stopAreasToDelete;
-	}
 }
