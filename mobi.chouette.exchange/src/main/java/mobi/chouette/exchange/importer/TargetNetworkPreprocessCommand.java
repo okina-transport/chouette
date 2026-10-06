@@ -7,6 +7,8 @@ import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.report.AnalyzeReport;
+import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.OrganisationTypeEnum;
@@ -47,10 +49,10 @@ public class TargetNetworkPreprocessCommand implements Command {
     @Override
     public boolean execute(Context context) throws Exception {
         AbstractImportParameter parameters = (AbstractImportParameter) context.get(CONFIGURATION);
+        ActionReporter reporter = ActionReporter.Factory.getInstance();
 
         if (StringUtils.isBlank(parameters.getTargetNetwork())) {
-            log.error("Import parameters useTargetNetwork is true but targetNetwork is blank");
-            throw new IllegalArgumentException("Import parameters useTargetNetwork is true but targetNetwork is blank");
+            return reportInvalidTargetNetwork(context, reporter, "Le réseau ciblé n'est pas renseigné");
         }
 
         Referential referential = (Referential) context.get(REFERENTIAL);
@@ -63,8 +65,8 @@ public class TargetNetworkPreprocessCommand implements Command {
         String targetCompanyOriginalId;
         if (CollectionUtils.isNotEmpty(companies)) {
             if (companies.size() > 1) {
-                throw new IllegalStateException(String.format("There must be only active one operator company with " +
-                                "name %s in database, make sure there is only one before restarting import",
+                return reportInvalidTargetNetwork(context, reporter, String.format("Plusieurs transporteurs actifs " +
+                        "portent le nom '%s' : il ne doit y en avoir qu'un seul pour pouvoir cibler ce réseau",
                         parameters.getTargetNetwork()));
             }
             log.info("Found active operator company with name '{}' in database", parameters.getTargetNetwork());
@@ -72,8 +74,8 @@ public class TargetNetworkPreprocessCommand implements Command {
             targetCompanyOriginalId =
                     StringUtils.chomp(ObjectIdUtil.extractOriginalId(targetOperatorCompany.getObjectId()), "o");
         } else {
-            throw new IllegalStateException(String.format("No active operator company with name '%s' in database",
-                    parameters.getTargetNetwork()));
+            return reportInvalidTargetNetwork(context, reporter, String.format("Le réseau ciblé '%s' n'existe pas : " +
+                    "aucun transporteur actif ne porte ce nom", parameters.getTargetNetwork()));
         }
 
         log.info("Target operator company objectId: '{}'", targetOperatorCompany.getObjectId());
@@ -85,8 +87,8 @@ public class TargetNetworkPreprocessCommand implements Command {
         Company targetAuthorityCompany;
         if (CollectionUtils.isNotEmpty(companies)) {
             if (companies.size() > 1) {
-                throw new IllegalStateException(String.format("There must be only one active authority company with " +
-                                "name %s in database, make sure there is only one before restarting import",
+                return reportInvalidTargetNetwork(context, reporter, String.format("Plusieurs autorités organisatrices " +
+                        "actives portent le nom '%s' : il ne doit y en avoir qu'une seule pour pouvoir cibler ce réseau",
                         parameters.getTargetNetwork()));
             }
             log.info("Found active authority company with name '{}' in database", parameters.getTargetNetwork());
@@ -113,6 +115,17 @@ public class TargetNetworkPreprocessCommand implements Command {
         context.put(TARGET_NETWORK_OBJECT_ID, targetNetwork.getObjectId());
 
         return true;
+    }
+
+    private boolean reportInvalidTargetNetwork(Context context, ActionReporter reporter, String message) {
+        log.error(message);
+        AnalyzeReport analyzeReport = (AnalyzeReport) context.get(ANALYSIS_REPORT);
+        if (analyzeReport != null) {
+            analyzeReport.setTargetNetworkError(message);
+            return SUCCESS;
+        }
+        reporter.setActionError(context, ActionReporter.ERROR_CODE.INVALID_PARAMETERS, message);
+        return ERROR;
     }
 
     public static class DefaultCommandFactory extends CommandFactory {
