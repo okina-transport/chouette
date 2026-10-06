@@ -4,6 +4,9 @@ package mobi.chouette.exchange.importer;
 import mobi.chouette.common.Context;
 import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.report.ActionReport;
+import mobi.chouette.exchange.report.ActionReporter;
+import mobi.chouette.exchange.report.AnalyzeReport;
 import mobi.chouette.model.Company;
 import mobi.chouette.model.Network;
 import mobi.chouette.model.type.OrganisationTypeEnum;
@@ -15,8 +18,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
+import static mobi.chouette.common.Constant.ANALYSIS_REPORT;
 import static mobi.chouette.common.Constant.CONFIGURATION;
 import static mobi.chouette.common.Constant.REFERENTIAL;
+import static mobi.chouette.common.Constant.REPORT;
 
 public class TargetNetworkPreprocessCommandTest {
 
@@ -71,6 +79,7 @@ public class TargetNetworkPreprocessCommandTest {
 
         context.put(CONFIGURATION, parameter);
         context.put(REFERENTIAL, new Referential());
+        context.put(REPORT, new ActionReport());
 
         return context;
     }
@@ -84,14 +93,74 @@ public class TargetNetworkPreprocessCommandTest {
         };
     }
 
-    @Test(dataProvider = "targetNetworkIsEmptyOrBlank", expectedExceptions = IllegalArgumentException.class)
-    public void testExecute__whenTargetNetworkIsEmptyOrBlank__throwsIllegalArgumentException(String targetNetwork) throws Exception {
+    @Test(dataProvider = "targetNetworkIsEmptyOrBlank")
+    public void testExecute__whenTargetNetworkIsEmptyOrBlank__reportsInvalidParameters(String targetNetwork) throws Exception {
         // Arrange
         Context ctx = buildContext(targetNetwork);
         Assert.assertTrue("targetNetwork should be blank", StringUtils.isBlank(targetNetwork));
 
         // Act
-        tested.execute(ctx);
+        boolean result = tested.execute(ctx);
+
+        // Assert
+        assertInvalidParametersReported(ctx, result);
+    }
+
+    @Test
+    public void testExecute__whenNoOperatorCompanyWithNameExistInDatabase__reportsInvalidParameters() throws Exception {
+        // Arrange
+        Context ctx = buildContext("Target");
+        Mockito.when(companyDAOMock.findActiveCompaniesByNameAndOrganisationType("Target", OrganisationTypeEnum.Operator))
+                .thenReturn(Collections.emptyList());
+
+        // Act
+        boolean result = tested.execute(ctx);
+
+        // Assert
+        assertInvalidParametersReported(ctx, result);
+        Assert.assertTrue("failure description should contain target network name",
+                ((ActionReport) ctx.get(REPORT)).getFailure().getDescription().contains("'Target'"));
+    }
+
+    @Test
+    public void testExecute__whenSeveralOperatorCompaniesWithNameExistInDatabase__reportsInvalidParameters() throws Exception {
+        // Arrange
+        Context ctx = buildContext("Target");
+        Mockito.when(companyDAOMock.findActiveCompaniesByNameAndOrganisationType("Target", OrganisationTypeEnum.Operator))
+                .thenReturn(Arrays.asList(dbCompanyOperator, dbCompanyOperator));
+
+        // Act
+        boolean result = tested.execute(ctx);
+
+        // Assert
+        assertInvalidParametersReported(ctx, result);
+    }
+
+    @Test
+    public void testExecute__whenNoOperatorCompanyWithNameExistInDatabaseDuringAnalysis__reportsErrorInAnalyzeReport() throws Exception {
+        // Arrange
+        Context ctx = buildContext("Target");
+        AnalyzeReport analyzeReport = new AnalyzeReport();
+        ctx.put(ANALYSIS_REPORT, analyzeReport);
+        Mockito.when(companyDAOMock.findActiveCompaniesByNameAndOrganisationType("Target", OrganisationTypeEnum.Operator))
+                .thenReturn(Collections.emptyList());
+
+        // Act
+        boolean result = tested.execute(ctx);
+
+        // Assert
+        Assert.assertTrue("analysis should go on", result);
+        Assert.assertNull("failure should not be reported in action report", ((ActionReport) ctx.get(REPORT)).getFailure());
+        Assert.assertNotNull("error should be reported in analyze report", analyzeReport.getTargetNetworkError());
+        Assert.assertTrue("error should contain target network name", analyzeReport.getTargetNetworkError().contains("'Target'"));
+    }
+
+    private void assertInvalidParametersReported(Context ctx, boolean result) {
+        Assert.assertFalse("command should fail", result);
+        ActionReport report = (ActionReport) ctx.get(REPORT);
+        Assert.assertNotNull("failure should be reported", report.getFailure());
+        Assert.assertEquals("failure should be an invalid parameters error",
+                ActionReporter.ERROR_CODE.INVALID_PARAMETERS, report.getFailure().getCode());
     }
 
 //    @DataProvider

@@ -140,6 +140,9 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
     @XmlElement(name = "targetRouteIdNotFound")
     private Set<String> targetRouteIdNotFound = new HashSet<>();
 
+    @XmlElement(name = "targetNetworkError")
+    private String targetNetworkError;
+
     @XmlTransient
     private Date date = new Date(0);
 
@@ -416,6 +419,10 @@ public class AnalyzeReport extends AbstractReport implements Constant, Report {
             analyzeReportMap.put("targetRouteIdNotFound", buildTargetRouteIdNotFound());
         }
 
+        if (targetNetworkError != null && !targetNetworkError.isEmpty()) {
+            canLaunchImport = false;
+            analyzeReportMap.put("targetNetworkError", targetNetworkError);
+        }
 
         analyzeReportMap.put("canLaunchImport", canLaunchImport);
         analyzeReportMap.put("tooManyNewStops", tooManyNewStops);
