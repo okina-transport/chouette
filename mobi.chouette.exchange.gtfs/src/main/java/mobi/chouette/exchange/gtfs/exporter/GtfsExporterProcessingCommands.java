@@ -49,7 +49,6 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		List<Command> commands = new ArrayList<>();
 		try {
-			initialContext.addToEnvironment(SCHEDULED_STOP_POINTS, context.get(SCHEDULED_STOP_POINTS));
 			if (withDao) {
 				commands.add(CommandFactory.create(initialContext, DaoGtfsLineProducerCommand.class.getName()));
 			} else {
@@ -78,7 +77,7 @@ public class GtfsExporterProcessingCommands implements ProcessingCommands, Const
 			commands.add(CommandFactory.create(initialContext, DaoGtfsTripExtensionProducerCommand.class.getName()));
 
 			commands.add(CommandFactory.create(initialContext, DaoGtfsFeedInfoProducerCommand.class.getName()));
-			//			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));
+//			commands.add(CommandFactory.create(initialContext, GtfsFeedInfoProducerCommand.class.getName()));
 			if (!(parameters.getReferencesType().equalsIgnoreCase("stop_area"))) {
 				commands.add(CommandFactory.create(initialContext, GtfsSharedDataProducerCommand.class.getName()));
 			}
