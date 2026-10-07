@@ -143,7 +143,8 @@ public class DataCollector {
 					if (stopPoint == null)
 						continue; // protection from missing stopPoint ranks
 					collection.getStopPoints().add(stopPoint);
-					collection.getAllParsedStopPoints().add(stopPoint);
+					if (isCollectAllParsedStopPoints())
+						collection.getAllParsedStopPoints().add(stopPoint);
 					if (stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject()!=null)
 						collectStopAreas(collection, stopPoint.getScheduledStopPoint().getContainedInStopAreaRef().getObject(), skipNoCoordinate, followLinks, exportGeneratedMissingQuays);
 					collection.getFootnotes().addAll(stopPoint.getFootnotes());
@@ -172,6 +173,14 @@ public class DataCollector {
 		}
 		completeSharedData(collection);
 		return validLine;
+	}
+
+	/**
+	 * allParsedStopPoints keeps every stop point of every exported line (and through them the whole line graph)
+	 * until the end of the export : only collect it for exporters that use it
+	 */
+	protected boolean isCollectAllParsedStopPoints() {
+		return true;
 	}
 
 	public ScheduledStopPointDAO getScheduledStopPointDAO() {
@@ -216,6 +225,11 @@ public class DataCollector {
 		Set<ConnectionLink> connectionLinkSet = new HashSet<>(collection.getConnectionLinks());
 
 		for (ConnectionLink link : connectionLinkSet) {
+
+			// connectionLinks is never cleared between 2 line exports : links completed for a previous line
+			// already have their stop areas collected, don't reload them from DB again
+			if (!collection.getCompletedConnectionLinks().add(link.getObjectId()))
+				continue;
 
 			// Due to connection reset between 2 line exports, there are problems if a connectionLink is between 2 different lines.
 			// So, we have te recover connection link from DB (using connection link ID) to avoid lazy exceptions
