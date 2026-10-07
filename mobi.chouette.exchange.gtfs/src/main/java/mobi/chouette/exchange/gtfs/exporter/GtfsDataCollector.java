@@ -125,13 +125,19 @@ public class GtfsDataCollector extends DataCollector {
 	/**
 	 * Check if a stop area is really used by exported lines
 	 * (to avoid exporting stops that are never used)
+	 * <p>
+	 * Stop areas actually used by exported lines are already collected from their stop points
+	 * (DataCollector.collect), so only stop areas without objectId are exported from here.
+	 * The previous implementation also streamed over every scheduled stop point of the referential
+	 * comparing the objectId (String) with getContainedInStopAreaRef() (ObjectReference) : always false,
+	 * but it took most of the export time on big referentials.
 	 * @param collection
 	 * 		data collection that must be exported
 	 * @param stopArea
 	 * 		the stopArea to check
 	 * @return
-	 * 		true : the stopArea is used and must be exported
-	 * 		false : the stopArea is never used
+	 * 		true : the stopArea has no objectId and must be exported
+	 * 		false : otherwise
 	 */
 	private boolean isStopAreaUsed(mobi.chouette.exchange.exporter.ExportableData collection, StopArea stopArea){
 
@@ -140,8 +146,7 @@ public class GtfsDataCollector extends DataCollector {
 			return true;
 		}
 
-		return collection.getScheduledStopPoints().stream()
-												  .anyMatch(scheduledStopPoint -> stopArea.getObjectId().equals(scheduledStopPoint.getContainedInStopAreaRef()));
+		return false;
 
 	}
 
