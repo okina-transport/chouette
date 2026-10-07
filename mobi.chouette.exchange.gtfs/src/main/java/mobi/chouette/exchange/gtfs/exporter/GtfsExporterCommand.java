@@ -7,7 +7,6 @@ import mobi.chouette.common.Color;
 import mobi.chouette.common.Context;
 import mobi.chouette.common.chain.Command;
 import mobi.chouette.common.chain.CommandFactory;
-import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.exchange.CommandCancelledException;
 import mobi.chouette.exchange.ProcessingCommands;
 import mobi.chouette.exchange.ProcessingCommandsFactory;
@@ -17,25 +16,19 @@ import mobi.chouette.exchange.gtfs.Constant;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ReportConstant;
-import mobi.chouette.model.ScheduledStopPoint;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.List;
 
 @Log4j
 @Stateless(name = GtfsExporterCommand.COMMAND)
 public class GtfsExporterCommand extends AbstractExporterCommand implements Command, Constant, ReportConstant {
 
 	public static final String COMMAND = "GtfsExporterCommand";
-
-	@EJB
-	private ScheduledStopPointDAO scheduledStopPointDAO;
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -45,9 +38,6 @@ public class GtfsExporterCommand extends AbstractExporterCommand implements Comm
 
 		InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
-
-        List<ScheduledStopPoint> scheduledStopPointList = scheduledStopPointDAO.findAll();
-        context.put(SCHEDULED_STOP_POINTS, scheduledStopPointList);
 
 		// initialize reporting and progression
 		ProgressionCommand progression = (ProgressionCommand) CommandFactory.create(initialContext,

@@ -62,7 +62,6 @@ public class DaoGtfsLineProducerCommand implements Command, Constant
 			Long lineId = (Long) context.get(LINE_ID);
 			Line line = lineDAO.find(lineId);
 			InitialContext initialContext = (InitialContext) context.get(INITIAL_CONTEXT);
-			initialContext.addToEnvironment(SCHEDULED_STOP_POINTS, context.get(SCHEDULED_STOP_POINTS));
 			Command export = CommandFactory.create(initialContext, GtfsLineProducerCommand.class.getName());
 			((GtfsLineProducerCommand)export).setConnectionLinkDao(connectionLinkDAO);
 			context.put(LINE, line);
