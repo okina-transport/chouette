@@ -170,7 +170,7 @@ public class GenerateTranslationMappingCsvTest {
         List<CSVRecord> records = readCsv();
         Assert.assertEquals(records.size(), 3);
 
-        assertRecord(records.get(0), DATASET, "LINE", "1", "name", "", "en_UK", "Downtown Express", "1");
+        assertRecord(records.get(0), DATASET, "LINE", "1", "publishedName", "", "en_UK", "Downtown Express", "1");
         assertRecord(records.get(1), DATASET, "STOP", "1", "stopName", "", "en_UK", "Central Station", "1");
         assertRecord(records.get(2), DATASET, "VEHICLE_JOURNEY", "1", "publishedJourneyName", "", "en_UK", "Trip one", "1");
     }
