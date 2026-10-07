@@ -24,6 +24,12 @@ public class GtfsDataCollector extends DataCollector {
 		return res;
 	}
 
+	@Override
+	protected boolean isCollectAllParsedStopPoints() {
+		// not used by gtfs export
+		return false;
+	}
+
 	public boolean collect(ExportableData collection, Collection<StopArea> stopAreas) {
 		return collect(collection, stopAreas, false, false);
 

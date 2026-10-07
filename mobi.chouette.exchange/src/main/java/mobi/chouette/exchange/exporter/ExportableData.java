@@ -47,6 +47,10 @@ public class ExportableData {
 	@Getter
 	@Setter
 	private Set<ConnectionLink> connectionLinks = new HashSet<>();
+	// objectIds of connection links already completed by DataCollector.completeSharedData
+	@Getter
+	@Setter
+	private Set<String> completedConnectionLinks = new HashSet<>();
 	@Getter
 	@Setter
 	private Set<AccessLink> accessLinks = new HashSet<>();
@@ -120,6 +124,7 @@ public class ExportableData {
 		commercialStops.clear();
 		stopPlaces.clear();
 		connectionLinks.clear();
+		completedConnectionLinks.clear();
 		accessLinks.clear();
 		accessPoints.clear();
 		timetables.clear();
