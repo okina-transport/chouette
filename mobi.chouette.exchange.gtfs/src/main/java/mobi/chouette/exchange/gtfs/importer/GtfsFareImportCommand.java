@@ -10,6 +10,7 @@ import mobi.chouette.common.chain.CommandFactory;
 import mobi.chouette.exchange.utils.TokenServiceBuilder;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import mobi.chouette.exchange.importer.utils.TokenService;
 
 import javax.naming.InitialContext;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipFile;
 
 import static mobi.chouette.exchange.gtfs.model.fares.GtfsFareV1File.FARE_ATTRIBUTES;
@@ -28,6 +30,7 @@ import static mobi.chouette.exchange.gtfs.model.fares.GtfsFareV2File.FARE_PRODUC
 public class GtfsFareImportCommand implements Command, Constant {
 
     private static final String FARES_BASE_URL = System.getenv("FARES_BASE_URL");
+    private static final long FARES_HTTP_TIMEOUT_SECONDS = NumberUtils.toLong(System.getenv("FARES_HTTP_TIMEOUT_SECONDS"), 120);
     private static final String FARES_IMPORT_GTFS_PATH = "fares-referential/fares/import/gtfs";
     private static final String FARES_IMPORT_GTFS_PATH_V2 = "fares-referential/fares/v2/import/gtfs";
 
@@ -96,7 +99,10 @@ public class GtfsFareImportCommand implements Command, Constant {
                 .addHeader(HEADER_AGENCY_ID, StringUtils.trimToEmpty(agencyId))
                 .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenService.getToken())
                 .build();
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .writeTimeout(FARES_HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(FARES_HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .build();
 
         log.info("Send GTFS to fares GTFS import");
         try (Response response = client.newCall(request).execute()) {
