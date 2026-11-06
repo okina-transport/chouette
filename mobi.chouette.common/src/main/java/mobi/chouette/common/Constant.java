@@ -60,7 +60,6 @@ public interface Constant {
 
     String VALIDATION_DATA = "validation_data";
     String EXPORTABLE_DATA = "exportable_data";
-    String SCHEDULED_STOP_POINTS = "scheduled_stop_points";
     String SHARED_DATA_KEYS = "shared_data_keys";
     String METADATA = "metadata";
     String LINE = "line";
