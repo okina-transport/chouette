@@ -43,6 +43,37 @@ public class StopPlaceParserTest {
     }
 
     @Test
+    public void mapAccessibilityAssessmentMapsWheelchairAccess() {
+        StopPlaceParser parser = new StopPlaceParser();
+
+        Assert.assertEquals(mapWheelchairAccess(parser, LimitationStatusEnumeration.TRUE), Boolean.TRUE);
+        Assert.assertEquals(mapWheelchairAccess(parser, LimitationStatusEnumeration.FALSE), Boolean.FALSE);
+        Assert.assertNull(mapWheelchairAccess(parser, LimitationStatusEnumeration.UNKNOWN));
+        Assert.assertNull(mapWheelchairAccess(parser, LimitationStatusEnumeration.PARTIAL));
+    }
+
+    @Test
+    public void mapAccessibilityAssessmentKeepsValueWhenNoAssessment() {
+        StopPlaceParser parser = new StopPlaceParser();
+        StopArea stopArea = new StopArea();
+        stopArea.setMobilityRestrictedSuitable(true);
+
+        parser.mapAccessibilityAssesssment(stopArea, new Quay());
+
+        Assert.assertEquals(stopArea.getMobilityRestrictedSuitable(), Boolean.TRUE);
+    }
+
+    private Boolean mapWheelchairAccess(StopPlaceParser parser, LimitationStatusEnumeration wheelchairAccess) {
+        Quay quay = new Quay().withAccessibilityAssessment(new AccessibilityAssessment()
+                .withLimitations(new AccessibilityLimitations_RelStructure()
+                        .withAccessibilityLimitation(new AccessibilityLimitation().withWheelchairAccess(wheelchairAccess))));
+        StopArea stopArea = new StopArea();
+        stopArea.setMobilityRestrictedSuitable(false);
+        parser.mapAccessibilityAssesssment(stopArea, quay);
+        return stopArea.getMobilityRestrictedSuitable();
+    }
+
+    @Test
     public void mapStopAreaTypeMapsByName() {
         StopPlaceParser parser = new StopPlaceParser();
 
