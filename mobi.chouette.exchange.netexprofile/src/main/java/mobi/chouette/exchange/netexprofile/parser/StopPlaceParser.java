@@ -194,19 +194,26 @@ public class StopPlaceParser implements Parser, Constant {
     }
 
     /**
-     * Read incoming site and set mobilityrestrictedSuitable to true or false by reading  accessibility limitations
+     * Read incoming site and set mobilityRestrictedSuitable by reading accessibility limitations:
+     * TRUE maps to true, FALSE maps to false, any other value (UNKNOWN, PARTIAL) maps to null.
      * @param stopArea
      *  the stopArea for which the mobilityRestrictedSuitable must be set
      * @param site
      *  the incoming stopPlace or quay which will be read to search the limitations
      */
-    private void mapAccessibilityAssesssment(StopArea stopArea, SiteElement_VersionStructure site) {
+    void mapAccessibilityAssesssment(StopArea stopArea, SiteElement_VersionStructure site) {
         if (site.getAccessibilityAssessment() == null || site.getAccessibilityAssessment().getLimitations() == null ||
                 site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation() == null || site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess() == null){
             return;
         }
         LimitationStatusEnumeration wheelchairAccess = site.getAccessibilityAssessment().getLimitations().getAccessibilityLimitation().getWheelchairAccess();
-        stopArea.setMobilityRestrictedSuitable(LimitationStatusEnumeration.TRUE.equals(wheelchairAccess));
+        if (LimitationStatusEnumeration.TRUE.equals(wheelchairAccess)) {
+            stopArea.setMobilityRestrictedSuitable(true);
+        } else if (LimitationStatusEnumeration.FALSE.equals(wheelchairAccess)) {
+            stopArea.setMobilityRestrictedSuitable(false);
+        } else {
+            stopArea.setMobilityRestrictedSuitable(null);
+        }
 
     }
 
