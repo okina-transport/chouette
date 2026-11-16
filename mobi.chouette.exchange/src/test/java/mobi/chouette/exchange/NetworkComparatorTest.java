@@ -54,6 +54,24 @@ public class NetworkComparatorTest {
         assertEquals(tested.compare(n1, n2), -1, "Second network has a null position, should return -1");
     }
 
+    @Test
+    public void testCompare_whenBothPosNull_returnsIdComparison() {
+        Network n1 = new Network();
+        n1.setId(2L);
+        Network n2 = new Network();
+        n2.setId(1L);
+        assertEquals(Integer.signum(tested.compare(n1, n2)), 1, "Both networks have a null position, should compare by id");
+    }
 
+    @Test
+    public void testCompare_whenSamePosSameId_returnsObjectIdComparison() {
+        Network n1 = new Network();
+        n1.setPosition(1);
+        n1.setObjectId("NET:Network:1");
+        Network n2 = new Network();
+        n2.setPosition(1);
+        n2.setObjectId("NET:Network:2");
+        assertEquals(Integer.signum(tested.compare(n1, n2)), -1, "Same position and id, should compare by objectId");
+    }
 
 }

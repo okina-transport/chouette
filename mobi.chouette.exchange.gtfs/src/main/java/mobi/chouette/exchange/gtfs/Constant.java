@@ -3,6 +3,7 @@ package mobi.chouette.exchange.gtfs;
 public interface Constant extends mobi.chouette.common.Constant {
     String GTFS_EXPORTER = "gtfs_exporter";
     String GTFS_REPORTER = "gtfs_reporter";
+    String GTFS_ROUTE_SORT_ORDER = "gtfs_route_sort_order";
 
     String GTFS_AGENCY_FILE = "agency.txt";
     String GTFS_STOPS_FILE = "stops.txt";

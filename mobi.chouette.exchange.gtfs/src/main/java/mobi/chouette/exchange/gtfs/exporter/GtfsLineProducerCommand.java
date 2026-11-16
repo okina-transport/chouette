@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -160,7 +161,10 @@ public class GtfsLineProducerCommand implements Command, Constant {
 			}
 			if (hasVj) {
 				IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),configuration.getIdSuffix(),configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
-				routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseExtendedGtfsRouteTypes(),idParams, configuration.getAgencyId());
+				AtomicInteger routeSortOrder = (AtomicInteger) context.computeIfAbsent(GTFS_ROUTE_SORT_ORDER, k -> new AtomicInteger(0));
+				if (routeProducer.save(line, prefix, configuration.isKeepOriginalId(),configuration.isUseExtendedGtfsRouteTypes(),idParams, configuration.getAgencyId(), routeSortOrder.get() + 1)) {
+					routeSortOrder.incrementAndGet();
+				}
 				hasLine = true;
 				if (metadata != null) {
 					metadata.getResources().add(
