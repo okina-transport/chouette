@@ -51,8 +51,8 @@ public class ExportTemplate {
 	@Column(name = "commercial_point_id_prefix")
 	protected String commercialPointIdPrefix;
 
-	@Column(name = "commercial_point_export")
-	protected Boolean commercialPointExport;
+	@Column(name = "discard_commercial_points")
+	protected Boolean discardCommercialPoints;
 
 	@Column(name = "google_maps_compatibility")
 	protected Boolean googleMapsCompatibility;

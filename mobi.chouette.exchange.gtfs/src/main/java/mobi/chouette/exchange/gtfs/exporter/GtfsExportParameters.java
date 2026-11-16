@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "commercialPointExport", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles", "serviceJourneyTripObjectName"})
+@XmlType(propOrder = {"objectIdPrefix", "timeZone", "keepOriginalId", "useExtendedGtfsRouteTypes", "exportedFileName", "stopIdPrefix", "lineIdPrefix", "idFormat", "idSuffix", "commercialPointIdPrefix", "mappingLinesIds", "discardCommercialPoints", "attributionsExportMode", "googleMapsCompatibility", "agencyId", "agencyName", "agencyTimezone", "agencyURL", "agencyLang", "fareFiles", "serviceJourneyTripObjectName"})
 @Getter
 @Setter
 public class GtfsExportParameters extends AbstractExportParameter {
@@ -50,8 +50,8 @@ public class GtfsExportParameters extends AbstractExportParameter {
 	@XmlElement(name = "commercial_point_id_prefix")
 	private String commercialPointIdPrefix;
 
-	@XmlElement(name = "commercial_point_export")
-	private Boolean commercialPointExport;
+	@XmlElement(name = "discard_commercial_points")
+	private Boolean discardCommercialPoints;
 
 	@XmlElement(name = "google_maps_compatibility")
 	private Boolean googleMapsCompatibility;
