@@ -39,7 +39,7 @@ public class GtfsRouteProducer extends AbstractProducer
 
    private GtfsRoute route = new GtfsRoute();
 
-   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String agencyId)
+   public boolean save(Line neptuneObject, String prefix, boolean keepOriginalId, boolean useExtendedGtfsRouteTypes, IdParameters idParams, String agencyId, Integer routeSortOrder)
    {
       route.setRouteId(generateCustomRouteId(ObjectIdUtil.toGtfsId(neptuneObject.getObjectId(), prefix, keepOriginalId), idParams));
 
@@ -98,13 +98,7 @@ public class GtfsRouteProducer extends AbstractProducer
       route.setRouteTextColor(getColor(neptuneObject.getTextColor()));
       route.setRouteUrl(getUrl(neptuneObject.getUrl()));
 
-      if (neptuneObject.getNetwork().getPosition() != null) {
-          Integer pos = neptuneObject.getNetwork().getPosition() * 1000;
-          pos += neptuneObject.getPosition();
-          route.setPosition(pos);
-      } else {
-          route.setPosition(neptuneObject.getPosition());
-      }
+      route.setPosition(routeSortOrder);
 
       if (neptuneObject.getTransportModeName() != null)
       {

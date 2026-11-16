@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.naming.InitialContext;
 
@@ -74,6 +75,7 @@ public class GtfsInitExportCommand implements Command, Constant {
 			}
 			GtfsExporter gtfsExporter = new GtfsExporter(path.toString());
 			context.put(GTFS_EXPORTER, gtfsExporter);
+			context.put(GTFS_ROUTE_SORT_ORDER, new AtomicInteger(0));
 			result = SUCCESS;
 
 		} catch (Exception e) {

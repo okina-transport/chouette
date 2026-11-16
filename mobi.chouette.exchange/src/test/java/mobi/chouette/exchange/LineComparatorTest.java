@@ -219,6 +219,32 @@ public class LineComparatorTest {
         Assert.assertEquals(output, expected);
     }
 
+    @Test
+    public void testSort_whenNetworksWithoutPosition_keepsLinesGroupedByNetwork() {
+        Network twisto = new Network();
+        twisto.setId(1L);
+        twisto.setObjectId("NET:Network:TWISTO");
+        Network nomad = new Network();
+        nomad.setId(2L);
+        nomad.setObjectId("NET:Network:NOMAD");
+
+        Line t1 = line(twisto, 1, "t1");
+        Line t2 = line(twisto, 2, "t2");
+        Line n1 = line(nomad, 1, "n1");
+        Line n2 = line(nomad, 2, "n2");
+
+        List<Line> lines = Arrays.asList(t1, n1, t2, n2);
+        lines.sort(tested);
+
+        assertEquals(lines, Arrays.asList(t1, t2, n1, n2), "Lines must stay grouped by network, then sorted by position");
+    }
+
+    private static Line line(Network network, Integer position, String objectId) {
+        Line line = new Line();
+        line.setNetwork(network);
+        line.setPosition(position);
+        line.setObjectId(objectId);
+        return line;
+    }
+
 }
-
-
