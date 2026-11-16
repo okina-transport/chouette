@@ -36,12 +36,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -97,7 +92,7 @@ public class GtfsStopAreaProducerCommand implements Command, Constant {
 		GtfsExportParameters configuration = (GtfsExportParameters) context.get(CONFIGURATION);
 		String prefix = configuration.getObjectIdPrefix();
 		String sharedPrefix = prefix;
-		Boolean commercialPointExport = configuration.getCommercialPointExport();
+		Boolean discardCommercialPoints = configuration.getDiscardCommercialPoints();
 		IdParameters idParams = new IdParameters(configuration.getStopIdPrefix(),configuration.getIdFormat(),null,configuration.getLineIdPrefix(),configuration.getCommercialPointIdPrefix());
 		// metadata.setDescription("limited to stops and transfers");
 		int stopCount = 0;
@@ -111,7 +106,7 @@ public class GtfsStopAreaProducerCommand implements Command, Constant {
 					if (area.getConnectionEndLinks() != null)
 						connectionLinks.addAll(area.getConnectionEndLinks());
 
-					if (!commercialPointExport && area.getParent() != null && area.getParent().hasCoordinates()) {
+					if (!discardCommercialPoints && area.getParent() != null && area.getParent().hasCoordinates()) {
 						commercialStops.add(area.getParent());
 						if (area.getParent().getConnectionStartLinks() != null)
 							connectionLinks.addAll(area.getParent().getConnectionStartLinks());

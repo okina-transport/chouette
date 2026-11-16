@@ -111,7 +111,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		for (Iterator<StopArea> iterator = commercialStops.iterator(); iterator.hasNext(); ) {
 			StopArea stop = iterator.next();
 
-			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility())) {
+			if (!stopProducer.save(stop, null, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getDiscardCommercialPoints(), configuration.getGoogleMapsCompatibility())) {
 				iterator.remove();
 			} else {
 				if (metadata != null && stop.hasCoordinates())
@@ -120,7 +120,7 @@ public class GtfsSharedDataProducerCommand implements Command, Constant {
 		}
 
 		for (StopArea stop : physicalStops) {
-			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getCommercialPointExport(), configuration.getGoogleMapsCompatibility());
+			stopProducer.save(stop, commercialStops, configuration.isKeepOriginalId(), configuration.isUseExtendedGtfsRouteTypes(), idParams, prefix, configuration.getDiscardCommercialPoints(), configuration.getGoogleMapsCompatibility());
 			if (metadata != null && stop.hasCoordinates()) {
 				metadata.getSpatialCoverage().update(stop.getLongitude().doubleValue(), stop.getLatitude().doubleValue());
 			}

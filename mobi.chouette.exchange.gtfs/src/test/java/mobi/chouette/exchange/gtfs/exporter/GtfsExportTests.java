@@ -251,7 +251,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         configuration.setObjectIdPrefix("CITURA");
         configuration.setTimeZone("Europe/Paris");
         configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-        Command command = (Command) CommandFactory.create(initialContext,
+        Command command = CommandFactory.create(initialContext,
                 GtfsExporterCommand.class.getName());
 
         try {
@@ -302,9 +302,9 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         configuration.setReferencesType("stop_area");
         configuration.setObjectIdPrefix("CITURA");
         configuration.setTimeZone("Europe/Paris");
-        configuration.setCommercialPointExport(false);
+        configuration.setDiscardCommercialPoints(false);
         configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-        Command command = (Command) CommandFactory.create(initialContext,
+        Command command = CommandFactory.create(initialContext,
                 GtfsExporterCommand.class.getName());
 
         try {
@@ -403,7 +403,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
         configuration.setTimeZone("Europe/Paris");
         configuration.setKeepOriginalId(true);
         configuration.setAttributionsExportMode(AttributionsExportModes.NONE);
-        Command command = (Command) CommandFactory.create(initialContext,
+        Command command = CommandFactory.create(initialContext,
                 GtfsExporterCommand.class.getName());
 
 
@@ -439,7 +439,7 @@ public class GtfsExportTests extends Arquillian implements Constant, ReportConst
                 exptectedInterchanges = 1;
             }
 
-            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), new Integer(exptectedInterchanges), "interchange status");
+            Assert.assertEquals(report.getCollections().get(ActionReporter.OBJECT_TYPE.LINE).getObjects().get(i).getStats().get(OBJECT_TYPE.INTERCHANGE), Integer.valueOf(exptectedInterchanges), "interchange status");
         }
         Reporter.log("validation report size :" + vreport.getCheckPoints().size(), true);
         Assert.assertFalse(vreport.getCheckPoints().isEmpty(), "validation report should not be empty");
