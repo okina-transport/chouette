@@ -11,11 +11,7 @@ import mobi.chouette.exchange.netexprofile.ConversionUtil;
 import mobi.chouette.exchange.netexprofile.importer.NetexprofileImportParameters;
 import mobi.chouette.exchange.netexprofile.importer.util.NetexImportUtil;
 import mobi.chouette.model.StopArea;
-import mobi.chouette.model.type.ChouetteAreaEnum;
-import mobi.chouette.model.type.LongLatTypeEnum;
-import mobi.chouette.model.type.StopAreaTypeEnum;
-import mobi.chouette.model.type.TransportModeNameEnum;
-import mobi.chouette.model.type.TransportSubModeNameEnum;
+import mobi.chouette.model.type.*;
 import mobi.chouette.model.util.ObjectFactory;
 import mobi.chouette.model.util.Referential;
 import net.opengis.gml._3.DirectPositionType;
@@ -44,10 +40,9 @@ public class StopPlaceParser implements Parser, Constant {
         Referential referential = (Referential) context.get(REFERENTIAL);
         RelationshipStructure relationshipStruct = (RelationshipStructure) context.get(NETEX_LINE_DATA_CONTEXT);
 
-        if (relationshipStruct instanceof TariffZonesInFrame_RelStructure) {
+        if (relationshipStruct instanceof TariffZonesInFrame_RelStructure tariffZonesStruct) {
             tariffZoneProperties = new HashMap<>();
 
-            TariffZonesInFrame_RelStructure tariffZonesStruct = (TariffZonesInFrame_RelStructure) relationshipStruct;
             List<JAXBElement<? extends Zone_VersionStructure>> tariffZones = tariffZonesStruct.getTariffZone_();
 
             String zoneStrucId = tariffZonesStruct.getId();
@@ -64,8 +59,7 @@ public class StopPlaceParser implements Parser, Constant {
             for (JAXBElement<? extends Zone_VersionStructure> zone : tariffZones) {
                 properties.put(NAME, zone.getName());
             }
-        } else if (relationshipStruct instanceof StopPlacesInFrame_RelStructure) {
-            StopPlacesInFrame_RelStructure stopPlacesStruct = (StopPlacesInFrame_RelStructure) relationshipStruct;
+        } else if (relationshipStruct instanceof StopPlacesInFrame_RelStructure stopPlacesStruct) {
             List<StopPlace> stopPlaces = stopPlacesStruct.getStopPlace_().stream().map(sp -> (StopPlace) sp.getValue()).collect(Collectors.toList());
             Map<String, String> parentZoneMap = new HashMap<>();
             Map<String, String> parentSiteMap = new HashMap<>();
@@ -129,7 +123,6 @@ public class StopPlaceParser implements Parser, Constant {
                     .forEach(key -> {
                         stopArea.setRailUic(key.getValue());
                     });
-            ;
         }
         if (stopPlace.getDescription() != null) {
             stopArea.setComment(stopPlace.getDescription().getValue());
@@ -143,8 +136,8 @@ public class StopPlaceParser implements Parser, Constant {
             stopArea.setPrivateCode(privateCodeStruct.getValue());
         }
 
-        if (stopPlace.getShortName() != null) {
-            stopArea.setRegistrationNumber(stopPlace.getShortName().getValue());
+        if (StringUtils.isNotBlank(stopPlace.getPublicCode())) {
+            stopArea.setRegistrationNumber(stopPlace.getPublicCode());
         }
 
         SimplePoint_VersionStructure centroidStruct = stopPlace.getCentroid();
@@ -432,7 +425,7 @@ public class StopPlaceParser implements Parser, Constant {
 
     static {
         ParserFactory.register(StopPlaceParser.class.getName(), new ParserFactory() {
-            private StopPlaceParser instance = new StopPlaceParser();
+            private final StopPlaceParser instance = new StopPlaceParser();
 
             @Override
             protected Parser create() {
