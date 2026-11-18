@@ -644,7 +644,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
     }
 
 
-    private Optional<LocalDate> getMinDateOfTimeTable(Timetable timetable ){
+    public static Optional<LocalDate> getMinDateOfTimeTable(Timetable timetable ){
 
         List<LocalDate> startPeriodList = timetable.getPeriods().stream()
                 .map(Period::getStartDate)
@@ -661,7 +661,7 @@ public class ProcessAnalyzeCommand extends AbstractImporterCommand implements Co
         return startPeriodList.isEmpty() ? Optional.empty() : startPeriodList.stream().min(LocalDate::compareTo);
     }
 
-    private Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
+    public static Optional<LocalDate> getMaxDateOfTimeTable(Timetable timetable ){
 
         List<LocalDate> endPeriodList = timetable.getPeriods().stream()
                 .map(Period::getEndDate)

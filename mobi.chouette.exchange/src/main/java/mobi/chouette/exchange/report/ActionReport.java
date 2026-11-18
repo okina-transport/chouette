@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.io.PrintStream;
+import java.time.LocalDate;
 import java.util.*;
 
 @XmlRootElement(name = "action_report")
@@ -66,6 +67,32 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 
 	@XmlTransient
 	private Date date = new Date(0);
+
+	@XmlTransient
+	@JsonIgnore
+	private LocalDate oldestPeriodOfCalendars;
+
+	@XmlTransient
+	@JsonIgnore
+	private LocalDate newestPeriodOfCalendars;
+
+	public void extendExploitationPeriod(LocalDate start, LocalDate end) {
+		if (start != null && (oldestPeriodOfCalendars == null || oldestPeriodOfCalendars.isAfter(start)))
+			oldestPeriodOfCalendars = start;
+		if (end != null && (newestPeriodOfCalendars == null || newestPeriodOfCalendars.isBefore(end)))
+			newestPeriodOfCalendars = end;
+	}
+
+	private boolean hasExploitationPeriod() {
+		return oldestPeriodOfCalendars != null || newestPeriodOfCalendars != null;
+	}
+
+	private Map<String, Object> exploitationPeriodAsMap() {
+		Map<String, Object> period = new HashMap<>();
+		period.put("start", oldestPeriodOfCalendars == null ? "" : oldestPeriodOfCalendars.toString());
+		period.put("end", newestPeriodOfCalendars == null ? "" : newestPeriodOfCalendars.toString());
+		return period;
+	}
 
 	/**
 	 * Find file report from name
@@ -181,6 +208,8 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 			actionReport.put("progression", progression.toJson());
 		// "result","zip","files","lines","stats","failure"
 		actionReport.put("result", result);
+		if (hasExploitationPeriod())
+			actionReport.put("exploitation_period", new JSONObject(exploitationPeriodAsMap()));
 		if (!zips.isEmpty()) {
 			JSONArray array = new JSONArray();
 			actionReport.put("zip_files", array);
@@ -265,6 +294,8 @@ public class ActionReport extends AbstractReport implements Constant, Progressio
 			map.put("progression", progression);
 		}
 		map.put("result", result);
+		if (hasExploitationPeriod())
+			map.put("exploitation_period", exploitationPeriodAsMap());
 		if (!zips.isEmpty())
 			map.put("zip_files", zips);
 		if (failure != null)

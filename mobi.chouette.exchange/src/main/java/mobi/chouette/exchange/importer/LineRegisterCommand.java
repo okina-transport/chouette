@@ -11,9 +11,11 @@ import mobi.chouette.dao.CategoriesForLinesDAO;
 import mobi.chouette.dao.LineDAO;
 import mobi.chouette.dao.VehicleJourneyAtStopDAO;
 import mobi.chouette.exchange.importer.updater.*;
+import mobi.chouette.exchange.fileAnalysis.ProcessAnalyzeCommand;
 import mobi.chouette.exchange.importer.utils.IdGeneration;
 import mobi.chouette.exchange.importer.utils.MdmUtils;
 import mobi.chouette.exchange.parameters.AbstractImportParameter;
+import mobi.chouette.exchange.report.ActionReport;
 import mobi.chouette.exchange.report.ActionReporter;
 import mobi.chouette.exchange.report.ActionReporter.ERROR_CODE;
 import mobi.chouette.exchange.report.ActionReporter.OBJECT_STATE;
@@ -206,6 +208,7 @@ public class LineRegisterCommand implements Command {
                     context.put(VJAS_TRANSLATIONS, vjasTranslations);
                     wMonitor.stop();
                 }
+                updateExploitationPeriod(context, newValue);
                 result = SUCCESS;
             } catch (Exception ex) {
                 log.error(ex.getMessage(), ex);
@@ -339,6 +342,24 @@ public class LineRegisterCommand implements Command {
                     if (stopArea != null && StringUtils.isEmpty(stopArea.getOriginalStopId())) {
                         StopArea sharedStopArea = referential.getSharedStopAreas().get(stopArea.getObjectId());
                         stopArea.setOriginalStopId(sharedStopArea != null ? sharedStopArea.getOriginalStopId() : null);
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateExploitationPeriod(Context context, Line line) {
+        ActionReport report = (ActionReport) context.get(REPORT);
+        if (report == null) {
+            return;
+        }
+        for (Route route : line.getRoutes()) {
+            for (JourneyPattern journeyPattern : route.getJourneyPatterns()) {
+                for (VehicleJourney vehicleJourney : journeyPattern.getVehicleJourneys()) {
+                    for (Timetable timetable : vehicleJourney.getTimetables()) {
+                        report.extendExploitationPeriod(
+                                ProcessAnalyzeCommand.getMinDateOfTimeTable(timetable).orElse(null),
+                                ProcessAnalyzeCommand.getMaxDateOfTimeTable(timetable).orElse(null));
                     }
                 }
             }
