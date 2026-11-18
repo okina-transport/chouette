@@ -34,7 +34,6 @@ public class GtfsValidationReporter implements Constant {
 		reporter.addItemToValidationReport(context, "2-GTFS-", "StopTime", 1, "E");
 		reporter.addItemToValidationReport(context, "2-GTFS-", "Route", 4, "W", "W", "W", "W");
 
-		reporter.addItemToValidationReport(context, "3-", "Route", 6, "W", "W", "W", "W", "W", "E");
 		reporter.addItemToValidationReport(context, GTFS_TARGET_ROUTE, "W");
 	}
 
