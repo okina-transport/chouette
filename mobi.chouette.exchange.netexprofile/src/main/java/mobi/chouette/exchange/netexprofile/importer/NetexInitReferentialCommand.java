@@ -65,8 +65,6 @@ public class NetexInitReferentialCommand implements Command, Constant {
 		String fileName = path.getFileName().toString();
 		
 		ActionReporter reporter = ActionReporter.Factory.getInstance();
-		ValidationReporter validationReporter = ValidationReporter.Factory.getInstance();
-		validationReporter.addItemToValidationReport(context, AbstractNetexProfileValidator._1_NETEX_UNKNOWN_PROFILE, "E");
 
 		File file = path.toFile();
 		reporter.addFileReport(context, fileName, IO_TYPE.INPUT);
