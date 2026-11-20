@@ -324,15 +324,16 @@ public class JobServiceManager {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void removeOldJobs(final int keepDays, final int keepJobsPerReferential) throws ServiceException {
-		List<Job> completedJobsAnalyzeFile = getCompletedJobsByActionAndType("analyzeFile", null);
-		List<Job> completedJobsImport = getCompletedJobsByActionAndType("importer", null);
-		List<Job> completedJobsValidator = getCompletedJobsByActionAndType("validator", null);
-		List<Job> completedJobsTransfer = getCompletedJobsByActionAndType("exporter", "transfer");
-		List<Job> completedJobsExportGTFS = getCompletedJobsByActionAndType("exporter", "gtfs");
-		List<Job> completedJobsExportNeptune = getCompletedJobsByActionAndType("exporter", "neptune");
-		List<Job> completedJobsExportNetex = getCompletedJobsByActionAndType("exporter", "netexprofile");
-		List<Job> completedJobsExportGlobalNetex = getCompletedJobsByActionAndType("globalExport", "netexprofile");
-		List<Job> completedJobsExportGlobalGtfs = getCompletedJobsByActionAndType("globalExport", "gtfs");
+		List<Job> completedJobsAnalyzeFile = getCompletedJobsByActionAndType(JobAction.ANALYZE_FILE, null);
+		List<Job> completedJobsImport = getCompletedJobsByActionAndType(JobAction.IMPORTER, null);
+		List<Job> completedJobsValidator = getCompletedJobsByActionAndType(JobAction.VALIDATOR, null);
+		List<Job> completedJobsTransfer = getCompletedJobsByActionAndType(JobAction.EXPORTER, "transfer");
+		List<Job> completedJobsExportGTFS = getCompletedJobsByActionAndType(JobAction.EXPORTER, "gtfs");
+		List<Job> completedJobsExportNeptune = getCompletedJobsByActionAndType(JobAction.EXPORTER, "neptune");
+		List<Job> completedJobsExportNetex = getCompletedJobsByActionAndType(JobAction.EXPORTER, "netexprofile");
+		List<Job> completedJobsExportGlobalNetex = getCompletedJobsByActionAndType(JobAction.GLOBAL_EXPORT, "netexprofile");
+		List<Job> completedJobsExportGlobalGtfs = getCompletedJobsByActionAndType(JobAction.GLOBAL_EXPORT, "gtfs");
+		List<Job> completedMapMatchingJobs = getCompletedJobsByActionAndType(JobAction.MAPMATCHING, null);
 
 		int jobsDeleted = 0;
 
@@ -345,6 +346,7 @@ public class JobServiceManager {
 		jobsDeleted += deleteOldJobs(completedJobsExportNetex, keepDays, keepJobsPerReferential);
 		jobsDeleted += deleteOldJobs(completedJobsExportGlobalNetex, keepDays, keepJobsPerReferential);
 		jobsDeleted += deleteOldJobs(completedJobsExportGlobalGtfs, keepDays, keepJobsPerReferential);
+		jobsDeleted += deleteOldJobs(completedMapMatchingJobs, keepDays, keepJobsPerReferential);
 
 		log.info("Removed old jobs. Cnt: " + jobsDeleted);
 	}
@@ -409,9 +411,9 @@ public class JobServiceManager {
 		return context;
 	}
 
-	private List<Job> getCompletedJobsByActionAndType(String action, String type) {
+	private List<Job> getCompletedJobsByActionAndType(JobAction action, String type) {
 		List<Job> completedJobs = new ArrayList<>();
-		STATUS.getCompletedStatuses().forEach(status -> completedJobs.addAll(jobDAO.findByStatusAndActionAndType(status, action, type)));
+		STATUS.getCompletedStatuses().forEach(status -> completedJobs.addAll(jobDAO.findByStatusAndActionAndType(status, action.getValue(), type)));
 		completedJobs.sort(Comparator.comparing(Job::getUpdated));
 		return completedJobs;
 	}
