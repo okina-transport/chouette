@@ -52,7 +52,7 @@ public class StopAssignmentParser extends NetexParser implements Parser, Constan
 					String stopPlaceId = NetexImportUtil.composeObjectId("StopPlace",parameters.getObjectIdPrefix(),stopPlaceRef.getRef());
 					mobi.chouette.model.StopArea stopPlace = ObjectFactory.getStopArea(referential, stopPlaceId);
 
-					String virtualQuayId = NetexImportUtil.composeObjectId("Quay",parameters.getObjectIdPrefix(),stopPlaceRef.getRef());
+					String virtualQuayId = NetexImportUtil.composeObjectId("Quay",parameters.getObjectIdPrefix(),"q_" + stopPlaceRef.getRef());
 					mobi.chouette.model.StopArea virtualQuay = ObjectFactory.getStopArea(referential, virtualQuayId);
 					virtualQuay.setAreaType(ChouetteAreaEnum.BoardingPosition);
 					virtualQuay.setName(stopPlace.getName());

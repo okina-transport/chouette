@@ -10,6 +10,7 @@ import mobi.chouette.common.file.FileStore;
 import mobi.chouette.common.file.FileStoreFactory;
 import mobi.chouette.dao.CompanyDAO;
 import mobi.chouette.dao.ProviderDAO;
+import mobi.chouette.dao.ScheduledStopPointDAO;
 import mobi.chouette.dao.iev.JobDAO;
 import mobi.chouette.dao.iev.StatDAO;
 import mobi.chouette.exchange.InputValidator;
@@ -68,6 +69,8 @@ public class JobServiceManager {
 	CompanyDAO companyDAO;
 	@EJB
 	private ProviderDAO providerDAO;
+	@EJB
+	private ScheduledStopPointDAO scheduledStopPointDAO;
     @Getter
     private String rootDirectory;
 
@@ -399,7 +402,58 @@ public class JobServiceManager {
 
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public void exportScheduledStopPointQuayAssociations() {
+		long start = System.currentTimeMillis();
 
+		String datasetsProperty = System.getProperty(checker.getContext() + PropertyNames.SSP_QUAY_ASSOCIATION_DATASETS, "");
+		List<String> datasets = Arrays.stream(datasetsProperty.split(","))
+				.map(String::trim)
+				.filter(StringUtils::isNotEmpty)
+				.distinct()
+				.collect(Collectors.toList());
+
+		if (datasets.isEmpty()) {
+			log.warn("No dataset configured in property " + checker.getContext() + PropertyNames.SSP_QUAY_ASSOCIATION_DATASETS
+					+ ", sspQuayAssociation.csv export aborted");
+			return;
+		}
+
+		Path filePath = FileUtil.getTechnicalScheduledStopPointsPath().resolve("sspQuayAssociation.csv");
+		List<String> extractedDatasets = new ArrayList<>();
+
+		try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			writer.write("scheduledStopPoint,quay\n");
+
+			for (String dataset : datasets) {
+				String schema = dataset.toLowerCase();
+				// whitelist against existing schemas: the schema name is concatenated into a "SET SCHEMA" statement
+				if (!checker.validateContener(schema)) {
+					log.warn("sspQuayAssociation export: schema " + schema + " not found for dataset " + dataset + ", skipped");
+					continue;
+				}
+				try {
+					ContextHolder.clear();
+					ContextHolder.setContext(schema);
+					List<Object[]> associations = scheduledStopPointDAO.getScheduledStopPointQuayAssociations();
+					for (Object[] association : associations) {
+						writer.write(association[0] + "," + association[1] + "\n");
+					}
+					extractedDatasets.add(dataset + " (" + associations.size() + ")");
+				} catch (IOException e) {
+					throw e;
+				} catch (Exception e) {
+					log.error("sspQuayAssociation export: failed to extract dataset " + dataset, e);
+				}
+			}
+		} catch (IOException e) {
+			log.error("Error while trying to write sspQuayAssociation file " + filePath, e);
+		} finally {
+			ContextHolder.clear();
+		}
+
+		log.info("sspQuayAssociation export completed in " + (System.currentTimeMillis() - start) + " ms. Extracted datasets: " + extractedDatasets);
+	}
 
 	private Context createContext() {
 		Context context = new Context();

@@ -164,6 +164,19 @@ public class RestAdmin implements Constant {
 	}
 
 	@GET
+	@Path("/export_ssp_quay_association")
+	public void exportScheduledStopPointQuayAssociations() {
+		log.info(Color.BLUE + "Call Admin exportScheduledStopPointQuayAssociations" + Color.NORMAL);
+		try {
+			jobServiceManager.exportScheduledStopPointQuayAssociations();
+			log.info(Color.BLUE + "Finished exportScheduledStopPointQuayAssociations" + Color.NORMAL);
+		} catch (Exception ex) {
+			log.error("exportScheduledStopPointQuayAssociations failed with exception:" + ex.getMessage(), ex);
+			throw new WebApplicationException("INTERNAL_ERROR", Status.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GET
 	@Path("/export_line_and_route_ids")
 	public void exportLineAndRouteIds() {
 		log.info(Color.BLUE + "Call Admin exportLineAndRouteIds"+ Color.NORMAL);

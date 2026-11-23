@@ -23,4 +23,10 @@ public interface ScheduledStopPointDAO extends GenericDAO<ScheduledStopPoint> {
 	 * @return
 	 */
 	List<String> getAllStopAreaObjectIds();
+
+	/**
+	 * Return the (objectid, stop_area_objectid_key) pairs of all scheduled stop points referring to a stop area,
+	 * ordered by scheduled stop point objectid.
+	 */
+	List<Object[]> getScheduledStopPointQuayAssociations();
 }
