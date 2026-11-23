@@ -412,9 +412,18 @@ public class FileUtil {
         return tmpPath;
     }
 
+    private static final String TECHNICAL_ROOT_PATH = "/opt/jboss/data/referentials/mobiiti_technique";
+
     public static Path getTechnicalPath() {
-        String tmpFilePathStr = "/opt/jboss/data/referentials/mobiiti_technique/lines";
-        Path tmpPath = Paths.get(tmpFilePathStr);
+        return getTechnicalSubPath("lines");
+    }
+
+    public static Path getTechnicalScheduledStopPointsPath() {
+        return getTechnicalSubPath("scheduledStopPoints");
+    }
+
+    private static Path getTechnicalSubPath(String folderName) {
+        Path tmpPath = Paths.get(TECHNICAL_ROOT_PATH, folderName);
         File tmpFile = tmpPath.toFile();
         tmpFile.getParentFile().mkdirs();
         tmpFile.mkdir();

@@ -43,4 +43,14 @@ public class ScheduledStopPointDAOImpl extends GenericDAOImpl<ScheduledStopPoint
 	public List<String> getAllStopAreaObjectIds() {
 		return em.createQuery("select distinct(ssp.containedInStopAreaObjectId) from ScheduledStopPoint ssp where ssp.containedInStopAreaObjectId is not null", String.class).getResultList();
 	}
+
+	/**
+	 * Get in separate transactions in order to be able to iterate over several referentials
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@Override
+	public List<Object[]> getScheduledStopPointQuayAssociations() {
+		return em.createQuery("select ssp.objectId, ssp.containedInStopAreaObjectId from ScheduledStopPoint ssp " +
+				"where ssp.containedInStopAreaObjectId is not null order by ssp.objectId", Object[].class).getResultList();
+	}
 }

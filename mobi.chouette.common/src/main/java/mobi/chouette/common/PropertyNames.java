@@ -31,5 +31,8 @@ public interface PropertyNames {
 
     String MDM_URL = ".mdm.url";
 
+    /** Comma-separated list of datasets (e.g. TRAINS_MOBIGO) included in the sspQuayAssociation.csv export. */
+    String SSP_QUAY_ASSOCIATION_DATASETS = ".ssp.quay.association.datasets";
+
 
 }
