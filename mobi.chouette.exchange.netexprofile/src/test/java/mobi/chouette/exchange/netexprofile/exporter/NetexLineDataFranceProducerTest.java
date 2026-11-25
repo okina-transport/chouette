@@ -17,6 +17,7 @@ import mobi.chouette.model.StopArea;
 import mobi.chouette.model.Train;
 import mobi.chouette.model.VehicleJourney;
 import mobi.chouette.model.type.PTDirectionEnum;
+import mobi.chouette.model.type.TadEnum;
 import org.rutebanken.netex.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -52,6 +53,9 @@ public class NetexLineDataFranceProducerTest {
         Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getId(), "TEST:Route:r1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getVersion(), "any");
         Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getLineRef().getValue().getRef(), "TEST:Line:l1:LOC");
+        Assert.assertTrue(exportableNetexDataResult.getLine() instanceof FlexibleLine);
+        Assert.assertEquals(((FlexibleLine) exportableNetexDataResult.getLine()).getFlexibleLineType(), FlexibleLineTypeEnumeration.MIXED_FLEXIBLE);
+        Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getLineRef().getName().getLocalPart(), "FlexibleLineRef");
         Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getDirectionRef().getRef(), "TEST:Direction:r1:LOC");
         Assert.assertEquals(exportableNetexDataResult.getRoutes().get(0).getDirectionRef().getVersion(), "any");
 
@@ -239,7 +243,8 @@ public class NetexLineDataFranceProducerTest {
         line.setRegistrationNumber("l1");
         line.setCodifligne("TestCodifligne");
         line.setNetwork(network);
-        line.setFlexibleService(true);
+        line.setFlexibleService(false);
+        line.setTad(TadEnum.PARTIAL_TAD);
 
         Route route  = new Route();
         route.setObjectId("TEST:Route:r1");
